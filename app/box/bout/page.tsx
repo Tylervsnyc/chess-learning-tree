@@ -9,9 +9,12 @@
  *
  * Engine: the SAME vs-Rookie stack /play and the workout's Fight Rounds use —
  * stockfish adapter + getLevelEngineConfig + reactive opening book. No second
- * implementation. Boxing rounds reuse the workout's punch machinery
- * (PunchTracker camera counter); with the camera off, a tap-to-count pad keeps
- * the round playable (and doubles as the no-camera dev path).
+ * implementation.
+ *
+ * Boxing rounds have NO physical tracking (2026-08-05, Tyler): no camera, no
+ * tap pad, nothing counted. A boxing round is a timer and Rookie in your
+ * corner — reaching the bell IS the achievement. Consequently the final bell
+ * is decided on the BOARD (material, decideOnMaterial), not on judges' cards.
  *
  * v2 (2026-08-05): a finished bout is a real finished unit. On the result
  * screen it POSTs to /api/bout/finish (idempotent per bout), which stores the
@@ -30,7 +33,6 @@ import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { getLevelEngineConfig } from '@/lib/rookie-levels';
 import { getReactiveBookMove } from '@/lib/rookie-opening-book';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
-import { PunchTracker } from '@/components/workout/PunchTracker';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -55,10 +57,9 @@ import {
   ROOKIE_THINK_MAX_MS,
   CHESS_ROUND_SECONDS,
   BOXING_ROUND_SECONDS,
-  BOXING_PAR,
-  rookieBoxingScore,
   boutPoints,
-  decideOnCards,
+  decideOnMaterial,
+  materialBalance,
   fmtClock,
   pickLine,
   BOUT_LINES,
@@ -77,13 +78,24 @@ function loadRookieLevel(): number {
   return Number.isFinite(level) ? Math.max(1, Math.min(10, level)) : 1;
 }
 
+/** "a rook" / "2 pawns" — material spoken the way a person would say it. */
+function fmtMaterial(pawns: number): string {
+  const n = Math.abs(pawns);
+  if (n === 9) return 'a queen';
+  if (n === 5) return 'a rook';
+  if (n === 3) return 'a piece';
+  if (n === 1) return 'a pawn';
+  return `${n} pawns`;
+}
+
 interface BoutResult {
   outcome: BoutOutcome;
-  userCards: number[];
-  rookieCards: number[];
-  punches: number;
   rookieLine: string;
   meltdown: boolean;
+  /** Material at the final bell, in pawns, from the user's side. */
+  material: number;
+  /** Boxing rounds the user reached the bell in. */
+  roundsSurvived: number;
   /** Frozen at the final bell so the result card and the share card agree. */
   moves: number;
   clockLeft: number;
@@ -137,45 +149,17 @@ export default function BoutPage() {
   const tauntedRef = useRef(false); // under-30s taunt fires once per bout
   const confettiFiredRef = useRef(false);
 
-  // ── Cards + punches ───────────────────────────────────────────────────────
   const seedRef = useRef(1);
-  const userCardsRef = useRef<number[]>([]);
-  const [punchCamOn, setPunchCamOn] = useState(false);
-  const punchesRef = useRef(0); // whole-bout total
-  const segPunchBaseRef = useRef(0); // per-mount cumulative base (PunchTracker restarts)
-  const roundStartPunchesRef = useRef(0);
-  const [punchTotal, setPunchTotal] = useState(0);
+  // Boxing rounds the user reached the bell in — the conditioning half of the
+  // score. Nothing else about a boxing round is measured (see below).
+  const roundsSurvivedRef = useRef(0);
 
   const [result, setResult] = useState<BoutResult | null>(null);
+  // Rookie's corner: one line at a time during a boxing round, swapped on a
+  // timer. She is the entire round now, so she can't go quiet.
+  const [cornerLine, setCornerLine] = useState<string>(BOUT_LINES.boxing[0]);
 
   const seg = BOUT_SEGMENTS[segIndex];
-  const rookieCards = useMemo(
-    () =>
-      Array.from({ length: BOXING_ROUND_COUNT }, (_, i) =>
-        rookieBoxingScore(seedRef.current, i + 1),
-      ),
-    // seedRef is set before first render of any card UI (begin())
-    [phase], // eslint-disable-line react-hooks/exhaustive-deps
-  );
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    setPunchCamOn(window.localStorage.getItem('cp_punch_cam') === '1');
-  }, []);
-
-  const onPunch = useCallback((mountTotal: number) => {
-    const delta = mountTotal - segPunchBaseRef.current;
-    if (delta > 0) {
-      punchesRef.current += delta;
-      setPunchTotal(punchesRef.current);
-    }
-    segPunchBaseRef.current = mountTotal;
-  }, []);
-
-  const addTapPunch = useCallback(() => {
-    punchesRef.current += 1;
-    setPunchTotal(punchesRef.current);
-  }, []);
 
   // ── Finish ────────────────────────────────────────────────────────────────
   const finishBout = useCallback(
@@ -187,22 +171,12 @@ export default function BoutPage() {
       stockfish.cancel();
       setRookieThinking(false);
 
-      // Pad unfought boxing rounds with zeros so the scorecard always shows
-      // both rounds (a KO in Chess 1 means empty cards — that reads right).
-      const userCards = Array.from(
-        { length: BOXING_ROUND_COUNT },
-        (_, i) => userCardsRef.current[i] ?? 0,
-      );
-      const rCards = Array.from({ length: BOXING_ROUND_COUNT }, (_, i) =>
-        rookieBoxingScore(seedRef.current, i + 1),
-      );
-      // Meltdown: mated in a bout she was WINNING on the cards (fought rounds).
-      const fought = userCardsRef.current.length;
-      const userSoFar = userCardsRef.current.reduce((s, n) => s + n, 0);
-      const rookieSoFar = rCards.slice(0, fought).reduce((s, n) => s + n, 0);
-      const meltdown = outcome === 'ko_win' && fought > 0 && rookieSoFar > userSoFar;
+      const material = materialBalance(fenRef.current);
+      // Meltdown: mated in a position she was WINNING on material. She does not
+      // take that well.
+      const meltdown = outcome === 'ko_win' && material < 0;
 
-      const seed = movesRef.current.length + punchesRef.current;
+      const seed = movesRef.current.length + roundsSurvivedRef.current;
       const line = meltdown
         ? pickLine(BOUT_LINES.meltdown, seed)
         : outcome === 'ko_win'
@@ -223,20 +197,19 @@ export default function BoutPage() {
       BoutEvents.finished({
         outcome,
         moves: movesRef.current.length,
-        punches: punchesRef.current,
+        punches: 0, // no physical tracking — kept for event-schema stability
         level: levelRef.current,
       });
 
       setResult({
         outcome,
-        userCards,
-        rookieCards: rCards,
-        punches: punchesRef.current,
         rookieLine: line,
         meltdown,
+        material,
+        roundsSurvived: roundsSurvivedRef.current,
         moves: movesRef.current.length,
         clockLeft: userBankRef.current,
-        points: boutPoints({ outcome, userCards, punches: punchesRef.current }),
+        points: boutPoints({ outcome, roundsSurvived: roundsSurvivedRef.current }),
         finalFen: fenRef.current,
         boutKey: boutKeyRef.current,
       });
@@ -476,18 +449,19 @@ export default function BoutPage() {
       rookieThinkingRef.current = false;
       if (isLast) {
         // Final bell, no mate → the judges decide.
-        finishBout(decideOnCards(userCardsRef.current, rookieCards));
+        // Final bell, nobody mated: the decision is the position itself.
+        finishBout(decideOnMaterial(fenRef.current));
         return;
       }
       setBellLine(pickLine(BOUT_LINES.bellFreeze, segIndex + movesRef.current.length));
     } else {
-      // Boxing round over — bank this round's punch score on the cards.
-      const roundPunches = punchesRef.current - roundStartPunchesRef.current;
-      userCardsRef.current[cur.round - 1] = roundPunches;
-      setBellLine(pickLine(BOUT_LINES.bellResume, segIndex + punchesRef.current));
+      // Boxing round survived to the bell. Nothing is measured inside it —
+      // reaching the end IS the achievement.
+      roundsSurvivedRef.current = Math.max(roundsSurvivedRef.current, cur.round);
+      setBellLine(pickLine(BOUT_LINES.bellResume, segIndex + roundsSurvivedRef.current));
     }
     setPhase('bell');
-  }, [segIndex, finishBout, rookieCards]);
+  }, [segIndex, finishBout]);
 
   /** Leave the bell overlay into the next segment. */
   const nextSegment = useCallback(() => {
@@ -497,8 +471,6 @@ export default function BoutPage() {
     setSegIndex(next);
     setRoundLeft(nextSeg.seconds);
     if (nextSeg.kind === 'boxing') {
-      segPunchBaseRef.current = 0; // fresh PunchTracker mount
-      roundStartPunchesRef.current = punchesRef.current;
       setRookieLine(pickLine(BOUT_LINES.boxing, next));
       setPhase('boxing');
     } else {
@@ -507,6 +479,21 @@ export default function BoutPage() {
     }
     playBoxingBell();
   }, [segIndex]);
+
+  // Rookie's corner rotation — a fresh line every ~12s for the whole boxing
+  // round, walking forward through the pool from a per-round offset so two
+  // rounds in one bout don't hear the same run of lines.
+  useEffect(() => {
+    if (phase !== 'boxing') return;
+    const pool = BOUT_LINES.boxing;
+    let i = (segIndex * 5 + movesRef.current.length) % pool.length;
+    setCornerLine(pool[i]);
+    const t = setInterval(() => {
+      i = (i + 1) % pool.length;
+      setCornerLine(pool[i]);
+    }, 12000);
+    return () => clearInterval(t);
+  }, [phase, segIndex]);
 
   // Auto-advance the bell overlay after a short beat.
   useEffect(() => {
@@ -580,9 +567,7 @@ export default function BoutPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             outcome: result.outcome,
-            userCards: result.userCards,
-            rookieCards: result.rookieCards,
-            punches: result.punches,
+            roundsSurvived: result.roundsSurvived,
             moves: result.moves,
             level: levelRef.current,
             clockLeftSeconds: result.clockLeft,
@@ -644,11 +629,7 @@ export default function BoutPage() {
       typeof crypto !== 'undefined' && 'randomUUID' in crypto
         ? crypto.randomUUID()
         : `bout-${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
-    userCardsRef.current = [];
-    punchesRef.current = 0;
-    segPunchBaseRef.current = 0;
-    roundStartPunchesRef.current = 0;
-    setPunchTotal(0);
+    roundsSurvivedRef.current = 0;
     finishedRef.current = false;
     tauntedRef.current = false;
     confettiFiredRef.current = false;
@@ -746,8 +727,8 @@ export default function BoutPage() {
                 Your clock: {fmtClock(USER_BANK_SECONDS)} for all chess rounds. Flag = loss.
               </li>
               <li>Rookie thinks 2-4s a move. She never flags. Rude, honestly.</li>
-              <li>Boxing rounds score the cards: your punches vs hers.</li>
-              <li>No mate by the final bell — judges decide. Tie goes to you.</li>
+              <li>Boxing rounds: {BOXING_ROUND_SECONDS}s of work. Rookie&apos;s in your corner.</li>
+              <li>No mate by the final bell — material decides. Level goes to you.</li>
             </ul>
           </div>
 
@@ -786,22 +767,19 @@ export default function BoutPage() {
           : result.outcome === 'flag_loss'
             ? 'Loss on time'
             : result.outcome === 'decision_win'
-              ? 'You win on the cards'
+              ? 'You win the decision'
               : result.outcome === 'decision_loss'
                 ? 'Rookie takes the decision'
                 : 'Draw';
-    const userTotal = result.userCards.reduce((s, n) => s + n, 0);
-    const rookieTotal = result.rookieCards.reduce((s, n) => s + n, 0);
     const earned = savedPoints ?? result.points;
 
     const shareBout = async () => {
       setSharing(true);
       const params = new URLSearchParams({
         outcome: result.outcome,
-        you: result.userCards.join(','),
-        rookie: result.rookieCards.join(','),
+        material: String(result.material),
+        rounds: String(result.roundsSurvived),
         moves: String(result.moves),
-        punches: String(result.punches),
         clock: String(result.clockLeft),
         points: String(earned),
       });
@@ -853,44 +831,27 @@ export default function BoutPage() {
               {result.rookieLine}
             </div>
 
-            {/* Judges' scorecard */}
+            {/* The decision — material when the bell rang. No judges, no
+                cards: nothing about the boxing rounds is measured. */}
             <div className="w-full rounded-2xl border border-slate-200 overflow-hidden">
               <div className="bg-chess-page px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
-                Judges&apos; scorecard
+                On the board
               </div>
-              <div className="grid grid-cols-3 text-xs font-bold text-chess-text-muted px-3 pt-2">
-                <span className="text-left">Round</span>
-                <span>You</span>
-                <span>Rookie</span>
-              </div>
-              {result.userCards.map((u, i) => (
-                <div
-                  key={i}
-                  className="bout-score-row grid grid-cols-3 px-3 py-1 text-sm font-black text-chess-text tabular-nums"
-                  style={{ animationDelay: `${0.3 + i * 0.35}s` }}
-                >
-                  <span className="text-left text-chess-text-muted font-bold">
-                    Boxing {i + 1}
-                  </span>
-                  <span className={u >= result.rookieCards[i] ? 'text-chess-green' : ''}>
-                    {u}
-                  </span>
-                  <span className={result.rookieCards[i] > u ? 'text-[#e5484d]' : ''}>
-                    {result.rookieCards[i]}
-                  </span>
+              <div className="px-3 py-2.5 flex flex-col gap-1">
+                <div className="text-sm font-black text-chess-text">
+                  {result.material > 0
+                    ? `You finished up ${fmtMaterial(result.material)}`
+                    : result.material < 0
+                      ? `Rookie finished up ${fmtMaterial(-result.material)}`
+                      : 'Dead level on material'}
                 </div>
-              ))}
-              <div
-                className="bout-score-row grid grid-cols-3 px-3 py-1.5 text-sm font-black tabular-nums border-t border-slate-100"
-                style={{ animationDelay: `${0.3 + result.userCards.length * 0.35 + 0.2}s` }}
-              >
-                <span className="text-left text-chess-text-muted font-bold">Total</span>
-                <span className={userTotal >= rookieTotal ? 'text-chess-green' : 'text-chess-text'}>
-                  {userTotal}
-                </span>
-                <span className={rookieTotal > userTotal ? 'text-[#e5484d]' : 'text-chess-text'}>
-                  {rookieTotal}
-                </span>
+                <div className="text-[11px] font-semibold text-chess-text-muted leading-snug">
+                  {result.roundsSurvived > 0
+                    ? `${result.roundsSurvived} boxing ${
+                        result.roundsSurvived === 1 ? 'round' : 'rounds'
+                      } survived`
+                    : 'Ended before the gloves came on'}
+                </div>
               </div>
             </div>
 
@@ -900,12 +861,6 @@ export default function BoutPage() {
                   {result.moves}
                 </div>
                 <div className="text-[11px] font-semibold text-chess-text-muted">moves</div>
-              </div>
-              <div>
-                <div className="text-xl font-black text-chess-text tabular-nums">
-                  {result.punches}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">punches</div>
               </div>
               <div>
                 <div className="text-xl font-black text-chess-text tabular-nums">
@@ -968,8 +923,8 @@ export default function BoutPage() {
 
   return (
     // HARD RULE: no scroll. Fixed column — header + flexible middle + footer.
-    // The board (and the punch cam) size themselves off the leftover height
-    // via container queries, so nothing ever pushes past the window.
+    // The board sizes itself off the leftover height via container queries,
+    // so nothing ever pushes past the window.
     <div className="h-full overflow-hidden bg-chess-page flex flex-col">
       {/* Header: round + bell timer */}
       <div className="bg-chess-surface border-b border-slate-200 shrink-0">
@@ -995,79 +950,34 @@ export default function BoutPage() {
         </div>
       </div>
 
+      {/* Corner lines cross-fade in rather than snapping — she's talking, not
+          flashing cue cards. */}
+      <style>{`
+        @keyframes boutCornerIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        .bout-corner-line { animation: boutCornerIn .5s ease-out; }
+      `}</style>
+
       <div className="flex-1 min-h-0 flex flex-col">
         {isBoxing ? (
-          // ── Boxing round: punch machinery, board frozen ──────────────────
-          <div className="flex-1 min-h-0 flex flex-col items-center px-4 md:px-6 py-2 text-center gap-2 max-w-md md:max-w-lg mx-auto w-full">
-            <div className="text-5xl font-black text-chess-text tabular-nums shrink-0">
+          // ── Boxing round: a timer and Rookie in your corner ──────────────
+          // NOTHING is measured here (2026-08-05, Tyler): no camera, no tap
+          // pad, no count. Reaching the bell is the achievement, and Rookie
+          // talking you through it is the whole experience.
+          <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 md:px-6 py-2 text-center gap-4 max-w-md md:max-w-lg mx-auto w-full">
+            <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e5484d] shrink-0">
+              Boxing round {seg?.round}
+            </div>
+            <div className="text-7xl font-black text-chess-text tabular-nums shrink-0 leading-none">
               {fmtClock(roundLeft)}
             </div>
-            <p className="text-xs font-semibold text-chess-text-muted leading-snug max-w-xs shrink-0">
-              {rookieLine}
+            <BreathingRook size="lg" animate mood="excited" />
+            {/* Rookie's corner — rotates through the round so she keeps talking */}
+            <p
+              key={cornerLine}
+              className="bout-corner-line text-sm font-bold text-chess-text leading-snug max-w-xs min-h-[3rem] flex items-center justify-center shrink-0"
+            >
+              {cornerLine}
             </p>
-            <div className="text-sm font-black text-chess-text shrink-0">
-              {punchTotal - (roundStartPunchesRef.current ?? 0)} punches this round
-              <span className="text-chess-text-muted font-bold">
-                {' '}
-                · Rookie&apos;s pace ~{BOXING_PAR}
-              </span>
-            </div>
-            {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && punchCamOn ? (
-              <>
-                {/* Cam feed scales to leftover height (3:4), never overflows */}
-                <div
-                  className="flex-[3] min-h-0 w-full flex items-center justify-center"
-                  style={{ containerType: 'size' }}
-                >
-                  <div style={{ width: 'min(100%, 20rem, calc(100cqh * 3 / 4))' }}>
-                    <PunchTracker
-                      key={`bout-${segIndex}`}
-                      autoStart
-                      onPunch={onPunch}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    setPunchCamOn(false);
-                    window.localStorage.setItem('cp_punch_cam', '0');
-                  }}
-                  className="text-xs font-semibold text-chess-text-muted underline underline-offset-2 min-h-[36px] shrink-0"
-                >
-                  Turn off camera
-                </button>
-              </>
-            ) : (
-              <>
-                {/* No camera: tap-to-count keeps the cards honest-ish. Also the
-                    dev path for faking punches in a web preview. */}
-                <button
-                  onClick={addTapPunch}
-                  className="w-full max-w-xs rounded-3xl bg-[#e5484d] text-white font-black text-xl py-7 shadow-[0_5px_0_#b53437] active:translate-y-[2px] active:shadow-[0_3px_0_#b53437] transition tap-highlight select-none shrink-0"
-                >
-                  Tap per punch
-                </button>
-                <p className="text-[11px] text-chess-text-muted max-w-xs shrink-0">
-                  {FEATURE_FLAGS.WORKOUT_PUNCH_CAM
-                    ? 'Shadowbox and tap with each punch — or turn on the camera and it counts for you.'
-                    : 'Shadowbox and tap with each punch.'}
-                </p>
-                {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && (
-                  <button
-                    onClick={() => {
-                      playButtonClick();
-                      setPunchCamOn(true);
-                      window.localStorage.setItem('cp_punch_cam', '1');
-                    }}
-                    className="flex items-center gap-2 rounded-xl border-2 border-chess-green text-chess-green font-bold px-4 py-2 min-h-[40px] hover:bg-chess-green/5 transition shrink-0"
-                  >
-                    Count my punches
-                  </button>
-                )}
-              </>
-            )}
             {/* The frozen game, visible but locked — soaks up whatever height
                 is left (may get small on an SE; it's decoration here) */}
             <div

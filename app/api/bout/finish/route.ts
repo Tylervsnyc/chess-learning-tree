@@ -5,7 +5,6 @@ import {
   boutPoints,
   boutResult,
   BOXING_ROUND_COUNT,
-  BOXING_ROUND_SECONDS,
   USER_BANK_SECONDS,
   type BoutOutcome,
 } from '@/lib/bout/bout';
@@ -15,9 +14,7 @@ import {
  *
  * Body: {
  *   outcome: BoutOutcome,
- *   userCards: number[],      // judges' cards, one per boxing round
- *   rookieCards: number[],
- *   punches: number,
+ *   roundsSurvived: number,   // boxing rounds reached the bell in
  *   moves: number,
  *   level: number,
  *   clockLeftSeconds: number,
@@ -30,8 +27,10 @@ import {
  * (/api/leaderboard), and the fight record on /profile.
  *
  * TRUST: points are NOT accepted from the client — they are recomputed here
- * from the reported result via boutPoints(), and the inputs that feed it are
- * clamped to what a real 5-round bout can physically produce. The write uses
+ * from the reported result via boutPoints(), and the only input that feeds it
+ * is roundsSurvived, clamped to the number of boxing rounds that exist. There
+ * is NO physical tracking in a bout (no camera, no tap pad), so there is
+ * nothing a client could inflate beyond that. The write uses
  * the service role because bout_sessions has no public insert policy (a user
  * must not be able to hand-write a row onto a public board).
  *
@@ -40,10 +39,6 @@ import {
  * instead of erroring in the user's face.
  */
 
-// Physical caps for one bout: 5 segments, 2 boxing rounds of 60s. Humans peak
-// around 300 punches/min, so a full bout cannot honestly clear this.
-const MAX_PUNCHES_PER_ROUND = Math.ceil((BOXING_ROUND_SECONDS / 60) * 350);
-const MAX_PUNCHES = MAX_PUNCHES_PER_ROUND * BOXING_ROUND_COUNT;
 // A 3-round bout at 3:00 a round with a 9:00 bank can't run past this.
 const MAX_MOVES = 400;
 
@@ -64,14 +59,6 @@ function isOutcome(v: unknown): v is BoutOutcome {
 function clampInt(v: unknown, max: number): number {
   if (typeof v !== 'number' || !Number.isFinite(v)) return 0;
   return Math.max(0, Math.min(max, Math.trunc(v)));
-}
-
-/** Cards array → exactly BOXING_ROUND_COUNT clamped entries. */
-function clampCards(v: unknown): number[] {
-  const arr = Array.isArray(v) ? v : [];
-  return Array.from({ length: BOXING_ROUND_COUNT }, (_, i) =>
-    clampInt(arr[i], MAX_PUNCHES_PER_ROUND),
-  );
 }
 
 export async function POST(request: NextRequest) {
@@ -95,12 +82,7 @@ export async function POST(request: NextRequest) {
   }
   const outcome = body.outcome;
 
-  const userCards = clampCards(body.userCards);
-  const rookieCards = clampCards(body.rookieCards);
-  // Punches must be consistent with the cards — the cards ARE the per-round
-  // punch counts, so the total can never exceed their sum.
-  const cardSum = userCards.reduce((s, n) => s + n, 0);
-  const punches = Math.min(clampInt(body.punches, MAX_PUNCHES), cardSum);
+  const roundsSurvived = clampInt(body.roundsSurvived, BOXING_ROUND_COUNT);
   const moves = clampInt(body.moves, MAX_MOVES);
   const level = Math.max(1, Math.min(10, clampInt(body.level, 10) || 1));
   const clockLeftSeconds = clampInt(body.clockLeftSeconds, USER_BANK_SECONDS);
@@ -110,7 +92,7 @@ export async function POST(request: NextRequest) {
       ? body.clientSessionId
       : null;
 
-  const points = boutPoints({ outcome, userCards, punches });
+  const points = boutPoints({ outcome, roundsSurvived });
   const result = boutResult(outcome);
 
   const svc = createServiceClient();
@@ -141,11 +123,11 @@ export async function POST(request: NextRequest) {
       outcome,
       result,
       points,
-      punches,
+      punches: 0, // no physical tracking; column retained for schema stability
       moves,
       level,
-      user_cards: userCards,
-      rookie_cards: rookieCards,
+      user_cards: [],
+      rookie_cards: [],
       clock_left_seconds: clockLeftSeconds,
       final_fen: finalFen,
       client_session_id: clientSessionId,

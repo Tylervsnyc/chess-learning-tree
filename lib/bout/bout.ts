@@ -11,8 +11,8 @@
  * - Rookie's clock is pacing/flavor only. She thinks 2-4s/move, her clock
  *   ticks visually, she can NEVER flag.
  * - The bell always wins: round timer at zero freezes the board mid-position.
- *   Final bell with no mate = points decision.
- * - Three ways to lose: checkmated, flagged, outscored on the cards.
+ *   Final bell with no mate = decision on material.
+ * - Three ways to lose: checkmated, flagged, behind on material at the bell.
  */
 
 export const CHESS_ROUND_SECONDS = 180; // 3:00 bell per chess round
@@ -45,24 +45,31 @@ export const BOUT_SEGMENTS: BoutSegment[] = [
 
 export const BOXING_ROUND_COUNT = BOUT_SEGMENTS.filter((s) => s.kind === 'boxing').length;
 
-// ─── Judges' cards ───────────────────────────────────────────────────────────
-// Each boxing round is scored on punch output — one point per counted punch
-// (same punch machinery as the workout's exercise segments). Rookie is the
-// opponent on the cards: her round score is a believable target derived from a
-// par pace with ±15% variance, deterministic per bout-seed + round.
+// ─── The decision ────────────────────────────────────────────────────────────
+// There is NO physical tracking (2026-08-05, Tyler): boxing rounds are a timer
+// plus Rookie in your corner, nothing counted. So the final bell is decided on
+// the BOARD — material when time runs out. "You were up a rook when the bell
+// rang, that's your decision." Tie goes to the user (crowd favorite).
+//
+// Deliberately NOT an engine eval: material is the one thing a beginner can
+// look at and agree with. A decision you can't understand isn't a decision.
 
-/** Par punch output for one 60s boxing round (~1 punch/sec working pace). */
-export const BOXING_PAR = 60;
+/** Standard piece values. Kings are excluded — both sides always have one. */
+const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9 };
 
-/** Cheap deterministic 0..1 from (seed, round) — stable for a whole bout. */
-function seededFrac(seed: number, round: number): number {
-  const x = Math.sin(seed * 374761 + round * 668265) * 43758.5453;
-  return x - Math.floor(x);
-}
-
-/** Rookie's score for one boxing round: par ±15%, deterministic per seed. */
-export function rookieBoxingScore(seed: number, round: number): number {
-  return Math.round(BOXING_PAR * (0.85 + seededFrac(seed, round) * 0.3));
+/**
+ * Material balance from a FEN, in pawns, from WHITE's point of view (the user
+ * always plays white in a bout). Positive = user is up material.
+ */
+export function materialBalance(fen: string): number {
+  const board = fen.split(' ')[0] ?? '';
+  let score = 0;
+  for (const ch of board) {
+    const v = PIECE_VALUE[ch.toLowerCase()];
+    if (v === undefined) continue;
+    score += ch === ch.toUpperCase() ? v : -v;
+  }
+  return score;
 }
 
 export type BoutOutcome =
@@ -70,14 +77,15 @@ export type BoutOutcome =
   | 'ko_loss' // Rookie checkmated you
   | 'flag_loss' // your 9:00 bank ran out
   | 'draw' // stalemate / dead position mid-bout
-  | 'decision_win' // final bell, you outscored her (tie goes to you)
-  | 'decision_loss'; // final bell, outscored on the cards
+  | 'decision_win' // final bell, ahead on material (level goes to you)
+  | 'decision_loss'; // final bell, behind on material
 
-/** Points decision at the final bell. Tie goes to the user (crowd favorite). */
-export function decideOnCards(userCards: number[], rookieCards: number[]): BoutOutcome {
-  const user = userCards.reduce((s, n) => s + n, 0);
-  const rookie = rookieCards.reduce((s, n) => s + n, 0);
-  return user >= rookie ? 'decision_win' : 'decision_loss';
+/**
+ * Decision at the final bell, on material. Tie (or dead level) goes to the
+ * user — the crowd favorite gets the nod.
+ */
+export function decideOnMaterial(fen: string): BoutOutcome {
+  return materialBalance(fen) >= 0 ? 'decision_win' : 'decision_loss';
 }
 
 export function fmtClock(s: number): string {
@@ -112,8 +120,24 @@ export const BOUT_LINES = {
     "Tick tock. I don't even have a heartbeat and mine is racing for you.",
     'Under thirty. Move with your hands, think with your gut.',
   ],
+  // Rookie in your corner during a boxing round. Nothing is being counted —
+  // she is the whole round. Rotated on a timer, so this pool has to be deep
+  // enough that a 60s round never repeats and two rounds rarely overlap.
+  // Register: coach who is far too invested, occasionally derailed by chess.
   boxing: [
-    'Punch like you mean it — the judges are watching. I bribed none of them.',
+    'Hands up. Chin down. Breathe out when you throw.',
+    "Work. Just work. I'll hold the position, I promise I won't peek.",
+    'Shoulders loose. You are carrying them like a queen you refuse to trade.',
+    "Halfway. This is where it stops being fun — that's the part that counts.",
+    "Don't watch the clock. The clock is my job.",
+    'Move your feet. Nobody ever got mated standing still.',
+    'Big breath. Slow one. The board will still be a disaster in a minute.',
+    "You're doing the thing where you hold your breath. Out. Push it out.",
+    "Ten seconds of ugly beats a minute of pretty. Give me ugly.",
+    'I know it burns. I have read extensively about burning.',
+    "Last stretch. Empty the tank — you can think when you sit down.",
+    'Finish the round. Then we go be geniuses together.',
+    'Nobody is counting. That is the point. Just work.',
     'Hands up, chin down. The knights talk if your guard drops.',
   ],
   koWin: [
@@ -121,24 +145,24 @@ export const BOUT_LINES = {
     'Mate. Right through the gloves. Proud of you.',
   ],
   meltdown: [
-    'I was WINNING. On the CARDS. This is fine. This is completely fine.',
-    'The judges had me AHEAD. And you just — no. Rematch. Right now.',
+    'I was UP MATERIAL. I was WINNING. This is fine. This is completely fine.',
+    'I had a whole extra piece. And you just — no. Rematch. Right now.',
   ],
   koLoss: [
     'Checkmate — but you made me sweat every square of it.',
-    "That's the bout. You fought hard. Next time the cards fall your way.",
+    "That's the bout. You fought hard. Next time the position falls your way.",
   ],
   flagLoss: [
     "Flag's down. The clock got you before I did — and honestly, it was close.",
     'Time. The cruelest piece on the board. Run it back?',
   ],
   decisionWin: [
-    'The judges say you. The judges are correct and very brave.',
-    "Decision: yours. You out-worked me between the moves. That's the sport.",
+    'Bell rang, you had more wood on the board. Decision: yours.',
+    "Decision: yours. You kept the pieces AND kept breathing. That's the sport.",
   ],
   decisionLoss: [
-    'Decision: me. On work rate. The board was all you though — I felt it.',
-    'The cards say me. Barely. Throw more leather next time and it flips.',
+    'Decision: me. I was up material when the bell went. Barely counts. Counts.',
+    'One trade next time and that flips. I will be thinking about it all week.',
   ],
   draw: [
     'A draw. We both live. The judges are furious.',
@@ -151,9 +175,9 @@ export function pickLine(arr: readonly string[], seed: number): string {
 
 // ─── Bout scoring (v2) ───────────────────────────────────────────────────────
 // A finished bout earns leaderboard points, the same currency the workout
-// pays in. Shape of the formula: showing up is worth something, the chess
-// result is worth the most, and work rate (punches) is worth a steady trickle
-// so a grinder who loses on the cards still banks a real number.
+// pays in. With no physical tracking there is nothing to measure in the
+// boxing rounds, so the formula is: showing up + the chess result + how far
+// into the bout you got. Nothing here can be inflated by phone-tapping.
 //
 // The API re-computes this server-side from the reported result — the client
 // never sends a point total (see app/api/bout/finish).
@@ -171,31 +195,23 @@ export const BOUT_OUTCOME_POINTS: Record<BoutOutcome, number> = {
   flag_loss: 50,
 };
 
-/** Work rate: one point per counted punch. */
-export const BOUT_POINTS_PER_PUNCH = 1;
-
-/** Reaching the bell in a boxing round you actually fought. */
-export const BOUT_POINTS_PER_ROUND = 25;
+/** Surviving to the bell of a boxing round — the conditioning half. */
+export const BOUT_POINTS_PER_ROUND = 60;
 
 export interface BoutScoreInput {
   outcome: BoutOutcome;
-  /** Judges' cards for the rounds the user actually fought. */
-  userCards: number[];
-  /** Total counted punches across the bout. */
-  punches: number;
+  /** Boxing rounds the user reached the bell in (0..BOXING_ROUND_COUNT). */
+  roundsSurvived: number;
 }
 
 /**
  * Leaderboard points for one finished bout. Deterministic and pure so the
  * client preview and the server's stored value can never disagree.
  */
-export function boutPoints({ outcome, userCards, punches }: BoutScoreInput): number {
-  const roundsFought = userCards.filter((n) => n > 0).length;
+export function boutPoints({ outcome, roundsSurvived }: BoutScoreInput): number {
+  const rounds = Math.max(0, Math.min(BOXING_ROUND_COUNT, Math.trunc(roundsSurvived)));
   const total =
-    BOUT_BASE_POINTS +
-    (BOUT_OUTCOME_POINTS[outcome] ?? 0) +
-    Math.max(0, Math.trunc(punches)) * BOUT_POINTS_PER_PUNCH +
-    roundsFought * BOUT_POINTS_PER_ROUND;
+    BOUT_BASE_POINTS + (BOUT_OUTCOME_POINTS[outcome] ?? 0) + rounds * BOUT_POINTS_PER_ROUND;
   return Math.max(0, Math.round(total));
 }
 

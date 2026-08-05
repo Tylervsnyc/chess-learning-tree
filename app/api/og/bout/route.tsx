@@ -6,17 +6,16 @@ export const runtime = 'edge';
 /**
  * Reel/story-sized (1080x1920) share card for a finished Chess Boxing BOUT.
  *
- * The bout brag card — "KO in round 2, and here are the judges' cards." Models
+ * The bout brag card — "KO in round 2, and I was up a rook." Models
  * app/api/og/leaderboard (same window chrome, same brand bar, same CTA) so the
  * two cards read as one family in a feed.
  *
  * Query params:
  *   outcome  — ko_win | decision_win | draw | decision_loss | ko_loss | flag_loss
  *   username — handle (optional; omitted line if absent)
- *   you      — comma-separated judges' cards for the user (e.g. "62,58")
- *   rookie   — comma-separated judges' cards for Rookie
+ *   material — material balance in pawns at the end, from the user's side
+ *   rounds   — boxing rounds survived
  *   moves    — moves played
- *   punches  — total punches
  *   clock    — seconds left on the user's bank at the end
  *   points   — points earned
  */
@@ -56,20 +55,21 @@ const HEADLINE: Record<string, string> = {
   ko_win: 'KO — CHECKMATE',
   ko_loss: 'KO — ROOKIE MATES ME',
   flag_loss: 'LOSS ON TIME',
-  decision_win: 'WIN ON THE CARDS',
+  decision_win: 'WIN ON THE BOARD',
   decision_loss: 'ROOKIE TAKES THE DECISION',
   draw: 'DRAW',
 };
 
 const WINS = new Set(['ko_win', 'decision_win']);
 
-/** "62,58" → [62, 58], bounded and sane. */
-function parseCards(raw: string | null): number[] {
-  if (!raw) return [];
-  return raw
-    .split(',')
-    .slice(0, 6)
-    .map((n) => Math.max(0, Math.min(9999, parseInt(n, 10) || 0)));
+/** "a rook" / "2 pawns" — material spoken the way a person would say it. */
+function fmtMaterial(pawns: number): string {
+  const n = Math.abs(pawns);
+  if (n === 9) return 'a queen';
+  if (n === 5) return 'a rook';
+  if (n === 3) return 'a piece';
+  if (n === 1) return 'a pawn';
+  return `${n} pawns`;
 }
 
 function fmtClock(s: number): string {
@@ -101,19 +101,21 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const outcome = searchParams.get('outcome') || 'decision_win';
   const username = (searchParams.get('username') || '').slice(0, 20);
-  const you = parseCards(searchParams.get('you'));
-  const rookie = parseCards(searchParams.get('rookie'));
+  const material = Math.max(-99, Math.min(99, parseInt(searchParams.get('material') || '0', 10) || 0));
+  const rounds = Math.max(0, Math.min(9, parseInt(searchParams.get('rounds') || '0', 10) || 0));
   const moves = Math.max(0, parseInt(searchParams.get('moves') || '0', 10) || 0);
-  const punches = Math.max(0, parseInt(searchParams.get('punches') || '0', 10) || 0);
   const clock = Math.max(0, parseInt(searchParams.get('clock') || '0', 10) || 0);
   const points = Math.max(0, parseInt(searchParams.get('points') || '0', 10) || 0);
 
   const headline = HEADLINE[outcome] || 'BOUT COMPLETE';
   const won = WINS.has(outcome);
   const accent = won ? '#58CC02' : '#E5484D';
-  const youTotal = you.reduce((s, n) => s + n, 0);
-  const rookieTotal = rookie.reduce((s, n) => s + n, 0);
-  const rounds = Math.max(you.length, rookie.length);
+  const materialLine =
+    material > 0
+      ? `Up ${fmtMaterial(material)} at the bell`
+      : material < 0
+        ? `Down ${fmtMaterial(-material)} at the bell`
+        : 'Dead level at the bell';
 
   const W = 1080;
   const H = 1920;
@@ -219,121 +221,51 @@ export async function GET(req: Request) {
             </div>
           ) : null}
 
-          {/* Judges' scorecard */}
-          {rounds > 0 ? (
+          {/* The decision — the position, not a scorecard. Nothing about the
+              boxing rounds is measured, so there is nothing to tabulate. */}
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              marginTop: 34,
+              borderRadius: 24,
+              border: '3px solid #DCE8F1',
+              background: '#F1F7FC',
+              padding: '34px 30px',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-                marginTop: 34,
-                borderRadius: 24,
-                border: '3px solid #DCE8F1',
-                overflow: 'hidden',
+                fontSize: 26,
+                fontWeight: 800,
+                letterSpacing: '0.16em',
+                color: '#5B7A93',
+                textTransform: 'uppercase',
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  background: '#F1F7FC',
-                  padding: '14px 30px',
-                  fontSize: 26,
-                  fontWeight: 800,
-                  letterSpacing: '0.16em',
-                  color: '#5B7A93',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Judges&apos; scorecard
-              </div>
-              <div style={{ display: 'flex', padding: '16px 34px 0 34px', fontSize: 36, fontWeight: 700, color: '#5B7A93' }}>
-                <div style={{ display: 'flex', flexGrow: 1 }}>Round</div>
-                <div style={{ display: 'flex', width: 170, justifyContent: 'center' }}>You</div>
-                <div style={{ display: 'flex', width: 170, justifyContent: 'center' }}>Rookie</div>
-              </div>
-              {Array.from({ length: rounds }).map((_, i) => {
-                const u = you[i] ?? 0;
-                const r = rookie[i] ?? 0;
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      padding: '20px 34px',
-                      fontSize: 48,
-                      fontWeight: 900,
-                      color: '#15324A',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexGrow: 1, fontSize: 36, fontWeight: 700, color: '#5B7A93' }}>
-                      Boxing {i + 1}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        width: 170,
-                        justifyContent: 'center',
-                        color: u >= r ? '#58CC02' : '#15324A',
-                      }}
-                    >
-                      {u}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        width: 170,
-                        justifyContent: 'center',
-                        color: r > u ? '#E5484D' : '#15324A',
-                      }}
-                    >
-                      {r}
-                    </div>
-                  </div>
-                );
-              })}
-              <div
-                style={{
-                  display: 'flex',
-                  padding: '22px 34px',
-                  fontSize: 52,
-                  fontWeight: 900,
-                  color: '#15324A',
-                  borderTop: '3px solid #EDF3F9',
-                  alignItems: 'center',
-                }}
-              >
-                <div style={{ display: 'flex', flexGrow: 1, fontSize: 36, fontWeight: 700, color: '#5B7A93' }}>
-                  Total
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    width: 170,
-                    justifyContent: 'center',
-                    color: youTotal >= rookieTotal ? '#58CC02' : '#15324A',
-                  }}
-                >
-                  {youTotal}
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    width: 170,
-                    justifyContent: 'center',
-                    color: rookieTotal > youTotal ? '#E5484D' : '#15324A',
-                  }}
-                >
-                  {rookieTotal}
-                </div>
-              </div>
+              On the board
             </div>
-          ) : null}
+            <div
+              style={{
+                display: 'flex',
+                fontSize: 54,
+                fontWeight: 900,
+                color: material >= 0 ? '#15324A' : '#E5484D',
+                textAlign: 'center',
+              }}
+            >
+              {materialLine}
+            </div>
+          </div>
 
           {/* Stats */}
           <div style={{ display: 'flex', gap: 40, marginTop: 34 }}>
             <Stat value={String(moves)} label="Moves" />
-            {punches > 0 ? <Stat value={punches.toLocaleString()} label="Punches" /> : null}
+            {rounds > 0 ? <Stat value={String(rounds)} label="Rounds" /> : null}
             <Stat value={fmtClock(clock)} label="Clock left" />
             {points > 0 ? <Stat value={points.toLocaleString()} label="Points" /> : null}
           </div>
