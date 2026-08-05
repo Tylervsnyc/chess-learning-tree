@@ -6,6 +6,11 @@ import Link from 'next/link';
 /**
  * BoxSettings — the Chess Boxing app's settings screen (/box/settings).
  *
+ * HARD RULE (docs/chess-boxing-app-structure.md): no scrolling — the screen is
+ * a compact row list that fits 375×667 minus the tab bar. Handle and Crew open
+ * small SUB-PANELS (view swap, obvious back arrow) instead of expanding the
+ * list, so no state can make the page taller than the window.
+ *
  * Reuses the leaderboard identity APIs — no second implementation:
  * - Username:  GET/POST /api/profile/username (validation + lockdown live there)
  * - Crew:      GET/DELETE /api/leaderboard/crew + POST /api/leaderboard/join
@@ -16,8 +21,8 @@ import Link from 'next/link';
  * The workout's punch counter doesn't read this key yet — the toggle is the
  * preference of record for future wiring, labeled honestly in the UI.
  *
- * Logged-out users can still use the camera section; account-backed sections
- * collapse into a sign-in prompt.
+ * Logged-out users can still use the camera row; account-backed rows collapse
+ * into a sign-in prompt.
  */
 
 const CAMERA_KEY = 'cp:punch-camera';
@@ -28,12 +33,15 @@ interface Crew {
   name: string;
 }
 
+type View = 'list' | 'handle' | 'crew';
+
 export function BoxSettings() {
   // undefined = still loading; null = logged out.
   const [username, setUsername] = useState<string | null | undefined>(undefined);
   const [loggedOut, setLoggedOut] = useState(false);
   const [crew, setCrew] = useState<Crew | null>(null);
   const [optIn, setOptIn] = useState<boolean | null>(null);
+  const [view, setView] = useState<View>('list');
 
   useEffect(() => {
     fetch('/api/profile/username')
@@ -63,64 +71,123 @@ export function BoxSettings() {
       .catch(() => {});
   }, []);
 
+  const backToList = () => setView('list');
+
   return (
-    <div className="h-full overflow-auto bg-chess-page">
-      <div className="max-w-lg md:max-w-xl mx-auto w-full px-4 md:px-6 pt-4 pb-10 flex flex-col gap-4">
-        <div className="flex items-center gap-3 pt-2">
-          <Link
-            href="/box"
-            aria-label="Back to Chess Boxing"
-            className="flex items-center justify-center w-11 h-11 -ml-2 rounded-xl text-chess-text-muted tap-highlight"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M15 5l-7 7 7 7" />
-            </svg>
-          </Link>
-          <h1 className="text-2xl md:text-3xl font-black text-chess-text">Settings</h1>
+    <div className="h-full overflow-hidden bg-chess-page">
+      <div className="max-w-lg md:max-w-xl mx-auto w-full h-full px-4 md:px-6 pt-3 pb-3 flex flex-col gap-3">
+        {/* Header — back goes up one level, never traps */}
+        <div className="flex items-center gap-2 shrink-0">
+          {view === 'list' ? (
+            <Link
+              href="/box"
+              aria-label="Back to Chess Boxing"
+              className="flex items-center justify-center w-11 h-11 -ml-2 rounded-xl text-chess-text-muted tap-highlight"
+            >
+              <BackIcon />
+            </Link>
+          ) : (
+            <button
+              onClick={backToList}
+              aria-label="Back to settings"
+              className="flex items-center justify-center w-11 h-11 -ml-2 rounded-xl text-chess-text-muted tap-highlight"
+            >
+              <BackIcon />
+            </button>
+          )}
+          <h1 className="text-xl md:text-2xl font-black text-chess-text">
+            {view === 'list' ? 'Settings' : view === 'handle' ? 'Handle' : 'Crew'}
+          </h1>
         </div>
 
-        {loggedOut ? (
-          <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
-            <div>
-              <h2 className="font-black text-chess-text">Your fighter profile</h2>
-              <p className="text-sm text-chess-text-muted mt-1">
-                Sign in to pick a handle, join a crew, and appear on the
-                leaderboards. Camera settings below work without an account.
-              </p>
-            </div>
-            <Link
-              href="/auth/login"
-              className="rounded-xl text-white font-bold py-3 min-h-[44px] text-center tap-highlight"
-              style={{ backgroundColor: ACCENT, boxShadow: '0 3px 0 #b53437' }}
-            >
-              Sign in
-            </Link>
-          </section>
-        ) : (
-          <>
-            <UsernameSection username={username} onSaved={setUsername} />
-            <CrewSection crew={crew} onChanged={setCrew} />
-            <OptInSection optIn={optIn} onChanged={setOptIn} />
-          </>
+        {view === 'handle' && (
+          <HandlePanel username={username} onSaved={(u) => { setUsername(u); backToList(); }} />
+        )}
+        {view === 'crew' && (
+          <CrewPanel crew={crew} onChanged={(c) => { setCrew(c); backToList(); }} />
         )}
 
-        <CameraSection />
+        {view === 'list' && (
+          <div className="flex flex-col gap-3 min-h-0">
+            {loggedOut ? (
+              <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3 shrink-0">
+                <div>
+                  <h2 className="font-black text-chess-text">Your fighter profile</h2>
+                  <p className="text-sm text-chess-text-muted mt-1">
+                    Sign in to pick a handle, join a crew, and appear on the
+                    leaderboards. Camera settings below work without an account.
+                  </p>
+                </div>
+                <Link
+                  href="/auth/login"
+                  className="rounded-xl text-white font-bold py-3 min-h-[44px] text-center tap-highlight"
+                  style={{ backgroundColor: ACCENT, boxShadow: '0 3px 0 #b53437' }}
+                >
+                  Sign in
+                </Link>
+              </section>
+            ) : (
+              <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 shrink-0">
+                <NavRow
+                  title="Handle"
+                  value={
+                    username === undefined
+                      ? 'Loading…'
+                      : username
+                        ? username
+                        : 'Not set'
+                  }
+                  onClick={() => setView('handle')}
+                  disabled={username === undefined}
+                />
+                <NavRow
+                  title="Crew"
+                  value={crew ? crew.name : 'Not in a crew'}
+                  onClick={() => setView('crew')}
+                />
+                <div className="px-4 py-2.5">
+                  <ToggleRow
+                    title="Global leaderboard"
+                    sub="Show my handle and scores on the global board."
+                    on={optIn ?? true}
+                    disabled={optIn === null}
+                    onToggle={() => {
+                      if (optIn === null) return;
+                      const next = !optIn;
+                      setOptIn(next); // optimistic; server confirms
+                      fetch('/api/profile/leaderboard-opt-in', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ optIn: next }),
+                      })
+                        .then((r) => {
+                          if (!r.ok) setOptIn(!next);
+                        })
+                        .catch(() => setOptIn(!next));
+                    }}
+                  />
+                </div>
+              </section>
+            )}
+
+            <CameraSection />
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-/* ── Username ────────────────────────────────────────────────────────────── */
+/* ── Handle sub-panel ────────────────────────────────────────────────────── */
 
-function UsernameSection({
+function HandlePanel({
   username,
   onSaved,
 }: {
   username: string | null | undefined;
   onSaved: (u: string) => void;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(username ?? '');
   const [err, setErr] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -134,13 +201,8 @@ function UsernameSection({
         body: JSON.stringify({ username: input.trim() }),
       });
       const d = await res.json();
-      if (res.ok) {
-        onSaved(d.username);
-        setEditing(false);
-        setInput('');
-      } else {
-        setErr(d.error ?? 'Could not save handle.');
-      }
+      if (res.ok) onSaved(d.username);
+      else setErr(d.error ?? 'Could not save handle.');
     } catch {
       setErr('Network error — try again.');
     } finally {
@@ -149,75 +211,39 @@ function UsernameSection({
   };
 
   return (
-    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="font-black text-chess-text">Handle</h2>
-          <p className="text-sm text-chess-text-muted mt-0.5 truncate">
-            {username === undefined
-              ? 'Loading…'
-              : username
-                ? username
-                : 'Not set — pick one to get on the board.'}
-          </p>
-        </div>
-        {!editing && username !== undefined && (
-          <button
-            onClick={() => {
-              setInput(username ?? '');
-              setEditing(true);
-            }}
-            className="shrink-0 rounded-xl border-2 font-bold text-sm px-4 py-2 min-h-[44px] tap-highlight"
-            style={{ borderColor: ACCENT, color: ACCENT }}
-          >
-            {username ? 'Change' : 'Set handle'}
-          </button>
-        )}
-      </div>
-
-      {editing && (
-        <div className="flex flex-col gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g. brooklyn_bishop"
-            maxLength={20}
-            autoFocus
-            className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 min-h-[44px] text-chess-text outline-none focus:border-[#e5484d]"
-          />
-          <p className="text-xs text-chess-text-muted">
-            3–20 characters — letters, numbers, underscore. This is the name
-            other fighters see.
-          </p>
-          {err && <p className="text-sm text-red-500">{err}</p>}
-          <div className="flex gap-2">
-            <button
-              onClick={save}
-              disabled={saving || input.trim().length < 3}
-              className="flex-1 rounded-xl text-white font-bold py-3 min-h-[44px] disabled:opacity-50 tap-highlight"
-              style={{ backgroundColor: ACCENT }}
-            >
-              {saving ? 'Saving…' : 'Save'}
-            </button>
-            <button
-              onClick={() => {
-                setEditing(false);
-                setErr(null);
-              }}
-              className="flex-1 rounded-xl border border-slate-200 font-bold py-3 min-h-[44px] text-chess-text-muted tap-highlight"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2 shrink-0">
+      <p className="text-sm text-chess-text-muted">
+        The name other fighters see on the boards.
+      </p>
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="e.g. brooklyn_bishop"
+        maxLength={20}
+        autoFocus
+        autoCapitalize="none"
+        autoCorrect="off"
+        className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 min-h-[44px] text-chess-text outline-none focus:border-[#e5484d]"
+      />
+      <p className="text-xs text-chess-text-muted">
+        3–20 characters — letters, numbers, underscore.
+      </p>
+      {err && <p className="text-sm text-red-500">{err}</p>}
+      <button
+        onClick={save}
+        disabled={saving || input.trim().length < 3}
+        className="rounded-xl text-white font-bold py-3 min-h-[44px] disabled:opacity-50 tap-highlight"
+        style={{ backgroundColor: ACCENT }}
+      >
+        {saving ? 'Saving…' : 'Save'}
+      </button>
     </section>
   );
 }
 
-/* ── Crew ────────────────────────────────────────────────────────────────── */
+/* ── Crew sub-panel ──────────────────────────────────────────────────────── */
 
-function CrewSection({
+function CrewPanel({
   crew,
   onChanged,
 }: {
@@ -239,12 +265,8 @@ function CrewSection({
         body: JSON.stringify({ code: code.trim() }),
       });
       const d = await res.json();
-      if (res.ok) {
-        onChanged(d.crew);
-        setCode('');
-      } else {
-        setErr(d.error ?? 'Could not join.');
-      }
+      if (res.ok) onChanged(d.crew);
+      else setErr(d.error ?? 'Could not join.');
     } catch {
       setErr('Network error — try again.');
     } finally {
@@ -258,12 +280,8 @@ function CrewSection({
     try {
       const res = await fetch('/api/leaderboard/crew', { method: 'DELETE' });
       const d = await res.json();
-      if (res.ok) {
-        onChanged(d.crew ?? null);
-        setConfirmLeave(false);
-      } else {
-        setErr(d.error ?? 'Could not leave.');
-      }
+      if (res.ok) onChanged(d.crew ?? null);
+      else setErr(d.error ?? 'Could not leave.');
     } catch {
       setErr('Network error — try again.');
     } finally {
@@ -272,22 +290,19 @@ function CrewSection({
   };
 
   return (
-    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
-      <div>
-        <h2 className="font-black text-chess-text">Crew</h2>
-        <p className="text-sm text-chess-text-muted mt-0.5">
-          {crew ? (
-            <>
-              You fight for <span className="font-bold text-chess-text">{crew.name}</span>.
-            </>
-          ) : (
-            <>
-              Not in a crew. Training at Gleason&apos;s? Use code{' '}
-              <span className="font-bold text-chess-text">NYC</span>.
-            </>
-          )}
-        </p>
-      </div>
+    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3 shrink-0">
+      <p className="text-sm text-chess-text-muted">
+        {crew ? (
+          <>
+            You fight for <span className="font-bold text-chess-text">{crew.name}</span>.
+          </>
+        ) : (
+          <>
+            Not in a crew. Training at Gleason&apos;s? Use code{' '}
+            <span className="font-bold text-chess-text">NYC</span>.
+          </>
+        )}
+      </p>
 
       {!crew && (
         <div className="flex gap-2">
@@ -295,6 +310,7 @@ function CrewSection({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="Crew code"
+            autoFocus
             className="flex-1 min-w-0 rounded-xl border-2 border-slate-200 px-4 py-3 min-h-[44px] text-chess-text outline-none focus:border-[#e5484d] uppercase"
           />
           <button
@@ -336,56 +352,6 @@ function CrewSection({
           </button>
         ))}
 
-      {err && <p className="text-sm text-red-500">{err}</p>}
-    </section>
-  );
-}
-
-/* ── Leaderboard opt-in ──────────────────────────────────────────────────── */
-
-function OptInSection({
-  optIn,
-  onChanged,
-}: {
-  optIn: boolean | null;
-  onChanged: (v: boolean) => void;
-}) {
-  const [err, setErr] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  const toggle = async () => {
-    if (optIn === null || busy) return;
-    const next = !optIn;
-    setErr(null);
-    setBusy(true);
-    try {
-      const res = await fetch('/api/profile/leaderboard-opt-in', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optIn: next }),
-      });
-      if (res.ok) {
-        onChanged(next);
-      } else {
-        const d = await res.json().catch(() => null);
-        setErr(d?.error ?? 'Could not save.');
-      }
-    } catch {
-      setErr('Network error — try again.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2">
-      <ToggleRow
-        title="Global leaderboard"
-        sub="Show my handle and scores on the global board. Crew boards always show crew members."
-        on={optIn ?? true}
-        disabled={optIn === null || busy}
-        onToggle={toggle}
-      />
       {err && <p className="text-sm text-red-500">{err}</p>}
     </section>
   );
@@ -439,10 +405,10 @@ function CameraSection() {
   };
 
   return (
-    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2">
+    <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm px-4 py-2.5 flex flex-col gap-1 shrink-0">
       <ToggleRow
         title="Punch counter camera"
-        sub="Use the front camera to count punches during boxing rounds. Video stays on your device — nothing is recorded or uploaded."
+        sub="Counts punches during boxing rounds. Video never leaves your device."
         on={camOn ?? true}
         disabled={camOn === null}
         onToggle={toggle}
@@ -464,7 +430,33 @@ function CameraSection() {
   );
 }
 
-/* ── Shared toggle row ───────────────────────────────────────────────────── */
+/* ── Shared rows ─────────────────────────────────────────────────────────── */
+
+function NavRow({
+  title,
+  value,
+  onClick,
+  disabled,
+}: {
+  title: string;
+  value: string;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full flex items-center justify-between gap-3 px-4 py-3 min-h-[52px] text-left tap-highlight disabled:opacity-60"
+    >
+      <span className="font-black text-chess-text shrink-0">{title}</span>
+      <span className="flex items-center gap-1.5 min-w-0">
+        <span className="text-sm text-chess-text-muted truncate">{value}</span>
+        <ChevronIcon />
+      </span>
+    </button>
+  );
+}
 
 function ToggleRow({
   title,
@@ -483,7 +475,7 @@ function ToggleRow({
     <div className="flex items-center justify-between gap-3">
       <div className="min-w-0">
         <h2 className="font-black text-chess-text">{title}</h2>
-        <p className="text-sm text-chess-text-muted mt-0.5">{sub}</p>
+        <p className="text-xs text-chess-text-muted mt-0.5">{sub}</p>
       </div>
       <button
         role="switch"
@@ -500,5 +492,21 @@ function ToggleRow({
         />
       </button>
     </div>
+  );
+}
+
+function BackIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M15 5l-7 7 7 7" />
+    </svg>
+  );
+}
+
+function ChevronIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="text-slate-300 shrink-0">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
   );
 }

@@ -606,39 +606,41 @@ export default function BoutPage() {
   }
 
   // ── PRE-FIGHT ─────────────────────────────────────────────────────────────
+  // HARD RULE (docs/chess-boxing-app-structure.md): no scroll — the whole
+  // pre-fight card stack fits a 375×667 window (tab bar hidden on this route).
   if (phase === 'prefight') {
     return (
-      <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-4">
+      <div className="h-full overflow-hidden bg-chess-page flex flex-col">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2.5 my-auto flex flex-col gap-2 min-h-0">
           <div
-            className="rounded-2xl p-4 text-center shadow-sm"
+            className="rounded-2xl p-3 text-center shadow-sm shrink-0"
             style={{ background: 'linear-gradient(135deg, #b91c1c, #e5484d, #f97316)' }}
           >
             <h1
-              className="text-2xl md:text-3xl font-black text-white tracking-tight"
+              className="text-xl md:text-3xl font-black text-white tracking-tight"
               style={{ textShadow: '0 2px 6px rgba(0,0,0,0.25)' }}
             >
               Bout vs Rookie
             </h1>
-            <p className="text-white/90 text-sm font-bold mt-1">
+            <p className="text-white/90 text-xs md:text-sm font-bold mt-0.5">
               One game. The bell always wins.
             </p>
           </div>
 
           {/* Round card */}
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4">
-            <h2 className="text-[11px] font-black text-chess-text-muted uppercase tracking-wide text-center mb-3">
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-3 shrink-0">
+            <h2 className="text-[10px] font-black text-chess-text-muted uppercase tracking-wide text-center mb-1.5">
               Round card
             </h2>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               {BOUT_SEGMENTS.map((s, i) => (
                 <div
                   key={i}
-                  className={`flex items-center justify-between rounded-xl px-3 py-2 ${
+                  className={`flex items-center justify-between rounded-lg px-3 py-1 ${
                     s.kind === 'chess' ? 'bg-violet-50' : 'bg-orange-50'
                   }`}
                 >
-                  <span className="text-sm font-black text-chess-text">
+                  <span className="text-[13px] font-black text-chess-text">
                     {s.kind === 'chess' ? `Chess ${s.round}` : `Boxing ${s.round}`}
                     {s.kind === 'chess' && s.round === 3 && (
                       <span className="text-chess-text-muted font-bold"> · final round</span>
@@ -654,28 +656,27 @@ export default function BoutPage() {
 
           {/* Rules in one glance */}
           <div
-            className="rounded-2xl border border-amber-200 shadow-sm p-3.5"
+            className="rounded-2xl border border-amber-200 shadow-sm p-3 shrink-0"
             style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)' }}
           >
-            <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
+            <ul className="flex flex-col gap-1 text-xs font-bold text-amber-900 leading-snug">
               <li>One game, frozen at every bell — you come back gassed.</li>
               <li>
-                Your clock: {fmtClock(USER_BANK_SECONDS)} across all chess rounds. Run out =
-                you flagged.
+                Your clock: {fmtClock(USER_BANK_SECONDS)} for all chess rounds. Flag = loss.
               </li>
-              <li>Rookie thinks 2-4 seconds a move. She never flags. Rude, honestly.</li>
+              <li>Rookie thinks 2-4s a move. She never flags. Rude, honestly.</li>
               <li>Boxing rounds score the cards: your punches vs hers.</li>
-              <li>No mate by the final bell — the judges decide. Tie goes to you.</li>
+              <li>No mate by the final bell — judges decide. Tie goes to you.</li>
             </ul>
           </div>
 
-          <p className="text-center text-sm font-semibold text-chess-text-muted leading-snug px-2">
+          <p className="text-center text-xs font-semibold text-chess-text-muted leading-snug px-2 shrink-0">
             {pickLine(BOUT_LINES.prefight, new Date().getDate())}
           </p>
 
           <button
             onClick={begin}
-            className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-xl py-5 min-h-[64px] shadow-[0_4px_0_#b53437] tap-highlight"
+            className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-lg py-3 min-h-[48px] shadow-[0_4px_0_#b53437] tap-highlight shrink-0"
           >
             Fight
           </button>
@@ -684,7 +685,7 @@ export default function BoutPage() {
               playButtonClick();
               router.push('/box');
             }}
-            className="text-sm font-bold text-chess-text-muted py-2 min-h-[44px] tap-highlight"
+            className="text-sm font-bold text-chess-text-muted py-1 min-h-[40px] tap-highlight shrink-0"
           >
             Back
           </button>
@@ -711,15 +712,16 @@ export default function BoutPage() {
     const userTotal = result.userCards.reduce((s, n) => s + n, 0);
     const rookieTotal = result.rookieCards.reduce((s, n) => s + n, 0);
     return (
-      <div className="h-full bg-chess-page">
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-auto">
+      <div className="h-full overflow-hidden bg-chess-page">
+        {/* HARD RULE: no scroll — the card is compact enough to fit 375×667. */}
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <style>{`
             @keyframes boutCardIn { 0% { opacity:0; transform: scale(.7) translateY(16px);} 60%{opacity:1; transform: scale(1.04);} 100%{transform: scale(1);} }
             .bout-result-card { animation: boutCardIn .45s cubic-bezier(.2,.9,.3,1.2); }
             @keyframes boutRowIn { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: none;} }
             .bout-score-row { opacity:0; animation: boutRowIn .4s ease-out forwards; }
           `}</style>
-          <div className="bout-result-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-5 flex flex-col items-center gap-2.5 text-center my-auto">
+          <div className="bout-result-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-4 flex flex-col items-center gap-2 text-center">
             <h1
               className={`text-xl font-black ${
                 won ? 'text-chess-green' : result.meltdown ? 'text-chess-text' : 'text-chess-text'
@@ -752,7 +754,7 @@ export default function BoutPage() {
               {result.userCards.map((u, i) => (
                 <div
                   key={i}
-                  className="bout-score-row grid grid-cols-3 px-3 py-1.5 text-sm font-black text-chess-text tabular-nums"
+                  className="bout-score-row grid grid-cols-3 px-3 py-1 text-sm font-black text-chess-text tabular-nums"
                   style={{ animationDelay: `${0.3 + i * 0.35}s` }}
                 >
                   <span className="text-left text-chess-text-muted font-bold">
@@ -767,7 +769,7 @@ export default function BoutPage() {
                 </div>
               ))}
               <div
-                className="bout-score-row grid grid-cols-3 px-3 py-2 text-sm font-black tabular-nums border-t border-slate-100"
+                className="bout-score-row grid grid-cols-3 px-3 py-1.5 text-sm font-black tabular-nums border-t border-slate-100"
                 style={{ animationDelay: `${0.3 + result.userCards.length * 0.35 + 0.2}s` }}
               >
                 <span className="text-left text-chess-text-muted font-bold">Total</span>
@@ -806,7 +808,7 @@ export default function BoutPage() {
                 playButtonClick();
                 setPhase('prefight');
               }}
-              className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-base py-3 shadow-sm transition mt-1 tap-highlight"
+              className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-base py-2.5 shadow-sm transition mt-1 tap-highlight"
             >
               Rematch
             </button>
@@ -815,7 +817,7 @@ export default function BoutPage() {
                 playButtonClick();
                 router.push('/box');
               }}
-              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-base py-3 shadow-sm transition tap-highlight"
+              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
             >
               Done
             </button>
@@ -835,10 +837,13 @@ export default function BoutPage() {
     : '';
 
   return (
-    <div className="h-full overflow-auto bg-chess-page flex flex-col">
+    // HARD RULE: no scroll. Fixed column — header + flexible middle + footer.
+    // The board (and the punch cam) size themselves off the leftover height
+    // via container queries, so nothing ever pushes past the window.
+    <div className="h-full overflow-hidden bg-chess-page flex flex-col">
       {/* Header: round + bell timer */}
-      <div className="bg-chess-surface border-b border-slate-200">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3">
+      <div className="bg-chess-surface border-b border-slate-200 shrink-0">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2 flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-chess-text-muted">
               {seg?.kind === 'chess' && seg.round === 3 ? 'Final round' : 'Round'}
@@ -860,17 +865,17 @@ export default function BoutPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 min-h-0 flex flex-col">
         {isBoxing ? (
           // ── Boxing round: punch machinery, board frozen ──────────────────
-          <div className="flex-1 flex flex-col items-center px-4 md:px-6 py-5 text-center gap-4 max-w-md md:max-w-lg mx-auto w-full">
-            <div className="text-6xl font-black text-chess-text tabular-nums">
+          <div className="flex-1 min-h-0 flex flex-col items-center px-4 md:px-6 py-2 text-center gap-2 max-w-md md:max-w-lg mx-auto w-full">
+            <div className="text-5xl font-black text-chess-text tabular-nums shrink-0">
               {fmtClock(roundLeft)}
             </div>
-            <p className="text-sm font-semibold text-chess-text-muted leading-snug max-w-xs">
+            <p className="text-xs font-semibold text-chess-text-muted leading-snug max-w-xs shrink-0">
               {rookieLine}
             </p>
-            <div className="text-sm font-black text-chess-text">
+            <div className="text-sm font-black text-chess-text shrink-0">
               {punchTotal - (roundStartPunchesRef.current ?? 0)} punches this round
               <span className="text-chess-text-muted font-bold">
                 {' '}
@@ -879,19 +884,27 @@ export default function BoutPage() {
             </div>
             {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && punchCamOn ? (
               <>
-                <PunchTracker
-                  key={`bout-${segIndex}`}
-                  autoStart
-                  onPunch={onPunch}
-                  className="w-full max-w-xs"
-                />
+                {/* Cam feed scales to leftover height (3:4), never overflows */}
+                <div
+                  className="flex-[3] min-h-0 w-full flex items-center justify-center"
+                  style={{ containerType: 'size' }}
+                >
+                  <div style={{ width: 'min(100%, 20rem, calc(100cqh * 3 / 4))' }}>
+                    <PunchTracker
+                      key={`bout-${segIndex}`}
+                      autoStart
+                      onPunch={onPunch}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
                 <button
                   onClick={() => {
                     playButtonClick();
                     setPunchCamOn(false);
                     window.localStorage.setItem('cp_punch_cam', '0');
                   }}
-                  className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px]"
+                  className="text-xs font-semibold text-chess-text-muted underline underline-offset-2 min-h-[36px] shrink-0"
                 >
                   Turn off camera
                 </button>
@@ -902,11 +915,11 @@ export default function BoutPage() {
                     dev path for faking punches in a web preview. */}
                 <button
                   onClick={addTapPunch}
-                  className="w-full max-w-xs rounded-3xl bg-[#e5484d] text-white font-black text-2xl py-10 shadow-[0_5px_0_#b53437] active:translate-y-[2px] active:shadow-[0_3px_0_#b53437] transition tap-highlight select-none"
+                  className="w-full max-w-xs rounded-3xl bg-[#e5484d] text-white font-black text-xl py-7 shadow-[0_5px_0_#b53437] active:translate-y-[2px] active:shadow-[0_3px_0_#b53437] transition tap-highlight select-none shrink-0"
                 >
                   Tap per punch
                 </button>
-                <p className="text-xs text-chess-text-muted max-w-xs">
+                <p className="text-[11px] text-chess-text-muted max-w-xs shrink-0">
                   Shadowbox and tap with each punch — or turn on the camera and it counts for
                   you.
                 </p>
@@ -917,37 +930,46 @@ export default function BoutPage() {
                       setPunchCamOn(true);
                       window.localStorage.setItem('cp_punch_cam', '1');
                     }}
-                    className="flex items-center gap-2 rounded-xl border-2 border-chess-green text-chess-green font-bold px-5 py-3 min-h-[44px] hover:bg-chess-green/5 transition"
+                    className="flex items-center gap-2 rounded-xl border-2 border-chess-green text-chess-green font-bold px-4 py-2 min-h-[40px] hover:bg-chess-green/5 transition shrink-0"
                   >
                     Count my punches
                   </button>
                 )}
               </>
             )}
-            {/* The frozen game, visible but locked */}
-            <div className="relative w-full max-w-[200px] mx-auto">
-              <div className="pointer-events-none opacity-40 grayscale">
-                <ChessPathBoard
-                  options={{ position: fen, boardOrientation: 'white', animationDurationInMs: 0 }}
-                />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="rounded-lg bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5">
-                  Frozen
-                </span>
+            {/* The frozen game, visible but locked — soaks up whatever height
+                is left (may get small on an SE; it's decoration here) */}
+            <div
+              className="flex-1 min-h-0 w-full flex items-center justify-center"
+              style={{ containerType: 'size' }}
+            >
+              <div
+                className="relative"
+                style={{ width: 'min(100%, 200px, 100cqh)', aspectRatio: '1 / 1' }}
+              >
+                <div className="pointer-events-none opacity-40 grayscale">
+                  <ChessPathBoard
+                    options={{ position: fen, boardOrientation: 'white', animationDurationInMs: 0 }}
+                  />
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="rounded-lg bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5">
+                    Frozen
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         ) : (
           // ── Chess round (also shown, dimmed, under the bell overlay) ─────
-          <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-4 flex flex-col gap-2.5">
+          <div className="flex-1 min-h-0 max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2 flex flex-col gap-1.5">
             {/* Rookie's clock — pacing/flavor only, she can never flag */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between shrink-0">
               <span className="text-sm font-black text-chess-text">
                 Rookie <span className="text-chess-text-muted font-bold">· Level {level}</span>
               </span>
               <span
-                className={`text-base font-black tabular-nums rounded-lg px-2.5 py-1 ${
+                className={`text-base font-black tabular-nums rounded-lg px-2.5 py-0.5 ${
                   rookieThinking ? 'bg-violet-100 text-violet-700' : 'bg-chess-page text-chess-text-muted'
                 }`}
               >
@@ -955,25 +977,34 @@ export default function BoutPage() {
               </span>
             </div>
 
-            <ChessPathBoard
-              options={{
-                position: fen,
-                boardOrientation: 'white',
-                onPieceDrop: (args: any) => {
-                  if (rookieThinking) return false;
-                  return doMove(args.sourceSquare as Square, args.targetSquare as Square);
-                },
-                onSquareClick: (args: any) => onSquareClick(args.square as Square),
-                squareStyles: sqStyles,
-                animationDurationInMs: ANIM_MS,
-              }}
-            />
+            {/* Board scales to the leftover height: square, capped by width.
+                Centered so slack splits evenly between the two clocks. */}
+            <div
+              className="flex-1 min-h-0 w-full flex items-center justify-center"
+              style={{ containerType: 'size' }}
+            >
+              <div className="w-full" style={{ width: 'min(100%, 100cqh)', aspectRatio: '1 / 1' }}>
+                <ChessPathBoard
+                  options={{
+                    position: fen,
+                    boardOrientation: 'white',
+                    onPieceDrop: (args: any) => {
+                      if (rookieThinking) return false;
+                      return doMove(args.sourceSquare as Square, args.targetSquare as Square);
+                    },
+                    onSquareClick: (args: any) => onSquareClick(args.square as Square),
+                    squareStyles: sqStyles,
+                    animationDurationInMs: ANIM_MS,
+                  }}
+                />
+              </div>
+            </div>
 
             {/* YOUR clock — the one real clock */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between shrink-0">
               <span className="text-sm font-black text-chess-text">You</span>
               <span
-                className={`text-xl font-black tabular-nums rounded-lg px-3 py-1 ${
+                className={`text-xl font-black tabular-nums rounded-lg px-3 py-0.5 ${
                   userBank <= 30
                     ? 'bg-red-50 text-[#e5484d]'
                     : game && game.turn() === 'w' && !rookieThinking
@@ -986,7 +1017,7 @@ export default function BoutPage() {
             </div>
 
             {/* Status / Rookie's line — fixed height so the board never shifts */}
-            <div className="text-center min-h-[2.25rem]">
+            <div className="text-center min-h-[2rem] shrink-0">
               {rookieLine ? (
                 <span
                   className={`text-xs font-semibold leading-snug ${
@@ -1010,14 +1041,14 @@ export default function BoutPage() {
       </div>
 
       {/* Footer: quit */}
-      <div className="bg-chess-surface border-t border-slate-200">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2.5 flex justify-center">
+      <div className="bg-chess-surface border-t border-slate-200 shrink-0">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-1 flex justify-center">
           <button
             onClick={() => {
               playButtonClick();
               router.push('/box');
             }}
-            className="text-chess-text-muted font-bold text-sm py-2 px-4 min-h-[44px] tap-highlight"
+            className="text-chess-text-muted font-bold text-sm py-1 px-4 min-h-[40px] tap-highlight"
           >
             Throw in the towel
           </button>

@@ -60,10 +60,12 @@ export function BoxToday() {
   }, []);
 
   return (
-    <div className="h-full overflow-auto bg-chess-page">
-      <div className="max-w-lg md:max-w-xl mx-auto w-full px-4 md:px-6 pt-6 pb-10 flex flex-col gap-5">
+    // HARD RULE (docs/chess-boxing-app-structure.md): native app screens never
+    // scroll. Fixed column; the locker scales to whatever height is left.
+    <div className="h-full overflow-hidden bg-chess-page">
+      <div className="max-w-lg md:max-w-xl mx-auto w-full h-full px-4 md:px-6 pt-3 pb-2 flex flex-col gap-3">
         {/* Header */}
-        <div className="relative flex flex-col items-center text-center gap-2 pt-2">
+        <div className="relative flex flex-col items-center text-center gap-1 pt-1 shrink-0">
           {inShell && (
             <Link
               href="/box/settings"
@@ -73,10 +75,10 @@ export function BoxToday() {
               <GearIcon />
             </Link>
           )}
-          <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
+          <h1 className="text-xl md:text-3xl font-black text-chess-text leading-tight">
             Chess Boxing
           </h1>
-          <p className="text-sm text-chess-text-muted -mt-1">
+          <p className="text-xs md:text-sm text-chess-text-muted">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               month: 'long',
@@ -85,16 +87,29 @@ export function BoxToday() {
           </p>
         </div>
 
-        {/* The locker: gloves = bout, board = puzzle workout. Chalk = streak. */}
-        <div className="mx-auto w-full max-w-[380px] overflow-hidden rounded-2xl">
-          <LockerHome
-            onFight={() => router.push(FEATURE_FLAGS.BOUT_MODE ? '/box/bout' : '/workout')}
-            onTrain={() => router.push('/workout')}
-          />
+        {/* The locker: gloves = bout, board = puzzle workout. Chalk = streak.
+            Sized by the space that's LEFT (container-query height), never
+            pushing the stats row off screen. */}
+        <div
+          className="flex-1 min-h-0 w-full flex items-center justify-center"
+          style={{ containerType: 'size' }}
+        >
+          <div
+            className="overflow-hidden rounded-2xl"
+            style={{
+              width: 'min(100%, 380px, calc(100cqh * 1024 / 1536))',
+              aspectRatio: '1024 / 1536',
+            }}
+          >
+            <LockerHome
+              onFight={() => router.push(FEATURE_FLAGS.BOUT_MODE ? '/box/bout' : '/workout')}
+              onTrain={() => router.push('/workout')}
+            />
+          </div>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2 md:gap-3">
+        <div className="grid grid-cols-3 gap-2 md:gap-3 shrink-0">
           <StatCard
             label="Streak"
             value={streak ? String(streak.current) : '—'}
@@ -122,7 +137,7 @@ export function BoxToday() {
         </div>
 
         {/* Legend under the locker */}
-        <p className="text-center text-xs font-semibold text-chess-text-muted -mt-2">
+        <p className="text-center text-[11px] font-semibold text-chess-text-muted -mt-1 shrink-0">
           Tap the gloves to fight{FEATURE_FLAGS.BOUT_MODE ? '' : ' (workout for now)'} &middot; tap the board to train
         </p>
       </div>

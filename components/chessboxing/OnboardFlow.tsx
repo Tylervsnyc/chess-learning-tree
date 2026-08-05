@@ -58,8 +58,10 @@ export function OnboardFlow() {
   };
 
   return (
-    <div className="h-full overflow-auto bg-chess-page">
-      <div className="max-w-lg md:max-w-xl mx-auto w-full min-h-full px-4 md:px-6 pt-4 pb-8 flex flex-col">
+    // HARD RULE (docs/chess-boxing-app-structure.md): no scroll — each card
+    // fits a 375×667 window (tab bar hidden on this route).
+    <div className="h-full overflow-hidden bg-chess-page">
+      <div className="max-w-lg md:max-w-xl mx-auto w-full h-full px-4 md:px-6 pt-3 pb-5 flex flex-col">
         {/* Top bar: dots + skip */}
         <div className="flex items-center justify-between min-h-[44px]">
           <div className="flex items-center gap-2" aria-label={`Step ${step + 1} of ${STEPS}`}>
@@ -88,7 +90,7 @@ export function OnboardFlow() {
 
         {/* Card */}
         <div
-          className="flex-1 flex flex-col justify-center py-4"
+          className="flex-1 min-h-0 flex flex-col justify-center py-2"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
@@ -125,19 +127,19 @@ export function OnboardFlow() {
 
 function StepWhat() {
   return (
-    <div className="flex flex-col items-center text-center gap-4">
-      <BoxingLogoLoader size={120} />
+    <div className="flex flex-col items-center text-center gap-3">
+      <BoxingLogoLoader size={96} />
       <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
         This is chess boxing.
       </h1>
-      <p className="text-base text-chess-text-muted max-w-sm">
-        A real sport. One fight, alternating rounds: chess at the board, then
-        boxing in the ring, then back to the same game — heart pounding. Win by
-        checkmate or by knockout.
+      <p className="text-sm text-chess-text-muted max-w-sm">
+        A real sport. One fight, alternating rounds: chess at the board, boxing
+        in the ring, then back to the same game — heart pounding. Win by
+        checkmate or knockout.
       </p>
-      <p className="text-base text-chess-text-muted max-w-sm">
-        Here you train it: solve puzzles between boxing rounds while your pulse
-        tries to wreck your calculation. Streaks, scores, leaderboards.
+      <p className="text-sm text-chess-text-muted max-w-sm">
+        Here you train it: puzzles between boxing rounds while your pulse tries
+        to wreck your calculation. Streaks, scores, leaderboards.
       </p>
       <RookieLine text="Chess while gassed. You are going to hang a queen in round two. I respect it already." />
     </div>
@@ -183,11 +185,11 @@ function StepUsername() {
   };
 
   return (
-    <div className="flex flex-col items-center text-center gap-4">
+    <div className="flex flex-col items-center text-center gap-3">
       <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
         Pick your fighter name
       </h1>
-      <p className="text-base text-chess-text-muted max-w-sm">
+      <p className="text-sm text-chess-text-muted max-w-sm">
         It goes on the leaderboard — every round you fight, other fighters see
         this name climb.
       </p>
@@ -265,15 +267,15 @@ function StepCamera({ onDone }: { onDone: () => void }) {
   };
 
   return (
-    <div className="flex flex-col items-center text-center gap-4">
+    <div className="flex flex-col items-center text-center gap-3">
       <CameraArt />
       <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
         Count every punch
       </h1>
-      <p className="text-base text-chess-text-muted max-w-sm">
+      <p className="text-sm text-chess-text-muted max-w-sm">
         Prop your phone up during boxing rounds and the camera counts your
-        punches live. Everything happens on your phone — nothing is recorded or
-        uploaded.
+        punches live. Nothing is recorded or uploaded — it all stays on your
+        phone.
       </p>
 
       {state === 'granted' && (
@@ -290,7 +292,7 @@ function StepCamera({ onDone }: { onDone: () => void }) {
 
       <RookieLine text="I count every single punch. It is the only counting I do that is not chess and I take it just as seriously." />
 
-      <div className="w-full max-w-sm flex flex-col gap-3 pt-2">
+      <div className="w-full max-w-sm flex flex-col gap-2 pt-1">
         {state === 'granted' || state === 'denied' ? (
           <button
             onClick={onDone}
@@ -332,7 +334,7 @@ function RookieLine({ text }: { text: string }) {
 /** Tiny inline camera-in-the-corner art — no assets, no emoji. */
 function CameraArt() {
   return (
-    <svg width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden>
+    <svg width="80" height="80" viewBox="0 0 96 96" fill="none" aria-hidden>
       <rect x="8" y="8" width="80" height="80" rx="18" fill="#101a33" />
       <rect x="16" y="16" width="64" height="64" rx="10" fill="none" stroke="#e5484d" strokeWidth="4" />
       <circle cx="48" cy="46" r="14" fill="none" stroke="#fff" strokeWidth="4" />

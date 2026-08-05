@@ -27,6 +27,21 @@ Plus first-launch **onboarding**: what chess boxing is → pick username → cam
 - Rookie reacts to the USER's clock — leans in under 30s; sore-loser meltdown when mated in a bout she was winning on points.
 - Later, if the gym crew wants it: "Pro Bout" mode with a true two-clock setup.
 
+## HARD RULE — No scrolling (Tyler, 2026-08-05)
+
+Every native app screen is designed to FIT the app window — no vertical scrolling,
+ever. If content doesn't fit, redesign it (compact it, split it into steps, put it
+behind a tap) — never let it scroll. Fit target: iPhone SE viewport (375×667 minus
+safe areas and the tab bar) up through Pro Max.
+
+Applies to all app-owned screens: /box (locker home), /box/bout (every phase),
+/box/onboarding, /box/settings. Enforced 2026-08-05: each screen is a fixed
+`h-full` column (no overflow-auto); the locker / bout board / punch cam scale to
+leftover height via container queries, and /box/settings became a compact row
+list where Handle and Crew open sub-panels instead of expanding in place. The Train/Play/Profile tabs currently reuse shared
+website pages and are exempt UNTIL they get their app-mode compact redesign (open
+project — the rule is the end state for every tab).
+
 ## Build list (what's actually new)
 
 Most of the map exists already (workout engine, punch counter, leaderboards + crews, share card, review, puzzles, tactics, play-vs-Rookie). New work:

@@ -84,9 +84,30 @@ const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/test/landing', '/test/r
 export function NavHeader() {
   const pathname = usePathname();
 
+  // Chess Boxing app shell: /box screens are native app screens (BoxTabBar owns
+  // navigation) and must FIT the window with no scroll — the site header would
+  // steal ~64px of the fit budget. Same shell detection as BoxTabBar
+  // (Capacitor native, or the ?boxapp=1 debug session key).
+  const [inBoxShell, setInBoxShell] = useState(false);
+  useEffect(() => {
+    const isNative = window.Capacitor?.isNativePlatform?.() === true;
+    let isDebug = false;
+    try {
+      if (new URLSearchParams(window.location.search).has('boxapp')) {
+        sessionStorage.setItem('cp:boxapp', '1');
+      }
+      isDebug = sessionStorage.getItem('cp:boxapp') === '1';
+    } catch {
+      /* private mode — native detection still works */
+    }
+    setInBoxShell(isNative || isDebug);
+  }, []);
+  const isBoxRoute = pathname === '/box' || pathname?.startsWith('/box/'); // NOT /boxing (printable sheets)
+
   // Early bail — avoids loading useUser/Supabase on pages that never show the header
   const hidden = HIDDEN_PATHS.some(p => pathname?.startsWith(p))
-    || pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree');
+    || pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')
+    || (inBoxShell && isBoxRoute);
   if (hidden) return null;
 
   return <NavHeaderInner pathname={pathname} />;
