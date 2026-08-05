@@ -10,7 +10,7 @@
  * the week (Tyler flagged it 2026-08-04). See RULES.md §44 "Caption Format".
  */
 
-import { hookForPuzzle } from './ig-puzzle-insight';
+import { hookForPuzzle, analysePuzzle } from './ig-puzzle-insight';
 
 export const THEME_HOOKS: Record<string, string[]> = {
   mateIn1: [
@@ -136,7 +136,7 @@ export const DIFFICULT_HOOKS = [
   'Your engine sees it instantly. Can you?',
 ];
 
-/** Difficult reels ask for a guess before the reveal — rotate the ask too. */
+/** Every reel asks for a guess before the reveal — rotate the ask. */
 export const GUESS_LINES = [
   'Drop your guess in the comments BEFORE you watch the solution 👇',
   'Comment your move before the reveal — no peeking 👇',
@@ -209,41 +209,67 @@ export interface CaptionInput {
   theme: string;
   quip: string;
   difficult: boolean;
-  /** Puzzle FEN + raw Lichess moves. Supply these and a difficult reel opens
-   *  with a line derived from the actual position instead of generic hype. */
+  /** Puzzle FEN + raw Lichess moves. Supply these and the caption can name the
+   *  side to move and derive its post-solution payoff from the real position. */
   fen?: string;
   rawMoves?: string[];
 }
 
 /**
- * The hook for a reel. Difficult reels prefer a position-derived insight
- * (lib/ig-puzzle-insight.ts) and only fall back to the generic DIFFICULT_HOOKS
- * pool when the position yields nothing provable.
+ * The line that goes AFTER the solution — the payoff, not the setup.
+ * Prefers a position-derived insight (lib/ig-puzzle-insight.ts) and falls back
+ * to the theme/difficult pools when the position yields nothing provable.
  */
-export function hookForReel(
+export function payoffLine(
   { puzzleId, theme, difficult, fen, rawMoves }: CaptionInput,
 ): string {
   const hash = captionHash(puzzleId);
-  if (difficult && fen && rawMoves?.length) {
+  if (fen && rawMoves?.length) {
     const insight = hookForPuzzle(fen, rawMoves, hash);
     if (insight) return insight;
   }
   return hookFor(theme, difficult, hash);
 }
 
-/** The canonical caption. Deterministic in puzzleId — same puzzle, same text. */
-export function generateCaption(input: CaptionInput): string {
-  const { puzzleId, rating, quip, difficult } = input;
-  const hash = captionHash(puzzleId);
-  const hook = hookForReel(input);
-  const guessLine = difficult ? `\n${guessLineFor(hash)}\n` : '';
+/** Separates the setup from the payoff so a scroller can't be spoiled. */
+export const SPOILER_GAP = '· · · solution below · · ·';
 
-  return `${hook}
-${guessLine}
+/**
+ * The canonical caption. Deterministic in puzzleId — same puzzle, same text.
+ *
+ * NOTHING above the spoiler gap may describe the solution. Instagram truncates
+ * captions at roughly 125 characters behind a "more" link, so the opening lines
+ * are what every scroller reads BEFORE tapping play — putting the tactic there
+ * (as "Fork incoming!" and "Giving up the queen..." both did) hands over the
+ * answer to a puzzle nobody has attempted yet. Setup above, payoff below.
+ */
+export function generateCaption(input: CaptionInput): string {
+  const { puzzleId, rating, quip } = input;
+  const hash = captionHash(puzzleId);
+
+  const toMove = sideToMoveLine(input);
+  const payoff = payoffLine(input);
+
+  return `${toMove}
+
+${guessLineFor(hash)}
+
 Rating: ${rating} ⭐
+
+${SPOILER_GAP}
+
+${payoff}
 "${quip}"
 
 ${ctaFor(hash)}
 
 ${hashtagsFor(hash)}`;
+}
+
+/** "White to move." — the only thing the caption says before the reveal. */
+export function sideToMoveLine({ fen, rawMoves }: CaptionInput): string {
+  if (!fen || !rawMoves?.length) return 'Your move.';
+  const facts = analysePuzzle(fen, rawMoves);
+  if (!facts) return 'Your move.';
+  return facts.solver === 'white' ? 'White to move.' : 'Black to move.';
 }

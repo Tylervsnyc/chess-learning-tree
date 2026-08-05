@@ -137,7 +137,8 @@
     "TgCjS",
     "CykYi",
     "jelEL",
-    "4Vs0I"
+    "4Vs0I",
+    "48l8X"
   ],
   "renders": [
     {
@@ -942,6 +943,12 @@
       "puzzleId": "4Vs0I",
       "date": "8.13.26",
       "file": "daily.8.13.26-4Vs0I.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "48l8X",
+      "date": "8.14.26",
+      "file": "daily.8.14.26-48l8X.mp4",
       "difficult": true
     }
   ]

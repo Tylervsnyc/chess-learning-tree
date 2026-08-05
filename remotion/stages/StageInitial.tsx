@@ -6,8 +6,11 @@ import { BottomCard } from '../components/BottomCard';
 const { fontFamily } = loadFont();
 
 /**
- * Stage 1: "Can you find the solution?" (4s / 120 frames)
- * Board shows starting puzzle position. Static — no animations.
+ * Stage 1: the setup (2s / 60 frames). Board shows the puzzle position.
+ *
+ * This card says ONE thing — whose move it is. No tactic, no mate count, no
+ * "can you find it" framing. Anything before the reveal that describes the
+ * answer robs the viewer of the puzzle (RULES.md §44, no-spoiler rule).
  */
 export const StageInitial: React.FC<{
   puzzleFen: string;
@@ -29,26 +32,15 @@ export const StageInitial: React.FC<{
           <p
             style={{
               fontFamily,
-              fontWeight: 600,
-              fontSize: 68,
+              fontWeight: 700,
+              fontSize: 84,
               letterSpacing: '-0.02em',
               color: '#FFFFFF',
               margin: 0,
-              lineHeight: 1.2,
+              lineHeight: 1.1,
             }}
           >
-            Can you find the solution?
-          </p>
-          <p
-            style={{
-              fontFamily,
-              fontWeight: 500,
-              fontSize: 44,
-              color: 'rgba(255,255,255,0.7)',
-              margin: '8px 0 0',
-            }}
-          >
-            {playerColorLabel} to play
+            {playerColorLabel} to move
           </p>
         </BottomCard>
       }

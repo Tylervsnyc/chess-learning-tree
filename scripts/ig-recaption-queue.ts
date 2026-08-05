@@ -1,7 +1,7 @@
 /**
- * Rewrite captions on UNPOSTED items in the IG Blob queue using the current
- * copy pools in lib/ig-captions.ts (small pools made the feed read like
- * reposts — Tyler, 2026-08-04). Keeps the Rating line and the quip.
+ * Rebuild captions on UNPOSTED items in the IG Blob queue from the current
+ * lib/ig-captions.ts structure — setup above the spoiler gap, payoff below.
+ * Carries the original Rating and quip over; everything else is regenerated.
  *
  *   npx tsx scripts/ig-recaption-queue.ts          # dry run — prints before/after
  *   npx tsx scripts/ig-recaption-queue.ts --save   # writes the manifest back to Blob
@@ -13,10 +13,8 @@ dotenv.config({ path: '.env.local' });
 
 import * as fs from 'fs';
 import { loadQueue, saveQueue } from '../lib/ig-queue';
-import {
-  THEME_HOOKS, GUESS_LINES, CTA_LINES,
-  captionHash, hookForReel, guessLineFor, ctaFor,
-} from '../lib/ig-captions';
+import { THEME_HOOKS, generateCaption } from '../lib/ig-captions';
+import { stripEmojis } from '../lib/instagram';
 
 // puzzleId → the puzzle itself, from the render pools. Needed for the theme AND
 // for the position, so difficult items get a real insight hook rather than hype.
@@ -45,59 +43,52 @@ async function main() {
   const unposted = queue.filter(q => !q.posted);
   let changed = 0;
 
+  let skipped = 0;
+
   for (const item of unposted) {
-    const lines = item.caption.split('\n');
-    const firstLine = lines.find(l => l.trim() !== '') ?? '';
+    const firstLine = item.caption.split('\n').find(l => l.trim() !== '') ?? '';
     if (!firstLine) continue;
 
-    // Seed on puzzleId ONLY — same seed the renderer uses. That makes this
-    // script idempotent: it converges each queued caption on exactly what
-    // lib/ig-captions.ts would write today, instead of reshuffling every run.
-    const hash = captionHash(item.puzzleId ?? item.date);
+    // Rebuilding needs the position — that's what names the side to move and
+    // derives the payoff. Without it we cannot safely restructure, so leave the
+    // item alone rather than write a caption we can't stand behind.
+    const puzzle = item.puzzleId ? PUZZLES[item.puzzleId] : undefined;
+    if (!puzzle) { skipped++; continue; }
+
+    // Carry the two human-written values over from the old caption.
+    const rating = Number(item.caption.match(/Rating:\s*(\d+)/)?.[1] ?? 0);
+    const quip = item.caption.match(/"([^"]+)"/)?.[1] ?? '';
+
     // The item's own flag is authoritative (set at render time). Only legacy
     // items with no flag at all fall back to reading their text.
     const isDifficult = item.difficult ?? /DIFFICULT|TOUGH|miss it/i.test(firstLine);
 
-    const puzzle = item.puzzleId ? PUZZLES[item.puzzleId] : undefined;
-    const theme = puzzle?.theme || OLD_HOOK_THEME[norm(firstLine)] || 'generic';
-
-    // hookForReel prefers a position-derived insight on difficult reels and
-    // falls back to the pools when the position yields nothing provable.
-    const newHook = hookForReel({
-      puzzleId: item.puzzleId ?? item.date,
-      rating: 0,
-      theme,
-      quip: '',
+    // Regenerate the WHOLE caption. The structure changed (setup above the
+    // spoiler gap, payoff below), so a line-by-line swap can't get there.
+    const caption = stripEmojis(generateCaption({
+      puzzleId: item.puzzleId!,
+      rating,
+      theme: puzzle.theme || OLD_HOOK_THEME[norm(firstLine)] || 'generic',
+      quip,
       difficult: isDifficult,
-      fen: puzzle?.fen,
-      rawMoves: puzzle?.moves.split(' '),
-    });
-
-    // Queue captions are emoji-stripped, so match every pool line emoji-blind.
-    const GUESS_SET = new Set(GUESS_LINES.map(norm));
-    const CTA_SET = new Set(CTA_LINES.map(norm));
-
-    const caption = lines
-      .map(line => {
-        if (line === firstLine) return newHook;
-        if (GUESS_SET.has(norm(line))) return guessLineFor(hash);
-        if (CTA_SET.has(norm(line))) return ctaFor(hash);
-        return line;
-      })
-      .join('\n');
+      fen: puzzle.fen,
+      rawMoves: puzzle.moves.split(' '),
+    }));
 
     if (caption !== item.caption) {
       changed++;
       if (!save) {
         console.log(`--- ${item.date}${item.difficult ? ' (difficult)' : ''} ---`);
-        console.log(`OLD: ${firstLine}`);
-        console.log(`NEW: ${caption.split('\n')[0]}`);
+        console.log(`OLD first line: ${firstLine}`);
+        console.log(caption.split('\n').map(l => `    ${l}`).join('\n'));
+        console.log('');
       }
       item.caption = caption;
     }
   }
 
-  console.log(`\n${unposted.length} unposted items, ${changed} captions rewritten.`);
+  console.log(`\n${unposted.length} unposted items, ${changed} captions rebuilt, ` +
+    `${skipped} skipped (no puzzle data — left untouched).`);
   if (save) {
     await saveQueue(queue);
     console.log('Manifest saved to Blob.');

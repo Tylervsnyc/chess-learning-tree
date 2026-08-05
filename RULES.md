@@ -2339,22 +2339,22 @@ On **difficult days** (see below) this becomes a red **"Difficult Puzzle"** pill
 
 | Stage | Name | Duration | Bottom Card Content |
 |-------|------|----------|---------------------|
-| 1 | Initial | 2s (60f) | "Can you find the solution?" (68px) + "{Color} to play" (44px) |
+| 1 | Initial | 2s (60f) | **"{Color} to move" (84px) — and nothing else** |
 | 2 | Countdown | 4s (120f) | "Solution in 3" → "2" → "1" → "GO!" (72px) + "(Tap Screen to Pause)" (32px) |
 | 3 | Solution | 1.2s × N moves | "SOLUTION" label (44px, uppercase) + SAN notation (46–80px, auto-sized) |
-| 4 | Celebrate | 3s (90f) | Quip in italic (64px) |
+| 4 | Celebrate | 5s (150f) | Payoff line (40–54px, auto-sized) + quip in italic (38px) |
 
-**Total duration:** `2 + 4 + (1.2 × solutionMoves) + 3` seconds
+**Total duration:** `2 + 4 + (1.2 × solutionMoves) + 5` seconds
 
 ### Stage Details
 
-**Stage 1 (Initial):** Static board showing puzzle position (after opponent's setup move). Opponent's last move highlighted in amber.
+**Stage 1 (Initial):** Static board showing puzzle position (after opponent's setup move). Opponent's last move highlighted in amber. The card says only whose move it is — see the no-spoiler rule below.
 
 **Stage 2 (Countdown):** Same board, 1s per count (30 frames). Text changes: 3 → 2 → 1 → GO!
 
 **Stage 3 (Solution):** Board animates one move every 36 frames (1.2s). SAN notation builds left-to-right (e.g. "1. Qg8+ Rxg8 2. Nf7#"). Font auto-sizes: 80px (≤12 chars) → 68px → 56px → 46px (28+ chars).
 
-**Stage 4 (Celebrate):** Final position with result overlay on board (dark semi-transparent badge, 72px white text). Result is auto-generated: "Checkmate in N!", "Won the Queen!", "Won a Piece!", "Brilliant Move!", etc.
+**Stage 4 (Celebrate):** Final position with result overlay on board (dark semi-transparent badge, 72px white text). Result is auto-generated: "Checkmate in N!", "Won the Queen!", "Won a Piece!", "Brilliant Move!", etc. The bottom card leads with the **payoff line** — the position-derived explanation of why the solution works (`lib/ig-puzzle-insight.ts`, the same line the caption uses below its spoiler gap) — with the quip demoted underneath it. Stage 4 runs 5s because 3s was not enough time to read the explanation.
 
 ### Result Badge (Board Overlay)
 
@@ -2447,20 +2447,36 @@ Band/size knobs (`MIN_RATING`/`MAX_RATING`/`PER_THEME`) live at the top of that 
 
 ### Caption Format
 
-Auto-generated per puzzle. Theme-specific hook + rating + quip + CTA + hashtags.
+Auto-generated per puzzle, in two halves separated by a spoiler gap.
 
 ```
-{Theme hook}
+{White|Black} to move.            ← the ONLY thing said before the reveal
+
+{guess line} 👇
 
 Rating: {rating} ⭐
+
+· · · solution below · · ·
+
+{payoff line}                     ← the position-derived explanation
 "{quip}"
 
-Play daily puzzles free → chesspath.app
+{CTA} → chesspath.app
 
 #chess #chesspuzzle #chesspath #dailypuzzle {+2 rotating tags}
 ```
 
-On **difficult days**, the hook is **derived from the position** (`lib/ig-puzzle-insight.ts`) — not generic hype. chess.js replays the puzzle and the hook names what is actually interesting: a queen given up, a quiet first move when a check was on offer, mating while down a rook, an underpromotion, a run of forced checks, the material really won. ~87% of the hard pool yields a specific line; the rest fall back to the generic `DIFFICULT_HOOKS` pool, because **an honest generic line beats a specific false one**. A `Drop your guess in the comments` line is inserted under it.
+### NO SPOILERS BEFORE THE REVEAL (do not regress)
+
+**Nothing above the spoiler gap may describe the solution.** Instagram truncates captions at roughly 125 characters behind a "more" link, so the opening lines are what every scroller reads *before* tapping play. Putting the tactic there hands the answer to someone who has not attempted the puzzle — which is the entire product. This killed both of the old formats: theme hooks ("Fork incoming!", "Checkmate in 2 — can you see it?") named the tactic or the mate length, and the position-derived insight ("Giving up the queen is the only way in. 3 moves to mate.") gave away even more. Setup above the gap, payoff below. The same rule governs the video: **Stage 1 says only "{Color} to move"**.
+
+`ig-verify-captions.ts` enforces this — it requires the opener to be exactly the side-to-move line and fails any caption whose setup half matches `mate in N / checkmate / fork / pin / skewer / sacrifice / back rank / smothered / promote`.
+
+### The Payoff Line
+
+The line under the gap (and on Stage 4 of the video) is **derived from the position** by `lib/ig-puzzle-insight.ts` — never generic hype. chess.js replays the puzzle and names what is actually interesting: a queen given up, a quiet first move when a check was on offer, mating while down a rook, an underpromotion, a run of forced checks, the material really won. ~87–88% of both pools yield a specific line; the rest fall back to the `THEME_HOOKS` / `DIFFICULT_HOOKS` pools, because **an honest generic line beats a specific false one**.
+
+**A payoff line may only assert what `PuzzleFacts` establishes.** The tempting-check lines require BOTH that a check was legally available AND that the solution does not start with one — the first draft asserted that without checking and would have lied on 5 puzzles. The single exception is uniqueness ("only one first move works"), which rests on Lichess only keeping single-solution positions. Each branch carries 2–3 phrasings picked by the puzzle's caption hash, so five posts a week don't read like one template.
 
 **A hook may only assert what `PuzzleFacts` establishes.** The tempting-check lines require BOTH that a check was legally available AND that the solution does not start with one — the first draft asserted that without checking and would have lied on 5 puzzles. The single exception is uniqueness ("only one first move works"), which rests on Lichess only keeping single-solution positions. Each branch carries 2–3 phrasings picked by the puzzle's caption hash, so five posts a week don't read like one template.
 

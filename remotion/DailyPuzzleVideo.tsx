@@ -3,6 +3,8 @@ import { Sequence } from 'remotion';
 import { Chess } from 'chess.js';
 import { parseUciMove, uciToSan } from '../lib/puzzle-utils';
 import { describeResult } from './lib/describe-result';
+import { hookForPuzzle } from '../lib/ig-puzzle-insight';
+import { captionHash } from '../lib/ig-captions';
 import {
   STAGE_INITIAL_FRAMES,
   STAGE_COUNTDOWN_FRAMES,
@@ -22,17 +24,22 @@ export interface DailyPuzzleVideoProps {
   themes: string[];
   quip: string;
   difficult?: boolean;
+  /** Post-solution explanation. Derived from the position when the renderer
+   *  passes it; the composition falls back to computing it itself. */
+  insight?: string;
 }
 
 /**
  * Main Remotion composition — 4 Sequences (Initial, Countdown, Solution, Celebrate).
  */
 export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
+  puzzleId,
   rawFen,
   rawMoves,
   themes,
   quip,
   difficult,
+  insight,
 }) => {
   const puzzle = useMemo(() => {
     // Apply setup move to get puzzle position
@@ -83,6 +90,13 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
       lastMoveTo: lastMove.to,
     };
   }, [rawFen, rawMoves, themes]);
+
+  // The payoff line shown after the solution. Same derivation the caption uses,
+  // so the video and the post say the same true thing about the position.
+  const payoff = useMemo(
+    () => insight ?? hookForPuzzle(rawFen, rawMoves, captionHash(puzzleId)) ?? undefined,
+    [insight, rawFen, rawMoves, puzzleId],
+  );
 
   const solutionFrames = puzzle.solutionUciMoves.length * FRAMES_PER_MOVE;
   const playerColorLabel = puzzle.playerColor === 'white' ? 'White' : 'Black';
@@ -139,6 +153,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
         durationInFrames={STAGE_CELEBRATE_FRAMES}
       >
         <StageCelebrate
+          insight={payoff}
           finalFen={puzzle.finalFen}
           orientation={puzzle.playerColor}
           result={puzzle.result}

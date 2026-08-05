@@ -24,7 +24,9 @@ import * as fs from 'fs';
 import { Chess } from 'chess.js';
 import { discoverReels } from '../lib/ig-reels';
 import { loadQueue } from '../lib/ig-queue';
-import { THEME_HOOKS, DIFFICULT_HOOKS, captionHash } from '../lib/ig-captions';
+import {
+  THEME_HOOKS, DIFFICULT_HOOKS, captionHash, SPOILER_GAP, sideToMoveLine,
+} from '../lib/ig-captions';
 import { hookForPuzzle } from '../lib/ig-puzzle-insight';
 
 interface PoolPuzzle {
@@ -127,8 +129,8 @@ function checkCaption(id: string, where: string, caption: string): Problem[] {
   const facts = analyse(puzzle);
   if (!facts) return [{ id, where, claim: 'n/a', truth: 'could not replay the solution' }];
 
-  const firstLine = caption.split('\n').find(l => l.trim() !== '') ?? '';
-  const hook = norm(firstLine);
+  const lines = caption.split('\n');
+  const firstLine = lines.find(l => l.trim() !== '') ?? '';
   const problems: Problem[] = [];
 
   // Rating line must match the pool.
@@ -136,6 +138,42 @@ function checkCaption(id: string, where: string, caption: string): Problem[] {
   if (ratingLine && Number(ratingLine[1]) !== facts.rating) {
     problems.push({ id, where, claim: `Rating: ${ratingLine[1]}`, truth: `actual rating ${facts.rating}` });
   }
+
+  // NEW STRUCTURE: nothing above the spoiler gap may describe the solution, and
+  // the payoff claim now lives below it. Check both halves.
+  const gapAt = lines.findIndex(l => norm(l) === norm(SPOILER_GAP));
+  if (gapAt !== -1) {
+    const expectedOpener = norm(sideToMoveLine({
+      puzzleId: id, rating: facts.rating, theme: puzzle.theme, quip: '',
+      difficult: false, fen: puzzle.fen, rawMoves: puzzle.moves.split(' '),
+    }));
+    if (norm(firstLine) !== expectedOpener) {
+      problems.push({
+        id, where, claim: firstLine,
+        truth: `the pre-solution opener must be exactly "${expectedOpener}" — nothing above the gap may hint at the answer`,
+      });
+    }
+    // Anything above the gap that leaks the tactic is a spoiler.
+    const setup = lines.slice(0, gapAt).map(norm).join(' ');
+    if (/mate in \d|checkmate|fork|pin|skewer|sacrifice|back rank|smothered|promote/i.test(setup)) {
+      problems.push({ id, where, claim: setup, truth: 'the setup half names the tactic — that spoils the puzzle' });
+    }
+    // The payoff line is the first non-empty line after the gap.
+    const payoff = lines.slice(gapAt + 1).find(l => l.trim() !== '') ?? '';
+    return [...problems, ...checkClaim(id, where, payoff, puzzle, facts)];
+  }
+
+  return [...problems, ...checkClaim(id, where, firstLine, puzzle, facts)];
+}
+
+/** Does this one line's claim hold up on the board? */
+function checkClaim(
+  id: string, where: string, line: string,
+  puzzle: PoolPuzzle, facts: Facts,
+): Problem[] {
+  const hook = norm(line);
+  const firstLine = line;
+  const problems: Problem[] = [];
 
   // Generic difficult hooks make no claim about the puzzle — nothing to falsify.
   if (DIFFICULT_HOOK_SET.has(hook)) return problems;

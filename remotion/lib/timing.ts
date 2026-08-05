@@ -8,7 +8,9 @@ export const FPS = 30;
 // Stage durations (frames)
 export const STAGE_INITIAL_FRAMES = 60; // 2s
 export const STAGE_COUNTDOWN_FRAMES = 120; // 4s
-export const STAGE_CELEBRATE_FRAMES = 90; // 3s
+// 5s — the celebrate card now carries the explanation of WHY the solution
+// works, which is the teaching beat. 3s was not enough time to read it.
+export const STAGE_CELEBRATE_FRAMES = 150; // 5s
 
 // Per-move duration in solution stage
 export const FRAMES_PER_MOVE = 36; // 1.2s
