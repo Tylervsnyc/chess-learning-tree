@@ -32,7 +32,10 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchShowDuration: 1400,
-      backgroundColor: '#ffffff',
+      // MUST match the launch image background (Splash.imageset) and the web
+      // NativeSplash. Left at Capacitor's default #ffffff this flashes WHITE
+      // between two navy screens on every cold start.
+      backgroundColor: '#101a33',
       showSpinner: false,
     },
   },
