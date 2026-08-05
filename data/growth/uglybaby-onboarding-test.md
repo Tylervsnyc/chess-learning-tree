@@ -89,4 +89,41 @@ Poke around wherever you want. Narrate what draws you in and what you'd ignore.
 
 ## Results
 
-_(paste findings + per-tester notes here after the run; then decide: onboarding-copy fix vs. go-fix-perf)_
+**Run date:** 2026-06-25 · ~10 tester videos, mobile think-aloud.
+
+### Headline read
+On good phones, **nobody flagged slowness/loading (Q7)** — perf was isolated out as designed. Yet testers still got lost, confused, and **bailed**. Conclusion: the 91% first-action cliff is **two stacked problems** — perf on cold-IG webview *and* a genuinely broken onboarding (comprehension/motivation). This is NOT a "go fix perf, leave onboarding alone" result.
+
+### What caused bails (the cliff, directly)
+- **Rookie's creepy non-sequitur lines — 2 explicit bails.** "What the heck was that? That's creepy and weird... This is the bailing part. I would bail." (V4, 01:38); "If I had feelings, they would be hurt. Update, I do have feelings. They are hurt." (V9, 04:34). These are the **retired voice register** (old "discovering feelings / Wheatley" framing, killed 2026-06-09; corpus rework was still TODO so live app still serves them).
+- **Rookie's sass as a dealbreaker — 1 hard pass within 20 seconds.** "The humor style doesn't hit with me, just comes across as really obnoxious and annoying" (V8, 01:36); "I'd hard pass... within the first 20 seconds" (V8, 09:22). Voice is polarizing: biggest strength for some, instant exit for others.
+- **Dumped into a confusing game with no intro — 2 users.** "this just sort of throws you right into it. That's not ideal." (V4, 00:28); "I don't know what's happening. I'm very lost." (V1, 00:13).
+
+### What stopped the first move (friction, not bail)
+- **No in-game move hints during live play — 3 users (most common complaint).** "I wish it would say that when I was playing, then I don't have to remember." (V6, 02:57); "There's not a lot of guidance... should be more guidance." (V1, 03:45).
+- **Clunky navigation — 2 users.** Repeated Back, no home path, lessons buried. "annoying that you have to hit Back every single time... I don't see a way to get back." (V10, 01:18); "want to see these lessons... earlier and easier." (V7, 03:35).
+- **Opponent too easy / lets you win — 2 users.** "they're just going to let me win." (V1, 01:27); "this is not a particularly hard game of chess." (V4, 04:28).
+- **Name-gate before the tutorial — 1 user.** "Why do I have to give my name to continue a tutorial? Seems stupid." (V8, 04:41).
+- **Lessons = colors with no "why" — 1 user.** "The colors are useful, but without context... kind of useless." (V8, 09:07).
+- **Mobile touch input — 1 user.** "having to click it and pick it up with my mouse. Not sure that will work on my phone" (V3, 01:59). ⚠️ Caveat: this tester was clearly on **desktop** ("my mouse") — screening leaked; verify before treating as a real mobile bug.
+- **Unclear value prop / differentiation — 1 user.** "I'm not sure what the difference is" (V9, 00:41).
+- **Weird voice (TTS) — 1 user.** "The voice is super weird, too." (V4, 04:28).
+
+### What testers liked
+- Move-option hints **when shown** during gameplay: "shows you what the move options are. That's generally really good." (V4, 00:44).
+- Free, no ads: "I don't think I'd bail... this is free. I don't even think there's ads." (V7, 03:22).
+- Rookie beginner difficulty naming: "I like that it's rookie level, because honestly, I don't really know how to play." (V7, 01:59).
+
+### Possible improvements (tester-sourced)
+- Add in-game move hints during live play (legal moves + piece-move reminders). **3 users.**
+- Remove/seriously tone down the off-the-rails chatbot lines (the "children/cages" and "fake feelings/cookie" bits) — they caused bails. Keep chess-themed jokes, cut creepy non-sequiturs.
+- Make Rookie's personality optional/dial-able from the start — a "just teach me" mode skeptics can pick before the sass.
+- Fix onboarding so it doesn't dump users into a confusing game state; add a clear Learn-vs-Play choice up front.
+- Surface lesson plan/categories on home + add persistent home/back navigation.
+- Add text explanations of WHY a move/checkmate works, not just colored squares.
+- Increase opponent difficulty or add adjustable AI levels.
+- Verify and fix mobile touch input + name-entry keyboard.
+- Sharpen the value proposition / differentiation.
+
+### Decision (deferred)
+Findings logged 2026-06-25. Fix-order recommendation drafted (Tier 1: purge retired Rookie lines + opt-in "just teach me" mode + Learn-vs-Play intro; Tier 2: in-game hints + nav; Tier 3: difficulty/why-text/name-gate/value-prop). **No work dispatched yet — awaiting Tyler's call.**
