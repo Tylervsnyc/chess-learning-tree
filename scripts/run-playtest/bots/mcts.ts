@@ -14,7 +14,9 @@
 import {
   applyDismissOffer,
   applyOfferPick,
+  formForAbility,
 } from '../../../lib/run/abilities';
+import type { AbilityId } from '../../../lib/run/abilities';
 import { rookieLegalMoves } from '../../../lib/run/movement';
 import { mulberry32 } from '../../../lib/run/seed';
 import type { BoardState } from '../../../lib/run/types';
@@ -190,15 +192,35 @@ function pickRolloutAction(
   // Score each by quick "post-action" fast eval. Skip enemy settlement here —
   // expensive — use pre-settle delta as a proxy. This is intentional: speed
   // matters more than precision for rollouts.
+  // "Stuck rook" detector: a rook walled in by hazards (the X, Knight's
+  // Academy, etc.) has no legal move that gains rank. Shuffling sideways
+  // forever is a dead-end — the ONLY progress is to transform into an allowed
+  // form that can cross the diagonal. Without this nudge the rollout policy
+  // sees a transform as just-another-move and never explores the path that
+  // actually wins, so the sweep false-flags these levels as unbeatable.
+  const stuckRook = isStuckRook(state);
+
   const scored: { c: ActionCandidate; s: number }[] = [];
   for (const c of cands) {
     const action = candidateToAction(c);
     const after = applyBotAction(state, action);
     if (after === state) continue;
     let s = fastScore(after);
+    const isAbilityCast =
+      c.kind === 'activate-ability' || c.kind === 'ability-target';
     // Encourage occasional ability casts so rollouts explore ability use.
-    if (c.kind === 'activate-ability' || c.kind === 'ability-target') {
+    if (isAbilityCast) {
       s += rng() * 3; // jitter — keeps abilities competitive on ties
+      // A transform that gives the new form an advancing move when the rook
+      // had none is the key out of the trap — make rollouts take it.
+      if (
+        c.kind === 'activate-ability' &&
+        formForAbility(c.abilityId!) !== null &&
+        stuckRook &&
+        bestReachRank(after) > state.rookie.rank
+      ) {
+        s += 80;
+      }
     }
     scored.push({ c, s });
   }
@@ -217,6 +239,42 @@ function pickRolloutAction(
     if (r <= 0) return top[i].c;
   }
   return top[top.length - 1].c;
+}
+
+/** Highest rank Rookie can reach in one move with her current form. */
+function bestReachRank(state: BoardState): number {
+  let best = state.rookie.rank;
+  for (const m of rookieLegalMoves(state)) {
+    if (m.rank > best) best = m.rank;
+  }
+  return best;
+}
+
+/**
+ * True when Rookie is a rook that has no straight-line path to the goal on a
+ * hazard-walled map — either she can't gain a rank right now, OR no file is
+ * vertically clear to rank 8. On the X / Knight's Academy maps this is the
+ * signal that she must transform to make progress instead of shuffling along
+ * a rank forever (which depth-capped rollouts can't tell apart from progress).
+ */
+function isStuckRook(state: BoardState): boolean {
+  if (state.form !== 'rook') return false;
+  if (state.hazards.length < 4) return false;
+  // Walled in right now — can't even gain a rank.
+  if (bestReachRank(state) <= state.rookie.rank) return true;
+  // Or: no file offers a clear vertical run to rank 8 from her current rank,
+  // so advancing as a rook just leads into the wall. Transform instead.
+  for (let f = 1; f <= 8; f++) {
+    let clear = true;
+    for (let r = state.rookie.rank + 1; r <= 8; r++) {
+      if (state.hazards.some((h) => h.file === f && h.rank === r)) {
+        clear = false;
+        break;
+      }
+    }
+    if (clear) return false; // a clean rook path exists — not stuck
+  }
+  return true;
 }
 
 /**
@@ -263,17 +321,47 @@ function fastScore(state: BoardState): number {
     if (slack <= 0) return -10_000;
     s += Math.min(slack, 6);
   }
-  // Cheap winning-reach check via legalMoves — only if rookie is on rank 6+
-  // (further away, slide unlikely to clear). Saves work in rollouts.
-  if (rr >= 5) {
-    const legal = rookieLegalMoves(state);
-    for (const m of legal) {
-      if (m.rank === 8) {
-        s += 40;
-        break;
-      }
-    }
+  // Reach-aware advancement signal. Rather than only checking for a winning
+  // slide near the top, reward how far up the board the current form can move
+  // RIGHT NOW. This is what separates a bishop that can cross the X (reaches
+  // rank 8) from a rook trapped on the same square (reaches nothing) — without
+  // it, a transform that opens the path looks identical to standing still.
+  const reach = bestReachRank(state);
+  if (reach === 8) {
+    s += 40;
+  } else if (reach > rr) {
+    s += (reach - rr) * 2;
+  } else if (state.form === 'rook' && state.hazards.length >= 4) {
+    // A walled-in rook that can't gain a rank is going nowhere — discourage
+    // lingering in that state so rollouts favor transforming out of it.
+    s -= 12;
   }
+  return s;
+}
+
+/**
+ * How useful an offered ability is *to this board*. Locked-form runs (the X,
+ * Knight's Academy, etc.) wall off the rook with hazards — the only way through
+ * is a transform that matches an allowed form. So we weight the offer by
+ * whether picking it unlocks movement Rookie can't otherwise make, not just by
+ * raw tier. Without this the bot would happily bank Surge while sitting trapped
+ * behind a hazard diagonal, never taking the bishop-step that actually wins.
+ */
+function offerUsefulness(state: BoardState, opt: { id: AbilityId; kind: 'new' | 'upgrade'; tier: number }): number {
+  let s = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
+
+  // Transform abilities. If the board has hazards (a walled/locked-form map)
+  // and Rookie is currently a rook with few/no safe advancing moves, a
+  // matching transform is the key that opens the level — weight it massively.
+  const form = formForAbility(opt.id);
+  if (form && form !== 'rook') {
+    const hazardWalled = state.hazards.length >= 4;
+    s += 6; // a movement key is broadly valuable on themed maps
+    if (hazardWalled) s += 12; // ...and decisive when the map is walled
+  }
+  // Surge / Aegis are always handy but shouldn't outrank the one transform
+  // that unwalls the board, so keep their bump modest.
+  if (opt.id === 'surge' || opt.id === 'aegis') s += 2;
   return s;
 }
 
@@ -290,7 +378,7 @@ function decideOffer(state: BoardState, ctx: BotContext): BotDecision {
   offer.forEach((opt, i) => {
     if (ctx.excludedAbilities.has(opt.id)) return;
     if (ctx.forcedSkipIds.has(opt.id)) return;
-    const s = 3 + opt.tier + (opt.kind === 'new' ? 1 : 0);
+    const s = offerUsefulness(state, opt);
     if (s > bestScore) {
       bestScore = s;
       bestIdx = i;

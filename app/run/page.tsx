@@ -259,7 +259,17 @@ export default function RookiesRunPage() {
   const tracePostedRef = useRef(false);
   const recordEvent = useCallback(
     (ev: Record<string, unknown>) => {
-      traceEventsRef.current.push({ t: Date.now() - traceStartRef.current, ...ev });
+      const entry = { t: Date.now() - traceStartRef.current, ...ev };
+      traceEventsRef.current.push(entry);
+      // Dev-only live stream so Claude can watch moves as they happen.
+      if (process.env.NODE_ENV !== 'production') {
+        fetch('/api/dev/run-live', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry),
+          keepalive: true,
+        }).catch(() => {});
+      }
     },
     [],
   );
