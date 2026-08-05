@@ -110,12 +110,37 @@ export function discoverReels(): DiscoveredReel[] {
 }
 
 /**
+ * Every puzzle id ever rendered, read from the SIDECARS on disk.
+ *
+ * Deliberately keyed on the .json sidecar rather than the .mp4: a posted reel's
+ * video is safe to delete (it lives on Instagram and in Blob), but the record
+ * that we rendered that puzzle must survive, or dedup silently narrows to the
+ * ledger — the exact failure that put the same puzzle on the account twice.
+ * Sidecars are ~200 bytes, so keeping them forever is free.
+ */
+export function renderedPuzzleIds(): Set<string> {
+  const ids = new Set<string>();
+  if (!existsSync(VIDEOS_DIR)) return ids;
+  for (const entry of readdirSync(VIDEOS_DIR)) {
+    const dir = join(VIDEOS_DIR, entry);
+    if (!statSync(dir).isDirectory()) continue;
+    for (const name of readdirSync(dir)) {
+      if (!name.startsWith('daily.')) continue;
+      if (name.endsWith('.json') || name.endsWith('.mp4')) {
+        ids.add(name.replace(/\.(json|mp4)$/, '').split('-').pop()!);
+      }
+    }
+  }
+  return ids;
+}
+
+/**
  * Every puzzle id we must never render again: everything on disk UNION the
  * ledger. Pass extra ids (e.g. from the Blob queue) to widen it further.
  */
 export function usedPuzzleIds(extra: Iterable<string> = []): Set<string> {
   const used = new Set<string>(loadUsage().usedPuzzleIds);
-  for (const r of discoverReels()) used.add(r.puzzleId);
+  for (const id of renderedPuzzleIds()) used.add(id);
   for (const id of extra) used.add(id);
   return used;
 }
