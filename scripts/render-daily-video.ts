@@ -68,6 +68,17 @@ function puzzleFromDaily(date: string, indexFromOne: number): PoolPuzzle {
   };
 }
 
+/** A specific puzzle by id, from either pool. Used for re-renders. */
+function puzzleById(id: string): PoolPuzzle {
+  for (const file of [POOL_FILE, HARD_POOL_FILE]) {
+    if (!fs.existsSync(file)) continue;
+    const pool: { puzzles: PoolPuzzle[] } = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    const found = pool.puzzles.find(p => p.puzzleId === id);
+    if (found) return found;
+  }
+  throw new Error(`Puzzle ${id} is in neither pool`);
+}
+
 /** Next unused puzzle from the right pool, honouring an optional rating floor. */
 function puzzleFromPool(difficult: boolean, minRating: number): PoolPuzzle {
   const poolFile = difficult ? HARD_POOL_FILE : POOL_FILE;
@@ -108,9 +119,13 @@ function main() {
   const forceOff = process.argv.includes('--no-difficult');
   const difficult = forceOff ? false : forceOn || isDifficultDateLabel(dateStr);
 
-  const puzzle = args['from-daily']
-    ? puzzleFromDaily(args['from-daily'], parseInt(args['index'] ?? '1', 10))
-    : puzzleFromPool(difficult, minRating);
+  // --puzzle-id re-renders a SPECIFIC puzzle, dedup deliberately bypassed. This
+  // is how an already-queued reel gets rebuilt in the current video format.
+  const puzzle = args['puzzle-id']
+    ? puzzleById(args['puzzle-id'])
+    : args['from-daily']
+      ? puzzleFromDaily(args['from-daily'], parseInt(args['index'] ?? '1', 10))
+      : puzzleFromPool(difficult, minRating);
 
   console.log(
     `${difficult ? 'DIFFICULT' : 'Normal'} render for ${dateStr} — ` +

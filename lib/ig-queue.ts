@@ -23,6 +23,12 @@ export interface QueueItem {
   mediaId?: string;
   difficult?: boolean; // true = a "Difficult Puzzle" reel (posts on difficult days)
   puzzleId?: string;   // Lichess puzzle id, for dedup across folders/renders
+  /**
+   * Which video format this reel was rendered in. 2 = the no-spoiler format
+   * (Stage 1 "{Color} to move" only, Stage 5s payoff card). Absent/1 = the old
+   * format. scripts/ig-rerender-queue.ts migrates 1 → 2 and is resumable on it.
+   */
+  formatVersion?: number;
 }
 
 /** Parse "M.D.YY" into a sortable timestamp; falls back to 0 if unparseable. */
@@ -37,7 +43,15 @@ export async function loadQueue(): Promise<QueueItem[]> {
   const { blobs } = await list({ prefix: MANIFEST_PATH });
   const manifest = blobs.find(b => b.pathname === MANIFEST_PATH);
   if (!manifest) return [];
-  const res = await fetch(manifest.url, { cache: 'no-store' });
+
+  // The manifest is written to a FIXED pathname with allowOverwrite, so its
+  // public URL sits behind the Blob CDN and can serve a stale copy for a while
+  // after a write — observed 2026-08-05 returning a queue 4 items out of date.
+  // `cache: 'no-store'` only governs the local fetch cache, not the CDN, so the
+  // uploadedAt stamp goes in the URL to force a fresh edge lookup. Without this
+  // any read-modify-write on the queue can silently clobber a recent write.
+  const fresh = `${manifest.url}?v=${new Date(manifest.uploadedAt).getTime()}`;
+  const res = await fetch(fresh, { cache: 'no-store' });
   if (!res.ok) return [];
   return res.json();
 }
