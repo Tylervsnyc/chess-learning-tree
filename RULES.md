@@ -2368,24 +2368,38 @@ Lichess-style amber squares:
 
 ### Puzzle Pool & Rendering
 
-**Pool file:** `data/video-puzzle-pool.json` (~200 puzzles, normal days) · `data/video-puzzle-pool-hard.json` (2000+, difficult days — see below)
-**Usage tracker:** `data/video-puzzle-usage.json` (shared across both pools)
+**Pool file:** `data/video-puzzle-pool.json` (250 puzzles as of 2026-08-05, normal days) · `data/video-puzzle-pool-hard.json` (180, rated 2000+, difficult days — see below)
 **Rating range:** 500–2000 normal, 2000–2400 difficult
 **Solution moves:** 3–7 (not too short for video, not too long)
-**Preferred themes:** mateIn1-3, backRankMate, smotheredMate, fork, pin, skewer, sacrifice, discoveredAttack, kingsideAttack, queensideAttack, deflection, attraction
+**Preferred themes:** `VIDEO_THEMES` in `lib/ig-captions.ts` — the themes we write hooks for ARE the themes we curate. Never hardcode a second copy of that list.
+
+**Dedup — DISK is the source of truth (do not regress).** `usedPuzzleIds()` in `lib/ig-reels.ts` returns everything rendered on disk UNION `data/video-puzzle-usage.json`. The ledger alone is a *cache*, not the authority: it drifted by 44 puzzles in 2026-08, the renderer re-picked used puzzles, and the same puzzle went out on Instagram twice (`0TwIx` on consecutive days; `Cwu4G` and `amUUt` as both a normal and a difficult reel). Never dedup against the ledger alone.
 
 **Render command:**
 ```bash
-npx tsx scripts/render-daily-video.ts                  # next unused puzzle
-npx tsx scripts/render-daily-video.ts --min-rating=1700  # extra rating floor (normal pool)
+npx tsx scripts/render-daily-video.ts                     # next unused puzzle, today (ET)
+npx tsx scripts/render-daily-video.ts --date=8.14.26      # render for a target date
+npx tsx scripts/render-daily-video.ts --min-rating=1700   # extra rating floor (normal pool)
+npx tsx scripts/render-daily-video.ts --from-daily=2026-04-29 --index=18   # a specific daily-challenge puzzle
 ```
+This is the ONLY renderer. (The old `render-daily-video-from-id.ts` was a second pipeline that wrote no caption and never set `difficult`; it is folded in as `--from-daily`.)
 
 **Refill pool:**
 ```bash
 npx tsx scripts/curate-video-puzzles.ts
 ```
 
-**Output:** `out/videos/{M.DD.YY}/daily.{M.DD.YY}-{puzzleId}.mp4` + `.txt` caption file
+**Output** (three files per reel, all named for the puzzle):
+- `out/videos/{M.D.YY}/daily.{M.D.YY}-{puzzleId}.mp4`
+- `…​.txt` — the caption
+- `…​.json` — **metadata sidecar** (`puzzleId`, `difficult`, rating, theme, quip). The sidecar is the authority on whether a reel is difficult. Nothing downstream may re-infer that flag by pattern-matching caption text.
+
+**Health check / repair:**
+```bash
+npx tsx scripts/ig-reconcile.ts            # report: duplicates, ledger drift, missing sidecars/captions
+npx tsx scripts/ig-reconcile.ts --write    # backfill sidecars + repair the ledger
+```
+Run it before any big render batch. Duplicates already in the queue are reported, never auto-removed.
 
 ### Posting Pipeline (queue → weekday-aware cron)
 
@@ -2398,7 +2412,11 @@ Rendering (local) is decoupled from posting (daily Vercel cron `/api/cron/ig-pos
   npx tsx scripts/ig-refill.ts --render=14     # render 14 days ahead first, then upload
   npx tsx scripts/ig-refill.ts --dry           # preview, touch nothing
   ```
-  It warns when the difficult pool drops below 4 (< ~1 week at 5 difficult days/wk). Puzzles are evergreen, so a stale-dated normal reel is fine to post; the difficult pool is the one to keep stocked. (Replaces the old `ig-upload-queue.ts`, which keyed by folder date and dropped multi-reel days.)
+  It warns when the difficult pool drops below 4 (< ~1 week at 5 difficult days/wk). Puzzles are evergreen, so a stale-dated normal reel is fine to post; the difficult pool is the one to keep stocked. It reads each reel's `difficult` flag from the render sidecar, skips reels with no caption file, and dedups by `puzzleId`.
+
+**ONE way in, ONE way out (do not add a second):**
+- **Into the queue:** `scripts/ig-refill.ts` only.
+- **Onto Instagram:** `/api/cron/ig-post` only. Side-channel posting scripts (`ig-post-daily.ts`, `ig-push-difficult.ts`, `ig-test-post.ts --post`) bypassed the queue's `posted` state and caused the 2026-08 double-posts — all removed. `scripts/ig-token-check.ts` is read-only diagnostics and deliberately cannot publish.
 
 ### Difficult Days (Mon/Tue/Thu/Fri/Sat — 5×/week)
 
@@ -2434,6 +2452,8 @@ Play daily puzzles free → chesspath.app
 
 On **difficult days**, `{Theme hook}` becomes a harder framing (e.g. "DIFFICULT PUZZLE. Most people miss it — can you?") and a `Drop your guess in the comments BEFORE you watch the solution` line is inserted under it.
 
+**Every word of the caption lives in `lib/ig-captions.ts` and nowhere else** — hooks, guess lines, CTAs, hashtags, and `generateCaption()`. Copy-pasting these pools into a script (which `ig-recaption-queue.ts` used to do, with a "change both" comment) is how they drift. `generateCaption()` is deterministic in `puzzleId`, so re-running the recaption script is idempotent: it converges every queued caption on what the renderer would write today.
+
 ### Files
 
 | File | Purpose |
@@ -2449,15 +2469,23 @@ On **difficult days**, `{Theme hook}` becomes a harder framing (e.g. "DIFFICULT 
 | `remotion/stages/StageCountdown.tsx` | Stage 2: countdown |
 | `remotion/stages/StageSolution.tsx` | Stage 3: animated solution |
 | `remotion/stages/StageCelebrate.tsx` | Stage 4: result + quip |
-| `scripts/render-daily-video.ts` | Selects puzzle (weekday-aware) + bakes caption + triggers render |
-| `scripts/curate-video-puzzles.ts` | Builds the normal pool from `clean-puzzles-v2` |
-| `scripts/curate-video-puzzles-hard.ts` | Builds the 2000+ hard pool from raw Lichess CSVs |
 | `remotion/lib/timing.ts` | FPS, frame counts, layout constants |
 | `remotion/lib/describe-result.ts` | Auto-generates result text from position |
-| `scripts/render-daily-video.ts` | Render pipeline (pick puzzle → render → caption → mark used) |
-| `scripts/curate-video-puzzles.ts` | Pool generation from clean-puzzles-v2 |
-| `data/video-puzzle-pool.json` | Pre-curated puzzle bank |
-| `data/video-puzzle-usage.json` | Tracks which puzzles have been rendered |
+| **`lib/ig-captions.ts`** | **OSOT: all caption copy + `generateCaption()` + `VIDEO_THEMES`** |
+| **`lib/ig-difficult-days.ts`** | **OSOT: `DIFFICULT_DOW` + the ET clock used to read it** |
+| **`lib/ig-reels.ts`** | **OSOT: what's rendered on disk, sidecars, `usedPuzzleIds()`** |
+| `lib/ig-queue.ts` | Blob queue manifest + `nextForDate()` weekday-aware pick |
+| `lib/instagram.ts` | Graph API: blob upload + `publishReel()` |
+| `app/api/cron/ig-post/route.ts` | The only thing that posts to Instagram |
+| `scripts/render-daily-video.ts` | The only renderer (pick → render → caption → sidecar → ledger) |
+| `scripts/ig-refill.ts` | The only path into the post queue (render ahead + upload) |
+| `scripts/ig-reconcile.ts` | Health check + repair (duplicates, ledger drift, sidecars) |
+| `scripts/ig-recaption-queue.ts` | Rewrites unposted queue captions from `lib/ig-captions.ts` |
+| `scripts/ig-token-check.ts` | Read-only IG token/account diagnostics (cannot post) |
+| `scripts/curate-video-puzzles.ts` | Builds the normal pool from `clean-puzzles-v2` |
+| `scripts/curate-video-puzzles-hard.ts` | Builds the 2000+ hard pool from raw Lichess CSVs |
+| `data/video-puzzle-pool.json` | Pre-curated puzzle bank (normal) |
+| `data/video-puzzle-usage.json` | Ledger — a CACHE of disk, never the sole dedup authority |
 
 ---
 

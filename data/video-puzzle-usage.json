@@ -90,7 +90,52 @@
     "qfUSY",
     "rn8Q2",
     "qXEJq",
-    "8ys4r"
+    "8ys4r",
+    "hiram",
+    "Fpp4C",
+    "9hGGz",
+    "sW9Gc",
+    "0Xtjy",
+    "L7D77",
+    "u1xTH",
+    "cpMku",
+    "xnV3X",
+    "11lBy",
+    "SHwoM",
+    "seRxo",
+    "Won6f",
+    "CyMb1",
+    "a4dJT",
+    "aVUSH",
+    "QNGTb",
+    "XHhw3",
+    "9e6Ni",
+    "GsZom",
+    "c06Io",
+    "WZkFF",
+    "4ejGs",
+    "QDgjk",
+    "arD6Z",
+    "9mHnm",
+    "RkOnI",
+    "7vuL3",
+    "JZAKD",
+    "a6rU3",
+    "Pja9i",
+    "xWe0O",
+    "ApAYk",
+    "ODlET",
+    "Z1UMb",
+    "k5Wc3",
+    "3ty8g",
+    "0AzsQ",
+    "bvlMW",
+    "fiq7B",
+    "ctJw4",
+    "CDQic",
+    "KVFZL",
+    "TgCjS",
+    "CykYi"
   ],
   "renders": [
     {
@@ -577,6 +622,312 @@
       "puzzleId": "8ys4r",
       "date": "8.13.26",
       "file": "daily.8.13.26-8ys4r.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "J3J8O",
+      "date": "2.28.26",
+      "file": "daily.2.28.26-J3J8O.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "0TwIx",
+      "date": "3.2.26",
+      "file": "daily.3.2.26-0TwIx.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "hiram",
+      "date": "3.27.26",
+      "file": "daily.3.27.26-user-hiram.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "Fpp4C",
+      "date": "3.29.26",
+      "file": "daily.3.29.26-Fpp4C.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "8e4lE",
+      "date": "4.13.26",
+      "file": "daily.4.13.26-8e4lE.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "Cwu4G",
+      "date": "4.15.26",
+      "file": "daily.4.15.26-Cwu4G.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "amUUt",
+      "date": "4.17.26",
+      "file": "daily.4.17.26-amUUt.mp4",
+      "difficult": true
+    },
+    {
+      "puzzleId": "9hGGz",
+      "date": "4.18.26",
+      "file": "daily.4.18.26-9hGGz.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "sW9Gc",
+      "date": "4.19.26",
+      "file": "daily.4.19.26-sW9Gc.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "0Xtjy",
+      "date": "4.20.26",
+      "file": "daily.4.20.26-0Xtjy.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "BpARe",
+      "date": "4.21.26",
+      "file": "daily.4.21.26-BpARe.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "L7D77",
+      "date": "4.22.26",
+      "file": "daily.4.22.26-L7D77.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "u1xTH",
+      "date": "4.23.26",
+      "file": "daily.4.23.26-u1xTH.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "cpMku",
+      "date": "4.24.26",
+      "file": "daily.4.24.26-cpMku.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "xnV3X",
+      "date": "4.25.26",
+      "file": "daily.4.25.26-xnV3X.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "11lBy",
+      "date": "4.26.26",
+      "file": "daily.4.26.26-11lBy.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "SHwoM",
+      "date": "4.27.26",
+      "file": "daily.4.27.26-SHwoM.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "seRxo",
+      "date": "4.29.26",
+      "file": "daily.4.29.26-seRxo.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "Won6f",
+      "date": "4.4.26",
+      "file": "daily.4.4.26-Won6f.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "CyMb1",
+      "date": "4.6.26",
+      "file": "daily.4.6.26-CyMb1.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "a4dJT",
+      "date": "5.10.26",
+      "file": "daily.5.10.26-a4dJT.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "aVUSH",
+      "date": "5.11.26",
+      "file": "daily.5.11.26-aVUSH.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "QNGTb",
+      "date": "5.12.26",
+      "file": "daily.5.12.26-QNGTb.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "XHhw3",
+      "date": "5.13.26",
+      "file": "daily.5.13.26-XHhw3.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "9e6Ni",
+      "date": "5.14.26",
+      "file": "daily.5.14.26-9e6Ni.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "GsZom",
+      "date": "5.15.26",
+      "file": "daily.5.15.26-GsZom.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "c06Io",
+      "date": "5.16.26",
+      "file": "daily.5.16.26-c06Io.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "WZkFF",
+      "date": "5.17.26",
+      "file": "daily.5.17.26-WZkFF.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "4ejGs",
+      "date": "5.18.26",
+      "file": "daily.5.18.26-4ejGs.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "QDgjk",
+      "date": "5.19.26",
+      "file": "daily.5.19.26-QDgjk.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "arD6Z",
+      "date": "5.2.26",
+      "file": "daily.5.2.26-arD6Z.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "9mHnm",
+      "date": "5.20.26",
+      "file": "daily.5.20.26-9mHnm.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "RkOnI",
+      "date": "5.21.26",
+      "file": "daily.5.21.26-RkOnI.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "7vuL3",
+      "date": "5.22.26",
+      "file": "daily.5.22.26-7vuL3.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "JZAKD",
+      "date": "5.23.26",
+      "file": "daily.5.23.26-JZAKD.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "a6rU3",
+      "date": "5.24.26",
+      "file": "daily.5.24.26-a6rU3.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "Pja9i",
+      "date": "5.25.26",
+      "file": "daily.5.25.26-Pja9i.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "xWe0O",
+      "date": "5.26.26",
+      "file": "daily.5.26.26-xWe0O.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "ApAYk",
+      "date": "5.27.26",
+      "file": "daily.5.27.26-ApAYk.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "ODlET",
+      "date": "5.28.26",
+      "file": "daily.5.28.26-ODlET.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "Z1UMb",
+      "date": "5.29.26",
+      "file": "daily.5.29.26-Z1UMb.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "k5Wc3",
+      "date": "5.3.26",
+      "file": "daily.5.3.26-k5Wc3.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "3ty8g",
+      "date": "5.30.26",
+      "file": "daily.5.30.26-3ty8g.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "0AzsQ",
+      "date": "5.31.26",
+      "file": "daily.5.31.26-0AzsQ.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "bvlMW",
+      "date": "5.4.26",
+      "file": "daily.5.4.26-bvlMW.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "fiq7B",
+      "date": "5.5.26",
+      "file": "daily.5.5.26-fiq7B.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "ctJw4",
+      "date": "5.6.26",
+      "file": "daily.5.6.26-ctJw4.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "CDQic",
+      "date": "5.7.26",
+      "file": "daily.5.7.26-CDQic.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "KVFZL",
+      "date": "5.8.26",
+      "file": "daily.5.8.26-KVFZL.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "TgCjS",
+      "date": "5.9.26",
+      "file": "daily.5.9.26-TgCjS.mp4",
+      "difficult": false
+    },
+    {
+      "puzzleId": "CykYi",
+      "date": "8.11.26",
+      "file": "daily.8.11.26-CykYi.mp4",
       "difficult": true
     }
   ]

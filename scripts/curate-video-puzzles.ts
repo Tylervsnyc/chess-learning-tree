@@ -14,19 +14,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+// Themes that look good on video = exactly the themes we write hooks for.
+import { VIDEO_THEMES } from '../lib/ig-captions';
 
 const CLEAN_DIR = path.join(process.cwd(), 'data', 'clean-puzzles-v2');
 const OUTPUT = path.join(process.cwd(), 'data', 'video-puzzle-pool.json');
-
-// Themes that look good on video (visual drama, clear result)
-const VIDEO_THEMES = [
-  'mateIn1', 'mateIn2', 'mateIn3',
-  'backRankMate', 'smotheredMate',
-  'fork', 'pin', 'skewer',
-  'sacrifice', 'discoveredAttack',
-  'kingsideAttack', 'queensideAttack',
-  'deflection', 'attraction',
-];
 
 // Levels to pull from (covers 400-2000 rating range)
 const LEVELS = [1, 2, 3, 4, 5, 6, 7];

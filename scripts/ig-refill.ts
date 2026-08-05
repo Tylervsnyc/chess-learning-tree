@@ -3,77 +3,41 @@
  *
  *   npx tsx scripts/ig-refill.ts                 # upload any un-queued renders on disk
  *   npx tsx scripts/ig-refill.ts --render=14     # render 14 days ahead first, then upload
+ *   npx tsx scripts/ig-refill.ts --render=28 --render-difficult-only
+ *                                                # only render the difficult days in that window
  *   npx tsx scripts/ig-refill.ts --render=14 --start=7.28.26
  *   npx tsx scripts/ig-refill.ts --rebuild       # wipe queue + rebuild from disk (careful)
  *   npx tsx scripts/ig-refill.ts --dry           # show what would happen, touch nothing
  *
- * Fixes the old ig-upload-queue.ts pitfalls:
+ * The ONLY path that puts a reel into the post queue.
  *   - dedups by PUZZLE ID, not folder date → multiple reels per day all get queued
- *   - tags each item difficult/normal (from its caption) so the weekday-aware
- *     cron can serve difficult reels on Thu/Sat
+ *   - reads each reel's `difficult` flag from its render sidecar (lib/ig-reels.ts),
+ *     never by sniffing caption text
  *   - reports runway per pool so you know when to refill again
  *
  * Rendering is local (Remotion). Difficult vs normal is auto-picked by the
- * target DATE inside render-daily-video.ts (Thu/Sat → hard pool).
+ * target DATE inside render-daily-video.ts (DIFFICULT_DOW → hard pool).
  */
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
-import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
-import { join } from 'path';
 import { execSync } from 'child_process';
 import { uploadToBlob, stripEmojis } from '../lib/instagram';
 import {
   loadQueue, saveQueue, dateToSortKey, queueRunway, type QueueItem,
 } from '../lib/ig-queue';
-
-const VIDEOS_DIR = 'out/videos';
+import { discoverReels } from '../lib/ig-reels';
+import { isDifficultDateLabel } from '../lib/ig-difficult-days';
 
 const arg = (name: string): string | undefined =>
   process.argv.find(a => a.startsWith(`--${name}=`))?.split('=')[1];
 const flag = (name: string): boolean => process.argv.includes(`--${name}`);
 
-interface DiscoveredReel {
-  date: string;       // folder name, e.g. "7.28.26"
-  puzzleId: string;   // from filename
-  mp4: string;
-  caption: string;
-  difficult: boolean;
-}
-
-/** puzzleId → difficult, from the render log (the reliable source of truth). */
-function difficultMap(): Record<string, boolean> {
-  const f = join('data', 'video-puzzle-usage.json');
-  if (!existsSync(f)) return {};
-  const usage = JSON.parse(readFileSync(f, 'utf8'));
-  const map: Record<string, boolean> = {};
-  for (const r of usage.renders ?? []) if (r.puzzleId) map[r.puzzleId] = !!r.difficult;
-  return map;
-}
-
-/** Every daily reel across every folder — NOT one-per-folder. */
-function discoverReels(): DiscoveredReel[] {
-  if (!existsSync(VIDEOS_DIR)) return [];
-  const diffByPuzzle = difficultMap();
-  const reels: DiscoveredReel[] = [];
-  for (const entry of readdirSync(VIDEOS_DIR)) {
-    const dir = join(VIDEOS_DIR, entry);
-    if (!statSync(dir).isDirectory()) continue;
-    const files = readdirSync(dir);
-    for (const mp4 of files.filter(f => f.startsWith('daily.') && f.endsWith('.mp4'))) {
-      const base = mp4.replace(/\.mp4$/, '');            // daily.7.28.26-abc12
-      const puzzleId = base.split('-').pop()!;            // abc12
-      const txt = `${base}.txt`;
-      const caption = files.includes(txt) ? readFileSync(join(dir, txt), 'utf8') : '';
-      // Trust the render log; fall back to caption text for legacy renders.
-      const difficult = diffByPuzzle[puzzleId] ?? /difficult puzzle/i.test(caption);
-      reels.push({ date: entry, puzzleId, mp4: join(dir, mp4), caption, difficult });
-    }
-  }
-  return reels;
-}
-
-/** Render `count` days ahead, starting from `start` (M.D.YY) or today. */
-function renderAhead(count: number, start?: string) {
+/**
+ * Render `count` days ahead, starting from `start` (M.D.YY) or today.
+ * With `difficultOnly`, normal days in the window are skipped — difficult reels
+ * are the ones that perform (~5x) and the ones the queue actually runs short of.
+ */
+function renderAhead(count: number, start?: string, difficultOnly = false) {
   const parse = (s: string) => {
     const [m, d, y] = s.split('.').map(Number);
     return new Date(2000 + y, m - 1, d);
@@ -85,6 +49,10 @@ function renderAhead(count: number, start?: string) {
     const dt = new Date(base);
     dt.setDate(base.getDate() + i);
     const dateStr = fmt(dt);
+    if (difficultOnly && !isDifficultDateLabel(dateStr)) {
+      console.log(`\n── Skipping ${dateStr} (normal day, --render-difficult-only) ──`);
+      continue;
+    }
     console.log(`\n── Rendering ${dateStr} (${i + 1}/${count}) ──`);
     try {
       execSync(`npx tsx scripts/render-daily-video.ts --date=${dateStr}`, {
@@ -102,7 +70,9 @@ async function main() {
   const difficultOnly = flag('difficult-only');
   const renderCount = arg('render') ? parseInt(arg('render')!, 10) : 0;
 
-  if (renderCount > 0) renderAhead(renderCount, arg('start'));
+  if (renderCount > 0) {
+    renderAhead(renderCount, arg('start'), flag('render-difficult-only'));
+  }
 
   let queue: QueueItem[] = rebuild ? [] : await loadQueue();
   const havePuzzle = new Set(queue.map(i => i.puzzleId).filter(Boolean));
@@ -112,11 +82,23 @@ async function main() {
   console.log(`\nDisk: ${reels.length} reels found. Queue: ${queue.length} items.` +
     (difficultOnly ? ' (difficult-only)' : ''));
 
-  let addedN = 0, addedD = 0;
+  const noSidecar = reels.filter(r => !r.hasSidecar).length;
+  if (noSidecar) {
+    console.log(`  (${noSidecar} legacy reels have no metadata sidecar — ` +
+      `run: npx tsx scripts/ig-reconcile.ts --write)`);
+  }
+
+  let addedN = 0, addedD = 0, skippedNoCaption = 0;
   for (const r of reels) {
     if (difficultOnly && !r.difficult) continue;
     if (havePuzzle.has(r.puzzleId)) continue;
     if (!havePuzzle.size && haveDate.has(r.date)) continue; // conservative on legacy queues
+    // Never queue a reel with no caption — it would post as a bare video.
+    if (r.caption.trim().length < 20) {
+      console.warn(`  ! ${r.date} ${r.puzzleId} has no caption file — skipped`);
+      skippedNoCaption++;
+      continue;
+    }
     console.log(`  + ${r.difficult ? 'DIFFICULT' : 'normal   '} ${r.date} ${r.puzzleId}`);
     if (!dry) {
       const videoUrl = await uploadToBlob(r.mp4, `ig-queue/videos/${r.date}-${r.puzzleId}.mp4`);
@@ -138,13 +120,26 @@ async function main() {
 
   const rw = queueRunway(queue);
   console.log(
-    `\n${dry ? '[DRY] would add' : 'Added'} ${addedN} normal + ${addedD} difficult.`,
+    `\n${dry ? '[DRY] would add' : 'Added'} ${addedN} normal + ${addedD} difficult.` +
+    (skippedNoCaption ? ` (${skippedNoCaption} skipped — no caption)` : ''),
   );
   console.log(
     `Runway — normal: ${rw.normal} unposted (~${rw.normal} days) · ` +
     `difficult: ${rw.difficult} unposted (~${rw.difficultWeeks.toFixed(1)} weeks at 5 difficult days/wk)`,
   );
-  if (rw.difficult < 4) console.warn('⚠ Difficult pool low — render more: --render=14');
+  if (rw.difficult < 4) {
+    console.warn('⚠ Difficult pool low — render more: --render=28 --render-difficult-only');
+  }
+  // 5 difficult slots/wk vs 2 normal. A big normal backlog is dead inventory in
+  // the format that underperforms ~5x, so flag the imbalance explicitly.
+  const normalWeeks = rw.normal / 2;
+  if (normalWeeks > rw.difficultWeeks * 2 && rw.normal > 10) {
+    console.warn(
+      `⚠ Inventory is lopsided — normal has ~${normalWeeks.toFixed(0)} weeks of runway ` +
+      `vs ~${rw.difficultWeeks.toFixed(1)} for difficult. Render difficult days only: ` +
+      `--render=28 --render-difficult-only`,
+    );
+  }
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

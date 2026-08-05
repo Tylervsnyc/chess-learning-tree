@@ -6,7 +6,10 @@
  * cron pops the oldest unposted item, publishes it, and saves the manifest back.
  */
 import { list, put } from '@vercel/blob';
-import { DIFFICULT_DOW } from './ig-difficult-days';
+import { easternDayOfWeek, isDifficultDay } from './ig-difficult-days';
+
+// Re-exported so callers have one import site for queue + cadence.
+export { easternDayOfWeek, isDifficultDay };
 
 const MANIFEST_PATH = 'ig-queue/manifest.json';
 
@@ -20,19 +23,6 @@ export interface QueueItem {
   mediaId?: string;
   difficult?: boolean; // true = a "Difficult Puzzle" reel (posts on difficult days)
   puzzleId?: string;   // Lichess puzzle id, for dedup across folders/renders
-}
-
-/** Weekday (0=Sun..6=Sat) of a Date in America/New_York — the audience's day. */
-export function easternDayOfWeek(d: Date): number {
-  const wd = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    weekday: 'short',
-  }).format(d);
-  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(wd);
-}
-
-export function isDifficultDay(d: Date): boolean {
-  return DIFFICULT_DOW.has(easternDayOfWeek(d));
 }
 
 /** Parse "M.D.YY" into a sortable timestamp; falls back to 0 if unparseable. */
@@ -61,23 +51,17 @@ export async function saveQueue(queue: QueueItem[]): Promise<void> {
   });
 }
 
-/** Oldest unposted item, or null if the queue is drained. */
-export function nextUnposted(queue: QueueItem[]): QueueItem | null {
-  return queue
-    .filter(i => !i.posted)
-    .sort((a, b) => a.sortKey - b.sortKey)[0] ?? null;
-}
-
 const oldestUnposted = (queue: QueueItem[], difficult: boolean): QueueItem | null =>
   queue
     .filter(i => !i.posted && !!i.difficult === difficult)
     .sort((a, b) => a.sortKey - b.sortKey)[0] ?? null;
 
 /**
- * Weekday-aware pick for the daily poster. On difficult days (Thu/Sat ET) it
- * serves the oldest unposted DIFFICULT reel; every other day the oldest NORMAL
- * reel. If the preferred pool is empty it falls back to the other pool so the
- * account never silently skips a day. Returns what was picked + why.
+ * Weekday-aware pick for the daily poster. On difficult days (DIFFICULT_DOW in
+ * ET — currently Mon/Tue/Thu/Fri/Sat) it serves the oldest unposted DIFFICULT
+ * reel; on the remaining days the oldest NORMAL reel. If the preferred pool is
+ * empty it falls back to the other pool so the account never silently skips a
+ * day. Returns what was picked + why.
  */
 export function nextForDate(
   queue: QueueItem[],

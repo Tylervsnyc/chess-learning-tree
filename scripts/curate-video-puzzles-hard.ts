@@ -2,7 +2,7 @@
  * Curate the HARD Video Puzzle Pool (2000+)
  *
  * Builds data/video-puzzle-pool-hard.json — the pool used on DIFFICULT days
- * (Thu/Sat) by scripts/render-daily-video.ts. Sourced from the raw Lichess
+ * (DIFFICULT_DOW) by scripts/render-daily-video.ts. Sourced from the raw Lichess
  * 2000-plus per-theme CSVs, which the normal pool (clean-puzzles-v2, capped at
  * ~1999) can't reach.
  *
@@ -14,20 +14,15 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { HARD_VIDEO_THEMES } from '../lib/ig-captions';
 
 const SRC_DIR = path.join(process.cwd(), 'data', 'puzzles-by-rating', '2000-plus');
 const OUTPUT = path.join(process.cwd(), 'data', 'video-puzzle-pool-hard.json');
 
-// Video-friendly themes (visual drama, clear result). Some don't exist as 2000+
-// files (mateIn1/mateIn3/smotheredMate/kingside/queensideAttack) — skipped gracefully.
-const VIDEO_THEMES = [
-  'mateIn2', 'mateIn3',
-  'backRankMate', 'smotheredMate',
-  'fork', 'pin', 'skewer',
-  'sacrifice', 'discoveredAttack',
-  'kingsideAttack', 'queensideAttack',
-  'deflection', 'attraction',
-];
+// Themes we write hooks for, minus mateIn1 (never a "difficult" puzzle). Some
+// don't exist as 2000+ files (smotheredMate/kingside/queensideAttack) — skipped
+// gracefully below.
+const VIDEO_THEMES = HARD_VIDEO_THEMES;
 
 const MIN_RATING = 2000;
 const MAX_RATING = 2400; // keep it hard-but-solvable / watchable, not insane
