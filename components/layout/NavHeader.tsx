@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useUser } from '@/hooks/useUser';
+import { useBoxShell } from '@/hooks/useBoxShell';
 import { usePathname } from 'next/navigation';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 import { DailyWorkoutBadge } from '@/components/shared/DailyWorkoutBadge';
@@ -84,30 +85,15 @@ const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/test/landing', '/test/r
 export function NavHeader() {
   const pathname = usePathname();
 
-  // Chess Boxing app shell: /box screens are native app screens (BoxTabBar owns
-  // navigation) and must FIT the window with no scroll — the site header would
-  // steal ~64px of the fit budget. Same shell detection as BoxTabBar
-  // (Capacitor native, or the ?boxapp=1 debug session key).
-  const [inBoxShell, setInBoxShell] = useState(false);
-  useEffect(() => {
-    const isNative = window.Capacitor?.isNativePlatform?.() === true;
-    let isDebug = false;
-    try {
-      if (new URLSearchParams(window.location.search).has('boxapp')) {
-        sessionStorage.setItem('cp:boxapp', '1');
-      }
-      isDebug = sessionStorage.getItem('cp:boxapp') === '1';
-    } catch {
-      /* private mode — native detection still works */
-    }
-    setInBoxShell(isNative || isDebug);
-  }, []);
-  const isBoxRoute = pathname === '/box' || pathname?.startsWith('/box/'); // NOT /boxing (printable sheets)
+  // Chess Boxing app shell: the BoxTabBar owns ALL navigation inside the app,
+  // on every route — the site header would double the nav and steal ~64px of
+  // the no-scroll fit budget. useBoxShell is the one shell detection.
+  const inBoxShell = useBoxShell();
 
   // Early bail — avoids loading useUser/Supabase on pages that never show the header
   const hidden = HIDDEN_PATHS.some(p => pathname?.startsWith(p))
     || pathname?.match(/^\/openings\/[^/]+\/[^/]+$/) && !pathname?.endsWith('/tree')
-    || (inBoxShell && isBoxRoute);
+    || inBoxShell;
   if (hidden) return null;
 
   return <NavHeaderInner pathname={pathname} />;

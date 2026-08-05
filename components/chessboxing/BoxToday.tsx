@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LockerHome } from '@/components/chessboxing/LockerHome';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
+import { useBoxShell } from '@/hooks/useBoxShell';
 import { getStreak, type StreakData } from '@/lib/streak-client';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
@@ -28,23 +29,8 @@ export function BoxToday() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [last, setLast] = useState<LastSession | null | undefined>(undefined);
   const [rank, setRank] = useState<{ rank: number; total: number } | null | undefined>(undefined);
-  // Settings gear only shows inside the app shell (same detection as
-  // BoxTabBar: Capacitor native, or the ?boxapp=1 debug session key).
-  const [inShell, setInShell] = useState(false);
-
-  useEffect(() => {
-    const isNative = window.Capacitor?.isNativePlatform?.() === true;
-    let isDebug = false;
-    try {
-      // URL param too — effect order vs BoxTabBar (which persists it) isn't guaranteed.
-      isDebug =
-        sessionStorage.getItem('cp:boxapp') === '1' ||
-        new URLSearchParams(window.location.search).has('boxapp');
-    } catch {
-      /* private mode — native detection still works */
-    }
-    setInShell(isNative || isDebug);
-  }, []);
+  // Settings gear only shows inside the app shell.
+  const inShell = useBoxShell();
 
   useEffect(() => {
     getStreak().then(setStreak);

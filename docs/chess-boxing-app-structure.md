@@ -38,9 +38,15 @@ Applies to all app-owned screens: /box (locker home), /box/bout (every phase),
 /box/onboarding, /box/settings. Enforced 2026-08-05: each screen is a fixed
 `h-full` column (no overflow-auto); the locker / bout board / punch cam scale to
 leftover height via container queries, and /box/settings became a compact row
-list where Handle and Crew open sub-panels instead of expanding in place. The Train/Play/Profile tabs currently reuse shared
-website pages and are exempt UNTIL they get their app-mode compact redesign (open
-project — the rule is the end state for every tab).
+list where Handle and Crew open sub-panels instead of expanding in place.
+
+App framing (2026-08-05): the website NavHeader hides on EVERY route inside the
+shell (`useBoxShell` in hooks/useBoxShell.ts is the ONE shell detection — never
+re-implement it). Tabs: Train = /box/train (no-scroll chooser fanning out to
+/solve, /path, /openings) · Profile = /box/profile (compact fighter card reusing
+/api/profile/dashboard + /api/bout/record + streak-client) · Play = shared /play
+(fits without the header). The shared activity pages the Train tab fans out to
+still scroll mid-activity — acceptable for activities, not for tab screens.
 
 ## Build list (what's actually new)
 

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useBoxShell } from '@/hooks/useBoxShell';
 
 /**
  * BoxTabBar — the Chess Boxing app's bottom tab bar. Renders ONLY inside the
@@ -18,35 +19,24 @@ import { usePathname } from 'next/navigation';
  * flex body shrinks them above the bar.
  */
 
-const DEBUG_KEY = 'cp:boxapp';
-
 /** Routes where the bar must not cover an immersive full-screen activity. */
 const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding'];
 
+/**
+ * The four tabs. `match` lists the extra routes a tab claims as "active" —
+ * Train's chooser fans out to the shared activity pages, and those still
+ * belong to the Train tab.
+ */
 const TABS = [
-  { href: '/box', label: 'Chess Box', icon: GloveIcon },
-  { href: '/solve', label: 'Train', icon: TargetIcon },
-  { href: '/play', label: 'Play', icon: PawnIcon },
-  { href: '/profile', label: 'Profile', icon: PersonIcon },
+  { href: '/box', label: 'Chess Box', icon: GloveIcon, match: [] as string[] },
+  { href: '/box/train', label: 'Train', icon: TargetIcon, match: ['/solve', '/path', '/openings', '/lesson'] },
+  { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[] },
+  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'] },
 ] as const;
 
 export function BoxTabBar() {
   const pathname = usePathname();
-  const [inShell, setInShell] = useState(false);
-
-  useEffect(() => {
-    const isNative = window.Capacitor?.isNativePlatform?.() === true;
-    let isDebug = false;
-    try {
-      if (new URLSearchParams(window.location.search).has('boxapp')) {
-        sessionStorage.setItem(DEBUG_KEY, '1');
-      }
-      isDebug = sessionStorage.getItem(DEBUG_KEY) === '1';
-    } catch {
-      /* private mode — native detection still works */
-    }
-    setInShell(isNative || isDebug);
-  }, []);
+  const inShell = useBoxShell();
 
   const hidden = HIDDEN_ROUTES.some((r) => pathname?.startsWith(r));
   const visible = inShell && !hidden;
@@ -65,9 +55,11 @@ export function BoxTabBar() {
       className="fixed bottom-0 inset-x-0 z-40 bg-chess-surface border-t border-slate-200 pb-[env(safe-area-inset-bottom)]"
     >
       <div className="max-w-lg mx-auto flex">
-        {TABS.map(({ href, label, icon: Icon }) => {
+        {TABS.map(({ href, label, icon: Icon, match }) => {
           const active =
-            pathname === href || (href !== '/box' && pathname?.startsWith(`${href}/`));
+            pathname === href ||
+            (href !== '/box' && pathname?.startsWith(`${href}/`)) ||
+            match.some((m) => pathname === m || pathname?.startsWith(`${m}/`));
           return (
             <Link
               key={href}

@@ -421,7 +421,12 @@ function LockerDoor({ closed, onToggle }: { closed: boolean; onToggle: () => voi
           overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
           // top padding clears the floating sign + settings button
-          padding: '19% 7% 13%',
+          // Top padding clears the floating CHESS BOXING sign, which hangs ON
+          // the closed door. The sign is fixed-size type while the door scales
+          // with the screen — so the clearance is a px clamp, not a %.
+          padding: '7%',
+          paddingTop: 'clamp(140px, 32%, 210px)',
+          paddingBottom: '13%',
           gap: '3%',
           // every cqw inside the door is a share of the DOOR's width
           containerType: 'inline-size',
