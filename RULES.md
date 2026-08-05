@@ -2401,6 +2401,13 @@ npx tsx scripts/ig-reconcile.ts --write    # backfill sidecars + repair the ledg
 ```
 Run it before any big render batch. Duplicates already in the queue are reported, never auto-removed.
 
+**Does the caption tell the truth about the position?**
+```bash
+npx tsx scripts/ig-verify-captions.ts          # every reel on disk
+npx tsx scripts/ig-verify-captions.ts --queue  # + every item in the live queue
+```
+Hooks are picked by THEME, so a mislabelled puzzle produces a caption that lies — "Checkmate in 2!" over a mate in 3 is the worst thing this pipeline can ship. The verifier replays each puzzle with chess.js and decides from the board, never from the pool's label: mate-in-N counts, that mate hooks really end in mate, back-rank mates on rank 1/8, smothered mates delivered by a knight with every flight square self-blocked, non-mate themes present in the puzzle's Lichess themes, and the Rating line. Run it after any change to the hook pools or the curation scripts.
+
 ### Posting Pipeline (queue → weekday-aware cron)
 
 Rendering (local) is decoupled from posting (daily Vercel cron `/api/cron/ig-post`, 8am ET) by a Blob queue manifest (`lib/ig-queue.ts`). **Two logical pools live in one queue**, tagged by a per-item `difficult` flag:
@@ -2410,8 +2417,11 @@ Rendering (local) is decoupled from posting (daily Vercel cron `/api/cron/ig-pos
   ```bash
   npx tsx scripts/ig-refill.ts                 # upload any un-queued renders on disk
   npx tsx scripts/ig-refill.ts --render=14     # render 14 days ahead first, then upload
+  npx tsx scripts/ig-refill.ts --render=28 --render-difficult-only
+                                               # render ONLY the difficult days in that window
   npx tsx scripts/ig-refill.ts --dry           # preview, touch nothing
   ```
+  **Render difficult days, not calendar days.** There are 5 difficult slots/week and 2 normal ones, so a flat `--render=N` builds normal inventory ~2.5x faster than it's consumed — dead stock in the format that underperforms ~5x. Refill warns when runway goes lopsided; answer it with `--render-difficult-only`.
   It warns when the difficult pool drops below 4 (< ~1 week at 5 difficult days/wk). Puzzles are evergreen, so a stale-dated normal reel is fine to post; the difficult pool is the one to keep stocked. It reads each reel's `difficult` flag from the render sidecar, skips reels with no caption file, and dedups by `puzzleId`.
 
 **ONE way in, ONE way out (do not add a second):**
@@ -2480,6 +2490,7 @@ On **difficult days**, `{Theme hook}` becomes a harder framing (e.g. "DIFFICULT 
 | `scripts/render-daily-video.ts` | The only renderer (pick → render → caption → sidecar → ledger) |
 | `scripts/ig-refill.ts` | The only path into the post queue (render ahead + upload) |
 | `scripts/ig-reconcile.ts` | Health check + repair (duplicates, ledger drift, sidecars) |
+| `scripts/ig-verify-captions.ts` | Proves each caption's claim against the real position (chess.js) |
 | `scripts/ig-recaption-queue.ts` | Rewrites unposted queue captions from `lib/ig-captions.ts` |
 | `scripts/ig-token-check.ts` | Read-only IG token/account diagnostics (cannot post) |
 | `scripts/curate-video-puzzles.ts` | Builds the normal pool from `clean-puzzles-v2` |
