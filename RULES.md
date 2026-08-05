@@ -2460,7 +2460,9 @@ Play daily puzzles free → chesspath.app
 #chess #chesspuzzle #chesspath #dailypuzzle {+2 rotating tags}
 ```
 
-On **difficult days**, `{Theme hook}` becomes a harder framing (e.g. "DIFFICULT PUZZLE. Most people miss it — can you?") and a `Drop your guess in the comments BEFORE you watch the solution` line is inserted under it.
+On **difficult days**, the hook is **derived from the position** (`lib/ig-puzzle-insight.ts`) — not generic hype. chess.js replays the puzzle and the hook names what is actually interesting: a queen given up, a quiet first move when a check was on offer, mating while down a rook, an underpromotion, a run of forced checks, the material really won. ~87% of the hard pool yields a specific line; the rest fall back to the generic `DIFFICULT_HOOKS` pool, because **an honest generic line beats a specific false one**. A `Drop your guess in the comments` line is inserted under it.
+
+**A hook may only assert what `PuzzleFacts` establishes.** The tempting-check lines require BOTH that a check was legally available AND that the solution does not start with one — the first draft asserted that without checking and would have lied on 5 puzzles. The single exception is uniqueness ("only one first move works"), which rests on Lichess only keeping single-solution positions. Each branch carries 2–3 phrasings picked by the puzzle's caption hash, so five posts a week don't read like one template.
 
 **Every word of the caption lives in `lib/ig-captions.ts` and nowhere else** — hooks, guess lines, CTAs, hashtags, and `generateCaption()`. Copy-pasting these pools into a script (which `ig-recaption-queue.ts` used to do, with a "change both" comment) is how they drift. `generateCaption()` is deterministic in `puzzleId`, so re-running the recaption script is idempotent: it converges every queued caption on what the renderer would write today.
 
@@ -2482,6 +2484,7 @@ On **difficult days**, `{Theme hook}` becomes a harder framing (e.g. "DIFFICULT 
 | `remotion/lib/timing.ts` | FPS, frame counts, layout constants |
 | `remotion/lib/describe-result.ts` | Auto-generates result text from position |
 | **`lib/ig-captions.ts`** | **OSOT: all caption copy + `generateCaption()` + `VIDEO_THEMES`** |
+| **`lib/ig-puzzle-insight.ts`** | **OSOT: position-derived hooks for difficult reels (chess.js facts)** |
 | **`lib/ig-difficult-days.ts`** | **OSOT: `DIFFICULT_DOW` + the ET clock used to read it** |
 | **`lib/ig-reels.ts`** | **OSOT: what's rendered on disk, sidecars, `usedPuzzleIds()`** |
 | `lib/ig-queue.ts` | Blob queue manifest + `nextForDate()` weekday-aware pick |
