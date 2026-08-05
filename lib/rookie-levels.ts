@@ -26,7 +26,11 @@ export interface RookieLevel {
 // CONSTANTS
 // ════════════════════════════════
 
-export const WINS_TO_ADVANCE = 3;
+// WINS_TO_ADVANCE is GONE (2026-08-05). "Win 3 to unlock the next level" could
+// only ratchet upward — a lucky run stranded you a rung above your real
+// strength, permanently, losing. Rookie is now MATCHED to your rating every
+// game and can ease off as well as climb: lib/rookie/matchmaking.ts,
+// RULES.md §20b. Do not reintroduce a win counter alongside the rating.
 
 /**
  * Stockfish engine config per level.
@@ -72,6 +76,45 @@ const ENGINE_CONFIGS: Record<number, RookieEngineConfig> = {
   10: { skillLevel: 20, depth: 14, multiPV: 3, poolSize: 3, tolerance: 30 },
 };
 
+// ─── CALIBRATION: first read, 2026-08-05, N=20 games/match ──────────────────
+// Measured on /test/calibrate (anchor: L6 scored 70.0% vs Maia 1100).
+// These `elo` values are still the ORIGINAL hand-typed guesses — do not trust
+// them. They are also not cosmetic: lib/elo/profile-elo.ts and
+// lib/rookie/rating.ts both feed getLevelElo() in as the OPPONENT RATING for
+// every game, so whatever is wrong here is wrong in every user's rating.
+//
+//   Level   claimed   measured   off by
+//   L1        200       285       +85
+//   L2        400       393        -7
+//   L3        600       662       +62
+//   L4        800       770       -30
+//   L5       1000      1282      +282
+//   L6       1200      1247       +47
+//   L7       1400      1705      +305
+//   L8-L10   1600+       —       not measured (run stopped early)
+//
+// TWO REAL BUGS this exposed:
+//
+//   1. L5 AND L6 ARE THE SAME OPPONENT. Both are Maia, asked for 1300 and 1500
+//      — and Maia's strength knob does NOTHING (measured: Maia 1900 scored
+//      47.5% vs Maia 1100; bucketing the rating into Maia-2's 0-10 category
+//      indices changed nothing either). See MAIA_STRENGTH_KNOB_WORKS in
+//      lib/maia/maia-adapter.ts. So "L6 is 35 points weaker than L5" was noise
+//      between two identical players. Levelling 5 -> 6 changes nothing at all.
+//
+//   2. Two cliffs, not a ladder: L4->L5 is +512 and L6->L7 is +458, while
+//      L1->L2 is only +108. Levels 1-4 are a gentle ramp to ~770, then it
+//      jumps straight past the whole 800-1200 band where most learners live.
+//      Only ~4 distinct opponents exist across the "10" levels.
+//
+// BLOCKED on a product call (Tyler): Maia can stay as ONE rung at the strength
+// it actually plays (~1265), but L5/L6/L7 need real Stockfish configs to fill
+// 800-1500 — and tuning those needs an absolute yardstick that isn't Maia.
+// The candidate is rated Lichess puzzles (data/puzzle-rating-index.json), the
+// same scale lib/elo/estimate.ts already rates users against.
+//
+// Do not half-update this table — a mix of measured and invented rungs is
+// worse than all-invented, because it reads as trustworthy.
 export const ROOKIE_LEVELS: RookieLevel[] = [
   {
     level: 1,

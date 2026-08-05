@@ -1,8 +1,12 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { ROOKIE_LEVELS, WINS_TO_ADVANCE } from '@/lib/rookie-levels';
+import { ROOKIE_LEVELS } from '@/lib/rookie-levels';
 import { QUIP_POOL } from '@/lib/quips/quip-pool';
+
+// Prototype page — keeps its own copy now that production has no win counter
+// (Rookie is matched to your rating; see RULES.md §20b).
+const WINS_TO_ADVANCE = 3;
 
 function levelUpQuipFor(level: number): string | null {
   const line = QUIP_POOL.find(l => l.category === `play:levelup:${level}`);

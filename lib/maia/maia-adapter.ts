@@ -24,6 +24,26 @@ interface StatusListener {
 const MODEL_URL = '/maia3/maia3_simplified.onnx';
 const MODEL_VERSION = '3';
 
+/**
+ * MEASURED 2026-08-05: THIS MODEL'S STRENGTH KNOB IS INERT.
+ *
+ * `elo_self` / `elo_oppo` are accepted and change nothing. Maia 1900 scored
+ * 47.5% against Maia 1100 over 20 games — a coin flip. Bucketing the rating
+ * into the 0-10 category indices Maia-2 uses was tried and made no difference
+ * either, so it is not an encoding mistake on our side: this
+ * `maia3_simplified.onnx` export does not condition on rating.
+ *
+ * Consequences, both real:
+ *   - Rookie L5 and L6 are THE SAME OPPONENT (~1265), despite asking for 1300
+ *     and 1500. Calibration measuring L6 as 35 points "weaker" than L5 was
+ *     noise between two identical players, not a config bug.
+ *   - Maia cannot be used as a rating-conditioned yardstick for calibration.
+ *
+ * Re-run the yardstick probe on /test/calibrate after ANY change to the model
+ * or this adapter. Do not reintroduce a rating parameter that does nothing.
+ */
+export const MAIA_STRENGTH_KNOB_WORKS = false;
+
 class MaiaEngine {
   private worker: Worker | null = null;
   private status: InternalStatus = 'idle';
@@ -137,8 +157,8 @@ class MaiaEngine {
   /**
    * Evaluate a position: returns move probabilities + win probability.
    * @param fen - Position to evaluate
-   * @param eloSelf - Player's approximate ELO (1100-1900)
-   * @param eloOppo - Opponent's approximate ELO
+   * @param eloSelf - IGNORED BY THE MODEL. See MAIA_STRENGTH_KNOB_WORKS.
+   * @param eloOppo - IGNORED BY THE MODEL.
    */
   async evaluate(
     fen: string,

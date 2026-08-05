@@ -32,6 +32,7 @@ import { usePremove } from '@/hooks/usePremove';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
+import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
@@ -81,13 +82,6 @@ const ANIM_MS = 300;
  * break · chess …) is locked in lib/bout/bout.ts — this page only runs it.
  */
 type Phase = 'prefight' | 'chess' | 'break' | 'boxing' | 'done';
-
-/** User's unlocked /play level (same localStorage key /play writes). */
-function loadRookieLevel(): number {
-  if (typeof window === 'undefined') return 1;
-  const level = parseInt(window.localStorage.getItem('rookie-level') || '1', 10);
-  return Number.isFinite(level) ? Math.max(1, Math.min(10, level)) : 1;
-}
 
 /** "a rook" / "2 pawns" — material spoken the way a person would say it. */
 function fmtMaterial(pawns: number): string {
@@ -704,7 +698,8 @@ export default function BoutPage() {
     setSavedPoints(null);
     setResult(null);
 
-    const lvl = Math.min(FIGHT_MAX_LEVEL, loadRookieLevel());
+    // Matched level, capped — the deeper engines are too heavy for a bout.
+    const lvl = Math.min(FIGHT_MAX_LEVEL, peekRookieLevel().level);
     setLevel(lvl);
     levelRef.current = lvl;
 
@@ -729,6 +724,13 @@ export default function BoutPage() {
   // Is today's ranked bout still on the table? Read once on the pre-fight
   // screen and after every finish, so the picker never promises points it
   // can't pay. Failure is silent — never block a fight over a stat line.
+  // Refresh the matched level while we're on the pre-fight screen, so the bout
+  // uses the same Rookie /play just matched to you.
+  useEffect(() => {
+    if (phase !== 'prefight') return;
+    void getRookieLevel({ fresh: true });
+  }, [phase]);
+
   useEffect(() => {
     if (phase !== 'prefight') return;
     let cancelled = false;

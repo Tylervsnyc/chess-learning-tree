@@ -10,6 +10,7 @@ import { usePremove } from '@/hooks/usePremove';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
+import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
 import {
   buildSchedule,
   labelFor,
@@ -158,13 +159,6 @@ type Discipline = 'puzzles' | 'fight';
 
 const FIGHT_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const FIGHT_ANIM_MS = 300;
-
-/** User's unlocked /play level (same localStorage key /play writes). */
-function loadRookieLevel(): number {
-  if (typeof window === 'undefined') return 1;
-  const level = parseInt(window.localStorage.getItem('rookie-level') || '1', 10);
-  return Number.isFinite(level) ? Math.max(1, Math.min(10, level)) : 1;
-}
 
 // Canned Rookie lines for the fight (no speech systems — just text).
 const FIGHT_LINES = {
@@ -358,6 +352,12 @@ export default function WorkoutPage() {
   useEffect(() => {
     setHighWaterElo((h) => Math.max(h, targetElo));
   }, [targetElo]);
+
+  // Warm the matched Rookie level so a Fight Round starting mid-session uses
+  // the same Rookie /play matched to you, not a stale cache.
+  useEffect(() => {
+    void getRookieLevel();
+  }, []);
 
   // 3 strikes: wrong answers in the CURRENT chess segment; the 3rd ends it.
   const strikesRef = useRef(0);
@@ -1012,7 +1012,9 @@ export default function WorkoutPage() {
     fightLossesRef.current = 0;
     fightDrawsRef.current = 0;
     if (fight) {
-      const lvl = Math.min(FIGHT_MAX_LEVEL, loadRookieLevel());
+      // Matched level, capped — L5+ engines are heavyweight downloads that
+      // must never load inside a timed segment.
+      const lvl = Math.min(FIGHT_MAX_LEVEL, peekRookieLevel().level);
       setFightLevel(lvl);
       fightLevelRef.current = lvl;
     }

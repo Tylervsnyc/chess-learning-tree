@@ -17,8 +17,13 @@ import {
 } from '@/lib/sounds';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
 import {
+  getRookieLevel as fetchMatchedLevel,
+  peekRookieLevel,
+  recordGameResult,
+  levelProgress,
+} from '@/lib/rookie/level-client';
+import {
   ROOKIE_LEVELS,
-  WINS_TO_ADVANCE,
   getRookieLevel,
   getLevelElo,
 } from '@/lib/rookie-levels';
@@ -78,20 +83,9 @@ const CoachingDrawer = nextDynamic(
 // LEVEL PERSISTENCE (localStorage)
 // ════════════════════════════════
 
-const LEVEL_STORAGE_KEY = 'rookie-level';
-const WINS_STORAGE_KEY = 'rookie-level-wins';
-
-function loadLevelProgress(): { level: number; wins: number } {
-  if (typeof window === 'undefined') return { level: 1, wins: 0 };
-  const level = parseInt(localStorage.getItem(LEVEL_STORAGE_KEY) || '1', 10);
-  const wins = parseInt(localStorage.getItem(WINS_STORAGE_KEY) || '0', 10);
-  return { level: Math.max(1, Math.min(10, level)), wins: Math.max(0, wins) };
-}
-
-function saveLevelProgress(level: number, wins: number) {
-  localStorage.setItem(LEVEL_STORAGE_KEY, String(level));
-  localStorage.setItem(WINS_STORAGE_KEY, String(wins));
-}
+// Level persistence lives in lib/rookie/level-client.ts now — the server owns
+// the rating and the localStorage key is only its cache. The old
+// `rookie-level-wins` key is dead: there is no win counter any more.
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -121,7 +115,7 @@ const ANIM_MS = 300;
 function LevelProgressBar({
   currentLevel,
   playingLevel,
-  winsAtLevel,
+  subProgress,
   animDurationMs = 700,
   celebrate = false,
   onPickLevel,
@@ -129,7 +123,8 @@ function LevelProgressBar({
   currentLevel: number;
   /** Level currently being played. When !== currentLevel, user has picked a lower level for this session. */
   playingLevel?: number;
-  winsAtLevel: number;
+  /** 0..1 — how far the rating has moved from this rung toward the next. */
+  subProgress: number;
   animDurationMs?: number;
   celebrate?: boolean;
   onPickLevel?: (level: number) => void;
@@ -138,7 +133,7 @@ function LevelProgressBar({
   const activePlayLevel = playingLevel ?? currentLevel;
   // 9 gaps between 10 levels. Level 1 = 0%, level 10 = 100%.
   const levelPct = (lvl: number) => ((lvl - 1) / 9) * 100;
-  const fillPct = levelPct(currentLevel) + (winsAtLevel / WINS_TO_ADVANCE) * (100 / 9);
+  const fillPct = levelPct(currentLevel) + Math.max(0, Math.min(1, subProgress)) * (100 / 9);
 
   return (
     <div className="w-full">
@@ -216,40 +211,26 @@ function LevelProgressBar({
   );
 }
 
-function WinsIndicator({ wins, needed, nextLevel }: { wins: number; needed: number; nextLevel: number }) {
-  if (nextLevel > 10) {
+/**
+ * Replaces the old "win 3 to reach Level N" counter. There is no counter any
+ * more — Rookie is matched to your rating every game, so what the player needs
+ * to know is that she's set to THEM, not how many boxes are left to tick.
+ */
+function MatchNote({ level, provisional }: { level: number; provisional: boolean }) {
+  if (provisional) {
     return (
-      <div className="text-center">
-        <span className="text-xs font-bold text-chess-gold">MAX LEVEL</span>
-      </div>
+      <span className="text-xs text-chess-text-muted font-semibold text-center">
+        Rookie is still finding your level.
+      </span>
     );
   }
+  if (level >= 10) {
+    return <span className="text-xs font-bold text-chess-gold">SHE IS ALL OUT OF GEARS</span>;
+  }
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex gap-1.5">
-        {Array.from({ length: needed }).map((_, i) => (
-          <div
-            key={i}
-            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
-              i < wins ? 'bg-chess-green text-white scale-105' : 'bg-slate-200'
-            }`}
-            style={i < wins ? { boxShadow: '0 2px 0 var(--color-chess-green-dark)' } : { boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.06)' }}
-          >
-            {i < wins && (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            )}
-          </div>
-        ))}
-      </div>
-      <span className="text-xs text-chess-text-muted font-semibold">
-        {wins === 0
-          ? `Win ${needed} to reach Level ${nextLevel}`
-          : `${needed - wins} more win${needed - wins !== 1 ? 's' : ''} to Level ${nextLevel}`
-        }
-      </span>
-    </div>
+    <span className="text-xs text-chess-text-muted font-semibold text-center">
+      Rookie is matched to you. Beat her and she gets harder.
+    </span>
   );
 }
 
@@ -334,12 +315,14 @@ export default function PlayRookiePage() {
     tapQuipTimerRef.current = setTimeout(() => setTapQuip(null), 4000);
   }, []);
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
-  // unlockedLevel = progression level shown on the progress bar; advances with wins.
-  // rookieLevel = the level we're actually playing at right now; user can drop below
-  // unlockedLevel for a lighter session without affecting progression.
-  const [unlockedLevel, setUnlockedLevel] = useState(1);
+  // Rookie MATCHES you (lib/rookie/matchmaking.ts) — she is no longer unlocked
+  // by a win counter. matchedLevel is what the rating says she should play at;
+  // rookieLevel is what she's actually playing this game (dev can override).
+  // A loss lowers the rating, so matchedLevel can fall — silently, by design.
+  const [matchedLevel, setMatchedLevel] = useState(1);
   const [rookieLevel, setRookieLevel] = useState(1);
-  const [winsAtLevel, setWinsAtLevel] = useState(0);
+  const [subProgress, setSubProgress] = useState(0);
+  const [levelProvisional, setLevelProvisional] = useState(true);
   const { name: playerNameValue, setName: setPlayerNameValue } = useName();
   const playerName = playerNameValue || '';
   const [showNameAsk, setShowNameAsk] = useState(false);
@@ -350,14 +333,23 @@ export default function PlayRookiePage() {
   const pendingLevelUpRef = useRef<{ oldLevel: number; newLevel: number } | null>(null);
   const lastResultForTrackingRef = useRef<'win' | 'loss' | 'none'>('none');
   const landingFiredRef = useRef(false);
-  const [levelBarAnim, setLevelBarAnim] = useState<{ level: number; wins: number; duration: number } | null>(null);
+  const [levelBarAnim, setLevelBarAnim] = useState<{ level: number; sub: number; duration: number } | null>(null);
 
-  // Load persisted level on mount
+  // The level Rookie should play at. Paint from the cache immediately so the
+  // bar isn't blank, then take whatever the server says (it owns the rating).
   useEffect(() => {
-    const { level, wins } = loadLevelProgress();
-    setUnlockedLevel(level);
-    setRookieLevel(level);
-    setWinsAtLevel(wins);
+    const peeked = peekRookieLevel();
+    setMatchedLevel(peeked.level);
+    setRookieLevel(peeked.level);
+    let cancelled = false;
+    fetchMatchedLevel().then((state) => {
+      if (cancelled) return;
+      setMatchedLevel(state.level);
+      setRookieLevel(state.level);
+      setSubProgress(levelProgress(state));
+      setLevelProvisional(state.provisional);
+    });
+    return () => { cancelled = true; };
   }, []);
 
   // FEN is the single source of truth for board state
@@ -695,14 +687,14 @@ export default function PlayRookiePage() {
   const runLevelUpAnimation = useCallback((oldLevel: number, newLevel: number) => {
     const DURATION = 1600;
     PlayEvents.levelUpTriggered(oldLevel, newLevel);
-    setLevelBarAnim({ level: oldLevel, wins: WINS_TO_ADVANCE, duration: 0 });
+    setLevelBarAnim({ level: oldLevel, sub: 1, duration: 0 });
     window.setTimeout(() => {
-      setLevelBarAnim({ level: newLevel, wins: 0, duration: DURATION });
+      setLevelBarAnim({ level: newLevel, sub: 0, duration: DURATION });
     }, 80);
     window.setTimeout(() => {
-      setUnlockedLevel(newLevel);
+      setMatchedLevel(newLevel);
       setRookieLevel(newLevel);
-      setWinsAtLevel(0);
+      setSubProgress(0);
       setLevelBarAnim(null);
       speech.queueLevelUpQuip(newLevel).then((quip) => {
         if (quip) {
@@ -738,9 +730,9 @@ export default function PlayRookiePage() {
           alreadyCelebrated = localStorage.getItem('rookie-celebrated-level-' + pendingLevelUp.newLevel) === '1';
         } catch {}
         if (alreadyCelebrated) {
-          setUnlockedLevel(pendingLevelUp.newLevel);
+          setMatchedLevel(pendingLevelUp.newLevel);
           setRookieLevel(pendingLevelUp.newLevel);
-          setWinsAtLevel(0);
+          setSubProgress(0);
         } else {
           runLevelUpAnimation(pendingLevelUp.oldLevel, pendingLevelUp.newLevel);
         }
@@ -769,8 +761,6 @@ export default function PlayRookiePage() {
       speech.queueLandingQuip({
         breadcrumb: consumeBreadcrumb(),
         gamesPlayed: mem.gamesPlayed,
-        winsAtLevel,
-        winsNeeded: WINS_TO_ADVANCE,
       }).then((line) => {
         if (line) {
           PlayEvents.quipShown('landing', line);
@@ -779,7 +769,7 @@ export default function PlayRookiePage() {
     }, 0);
 
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [phase, user?.id, rookieLevel, winsAtLevel, runLevelUpAnimation, speech]);
+  }, [phase, user?.id, rookieLevel, runLevelUpAnimation, speech]);
 
   // ── 6-layer narrative processing (runs alongside existing speech system) ──
   const processNarrative = useCallback(async (
@@ -1033,19 +1023,27 @@ export default function PlayRookiePage() {
     pendingPostGameRef.current = postGameResult;
     lastResultForTrackingRef.current = postGameResult;
 
-    // Progression only counts when playing at your unlocked level (no farming at lower levels).
-    if (result === 'win' && rookieLevel === unlockedLevel && unlockedLevel < 10) {
-      const newWins = winsAtLevel + 1;
-      if (newWins >= WINS_TO_ADVANCE) {
-        const newLevel = unlockedLevel + 1;
-        // localStorage written now so refresh keeps the new level; React state is committed by the setup-phase animation.
-        pendingLevelUpRef.current = { oldLevel: unlockedLevel, newLevel };
-        saveLevelProgress(newLevel, 0);
+    // Record the game against the Rookie rating. EVERY result counts, at
+    // whatever level was played — a win moves it up, a loss moves it down, and
+    // the level follows the rating. There is nothing to farm: beating a level
+    // far below you barely moves an Elo, and losing to one costs you.
+    const scored: 'win' | 'loss' | 'draw' =
+      result === 'win' ? 'win' : result === 'draw' ? 'draw' : 'loss';
+    const levelPlayed = rookieLevel;
+    void recordGameResult(levelPlayed, scored).then((update) => {
+      setSubProgress(levelProgress(update));
+      setLevelProvisional(update.provisional);
+      if (update.change === 'up') {
+        // Celebrated on the setup screen, so the animation doesn't fight the
+        // result card for attention.
+        pendingLevelUpRef.current = { oldLevel: levelPlayed, newLevel: update.level };
       } else {
-        setWinsAtLevel(newWins);
-        saveLevelProgress(unlockedLevel, newWins);
+        // Down or same: no ceremony. Tyler, 2026-08-05 — she eases off
+        // silently; a visible demotion reads as punishment.
+        setMatchedLevel(update.level);
+        setRookieLevel(update.level);
       }
-    }
+    });
 
     // Analyze game for review — always works, even without login
     const moves = moveLogRef.current;
@@ -2065,16 +2063,15 @@ export default function PlayRookiePage() {
         <div className="px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto">
           <div className="relative">
             <LevelProgressBar
-              currentLevel={levelBarAnim ? levelBarAnim.level : unlockedLevel}
+              currentLevel={levelBarAnim ? levelBarAnim.level : matchedLevel}
               playingLevel={rookieLevel}
-              winsAtLevel={levelBarAnim ? levelBarAnim.wins : winsAtLevel}
+              subProgress={levelBarAnim ? levelBarAnim.sub : subProgress}
               animDurationMs={levelBarAnim ? levelBarAnim.duration : 700}
               celebrate={!!levelBarAnim}
               onPickLevel={(lvl) => {
-                // In prod: only let user pick ≤ unlocked level (no farming, no skipping ahead).
-                // Dev: any level.
-                const isDev = process.env.NODE_ENV === 'development';
-                if (!isDev && lvl > unlockedLevel) return;
+                // Rookie picks the level now — she matches your rating. The bar
+                // is read-only in production; dev can still jump around to test.
+                if (process.env.NODE_ENV !== 'development') return;
                 setRookieLevel(lvl);
               }}
             />
@@ -2115,9 +2112,9 @@ export default function PlayRookiePage() {
               </div>
             </div>
 
-            {/* Wins progress */}
+            {/* How Rookie's difficulty is set */}
             <div className="flex justify-center">
-              <WinsIndicator wins={winsAtLevel} needed={WINS_TO_ADVANCE} nextLevel={rookieLevel + 1} />
+              <MatchNote level={matchedLevel} provisional={levelProvisional} />
             </div>
 
             {/* Color picker */}

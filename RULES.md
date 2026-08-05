@@ -1141,7 +1141,33 @@ The raw `Chessboard` component ships with default piece styling and no board col
 - **Storage (CHE-375):** `profiles.estimated_elo` + `profiles.elo_updated_at`. Reads catch up incrementally — only events newer than the watermark are folded in; a NULL value triggers one full replay that seeds the column. Never recompute the full history on a hot path.
 - **API:** `GET /api/profile/elo` (and the dashboard route) return `{ current, events, series }` — `current` is always caught-up, `series` is a 5-min-cached full replay with today's point patched to `current`. The `?fresh=1` param is accepted but is a no-op.
 - **Display (CHE-385):** the honest estimate is THE Chess Path ELO everywhere — every surface's headline number is `current` (popup = profile, always identical) and graphs plot the real `series` (dips included; the popup day-fills it via `chessPathEloSeries`, whole journey). NEVER apply a monotonic/running-max/ratchet transform — it desyncs surfaces and renders flat lines. Encouragement lives in copy only: a down day hides the "+N today" badge (gate on `> 0`), never shows a red negative.
-- The stored value is cosmetic (not used for gating or matchmaking). Puzzles still have their own ELO ratings (400-2300) for difficulty selection.
+- The stored value is cosmetic (not used for gating). Puzzles still have their own ELO ratings (400-2300) for difficulty selection.
+
+### 20b. Rookie rating (matchmaking) — DIFFERENT NUMBER, DIFFERENT JOB
+
+**Chess Path ELO does NOT drive matchmaking.** A separate **Rookie rating** does. Two numbers, two jobs, one shared update step — never merge them, and never add a third.
+
+| | Chess Path ELO | Rookie rating |
+|---|---|---|
+| Job | display / legible progress | how hard Rookie plays |
+| Fed by | puzzles **and** games | games vs Rookie only |
+| Lives | `profiles.estimated_elo` | `profiles.rookie_rating` |
+| Code | `lib/elo/profile-elo.ts` | `lib/rookie/rating.ts` |
+
+- **Seeded** from Chess Path ELO on first read, then moved only by games. Backfilled from `game_sessions` (`rookie_difficulty` + `result`) — no migration needed.
+- **Both directions.** A loss lowers it. That is deliberate: the level is derived from the rating on every read (`matchLevel`, `lib/rookie/matchmaking.ts`), so a falling rating is how Rookie eases off. There is no separate demotion rule, and nothing to keep in sync.
+- **`HANDICAP_ELO = 70`** — Rookie aims that far below you, which puts the player at about a 60% win rate. One constant; retune it to change how hard the whole app feels.
+- **The level is never accepted from a client.** It used to come from localStorage, and bout points scale with it (`/api/bout/finish`) — sending `level: 10` bought a 1.6x multiplier. Server derives it, always.
+- **`WINS_TO_ADVANCE` is gone.** "Win 3 to unlock the next level" could only ratchet up: a lucky run stranded you above your strength permanently. Do not reintroduce a win counter alongside the rating.
+- Client reads go through `lib/rookie/level-client.ts` (`getRookieLevel` / `peekRookieLevel`) — never fetch the endpoint or read the localStorage key directly.
+
+### 20c. The level ladder must be MEASURED
+
+`ROOKIE_LEVELS[n].elo` is fed into `applyEloEvent` as the **opponent rating** for every Rookie game, by both ratings above. Invented numbers there silently skew every user's rating.
+
+- Measure with `/test/calibrate` (`lib/rookie/calibrate.ts`): one absolute anchor against Maia inside its honest 1100-1900 band, plus adjacent-pair matches solved outward from it. Maia below ~1100 is extrapolation, and a 0/60 score is not a measurement.
+- Paste results in as constants with the date and sample size. **Never compute the ladder at runtime.**
+- Re-run whenever an engine config in `ENGINE_CONFIGS` changes.
 
 ---
 

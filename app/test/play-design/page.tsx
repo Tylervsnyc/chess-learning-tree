@@ -8,10 +8,13 @@ import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { warmupAudio } from '@/lib/sounds';
 import {
   ROOKIE_LEVELS,
-  WINS_TO_ADVANCE,
   getContextualGreeting,
   type GreetingContext,
 } from '@/lib/rookie-levels';
+
+// Prototype page — keeps its own copy now that production has no win counter
+// (Rookie is matched to your rating; see RULES.md §20b).
+const WINS_TO_ADVANCE = 3;
 
 // ════════════════════════════════
 // LEVEL PROGRESS BAR

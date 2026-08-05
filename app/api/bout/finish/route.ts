@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { periodStartISO } from '@/lib/leaderboard/period';
+import { getRookieRating, applyGameResult } from '@/lib/rookie/rating';
+import { matchLevel } from '@/lib/rookie/matchmaking';
+import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import {
   boutPoints,
   boutResult,
@@ -21,7 +24,7 @@ import {
  *   outcome: BoutOutcome,
  *   roundsSurvived: number,   // boxing rounds reached the bell in
  *   moves: number,
- *   level: number,
+ *   // NOTE: no `level` — the server derives it (see below).
  *   format: BoutFormat,       // sparring | standard | championship
  *   clockLeftSeconds: number,
  *   finalFen?: string,
@@ -57,6 +60,9 @@ import {
 
 // Even the 6-chess-round Championship card can't run past this.
 const MAX_MOVES = 400;
+
+/** Fight-record bucket → Elo score for the Rookie rating. */
+const RATING_SCORE = { win: 1, draw: 0.5, loss: 0 } as const;
 
 const OUTCOMES: readonly BoutOutcome[] = [
   'ko_win',
@@ -105,7 +111,6 @@ export async function POST(request: NextRequest) {
 
   const roundsSurvived = clampInt(body.roundsSurvived, boxingRounds);
   const moves = clampInt(body.moves, MAX_MOVES);
-  const level = Math.max(1, Math.min(10, clampInt(body.level, 10) || 1));
   const clockLeftSeconds = clampInt(body.clockLeftSeconds, bankSeconds(format));
   const finalFen = typeof body.finalFen === 'string' ? body.finalFen.slice(0, 120) : null;
   const clientSessionId =
@@ -116,6 +121,13 @@ export async function POST(request: NextRequest) {
   const result = boutResult(outcome);
 
   const svc = createServiceClient();
+
+  // LEVEL IS NOT ACCEPTED FROM THE CLIENT. Bout points scale with Rookie's
+  // level, and the client's level came from editable localStorage — sending
+  // `level: 10` would have bought a 1.6x multiplier on every ranked bout. The
+  // server derives it from the user's Rookie rating instead.
+  const { rating } = await getRookieRating(svc, user.id);
+  const level = matchLevel(rating, FIGHT_MAX_LEVEL).level;
 
   // Idempotency: if this bout already landed (double-tap, retry, flaky
   // network), return the existing row instead of writing a second one.
@@ -190,6 +202,12 @@ export async function POST(request: NextRequest) {
     console.error('bout finish insert failed', error);
     return NextResponse.json({ error: 'write failed' }, { status: 500 });
   }
+
+  // A bout is a full game against Rookie, so it moves the Rookie rating like
+  // any other — otherwise a player who only ever fights bouts would never have
+  // her difficulty adapt. Folded HERE rather than from the client so it can't
+  // be replayed, and only on a fresh row (the duplicate path returns above).
+  await applyGameResult(svc, user.id, level, RATING_SCORE[result]);
 
   return NextResponse.json({ ok: true, boutId: data.id as string, points, result, ranked });
 }
