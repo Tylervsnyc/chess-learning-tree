@@ -8,6 +8,7 @@ import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
 import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
 import { NativeSplash } from '@/components/chessboxing/NativeSplash';
 import { BoxTabBar } from '@/components/chessboxing/BoxTabBar';
+import { StatusBarSync } from '@/components/chessboxing/StatusBarSync';
 import { NativeHomeRedirect } from '@/components/chessboxing/NativeHomeRedirect';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
@@ -100,6 +101,7 @@ export default function RootLayout({
             </main>
             <SilentErrorBoundary label="BoxTabBar">
               <BoxTabBar />
+              <StatusBarSync />
             </SilentErrorBoundary>
           </PostHogProvider>
         </Suspense>

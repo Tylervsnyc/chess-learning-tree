@@ -28,10 +28,10 @@ const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding'];
  * belong to the Train tab.
  */
 const TABS = [
-  { href: '/box', label: 'Chess Box', icon: GloveIcon, match: [] as string[] },
-  { href: '/box/train', label: 'Train', icon: TargetIcon, match: ['/solve', '/path', '/openings', '/lesson'] },
-  { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[] },
-  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'] },
+  { href: '/box', label: 'Chess Box', icon: GloveIcon, match: [] as string[], color: '#FF4B4B', tint: 'rgba(255,75,75,0.12)' },
+  { href: '/box/train', label: 'Train', icon: TargetIcon, match: ['/solve', '/path', '/openings', '/lesson'], color: '#CE82FF', tint: 'rgba(206,130,255,0.14)' },
+  { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[], color: '#58CC02', tint: 'rgba(88,204,2,0.12)' },
+  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'], color: '#1CB0F6', tint: 'rgba(28,176,246,0.12)' },
 ] as const;
 
 export function BoxTabBar() {
@@ -55,7 +55,7 @@ export function BoxTabBar() {
       className="fixed bottom-0 inset-x-0 z-40 bg-chess-surface border-t border-slate-200 pb-[env(safe-area-inset-bottom)]"
     >
       <div className="max-w-lg mx-auto flex">
-        {TABS.map(({ href, label, icon: Icon, match }) => {
+        {TABS.map(({ href, label, icon: Icon, match, color, tint }) => {
           const active =
             pathname === href ||
             (href !== '/box' && pathname?.startsWith(`${href}/`)) ||
@@ -64,12 +64,27 @@ export function BoxTabBar() {
             <Link
               key={href}
               href={href}
-              className={`flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[52px] pt-1.5 pb-1 tap-highlight ${
-                active ? 'text-[#e5484d]' : 'text-chess-text-muted'
-              }`}
+              className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[52px] pt-1.5 pb-1 tap-highlight text-chess-text-muted"
             >
-              <Icon />
-              <span className="text-[10px] font-bold leading-none">{label}</span>
+              {/* Every tab keeps its color; inactive ones just dim. Active gets
+                  a tinted pill behind the icon — playful, Duolingo-style. */}
+              <span
+                className="flex items-center justify-center w-12 h-7 rounded-full transition-all"
+                style={{
+                  background: active ? tint : 'transparent',
+                  color,
+                  opacity: active ? 1 : 0.55,
+                  transform: active ? 'scale(1.08)' : 'scale(1)',
+                }}
+              >
+                <Icon />
+              </span>
+              <span
+                className="text-[10px] font-bold leading-none"
+                style={{ color: active ? color : undefined, opacity: active ? 1 : 0.75 }}
+              >
+                {label}
+              </span>
             </Link>
           );
         })}

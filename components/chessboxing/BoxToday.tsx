@@ -57,12 +57,13 @@ export function BoxToday() {
         className="absolute inset-0 mx-auto max-w-lg md:max-w-xl overflow-hidden"
         style={{ containerType: 'size' }}
       >
-        {/* Cover fit: whichever of width/height is the binding constraint wins,
-            so the scene always fills the window and crops the rest. */}
+        {/* Contain fit: the WHOLE scene stays visible (cover-cropping zoomed it
+            painfully on phones); the letterbox is the same navy as the locker
+            frame so the seams disappear. */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
-            width: 'max(100cqw, calc(100cqh * 1024 / 1536))',
+            width: 'min(100cqw, calc(100cqh * 1024 / 1536))',
             aspectRatio: '1024 / 1536',
           }}
         >

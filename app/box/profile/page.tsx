@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { getStreak, getTz, type StreakData } from '@/lib/streak-client';
+import RookieCampfire from '@/components/shared/RookieCampfire';
+import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
 
 /**
  * /box/profile — the Chess Boxing app's Profile tab. A compact, no-scroll
@@ -32,6 +34,7 @@ interface DashboardData {
     workoutPoints: number;
   };
   elo?: { current: number; events: number };
+  week?: WeekData;
 }
 
 export default function BoxProfilePage() {
@@ -98,29 +101,41 @@ export default function BoxProfilePage() {
           </Link>
         </div>
 
-        {/* Streak hero */}
+        {/* Streak hero — same campfire as the website profile */}
         <div className="shrink-0 rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-4 py-3 flex items-center gap-4">
-          <div
-            className={`text-5xl font-black tabular-nums leading-none ${
-              streak && streak.completedToday ? 'text-chess-green' : 'text-chess-text'
-            }`}
-          >
-            {streak ? streak.current : '—'}
+          <div className="shrink-0">
+            <RookieCampfire
+              blockSize={11}
+              active={!!streak && streak.completedToday}
+              blaze={Math.max(0.3, Math.min(1, (streak?.current ?? 0) / 60))}
+            />
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+            <div
+              className={`text-4xl font-black tabular-nums leading-none ${
+                streak && streak.completedToday ? 'text-chess-green' : 'text-chess-text'
+              }`}
+            >
+              {streak ? streak.current : '—'}
+            </div>
+            <div className="text-[10px] font-black uppercase tracking-wide text-chess-text-muted mt-1">
               Day streak
             </div>
-            <div className="text-sm font-bold text-chess-text truncate">
+            <div className="text-xs font-bold text-chess-text truncate">
               {streak
                 ? streak.completedToday
-                  ? 'Done today. Keep the chalk coming.'
+                  ? 'Done today. The fire stays lit.'
                   : streak.current > 0
                     ? 'Alive — finish one thing today.'
                     : 'Finish anything today to start it.'
-                : ' '}
+                : ' '}
             </div>
           </div>
+        </div>
+
+        {/* The week, in bars — the same chart as the website profile */}
+        <div className="shrink-0">
+          <WeekChart data={dash?.week ?? null} loading={dash === null} />
         </div>
 
         {/* Fight record — hidden until there's a bout, no wall of zeros */}
@@ -140,19 +155,19 @@ export default function BoxProfilePage() {
           </div>
         )}
 
-        {/* Lifetime tiles */}
-        <div className="flex-1 min-h-0 grid grid-cols-2 gap-3 content-start">
-          <Tile label="Chess Path ELO" value={dash?.elo ? String(dash.elo.current) : '—'} />
+        {/* Lifetime tiles — one compact row so the whole card fits an SE */}
+        <div className="flex-1 min-h-0 grid grid-cols-4 gap-2 content-start">
+          <Tile label="ELO" value={dash?.elo ? String(dash.elo.current) : '—'} />
           <Tile
-            label="Workout points"
+            label="Points"
             value={dash?.stats ? dash.stats.workoutPoints.toLocaleString() : '—'}
           />
           <Tile
-            label="Puzzles solved"
+            label="Puzzles"
             value={dash?.stats ? dash.stats.puzzlesSolved.toLocaleString() : '—'}
           />
           <Tile
-            label="Games played"
+            label="Games"
             value={dash?.stats ? dash.stats.gamesPlayed.toLocaleString() : '—'}
           />
         </div>
@@ -163,8 +178,8 @@ export default function BoxProfilePage() {
 
 function Tile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-3 py-3 text-center min-w-0">
-      <div className="text-2xl font-black tabular-nums text-chess-text">{value}</div>
+    <div className="rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-2 py-2.5 text-center min-w-0">
+      <div className="text-lg font-black tabular-nums text-chess-text truncate">{value}</div>
       <div className="text-[10px] font-black uppercase tracking-wide text-chess-text-muted truncate">
         {label}
       </div>
