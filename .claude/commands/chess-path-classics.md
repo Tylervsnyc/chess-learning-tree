@@ -29,7 +29,52 @@ Reference files (episode 1):
 
 ---
 
+## 0. SOURCE REEL GATE — do this FIRST, or STOP (Tyler, 2026-07-31, hard rule)
+
+**You may not write a single line of script until you have a specific, real,
+proven reel to model.** A Classics episode written from scratch (imagined
+"in our voice" with no reference) is a DEFECT — it looks AI-written, and the
+funnel proves it: the two cold-written episodes (Marshall, and the first King &
+Rook attempt) were the account's worst-performing posts. This is not optional
+polish; it is the gate.
+
+Before touching the chess or the script, you MUST have all three, written into
+the ledger's **Source reel** field for this episode:
+
+1. **A real reel URL** — a specific TikTok / IG / YouTube Short that actually
+   exists and that you found (WebSearch / browsing), NOT a genre ("a GothamChess
+   K+R reel") and NOT from memory. Paste the link.
+2. **Proof it's a hit** — its view/like count (or the creator's typical reach),
+   showing it earned distribution. Thinly-viewed = keep looking.
+3. **Its structure captured** — the transcript + beat map (use the
+   reference-video pipeline in §1: ask Tyler → yt-dlp → align-voice transcript →
+   tiled board frames). This is the thing you rebuild in Rookie's voice.
+
+**If you cannot find a real, proven reel for the subject, STOP and tell Tyler.
+Do NOT invent a script to keep moving.** Either Tyler points you at a reel, or
+you pick a different subject that has one. "Modeled on GothamChess" in the ledger
+means nothing unless it's a real link with views next to it.
+
+Only once the Source reel field is filled do you proceed to §1.
+
+---
+
 ## 1. Pick + verify the chess
+
+**CHECK THE CONTENT LEDGER FIRST (Tyler, 2026-07-21):**
+`data/growth/classics-content-ledger.md` records every subject we've already made
+a video about (Classics episodes AND older one-off reels — e.g. the Opera Game
+was already made as a June meme reel). NEVER remake a subject that's in the
+ledger. Update the ledger every time an episode is built or posted.
+
+**ANCHOR EVERY EPISODE ON A PROVEN VIRAL REEL (Tyler, 2026-07-20).** Do not pick
+positions on vibes for being "epic" — pick positions that ALREADY have a
+high-performing short-form reel, then rebuild that reel's structure/hook/pacing
+in Rookie's voice + our teach-the-logic layer. The reference-video path below is
+the DEFAULT, not a fallback. Marshall's Golden Queen underperformed precisely
+because it was the one position with no confirmed breakout reel. Prefer the
+most heavily-reeled stories; deprioritize thinly-covered positions. ADAPT
+STRUCTURE, NEVER verbatim lines — re-voice everything (ethics + IG originality).
 
 Good episodes: famous studies (Saavedra, Réti, Lucena, Philidor), famous games
 (Opera Game, Immortal Game), famous ideas (windmill, smothered mate). The hook
@@ -92,6 +137,26 @@ never reuse the creator's signature phrases or script.
   not. No redundant beats — if a fact was just shown, don't restate it.
 - **One star idea per episode** gets the most narration time (Saavedra: the
   king walk got 3 beats). Name it explicitly ("the quiet star move").
+- **TEACH THE LOGIC, NOT JUST THE MOVES (the thing that makes these work —
+  Tyler, 2026-07-20).** A move list is not teaching. Every episode's key moment
+  must EXPLAIN the reasoning, in this shape:
+  1. **The dream** — state what the winning side WANTS and why it would win
+     ("Bishop to e7 would be checkmate"). Show it: light the escape/attacked
+     squares around the target with `redSquares`/`yellowSquares`, and draw the
+     wished-for move as an arrow. Let the viewer SEE the mating net.
+  2. **The obstacle** — name the one thing that stops it ("but the knight on g8
+     defends e7"). Show the defender's job with an arrow to the square it guards.
+  3. **The technique** — name the idea that removes the obstacle and USE the
+     word: overload, deflection, decoy, clearance, interference, zugzwang,
+     removing-the-defender. ("So White overloads that knight...")
+  4. **The payoff** — the move lands, and a closing beat names the lesson
+     ("That is the real idea: an overload — the knight had two jobs and could
+     only do one.").
+  This usually adds 3–5 beats around the climax (Immortal ep. 4 went from a
+  4-move finish to dream→guard→overload→deflection→mate). Longer is fine — the
+  teaching IS the product. Lean on arrows + red/yellow highlights so the logic
+  is visible, never just spoken. Don't narrate a brilliant move without saying
+  WHY it works.
 - **TTS conventions:** spell numbers out ("one hundred and thirty years"),
   "chess path dot app", no decimals, squares as plain text ("c7" reads fine).
   Write "It is / cannot" over contractions when the line should land slowly.
@@ -142,6 +207,18 @@ The factory handles automatically — do NOT rebuild these:
 
 Details:
 
+- **RULE — show EVERY move, never teleport (Tyler, 2026-07-28).** Do NOT jump
+  the board forward to a later position with a `silent` state (e.g. "moves 26-34
+  compressed"). It's disorienting. If a stretch is just technique, show all of
+  it as real move states, sped up — pack the half-moves into the same narration
+  segment at closely-spaced fracs (the board snaps + clicks per move = a fast
+  replay). `silent` is ONLY for REWINDING to a failed variation, never for
+  skipping moves in the main line. Generate the FENs with a chess.js replay
+  (see `scripts/_tmp`-style one-off), never by hand.
+- **RULE — open on the last move, not a static board (Tyler, 2026-07-28).** The
+  first board state (the recap/hook FEN) must carry the `from`/`to`/`label` of
+  the move that led INTO that position, so the board animates it in rather than
+  appearing frozen. (Part 2 opens by playing 23...axb6 onto the start FEN.)
 - **Board states** are explicit `{ seg, frac, fen, from, to, label }` — frac is
   the fraction through that voice segment when the move lands. Explicit FENs
   (not cumulative SAN) so the board can REWIND to show failed variations.
@@ -158,6 +235,12 @@ Details:
   every move (`'6. c8=R!!'`).
 - **Title badge** = `Chess Path Classics · <Position Name>` (nowrap, fontSize
   27 fits ~45 chars).
+- **Cover card** = pass `cover: '<Short Name>'` (e.g. "Smothered Mate") in the
+  buildReel opts. The factory renders a full-screen title card for the first
+  ~1.6s (48 frames) — "CHESS PATH CLASSICS" pill + big bold name + orange accent
+  + chesspath logo — which also becomes the IG feed thumbnail. Every episode
+  MUST set `cover` (Tyler, 2026-07-21). Keep the name short (2-3 words) so the
+  128px title fits.
 - Register the composition in `remotion/Root.tsx`; duration comes from the
   exported total.
 
@@ -225,6 +308,8 @@ Close the task once the post is confirmed live.
 | 1 | The Saavedra Position (1895) | `SaavedraTeachReel` | 2026-07-17 | 18601938340033459 |
 | 2 | Zugzwang — A. Gurvich study (1959) | `ZugzwangReel` | 2026-07-18 | 18365382673244370 |
 | 3 | The Two-Pawn Checkmate (sacrifice cascade) | `ChosenOneReel` | 2026-07-19 | 17975966700100774 |
+| 4 | The Immortal Game (1851) — overload finish | `ImmortalReel` | 2026-07-20 | 18100647899189410 |
+| 5 | The Smothered Mate — modeled on GothamChess + cover card | `SmotheredReel` | 2026-07-21 | 18430511449126721 |
 
 Format note (Tyler, 2026-07-18): part of the fun is REVELING in the
 impossibility — show all the variations, take your time. The short formula is

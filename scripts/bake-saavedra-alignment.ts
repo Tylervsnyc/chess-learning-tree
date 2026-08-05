@@ -27,6 +27,12 @@ const VOICE_DIRS = [
   'public/remotion/marshall-voice',
   'public/remotion/smothered-voice',
   'public/remotion/legal-voice',
+  'public/remotion/century-voice',
+  'public/remotion/century2-voice',
+  'public/remotion/pawns-destiny-voice',
+  'public/remotion/krk-voice',
+  'public/remotion/knightmare-voice',
+  'public/remotion/hikaru-trap-voice',
 ];
 
 interface AlignedWord {

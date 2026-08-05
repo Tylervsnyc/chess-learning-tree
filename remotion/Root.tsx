@@ -33,6 +33,12 @@ import { ImmortalReel, IMMORTAL_TOTAL } from './ImmortalReel';
 import { MarshallReel, MARSHALL_TOTAL } from './MarshallReel';
 import { SmotheredReel, SMOTHERED_TOTAL } from './SmotheredReel';
 import { LegalReel, LEGAL_TOTAL } from './LegalReel';
+import { CenturyReel, CENTURY_TOTAL } from './CenturyReel';
+import { CenturyReel2, CENTURY2_TOTAL } from './CenturyReel2';
+import { PawnsDestinyReel, PAWNS_DESTINY_TOTAL } from './PawnsDestinyReel';
+import { KingRookReel, KING_ROOK_TOTAL } from './KingRookReel';
+import { KnightmareReel, KNIGHTMARE_TOTAL } from './KnightmareReel';
+import { HikaruTrapReel, HIKARU_TRAP_TOTAL } from './HikaruTrapReel';
 import { DataRiverDailyReel, DATA_RIVER_DAILY_TOTAL } from './DataRiverDailyReel';
 import { DataRiverWomensDailyReel, DATA_RIVER_WOMENS_DAILY_TOTAL } from './DataRiverWomensDailyReel';
 import {
@@ -162,6 +168,54 @@ export const Root: React.FC = () => {
         id="LegalReel"
         component={LegalReel}
         durationInFrames={LEGAL_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="CenturyReel"
+        component={CenturyReel}
+        durationInFrames={CENTURY_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="CenturyReel2"
+        component={CenturyReel2}
+        durationInFrames={CENTURY2_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="PawnsDestinyReel"
+        component={PawnsDestinyReel}
+        durationInFrames={PAWNS_DESTINY_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="KingRookReel"
+        component={KingRookReel}
+        durationInFrames={KING_ROOK_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="KnightmareReel"
+        component={KnightmareReel}
+        durationInFrames={KNIGHTMARE_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
+      />
+      <Composition
+        id="HikaruTrapReel"
+        component={HikaruTrapReel}
+        durationInFrames={HIKARU_TRAP_TOTAL}
         fps={FPS}
         width={FRAME_W}
         height={FRAME_H}

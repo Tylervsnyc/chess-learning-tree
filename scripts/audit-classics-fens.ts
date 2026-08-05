@@ -59,6 +59,63 @@ const LEG = 'rn1qkbnr/ppp2ppp/3p4/4p3/2B1P1b1/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4'
 replay(LEG, ['Nc3', 'g6', 'Nxe5', 'Bxd1', 'Bxf7+', 'Ke7', 'Nd5#']);
 replay(LEG, ['Nc3', 'g6', 'Nxe5', 'dxe5', 'Qxg4']); // the declined branch
 
+// No. 7 — The Game of the Century (1956): reel opens at 16.Bc5 (attacking the
+// b6 queen), Fischer ignores it (16...Rfe8+ 17.Kf1), the queen offer 17...Be6,
+// then the windmill Ne2+/Nxd4+/Ne2+/Nc3+, ending at 23...axb6.
+const CEN = 'r4rk1/pp2Bpbp/1qp3p1/8/2BP2b1/Q1n2N2/P4PPP/3RK2R w K - 0 16';
+replay(CEN, ['Bc5', 'Rfe8+', 'Kf1', 'Be6', 'Bxb6', 'Bxc4+', 'Kg1', 'Ne2+', 'Kf1', 'Nxd4+', 'Kg1', 'Ne2+', 'Kf1', 'Nc3+', 'Kg1', 'axb6']);
+
+// No. 7 PART 2 — the finish: consolidation (24-34) + the mating-net king hunt
+// (35...Bc5+ ... 41...Rc2#). Reel opens after 23...axb6.
+const CEN2 = 'r3r1k1/1p3pbp/1pp3p1/8/2b5/Q1n2N2/P4PPP/3R2KR w - - 0 24';
+replay(CEN2, [
+  'Qb4', 'Ra4', 'Qxb6', 'Nxd1', 'h3', 'Rxa2', 'Kh2', 'Nxf2', 'Re1', 'Rxe1',
+  'Qd8+', 'Bf8', 'Nxe1', 'Bd5', 'Nf3', 'Ne4', 'Qb8', 'b5', 'h4', 'h5',
+  'Ne5', 'Kg7', 'Kg1', 'Bc5+', 'Kf1', 'Ng3+', 'Ke1', 'Bb4+', 'Kd1', 'Bb3+',
+  'Kc1', 'Ne2+', 'Kb1', 'Nc3+', 'Kc1', 'Rc2#',
+]);
+
+// No. 8 — Pawns of Destiny: two connected passed pawns (a7 + h6) beat a rook
+// by a full-board king walk. Verified tablebase-perfect (Lichess 5-piece TB).
+const PWN = '8/8/P6P/8/8/8/1r6/K1k5 w - - 0 1'; // Ka1, Pa6, Ph6 vs Kc1, Rb2
+replay(PWN, [
+  'a7', 'Rb1+', 'Ka2', 'Rb2+', 'Ka3', 'Kb1', 'h7', 'Ra2+', 'Kb3', 'Rb2+',
+  'Ka4', 'Ra2+', 'Kb5', 'Rb2+', 'Kc6', 'Rc2+', 'Kd7', 'Rd2+', 'Ke7', 'Re2+',
+  'Kf7', 'Rf2+', 'Kg6', 'Rg2+', 'Kh5', 'Ra2', 'Kg4', 'Ra4+', 'Kf3', 'Ra3+',
+  'Ke2', 'Ra2+', 'Ke1', 'Rxa7', 'h8=Q',
+]);
+// the a8=Q?? skewer refutation, shown after 6...Kb1
+replay('8/P7/7P/8/8/K7/1r6/1k6 w - - 0 4', ['a8=Q', 'Ra2+']);
+// the center-blunder demo shown live: from the check position (after 5...Rb2+)
+// White strays with Kc3??, Black checks Rc2+, king runs Kd3, rook swings to the
+// back rank Rc8 and rakes both queening squares — verified draw.
+replay('8/P6P/8/8/8/1K6/1r6/1k6 w - - 3 6', ['Kc3', 'Rc2+', 'Kd3', 'Rc8']);
+
+// No. 10 — King & Rook Checkmate (modeled on GothamChess). Stockfish-perfect
+// line; star = the BACKWARDS waiting move Rf1 (Rf8+ hangs the rook, Kxf8 draw).
+replay('8/8/5k2/R7/5K2/8/8/8 w - - 0 1', [
+  'Re5', 'Kg6', 'Rf5', 'Kh6', 'Rf6+', 'Kg7', 'Kg5', 'Kh7', 'Rf7+', 'Kh8',
+  'Kg6', 'Kg8', 'Rf1', 'Kh8', 'Rf8#',
+]);
+replay('6k1/5R2/6K1/8/8/8/8/8 w - - 0 1', ['Rf8+', 'Kxf8']); // the premature-check trap
+
+// No. 11 — The Two Knights (source: @pietrocheckmate "Knightmare.").
+// Black to move and win vs a queening pawn; verified by verify-knightmare.ts.
+const KNM = 'K7/PN3k2/4n3/8/2n5/8/8/8 b - - 0 1';
+replay(KNM, ['Nc7+', 'Kb8', 'Na6+', 'Ka8', 'Nb6#']); // corner demo
+replay(KNM, ['Nc7+', 'Kb8', 'Na6+', 'Kc8', 'Ke8', 'a8=Q', 'Nb6#']); // queen demo
+replay(KNM, ['Nc7+', 'Kb8', 'Na6+', 'Kc8', 'Ke8', 'a8=N', 'Ke7', 'Nc7', 'Nb6#']); // zugzwang demo 1
+replay(KNM, ['Nc7+', 'Kb8', 'Na6+', 'Kc8', 'Ke8', 'a8=N', 'Ke7', 'Nc5', 'Nd6#']); // zugzwang demo 2
+
+// No. 12 — Hikaru's Queen Sacrifice (PotapovaM–Nakamura, chess.com 2026-07-23,
+// game 179133472429; verified by verify-hikaru-trap.ts). Reel opens at 20...Rc8.
+const HIK = '2rq1rk1/5ppp/5n2/p2bN3/1bB2P2/8/1P3BPP/R2Q1RK1 w - - 3 21';
+replay(HIK, ['Ba6', 'Rc7', 'Bb6', 'Rc2', 'Bxd8', 'Bc5+', 'Rf2', 'Rxf2', 'Bxf6', 'Rxb2+', 'Kf1', 'Bxg2+', 'Ke1', 'Bf2#']);
+replay(HIK, ['Ba6', 'Rc7', 'Bb6', 'Rc2', 'Qxc2', 'Qxb6+']); // the poisoned rook
+replay(HIK, ['Ba6', 'Rc7', 'Bb6', 'Rc2', 'Bxd8', 'Rxg2+', 'Kh1', 'Rd2+', 'Nf3']); // the refuted grab
+replay(HIK, ['Ba6', 'Rc7', 'Bb6', 'Rc2', 'Bxd8', 'Bc5+', 'Kh1', 'Bxg2#']); // corner-mate demo 1
+replay(HIK, ['Ba6', 'Rc7', 'Bb6', 'Rc2', 'Bxd8', 'Bc5+', 'Rf2', 'Rxf2', 'Bxf6', 'Rxb2+', 'Kh1', 'Bxg2#']); // corner-mate demo 2
+
 const COMPS = [
   'remotion/SaavedraReel.tsx',
   'remotion/ZugzwangReel.tsx',
@@ -67,6 +124,12 @@ const COMPS = [
   'remotion/MarshallReel.tsx',
   'remotion/SmotheredReel.tsx',
   'remotion/LegalReel.tsx',
+  'remotion/CenturyReel.tsx',
+  'remotion/CenturyReel2.tsx',
+  'remotion/PawnsDestinyReel.tsx',
+  'remotion/KingRookReel.tsx',
+  'remotion/KnightmareReel.tsx',
+  'remotion/HikaruTrapReel.tsx',
 ];
 
 let bad = 0;
