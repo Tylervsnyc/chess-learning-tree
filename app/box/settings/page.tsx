@@ -9,7 +9,7 @@ import { BoxSettings } from '@/components/chessboxing/BoxSettings';
 
 export const metadata: Metadata = {
   title: 'Settings — Chess Boxing',
-  description: 'Your handle, crew, camera and leaderboard settings.',
+  description: 'Your handle, crew and leaderboard settings.',
 };
 
 export default function BoxSettingsPage() {

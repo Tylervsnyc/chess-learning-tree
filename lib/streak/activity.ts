@@ -47,15 +47,23 @@ async function fetchUserTimestamps(
   return out;
 }
 
-/** The four finished-unit tables — mirrors /api/workout/streak. */
+/**
+ * The finished-unit tables — mirrors /api/workout/streak. Chess Boxing bouts
+ * are read best-effort: the table is created by hand on the live DB, so a
+ * missing bout_sessions degrades to "no bouts" instead of failing every cron.
+ */
 async function fetchCompletionRows(supabase: SupabaseClient): Promise<TsRow[]> {
-  const [lessons, games, workouts, openings] = await Promise.all([
+  const [lessons, games, workouts, openings, bouts] = await Promise.all([
     fetchUserTimestamps(supabase, 'lesson_progress', 'completed_at'),
     fetchUserTimestamps(supabase, 'game_sessions', 'ended_at', (q) => q.not('ended_at', 'is', null)),
     fetchUserTimestamps(supabase, 'workout_sessions', 'created_at'),
     fetchUserTimestamps(supabase, 'opening_progress', 'completed_at'),
+    fetchUserTimestamps(supabase, 'bout_sessions', 'ended_at').catch((e) => {
+      console.warn('bout_sessions unavailable for activity derivation:', (e as Error).message);
+      return [] as TsRow[];
+    }),
   ]);
-  return [...lessons, ...games, ...workouts, ...openings];
+  return [...lessons, ...games, ...workouts, ...openings, ...bouts];
 }
 
 export interface UserActivity {

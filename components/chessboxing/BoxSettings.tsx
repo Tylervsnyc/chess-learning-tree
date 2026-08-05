@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 /**
  * BoxSettings — the Chess Boxing app's settings screen (/box/settings).
@@ -115,7 +116,9 @@ export function BoxSettings() {
                   <h2 className="font-black text-chess-text">Your fighter profile</h2>
                   <p className="text-sm text-chess-text-muted mt-1">
                     Sign in to pick a handle, join a crew, and appear on the
-                    leaderboards. Camera settings below work without an account.
+                    leaderboards.{FEATURE_FLAGS.WORKOUT_PUNCH_CAM
+                      ? ' Camera settings below work without an account.'
+                      : ''}
                   </p>
                 </div>
                 <Link
@@ -170,7 +173,7 @@ export function BoxSettings() {
               </section>
             )}
 
-            <CameraSection />
+            {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && <CameraSection />}
           </div>
         )}
       </div>

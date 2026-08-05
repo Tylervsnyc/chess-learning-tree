@@ -13,7 +13,12 @@
  * (PunchTracker camera counter); with the camera off, a tap-to-count pad keeps
  * the round playable (and doubles as the no-camera dev path).
  *
- * v1 scope: local state only — no DB writes, no leaderboard, no streak claim.
+ * v2 (2026-08-05): a finished bout is a real finished unit. On the result
+ * screen it POSTs to /api/bout/finish (idempotent per bout), which stores the
+ * row that feeds the streak, the leaderboard windows, and the fight record on
+ * /profile. The streak celebration is claimed through claimStreakToday() —
+ * the ONE trigger, from a completion screen, exactly as CHE-388 requires. A
+ * logged-out fighter still gets the full result screen; nothing is persisted.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -30,6 +35,7 @@ import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { BoutEvents } from '@/lib/analytics/posthog';
+import { claimStreakToday } from '@/lib/streak-client';
 import {
   warmupAudio,
   playButtonClick,
@@ -51,6 +57,7 @@ import {
   BOXING_ROUND_SECONDS,
   BOXING_PAR,
   rookieBoxingScore,
+  boutPoints,
   decideOnCards,
   fmtClock,
   pickLine,
@@ -77,6 +84,13 @@ interface BoutResult {
   punches: number;
   rookieLine: string;
   meltdown: boolean;
+  /** Frozen at the final bell so the result card and the share card agree. */
+  moves: number;
+  clockLeft: number;
+  points: number;
+  finalFen: string;
+  /** Idempotency key for /api/bout/finish — one per bout, not per render. */
+  boutKey: string;
 }
 
 export default function BoutPage() {
@@ -90,6 +104,17 @@ export default function BoutPage() {
   // ── Clocks ────────────────────────────────────────────────────────────────
   // userBank is the ONE real clock; rookieClock is flavor and never flags.
   const [userBank, setUserBank] = useState(USER_BANK_SECONDS);
+  // Mirror of userBank for the finish path — finishBout has no deps on purpose
+  // (it must never be re-created mid-bout), so it reads the clock off a ref.
+  const userBankRef = useRef(USER_BANK_SECONDS);
+  // One idempotency key per bout, minted in begin(). A retry or a double-tap
+  // on the result screen can never write a second row.
+  const boutKeyRef = useRef('');
+  // One persist attempt per bout (the effect can re-run on re-render).
+  const persistedRef = useRef(false);
+  // Points confirmed by the server — the client preview is the fallback.
+  const [savedPoints, setSavedPoints] = useState<number | null>(null);
+  const [sharing, setSharing] = useState(false);
   const [rookieClock, setRookieClock] = useState(ROOKIE_CLOCK_SECONDS);
 
   // ── Game (same shape as the workout's Fight Rounds) ───────────────────────
@@ -209,6 +234,11 @@ export default function BoutPage() {
         punches: punchesRef.current,
         rookieLine: line,
         meltdown,
+        moves: movesRef.current.length,
+        clockLeft: userBankRef.current,
+        points: boutPoints({ outcome, userCards, punches: punchesRef.current }),
+        finalFen: fenRef.current,
+        boutKey: boutKeyRef.current,
       });
       setPhase('done');
     },
@@ -512,9 +542,10 @@ export default function BoutPage() {
         if (turn === 'w' && !rookieThinkingRef.current) {
           // The ONE real clock. Zero = flagged = real loss.
           setUserBank((b) => {
-            const next = b - 1;
+            const next = Math.max(0, b - 1);
+            userBankRef.current = next;
             if (next <= 0) finishBout('flag_loss');
-            return Math.max(0, next);
+            return next;
           });
         } else if (rookieThinkingRef.current) {
           // Flavor only — ticks while she thinks, never reaches zero.
@@ -531,6 +562,49 @@ export default function BoutPage() {
     tauntedRef.current = true;
     setRookieLine(pickLine(BOUT_LINES.clockTaunt, movesRef.current.length));
   }, [phase, userBank]);
+
+  // ── Persist the bout, then claim the streak (Bout v2) ─────────────────────
+  // Order matters: the row must LAND before claimStreakToday() polls for it,
+  // otherwise the celebration slips to the next finished unit. Both are
+  // idempotent, so a re-render or a retry can't double-count anything.
+  // Logged-out fighters get a 401 here and simply keep their result screen.
+  useEffect(() => {
+    if (phase !== 'done' || !result || persistedRef.current) return;
+    persistedRef.current = true;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch('/api/bout/finish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            outcome: result.outcome,
+            userCards: result.userCards,
+            rookieCards: result.rookieCards,
+            punches: result.punches,
+            moves: result.moves,
+            level: levelRef.current,
+            clockLeftSeconds: result.clockLeft,
+            finalFen: result.finalFen,
+            clientSessionId: result.boutKey,
+          }),
+        });
+        if (!res.ok) return; // 401 logged-out, or a real failure — nothing to claim
+        const body = (await res.json()) as { ok?: boolean; points?: number };
+        if (cancelled) return;
+        if (typeof body.points === 'number') setSavedPoints(body.points);
+        // The bout is a finished unit — it can earn the day.
+        await claimStreakToday();
+      } catch {
+        /* offline / blocked — the bout still happened on screen */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, result]);
 
   // Confetti when the user wins the bout.
   useEffect(() => {
@@ -564,7 +638,12 @@ export default function BoutPage() {
     setRookieThinking(false);
     rookieThinkingRef.current = false;
     setUserBank(USER_BANK_SECONDS);
+    userBankRef.current = USER_BANK_SECONDS;
     setRookieClock(ROOKIE_CLOCK_SECONDS);
+    boutKeyRef.current =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `bout-${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
     userCardsRef.current = [];
     punchesRef.current = 0;
     segPunchBaseRef.current = 0;
@@ -573,6 +652,8 @@ export default function BoutPage() {
     finishedRef.current = false;
     tauntedRef.current = false;
     confettiFiredRef.current = false;
+    persistedRef.current = false;
+    setSavedPoints(null);
     setResult(null);
 
     const lvl = Math.min(FIGHT_MAX_LEVEL, loadRookieLevel());
@@ -711,6 +792,37 @@ export default function BoutPage() {
                 : 'Draw';
     const userTotal = result.userCards.reduce((s, n) => s + n, 0);
     const rookieTotal = result.rookieCards.reduce((s, n) => s + n, 0);
+    const earned = savedPoints ?? result.points;
+
+    const shareBout = async () => {
+      setSharing(true);
+      const params = new URLSearchParams({
+        outcome: result.outcome,
+        you: result.userCards.join(','),
+        rookie: result.rookieCards.join(','),
+        moves: String(result.moves),
+        punches: String(result.punches),
+        clock: String(result.clockLeft),
+        points: String(earned),
+      });
+      const imgUrl = `/api/og/bout?${params.toString()}`;
+      try {
+        const res = await fetch(imgUrl);
+        const blob = await res.blob();
+        const file = new File([blob], 'chess-boxing-bout.png', { type: 'image/png' });
+        const nav = navigator as Navigator & { canShare?: (d?: unknown) => boolean };
+        if (nav.canShare?.({ files: [file] })) {
+          await nav.share({ files: [file], title: 'Chess Boxing', text: headline });
+          return;
+        }
+        window.open(imgUrl, '_blank');
+      } catch {
+        window.open(imgUrl, '_blank');
+      } finally {
+        setSharing(false);
+      }
+    };
+
     return (
       <div className="h-full overflow-hidden bg-chess-page">
         {/* HARD RULE: no scroll — the card is compact enough to fit 375×667. */}
@@ -782,10 +894,10 @@ export default function BoutPage() {
               </div>
             </div>
 
-            <div className="flex justify-center gap-6 w-full pt-2 border-t border-slate-100">
+            <div className="flex justify-center gap-4 w-full pt-2 border-t border-slate-100">
               <div>
                 <div className="text-xl font-black text-chess-text tabular-nums">
-                  {movesRef.current.length}
+                  {result.moves}
                 </div>
                 <div className="text-[11px] font-semibold text-chess-text-muted">moves</div>
               </div>
@@ -797,21 +909,39 @@ export default function BoutPage() {
               </div>
               <div>
                 <div className="text-xl font-black text-chess-text tabular-nums">
-                  {fmtClock(userBank)}
+                  {fmtClock(result.clockLeft)}
                 </div>
                 <div className="text-[11px] font-semibold text-chess-text-muted">clock left</div>
               </div>
+              <div>
+                <div className="text-xl font-black text-chess-green tabular-nums">
+                  {earned.toLocaleString()}
+                </div>
+                <div className="text-[11px] font-semibold text-chess-text-muted">points</div>
+              </div>
             </div>
 
-            <button
-              onClick={() => {
-                playButtonClick();
-                setPhase('prefight');
-              }}
-              className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-base py-2.5 shadow-sm transition mt-1 tap-highlight"
-            >
-              Rematch
-            </button>
+            <div className="flex gap-2 w-full mt-1">
+              <button
+                onClick={() => {
+                  playButtonClick();
+                  void shareBout();
+                }}
+                disabled={sharing}
+                className="flex-1 rounded-2xl border-2 border-slate-200 text-chess-text font-black text-base py-2.5 transition tap-highlight disabled:opacity-60"
+              >
+                {sharing ? 'Sharing…' : 'Share'}
+              </button>
+              <button
+                onClick={() => {
+                  playButtonClick();
+                  setPhase('prefight');
+                }}
+                className="flex-1 rounded-2xl bg-[#e5484d] text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
+              >
+                Rematch
+              </button>
+            </div>
             <button
               onClick={() => {
                 playButtonClick();
@@ -920,8 +1050,9 @@ export default function BoutPage() {
                   Tap per punch
                 </button>
                 <p className="text-[11px] text-chess-text-muted max-w-xs shrink-0">
-                  Shadowbox and tap with each punch — or turn on the camera and it counts for
-                  you.
+                  {FEATURE_FLAGS.WORKOUT_PUNCH_CAM
+                    ? 'Shadowbox and tap with each punch — or turn on the camera and it counts for you.'
+                    : 'Shadowbox and tap with each punch.'}
                 </p>
                 {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && (
                   <button

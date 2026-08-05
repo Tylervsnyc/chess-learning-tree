@@ -48,8 +48,15 @@ export const FEATURE_FLAGS = {
    * opt-in "Count my punches" toggle in the exercise segment; the camera
    * only ever starts after the user turns it on (preference remembered
    * per device in localStorage).
+   *
+   * OFF since 2026-08-05 (Tyler): the detector is too unreliable to put in
+   * front of users — it miscounts in real conditions. With the flag off the
+   * camera never appears anywhere: the workout runs timer + Combo Coach, the
+   * bout's boxing round uses the tap-per-punch pad, onboarding drops its
+   * camera-permission step, and Settings hides the camera row. Turn back on
+   * once the detector is trustworthy; nothing else needs to change.
    */
-  WORKOUT_PUNCH_CAM: true,
+  WORKOUT_PUNCH_CAM: false,
   /**
    * Fight rounds in the Chess Boxing workout — instead of puzzle segments, the
    * user plays ONE continuous game vs Rookie across all chess segments. The

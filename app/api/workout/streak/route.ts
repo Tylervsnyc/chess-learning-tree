@@ -7,7 +7,8 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
  *
  * The streak is "finish a unit": a day counts if the user *finished* something
  * on the app that day (in their local TZ) — completed a lesson, finished a Play
- * or Daily-Rook game, completed an opening, or finished a Chess Boxing workout.
+ * or Daily-Rook game, completed an opening, finished a Chess Boxing workout, or
+ * fought a Chess Boxing bout to its end.
  * Answering a single puzzle mid-lesson does NOT count (an abandoned lesson
  * shouldn't earn the day) — only the completion does. The streak walks back
  * from today until the first empty day.
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
   // Cap lookback to last ~400 days for sanity.
   const since = shiftDate(today, -400) + 'T00:00:00Z';
 
-  const [lessons, games, workouts, openings] = await Promise.all([
+  const [lessons, games, workouts, openings, bouts] = await Promise.all([
     supabase
       .from('lesson_progress')
       .select('completed_at')
@@ -54,7 +55,23 @@ export async function GET(request: NextRequest) {
       .select('completed_at')
       .eq('user_id', user.id)
       .gte('completed_at', since),
+    // Chess Boxing bouts (Bout v2). The table is created by hand on the live
+    // DB, so a missing table must not take the whole streak down — it degrades
+    // to "no bouts" until the migration is run.
+    supabase
+      .from('bout_sessions')
+      .select('ended_at')
+      .eq('user_id', user.id)
+      .gte('ended_at', since),
   ]);
+
+  const boutRows =
+    bouts.error || !bouts.data
+      ? []
+      : (bouts.data as { ended_at: string }[]);
+  if (bouts.error && !/bout_sessions/.test(bouts.error.message ?? '')) {
+    console.error('workout streak bout read failed', bouts.error);
+  }
 
   if (lessons.error || games.error || workouts.error || openings.error) {
     console.error('workout streak read failed', {
@@ -78,6 +95,7 @@ export async function GET(request: NextRequest) {
       ...(games.data ?? []).map((r) => r.ended_at as string),
       ...(workouts.data ?? []).map((r) => r.created_at as string),
       ...(openings.data ?? []).map((r) => r.completed_at as string),
+      ...boutRows.map((r) => r.ended_at),
     ],
     tz,
   );

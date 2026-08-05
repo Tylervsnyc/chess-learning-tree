@@ -41,6 +41,16 @@ interface WeekData {
   weekTotal: number;
 }
 
+/** Fight record from /api/bout/record (Bout v2). */
+interface BoutRecord {
+  wins: number;
+  losses: number;
+  draws: number;
+  kos: number;
+  total: number;
+  points: number;
+}
+
 interface WorkoutSession {
   id: string;
   createdAt: string;
@@ -309,6 +319,54 @@ function SessionRow({ session }: { session: WorkoutSession }) {
   return <div>{inner}</div>;
 }
 
+/**
+ * Fight record — the bout ledger (Bout v2). Hidden entirely until the user has
+ * fought one, so a profile that has never opened Bout mode doesn't grow a row
+ * of zeros. Data: /api/bout/record.
+ */
+function FightRecord({ record }: { record: BoutRecord | null }) {
+  // No skeleton on purpose: a placeholder that resolves to "nothing" for every
+  // user who has never fought would just be a flash of empty chrome.
+  if (!record || record.total === 0) return null;
+
+  return (
+    <div>
+      <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted px-1 mb-2">
+        Fight record
+      </h2>
+      <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+        <div className="flex items-baseline justify-center gap-1.5">
+          <span className="text-3xl font-black text-chess-green tabular-nums">{record.wins}</span>
+          <span className="text-2xl font-black text-chess-text-muted">-</span>
+          <span className="text-3xl font-black text-[#e5484d] tabular-nums">{record.losses}</span>
+          <span className="text-2xl font-black text-chess-text-muted">-</span>
+          <span className="text-3xl font-black text-chess-text-muted tabular-nums">
+            {record.draws}
+          </span>
+        </div>
+        <div className="flex justify-center gap-6 pt-2 border-t border-slate-100">
+          <div className="text-center">
+            <div className="text-lg font-black text-chess-text tabular-nums">{record.total}</div>
+            <div className="text-[11px] font-semibold text-chess-text-muted">bouts</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-black text-chess-text tabular-nums">{record.kos}</div>
+            <div className="text-[11px] font-semibold text-chess-text-muted">
+              {record.kos === 1 ? 'checkmate' : 'checkmates'}
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-black text-chess-text tabular-nums">
+              {record.points.toLocaleString()}
+            </div>
+            <div className="text-[11px] font-semibold text-chess-text-muted">points</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RecentWorkouts({ sessions, loading }: { sessions: WorkoutSession[] | null; loading: boolean }) {
   return (
     <div>
@@ -367,6 +425,7 @@ export default function ProfilePage() {
   const [week, setWeek] = useState<WeekData | null>(null);
   const [weekLoading, setWeekLoading] = useState(false);
   const [sessions, setSessions] = useState<WorkoutSession[] | null>(null);
+  const [boutRecord, setBoutRecord] = useState<BoutRecord | null>(null);
   const [sessionsLoading, setSessionsLoading] = useState(false);
 
   // Fire data fetches on mount — the API route authenticates from the cookie
@@ -388,8 +447,12 @@ export default function ProfilePage() {
       fetch(`/api/profile/dashboard?tz=${encodeURIComponent(getTz())}`, { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null),
-    ]).then(([s, d]) => {
+      fetch('/api/bout/record', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ]).then(([s, d, b]) => {
       if (cancelled) return;
+      setBoutRecord((b?.record as BoutRecord) ?? null);
       if (s) setStreak(s);
       if (d?.stats) setStats(d.stats as LifetimeStats);
       if (d?.week) setWeek(d.week as WeekData);
@@ -623,6 +686,9 @@ export default function ProfilePage() {
           <WeekChart data={week} loading={weekLoading} />
 
           {/* Recent workouts — tappable when there are missed puzzles to review */}
+          {/* Fight record — renders only once the user has fought a bout */}
+          <FightRecord record={boutRecord} />
+
           <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
         </div>
       </div>

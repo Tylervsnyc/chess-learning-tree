@@ -3,11 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 /**
  * OnboardFlow — the Chess Boxing app's first-launch onboarding.
  *
  * 3 steps: what chess boxing is → pick username → camera permission.
+ * The camera step only exists while WORKOUT_PUNCH_CAM is on — with the punch
+ * camera flagged off there is nothing to ask permission for, so onboarding is
+ * 2 steps and the username card owns the finish button.
  * Swipeable + tappable, progress dots, always skippable (never trap).
  * Completing OR skipping sets localStorage 'cp:box-onboarded' so the
  * OnboardGate in app/box/layout.tsx stops redirecting.
@@ -24,7 +28,8 @@ import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
 
 export const ONBOARDED_KEY = 'cp:box-onboarded';
 
-const STEPS = 3;
+const CAMERA_STEP = FEATURE_FLAGS.WORKOUT_PUNCH_CAM;
+const STEPS = CAMERA_STEP ? 3 : 2;
 const SWIPE_MIN = 48;
 
 export function OnboardFlow() {
@@ -96,11 +101,11 @@ export function OnboardFlow() {
         >
           {step === 0 && <StepWhat />}
           {step === 1 && <StepUsername />}
-          {step === 2 && <StepCamera onDone={finish} />}
+          {step === 2 && CAMERA_STEP && <StepCamera onDone={finish} />}
         </div>
 
-        {/* Bottom nav (step 3 owns its own buttons) */}
-        {step < STEPS - 1 && (
+        {/* Bottom nav (the camera step owns its own buttons) */}
+        {!(CAMERA_STEP && step === STEPS - 1) && (
           <div className="flex gap-3 pt-2">
             {step > 0 && (
               <button
@@ -111,10 +116,10 @@ export function OnboardFlow() {
               </button>
             )}
             <button
-              onClick={next}
+              onClick={step === STEPS - 1 ? finish : next}
               className="flex-1 rounded-2xl bg-chess-green text-white font-black py-3 min-h-[48px] shadow-sm"
             >
-              Next
+              {step === STEPS - 1 ? 'Gloves on' : 'Next'}
             </button>
           </div>
         )}

@@ -148,3 +148,60 @@ export const BOUT_LINES = {
 export function pickLine(arr: readonly string[], seed: number): string {
   return arr[Math.abs(seed) % arr.length];
 }
+
+// ─── Bout scoring (v2) ───────────────────────────────────────────────────────
+// A finished bout earns leaderboard points, the same currency the workout
+// pays in. Shape of the formula: showing up is worth something, the chess
+// result is worth the most, and work rate (punches) is worth a steady trickle
+// so a grinder who loses on the cards still banks a real number.
+//
+// The API re-computes this server-side from the reported result — the client
+// never sends a point total (see app/api/bout/finish).
+
+/** Every bout that reaches the final bell or a decisive end. */
+export const BOUT_BASE_POINTS = 100;
+
+/** The chess result is the headline — it pays the most. */
+export const BOUT_OUTCOME_POINTS: Record<BoutOutcome, number> = {
+  ko_win: 400,
+  decision_win: 250,
+  draw: 150,
+  decision_loss: 100,
+  ko_loss: 60,
+  flag_loss: 50,
+};
+
+/** Work rate: one point per counted punch. */
+export const BOUT_POINTS_PER_PUNCH = 1;
+
+/** Reaching the bell in a boxing round you actually fought. */
+export const BOUT_POINTS_PER_ROUND = 25;
+
+export interface BoutScoreInput {
+  outcome: BoutOutcome;
+  /** Judges' cards for the rounds the user actually fought. */
+  userCards: number[];
+  /** Total counted punches across the bout. */
+  punches: number;
+}
+
+/**
+ * Leaderboard points for one finished bout. Deterministic and pure so the
+ * client preview and the server's stored value can never disagree.
+ */
+export function boutPoints({ outcome, userCards, punches }: BoutScoreInput): number {
+  const roundsFought = userCards.filter((n) => n > 0).length;
+  const total =
+    BOUT_BASE_POINTS +
+    (BOUT_OUTCOME_POINTS[outcome] ?? 0) +
+    Math.max(0, Math.trunc(punches)) * BOUT_POINTS_PER_PUNCH +
+    roundsFought * BOUT_POINTS_PER_ROUND;
+  return Math.max(0, Math.round(total));
+}
+
+/** 'win' | 'loss' | 'draw' — the fight-record bucket for an outcome. */
+export function boutResult(outcome: BoutOutcome): 'win' | 'loss' | 'draw' {
+  if (outcome === 'ko_win' || outcome === 'decision_win') return 'win';
+  if (outcome === 'draw') return 'draw';
+  return 'loss';
+}

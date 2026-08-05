@@ -12,7 +12,9 @@ import { periodStartISO, isPeriod, type LeaderboardPeriod } from '@/lib/leaderbo
  * can't buy the day — one great round wins it. Legacy sessions without
  * best_round_points fall back to that user's best single-session points.
  * Scores come straight from workout_sessions — no scoring logic here (Tyler
- * tunes that upstream).
+ * tunes that upstream) — plus bout_sessions (Bout v2), whose points are
+ * computed once at /api/bout/finish. A bout counts as one session: it adds to
+ * the weekly/monthly total and competes for the daily best-single crown.
  *
  * - global: only users who opted in AND set a handle.
  * - crew:   members of the caller's crew (or ?crewId=). Requires membership.
@@ -103,6 +105,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
 
+  // Chess Boxing bouts pay into the SAME windows (Bout v2) — a bout is a
+  // finished unit like a workout. Read best-effort: bout_sessions is created
+  // by hand on the live DB, so a missing table just means no bout points yet.
+  type BoutRow = { user_id: string; points: number | null; punches: number | null };
+  let bouts: BoutRow[] = [];
+  const boutRead = await svc
+    .from('bout_sessions')
+    .select('user_id, points, punches, created_at')
+    .gte('created_at', startISO);
+  if (boutRead.error) {
+    if (!/bout_sessions/.test(boutRead.error.message ?? '')) {
+      console.error('leaderboard bout read failed', boutRead.error);
+    }
+  } else {
+    bouts = (boutRead.data ?? []) as BoutRow[];
+  }
+
   const metric: 'best_round' | 'total' = period === 'daily' ? 'best_round' : 'total';
 
   const totals = new Map<string, number>();
@@ -111,6 +130,9 @@ export async function GET(request: NextRequest) {
   // their best single-session points still puts them on the board.
   const bestRounds = new Map<string, number>();
   const bestSessions = new Map<string, number>();
+  // Best single BOUT in the window — competes with the best workout round for
+  // the daily crown (see scoreFor).
+  const bestBouts = new Map<string, number>();
   for (const row of sessions ?? []) {
     const uid = row.user_id as string;
     if (memberIds && !memberIds.has(uid)) continue;
@@ -124,10 +146,24 @@ export async function GET(request: NextRequest) {
     bestSessions.set(uid, Math.max(bestSessions.get(uid) ?? 0, pts));
   }
 
+  // Bouts add to the weekly/monthly total, and each bout stands as a single
+  // "session" for the daily best-single metric — one great bout can win the
+  // day the same way one great workout round can.
+  for (const row of bouts) {
+    const uid = row.user_id;
+    if (memberIds && !memberIds.has(uid)) continue;
+    const pts = row.points ?? 0;
+    totals.set(uid, (totals.get(uid) ?? 0) + pts);
+    punchTotals.set(uid, (punchTotals.get(uid) ?? 0) + (row.punches ?? 0));
+    bestBouts.set(uid, Math.max(bestBouts.get(uid) ?? 0, pts));
+  }
+
   const scoreFor = (uid: string): number => {
     if (metric === 'total') return totals.get(uid) ?? 0;
     const br = bestRounds.get(uid);
-    return br !== undefined ? br : bestSessions.get(uid) ?? 0;
+    const workoutBest = br !== undefined ? br : bestSessions.get(uid) ?? 0;
+    // Daily crown goes to the single best effort of either discipline.
+    return Math.max(workoutBest, bestBouts.get(uid) ?? 0);
   };
 
   // Handles + opt-in for the candidate users.
