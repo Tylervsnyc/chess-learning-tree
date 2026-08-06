@@ -266,6 +266,11 @@ export const BOUT_LINES = {
     'Do not coast to the bell. Coasting is a habit and habits show up in chess.',
     'Last ten. Loud ones. Finish the round like it mattered, because it did.',
     'That is nearly it. Do not think about the position yet. Not yet.',
+    'Jab, jab, cross. Again. Find a tempo you can hold for the whole round.',
+    'No bag? Shadowbox. Throw at the air like it just pinned your queen.',
+    'Double up the jab, then the cross. Breathe out on every punch.',
+    'Work in bursts — ten hard seconds on the bag, then move your feet and breathe.',
+    'Hands back to your chin after every combination. Guard first, flashy later.',
   ],
   koWin: [
     "Checkmate. That's yours forever.",

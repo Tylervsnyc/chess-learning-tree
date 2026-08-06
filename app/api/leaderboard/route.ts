@@ -20,7 +20,9 @@ import { periodStartISO, isPeriod, type LeaderboardPeriod } from '@/lib/leaderbo
  * - crew:   members of the caller's crew (or ?crewId=). Requires membership.
  *
  * Returns { rows: top 50, me: {rank, points, username}, metric, ... } where
- * metric is 'best_round' (daily) or 'total' (weekly/monthly).
+ * metric is 'best_round' (daily) or 'total' (weekly/monthly). Crew scope also
+ * returns `roster`: unranked crew members (no scores this window, or no
+ * handle → username:null) so the full crew always renders.
  */
 
 const TOP_N = 50;
@@ -208,6 +210,52 @@ export async function GET(request: NextRequest) {
 
   const meRow = ranked.find((r) => r.isSelf) ?? null;
 
+  // ── Crew roster tail ───────────────────────────────────────────────────────
+  // On crew scope, return EVERY member — a 3-person crew board that renders
+  // 1 row reads as a dead app. Members who aren't in the ranked list (no
+  // scores this window, or scores but no handle) come back unranked in
+  // `roster`, points included (0 + noScores:true when they haven't fought).
+  // Members without a handle are INCLUDED with username:null — the UI shows
+  // them as "unnamed fighter" so the crew's real size is always visible.
+  // Small crews only, so no cap on the tail.
+  type RosterRow = {
+    username: string | null;
+    points: number;
+    punches: number;
+    isSelf: boolean;
+    noScores: boolean;
+  };
+  let roster: RosterRow[] | undefined;
+  if (scope === 'crew' && memberIds) {
+    const rankedIds = new Set(eligible.map((e) => e.userId));
+    const tailIds = [...memberIds].filter((uid) => !rankedIds.has(uid));
+    const missing = tailIds.filter((uid) => !handleById.has(uid));
+    if (missing.length) {
+      const { data: profs } = await svc
+        .from('profiles')
+        .select('id, username')
+        .in('id', missing);
+      for (const p of profs ?? []) {
+        handleById.set(p.id as string, {
+          username: (p.username as string) ?? null,
+          optIn: true,
+        });
+      }
+    }
+    roster = tailIds.map((uid) => ({
+      username: handleById.get(uid)?.username ?? null,
+      points: scoreFor(uid),
+      punches: punchTotals.get(uid) ?? 0,
+      isSelf: uid === user.id,
+      noScores: !totals.has(uid),
+    }));
+    roster.sort(
+      (a, b) =>
+        b.points - a.points ||
+        (a.username ?? '~').localeCompare(b.username ?? '~'),
+    );
+  }
+
   return NextResponse.json({
     scope,
     period,
@@ -216,5 +264,7 @@ export async function GET(request: NextRequest) {
     rows: ranked.slice(0, TOP_N),
     me: meRow, // null if the caller has no points/handle in this window
     total: ranked.length,
+    // Only present on crew scope. Additive — existing consumers ignore it.
+    ...(roster ? { roster } : {}),
   });
 }

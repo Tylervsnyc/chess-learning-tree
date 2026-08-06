@@ -77,6 +77,22 @@ const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
 
 /**
+ * A finished bout that hit a 401 (logged-out fighter) waits here, and the next
+ * AUTHED load of this page replays it to /api/bout/finish — which is idempotent
+ * per clientSessionId, so a replay can never double-count. A fight is never
+ * silently lost.
+ */
+const PENDING_BOUT_KEY = 'cp:pending-bout';
+
+function stashPendingBout(payload: Record<string, unknown>) {
+  try {
+    localStorage.setItem(PENDING_BOUT_KEY, JSON.stringify(payload));
+  } catch {
+    /* storage full / private mode — nothing more we can do */
+  }
+}
+
+/**
  * 'break' is a REAL round on the card, not a transition: 1:00 between every
  * round, counted down on screen. The card structure (chess · break · boxing ·
  * break · chess …) is locked in lib/bout/bout.ts — this page only runs it.
@@ -149,6 +165,11 @@ export default function BoutPage() {
   const persistedRef = useRef(false);
   // Points confirmed by the server — the client preview is the fallback.
   const [savedPoints, setSavedPoints] = useState<number | null>(null);
+  // The finish POST came back 401: the fighter isn't signed in, the bout is
+  // stashed, and the result card must say so instead of pretending it saved.
+  const [needsSignIn, setNeedsSignIn] = useState(false);
+  // One replay attempt per page load (StrictMode double-mounts effects).
+  const replayTriedRef = useRef(false);
   const [sharing, setSharing] = useState(false);
   const [rookieClock, setRookieClock] = useState(bank);
 
@@ -182,6 +203,10 @@ export default function BoutPage() {
   const rankedRef = useRef(true);
 
   const [result, setResult] = useState<BoutResult | null>(null);
+  // "Throw in the towel" is two taps: the first flips the button into a
+  // confirm row (no browser dialogs), which auto-reverts after 4s untouched.
+  const [towelConfirm, setTowelConfirm] = useState(false);
+  const towelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Rookie's corner: one line at a time during a boxing round, swapped on a
   // timer. She is the entire round now, so she can't go quiet.
   const [cornerLine, setCornerLine] = useState<string>(BOUT_LINES.boxing[0]);
@@ -612,22 +637,30 @@ export default function BoutPage() {
     let cancelled = false;
 
     (async () => {
+      const payload = {
+        outcome: result.outcome,
+        roundsSurvived: result.roundsSurvived,
+        moves: result.moves,
+        level: levelRef.current,
+        format,
+        clockLeftSeconds: result.clockLeft,
+        finalFen: result.finalFen,
+        clientSessionId: result.boutKey,
+      };
       try {
         const res = await fetch('/api/bout/finish', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            outcome: result.outcome,
-            roundsSurvived: result.roundsSurvived,
-            moves: result.moves,
-            level: levelRef.current,
-            format,
-            clockLeftSeconds: result.clockLeft,
-            finalFen: result.finalFen,
-            clientSessionId: result.boutKey,
-          }),
+          body: JSON.stringify(payload),
         });
-        if (!res.ok) return; // 401 logged-out, or a real failure — nothing to claim
+        if (res.status === 401) {
+          // Logged-out fighter — NEVER silently lose the fight. Stash the
+          // payload; the next authed load of this page replays it.
+          stashPendingBout(payload);
+          if (!cancelled) setNeedsSignIn(true);
+          return;
+        }
+        if (!res.ok) return; // a real failure — nothing to claim
         const body = (await res.json()) as { ok?: boolean; points?: number; ranked?: boolean };
         if (cancelled) return;
         if (typeof body.points === 'number') setSavedPoints(body.points);
@@ -660,6 +693,7 @@ export default function BoutPage() {
   useEffect(() => {
     return () => {
       if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
+      if (towelTimerRef.current) clearTimeout(towelTimerRef.current);
       stockfish.cancel();
     };
   }, []);
@@ -696,6 +730,7 @@ export default function BoutPage() {
     confettiFiredRef.current = false;
     persistedRef.current = false;
     setSavedPoints(null);
+    setNeedsSignIn(false);
     setResult(null);
 
     // Matched level, capped — the deeper engines are too heavy for a bout.
@@ -730,6 +765,40 @@ export default function BoutPage() {
     if (phase !== 'prefight') return;
     void getRookieLevel({ fresh: true });
   }, [phase]);
+
+  // Replay a stashed logged-out bout on the next authed load. The endpoint is
+  // idempotent per clientSessionId, so retrying is always safe: 401 keeps the
+  // stash (still logged out), success or a payload rejection clears it, and a
+  // network/server hiccup leaves it for the load after. No streak claim here —
+  // the celebration belongs to completion screens only (CHE-388); once the row
+  // lands, the streak derives it live.
+  useEffect(() => {
+    if (replayTriedRef.current) return;
+    replayTriedRef.current = true;
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(PENDING_BOUT_KEY);
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    (async () => {
+      try {
+        const res = await fetch('/api/bout/finish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: raw,
+        });
+        if (res.status === 401) return; // still logged out — keep the stash
+        if (res.ok || (res.status >= 400 && res.status < 500)) {
+          // Saved, or the server will never accept it — either way, done.
+          localStorage.removeItem(PENDING_BOUT_KEY);
+        }
+      } catch {
+        /* offline — keep the stash for the next load */
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     if (phase !== 'prefight') return;
@@ -1021,8 +1090,16 @@ export default function BoutPage() {
               </div>
             </div>
 
+            {/* Not signed in: the fight is stashed, not saved — say so plainly
+                and make signing in the loudest thing on the card. */}
+            {needsSignIn && (
+              <p className="w-full rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] font-bold text-amber-900 leading-snug">
+                Not saved yet — sign in and this fight goes on your record and the standings.
+              </p>
+            )}
+
             {/* Why it paid nothing — said plainly, so a 0 never reads as a bug. */}
-            {wasRanked === false && (
+            {!needsSignIn && wasRanked === false && (
               <p className="text-[11px] font-bold text-chess-text-muted leading-snug">
                 {format === RANKED_FORMAT
                   ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
@@ -1051,6 +1128,44 @@ export default function BoutPage() {
                 Rematch
               </button>
             </div>
+            {needsSignIn ? (
+              // Sign in takes the prime slot; the standings demote to a text
+              // link — an unsaved fight isn't on them yet.
+              <>
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    router.push('/auth/login?redirect=/box/bout');
+                  }}
+                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
+                >
+                  Sign in to save this fight
+                </button>
+                {FEATURE_FLAGS.LEADERBOARDS && (
+                  <button
+                    onClick={() => {
+                      playButtonClick();
+                      router.push('/leaderboard');
+                    }}
+                    className="text-xs font-bold text-chess-text-muted underline underline-offset-2 py-1 min-h-[40px] tap-highlight"
+                  >
+                    See the standings
+                  </button>
+                )}
+              </>
+            ) : (
+              FEATURE_FLAGS.LEADERBOARDS && (
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    router.push('/leaderboard');
+                  }}
+                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
+                >
+                  See the standings
+                </button>
+              )
+            )}
             <button
               onClick={() => {
                 playButtonClick();
@@ -1137,6 +1252,11 @@ export default function BoutPage() {
             <div className="text-7xl font-black text-chess-text tabular-nums shrink-0 leading-none">
               {fmtClock(roundLeft)}
             </div>
+            {/* Persistent instruction — the one thing this round asks of you.
+                Rookie's rotating corner lines are color; this is the job. */}
+            <p className="text-xs font-black text-chess-text uppercase tracking-wide shrink-0">
+              Gloves up — shadowbox or work the bag until the bell.
+            </p>
             <BreathingRook size="lg" animate mood="excited" />
             {/* Rookie's corner — rotates through the round so she keeps talking */}
             <p
@@ -1252,18 +1372,49 @@ export default function BoutPage() {
         )}
       </div>
 
-      {/* Footer: quit */}
+      {/* Footer: quit — two taps, never one. First tap arms a confirm row that
+          auto-reverts after 4s so a stray thumb can't end the bout. */}
       <div className="bg-chess-surface border-t border-slate-200 shrink-0">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-1 flex justify-center">
-          <button
-            onClick={() => {
-              playButtonClick();
-              router.push('/box');
-            }}
-            className="text-chess-text-muted font-bold text-sm py-1 px-4 min-h-[40px] tap-highlight"
-          >
-            Throw in the towel
-          </button>
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-1 flex items-center justify-center gap-2">
+          {towelConfirm ? (
+            <>
+              <span className="text-xs font-bold text-chess-text leading-snug text-left">
+                Quit the bout? Today&apos;s ranked card is spent.
+              </span>
+              <button
+                onClick={() => {
+                  playButtonClick();
+                  if (towelTimerRef.current) clearTimeout(towelTimerRef.current);
+                  setTowelConfirm(false);
+                }}
+                className="rounded-xl bg-chess-green text-white font-black text-sm px-3 py-1.5 min-h-[40px] tap-highlight shrink-0"
+              >
+                Keep fighting
+              </button>
+              <button
+                onClick={() => {
+                  playButtonClick();
+                  if (towelTimerRef.current) clearTimeout(towelTimerRef.current);
+                  router.push('/box');
+                }}
+                className="rounded-xl border-2 border-slate-200 text-chess-text-muted font-black text-sm px-3 py-1.5 min-h-[40px] tap-highlight shrink-0"
+              >
+                Quit
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                playButtonClick();
+                setTowelConfirm(true);
+                if (towelTimerRef.current) clearTimeout(towelTimerRef.current);
+                towelTimerRef.current = setTimeout(() => setTowelConfirm(false), 4000);
+              }}
+              className="text-chess-text-muted font-bold text-sm py-1 px-4 min-h-[40px] tap-highlight"
+            >
+              Throw in the towel
+            </button>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { PERIODS, type LeaderboardPeriod } from '@/lib/leaderboard/period';
 
 type Scope = 'crew' | 'global';
@@ -12,6 +13,13 @@ interface Row {
   punches: number;
   isSelf: boolean;
 }
+interface RosterMember {
+  username: string | null;
+  points: number;
+  punches: number;
+  isSelf: boolean;
+  noScores: boolean;
+}
 interface BoardData {
   scope: Scope;
   period: LeaderboardPeriod;
@@ -21,6 +29,7 @@ interface BoardData {
   me: Row | null;
   total: number;
   notInCrew?: boolean;
+  roster?: RosterMember[]; // crew scope only: unranked members (no scores / no handle)
 }
 
 const PERIOD_LABELS: Record<LeaderboardPeriod, string> = {
@@ -241,26 +250,36 @@ export default function LeaderboardPage() {
         {loading && !data ? (
           <BoardSkeleton />
         ) : data && !data.notInCrew ? (
-          data.rows.length === 0 ? (
-            <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-8 text-center text-chess-text-muted">
-              No scores {PERIOD_LABELS[period].toLowerCase()} yet. Be the first —
-              finish a workout.
-            </div>
-          ) : (
-            <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              {data.rows.map((r) => (
-                <RankRow key={r.rank} row={r} metric={data.metric ?? 'total'} />
-              ))}
-              {meOutsideTop && data.me && (
-                <>
-                  <div className="text-center text-xs text-chess-text-muted py-1 bg-chess-page">
-                    · · ·
-                  </div>
-                  <RankRow row={data.me} metric={data.metric ?? 'total'} />
-                </>
-              )}
-            </div>
-          )
+          <>
+            {data.rows.length === 0 && (
+              <Link
+                href="/workout"
+                className="block bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-8 text-center text-chess-text-muted hover:border-chess-green transition"
+              >
+                No scores {PERIOD_LABELS[period].toLowerCase()} yet. Be the first —{' '}
+                <span className="font-bold text-chess-green">finish a workout</span>.
+              </Link>
+            )}
+            {(data.rows.length > 0 || (data.roster?.length ?? 0) > 0) && (
+              <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                {data.rows.map((r) => (
+                  <RankRow key={r.rank} row={r} metric={data.metric ?? 'total'} />
+                ))}
+                {meOutsideTop && data.me && (
+                  <>
+                    <div className="text-center text-xs text-chess-text-muted py-1 bg-chess-page">
+                      · · ·
+                    </div>
+                    <RankRow row={data.me} metric={data.metric ?? 'total'} />
+                  </>
+                )}
+                {/* Unranked crew members — the rest of the roster, dimmed. */}
+                {data.roster?.map((m, i) => (
+                  <RosterRow key={`roster-${i}`} member={m} />
+                ))}
+              </div>
+            )}
+          </>
         ) : null}
 
         {data?.me && (
@@ -311,6 +330,43 @@ function RankRow({ row, metric }: { row: Row; metric: 'best_round' | 'total' }) 
         <div className="text-[10px] font-semibold text-chess-text-muted">
           {metric === 'best_round' ? 'best round' : 'pts'}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Unranked crew member — dimmed, no rank number, "no fights yet" sub-label. */
+function RosterRow({ member }: { member: RosterMember }) {
+  return (
+    <div
+      className={`flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 opacity-60 ${
+        member.isSelf ? 'bg-chess-green/10' : ''
+      }`}
+    >
+      <div className="w-8 text-center font-black text-chess-text-muted">–</div>
+      <div className="flex-1 min-w-0">
+        <div
+          className={`font-bold truncate ${
+            member.username
+              ? member.isSelf
+                ? 'text-chess-green'
+                : 'text-chess-text'
+              : 'text-chess-text-muted italic'
+          }`}
+        >
+          {member.username ?? 'unnamed fighter'}
+          {member.isSelf && (
+            <span className="text-chess-text-muted font-semibold not-italic"> (you)</span>
+          )}
+        </div>
+        <div className="text-[11px] font-semibold text-chess-text-muted">
+          {member.noScores
+            ? 'no fights yet'
+            : `${member.punches.toLocaleString()} punches`}
+        </div>
+      </div>
+      <div className="text-right font-black text-chess-text-muted tabular-nums">
+        {member.noScores ? '' : member.points.toLocaleString()}
       </div>
     </div>
   );

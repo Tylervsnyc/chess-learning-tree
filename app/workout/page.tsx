@@ -311,6 +311,22 @@ function Legend({ color, label }: { color: string; label: string }) {
 
 type Phase = 'setup' | 'running' | 'done';
 
+/**
+ * A finished session that hit a 401 (logged-out fighter) waits here, and the
+ * next AUTHED load of this page replays it to /api/workout/finish — which is
+ * idempotent per clientSessionId, so a replay can never double-count. A
+ * workout is never silently lost.
+ */
+const PENDING_WORKOUT_KEY = 'cp:pending-workout';
+
+function stashPendingWorkout(payload: Record<string, unknown>) {
+  try {
+    localStorage.setItem(PENDING_WORKOUT_KEY, JSON.stringify(payload));
+  } catch {
+    /* storage full / private mode — nothing more we can do */
+  }
+}
+
 interface FinishResult {
   sessionPoints: number;
   bestRoundPoints: number;
@@ -324,6 +340,8 @@ interface FinishResult {
   rookieLine: string; // Rookie's post-workout encouragement
   /** Fight sessions only — the game-result line ("You beat Rookie (Level 3)"). */
   fightSummary: string | null;
+  /** Finish POST came back 401 — session stashed, card must ask for sign-in. */
+  needsSignIn: boolean;
 }
 
 export default function WorkoutPage() {
@@ -865,24 +883,32 @@ export default function WorkoutPage() {
     let isPersonalBest = false;
     let previousBest = 0;
     let recentPoints: number[] = [sessionPoints];
+    let needsSignIn = false;
     const rookieLine = pickWorkoutFinishLine();
+    const finishPayload = {
+      points: sessionPoints,
+      durationMinutes: minutes,
+      correct: right,
+      wrong,
+      perfect,
+      missedPuzzles: missedRef.current,
+      seenPuzzleIds: seenIdsRef.current,
+      clientSessionId: clientSessionIdRef.current,
+      punches: punchesRef.current,
+      bestRoundPoints,
+    };
     try {
       const res = await fetch('/api/workout/finish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          points: sessionPoints,
-          durationMinutes: minutes,
-          correct: right,
-          wrong,
-          perfect,
-          missedPuzzles: missedRef.current,
-          seenPuzzleIds: seenIdsRef.current,
-          clientSessionId: clientSessionIdRef.current,
-          punches: punchesRef.current,
-          bestRoundPoints,
-        }),
+        body: JSON.stringify(finishPayload),
       });
+      if (res.status === 401) {
+        // Logged-out fighter — NEVER silently lose the session. Stash the
+        // payload; the next authed load of this page replays it.
+        stashPendingWorkout(finishPayload);
+        needsSignIn = true;
+      }
       if (res.ok) {
         const data = await res.json();
         if (typeof data?.workoutPoints === 'number') lifetime = data.workoutPoints;
@@ -922,6 +948,7 @@ export default function WorkoutPage() {
       recentPoints,
       rookieLine,
       fightSummary,
+      needsSignIn,
     });
     setPhase('done');
   }, [score, right, wrong, minutes, isFight, freezeFight, bankFightSegment]);
@@ -1130,12 +1157,47 @@ export default function WorkoutPage() {
         recentPoints: [180, 240, 300, 210, 360, 280, 420],
         rookieLine: pickWorkoutFinishLine(),
         fightSummary: null,
+        needsSignIn: false,
       });
       setPhase('done');
       return;
     }
     const snap = loadResume();
     if (snap) setResumable(snap);
+  }, []);
+
+  // Replay a stashed logged-out session on the next authed load. The endpoint
+  // is idempotent per clientSessionId, so retrying is always safe: 401 keeps
+  // the stash (still logged out), success or a payload rejection clears it,
+  // and a network/server hiccup leaves it for the load after. No streak claim
+  // here — the celebration belongs to completion screens only (CHE-388).
+  const replayTriedRef = useRef(false);
+  useEffect(() => {
+    if (replayTriedRef.current) return;
+    replayTriedRef.current = true;
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(PENDING_WORKOUT_KEY);
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    (async () => {
+      try {
+        const res = await fetch('/api/workout/finish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: raw,
+        });
+        if (res.status === 401) return; // still logged out — keep the stash
+        if (res.ok || (res.status >= 400 && res.status < 500)) {
+          // Saved, or the server will never accept it — either way, done.
+          localStorage.removeItem(PENDING_WORKOUT_KEY);
+        }
+      } catch {
+        /* offline — keep the stash for the next load */
+      }
+    })();
   }, []);
 
   // Persist in-progress state so an OS kill can resume (not for backgrounding).
@@ -1682,16 +1744,49 @@ export default function WorkoutPage() {
               <StreakComplete />
             </div>
 
-            {FEATURE_FLAGS.LEADERBOARDS && (
-              <button
-                onClick={() => {
-                  playButtonClick();
-                  router.push('/leaderboard');
-                }}
-                className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
-              >
-                See the leaderboard
-              </button>
+            {/* Not signed in: the session is stashed, not saved — say so and
+                make signing in the loudest thing on the card. */}
+            {finishResult.needsSignIn && (
+              <p className="w-full rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] font-bold text-amber-900 leading-snug">
+                Not saved yet — sign in and this fight goes on your record and the leaderboard.
+              </p>
+            )}
+
+            {finishResult.needsSignIn ? (
+              <>
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    router.push('/auth/login?redirect=/workout');
+                  }}
+                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
+                >
+                  Sign in to save this fight
+                </button>
+                {FEATURE_FLAGS.LEADERBOARDS && (
+                  <button
+                    onClick={() => {
+                      playButtonClick();
+                      router.push('/leaderboard');
+                    }}
+                    className="text-xs font-bold text-chess-text-muted underline underline-offset-2 py-1 min-h-[40px]"
+                  >
+                    See the leaderboard
+                  </button>
+                )}
+              </>
+            ) : (
+              FEATURE_FLAGS.LEADERBOARDS && (
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    router.push('/leaderboard');
+                  }}
+                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
+                >
+                  See the leaderboard
+                </button>
+              )
             )}
 
             <button

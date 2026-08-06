@@ -8,10 +8,10 @@ import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 /**
  * OnboardFlow — the Chess Boxing app's first-launch onboarding.
  *
- * 3 steps: what chess boxing is → pick username → camera permission.
- * The camera step only exists while WORKOUT_PUNCH_CAM is on — with the punch
- * camera flagged off there is nothing to ask permission for, so onboarding is
- * 2 steps and the username card owns the finish button.
+ * Steps: what chess boxing is → pick username → join a crew → camera
+ * permission. The crew step only exists for logged-in users (anon can't
+ * join); the camera step only exists while WORKOUT_PUNCH_CAM is on — with
+ * the punch camera flagged off there is nothing to ask permission for.
  * Swipeable + tappable, progress dots, always skippable (never trap).
  * Completing OR skipping sets localStorage 'cp:box-onboarded' so the
  * OnboardGate in app/box/layout.tsx stops redirecting.
@@ -29,13 +29,40 @@ import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 export const ONBOARDED_KEY = 'cp:box-onboarded';
 
 const CAMERA_STEP = FEATURE_FLAGS.WORKOUT_PUNCH_CAM;
-const STEPS = CAMERA_STEP ? 3 : 2;
 const SWIPE_MIN = 48;
+
+type StepKey = 'what' | 'username' | 'crew' | 'camera';
+// undefined=loading, 'anon'=not logged in, null=needs handle, string=has one
+type UsernameState = string | null | 'anon' | undefined;
 
 export function OnboardFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const touchX = useRef<number | null>(null);
+
+  // Fetched once here so the flow knows whether to include the crew step
+  // (anon users can't join a crew — /api/leaderboard/join 401s).
+  const [username, setUsername] = useState<UsernameState>(undefined);
+  useEffect(() => {
+    fetch('/api/profile/username')
+      .then((r) => {
+        if (r.status === 401) return 'anon' as const;
+        return r.ok ? r.json().then((d) => d.username ?? null) : null;
+      })
+      .then((v) => setUsername(v))
+      .catch(() => setUsername(null));
+  }, []);
+
+  const stepKeys: StepKey[] = [
+    'what',
+    'username',
+    ...(username !== 'anon' ? (['crew'] as const) : []),
+    ...(CAMERA_STEP ? (['camera'] as const) : []),
+  ];
+  const STEPS = stepKeys.length;
+  // If the anon check resolves while past the crew step, clamp.
+  const stepIdx = Math.min(step, STEPS - 1);
+  const stepKey = stepKeys[stepIdx];
 
   const finish = useCallback(() => {
     try {
@@ -48,7 +75,7 @@ export function OnboardFlow() {
 
   const next = useCallback(() => {
     setStep((s) => (s >= STEPS - 1 ? s : s + 1));
-  }, []);
+  }, [STEPS]);
   const back = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -69,7 +96,7 @@ export function OnboardFlow() {
       <div className="max-w-lg md:max-w-xl mx-auto w-full h-full px-4 md:px-6 pt-3 pb-5 flex flex-col">
         {/* Top bar: dots + skip */}
         <div className="flex items-center justify-between min-h-[44px]">
-          <div className="flex items-center gap-2" aria-label={`Step ${step + 1} of ${STEPS}`}>
+          <div className="flex items-center gap-2" aria-label={`Step ${stepIdx + 1} of ${STEPS}`}>
             {Array.from({ length: STEPS }).map((_, i) => (
               <button
                 key={i}
@@ -79,7 +106,7 @@ export function OnboardFlow() {
               >
                 <span
                   className={`block rounded-full transition-all ${
-                    i === step ? 'w-6 h-2 bg-[#e5484d]' : 'w-2 h-2 bg-slate-300'
+                    i === stepIdx ? 'w-6 h-2 bg-[#e5484d]' : 'w-2 h-2 bg-slate-300'
                   }`}
                 />
               </button>
@@ -99,15 +126,20 @@ export function OnboardFlow() {
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          {step === 0 && <StepWhat />}
-          {step === 1 && <StepUsername />}
-          {step === 2 && CAMERA_STEP && <StepCamera onDone={finish} />}
+          {stepKey === 'what' && <StepWhat />}
+          {stepKey === 'username' && (
+            <StepUsername username={username} setUsername={setUsername} />
+          )}
+          {stepKey === 'crew' && (
+            <StepCrew onSkip={stepIdx === STEPS - 1 ? finish : next} />
+          )}
+          {stepKey === 'camera' && <StepCamera onDone={finish} />}
         </div>
 
         {/* Bottom nav (the camera step owns its own buttons) */}
-        {!(CAMERA_STEP && step === STEPS - 1) && (
+        {stepKey !== 'camera' && (
           <div className="flex gap-3 pt-2">
-            {step > 0 && (
+            {stepIdx > 0 && (
               <button
                 onClick={back}
                 className="rounded-2xl border-2 border-slate-200 text-chess-text-muted font-black px-5 py-3 min-h-[48px]"
@@ -116,10 +148,10 @@ export function OnboardFlow() {
               </button>
             )}
             <button
-              onClick={step === STEPS - 1 ? finish : next}
+              onClick={stepIdx === STEPS - 1 ? finish : next}
               className="flex-1 rounded-2xl bg-chess-green text-white font-black py-3 min-h-[48px] shadow-sm"
             >
-              {step === STEPS - 1 ? 'Gloves on' : 'Next'}
+              {stepIdx === STEPS - 1 ? 'Gloves on' : 'Next'}
             </button>
           </div>
         )}
@@ -153,22 +185,16 @@ function StepWhat() {
 
 /* ---------------- Step 2 — pick your username ---------------- */
 
-function StepUsername() {
-  // undefined=loading, 'anon'=not logged in, null=needs handle, string=has one
-  const [username, setUsername] = useState<string | null | 'anon' | undefined>(undefined);
+function StepUsername({
+  username,
+  setUsername,
+}: {
+  username: UsernameState;
+  setUsername: (v: UsernameState) => void;
+}) {
   const [input, setInput] = useState('');
   const [err, setErr] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    fetch('/api/profile/username')
-      .then((r) => {
-        if (r.status === 401) return 'anon' as const;
-        return r.ok ? r.json().then((d) => d.username ?? null) : null;
-      })
-      .then((v) => setUsername(v))
-      .catch(() => setUsername(null));
-  }, []);
 
   const save = async () => {
     setErr(null);
@@ -249,7 +275,85 @@ function StepUsername() {
   );
 }
 
-/* ---------------- Step 3 — camera permission ---------------- */
+/* ---------------- Step 3 — join a crew (logged-in only) ---------------- */
+
+function StepCrew({ onSkip }: { onSkip: () => void }) {
+  // Mirrors the join-crew card on /leaderboard — same endpoint, same errors.
+  const [code, setCode] = useState('');
+  const [err, setErr] = useState<string | null>(null);
+  const [joining, setJoining] = useState(false);
+  const [joined, setJoined] = useState<string | null>(null); // crew name
+
+  const join = async () => {
+    setErr(null);
+    setJoining(true);
+    try {
+      const res = await fetch('/api/leaderboard/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code.trim() }),
+      });
+      const d = await res.json();
+      if (res.ok) setJoined(d.crew?.name ?? 'your crew');
+      else setErr(d.error ?? 'Could not join.');
+    } catch {
+      setErr('Network error.');
+    } finally {
+      setJoining(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center text-center gap-3">
+      <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
+        Got a crew code?
+      </h1>
+      <p className="text-sm text-chess-text-muted max-w-sm">
+        Crews get their own board — your gym against itself. Training at
+        Gleason&apos;s? Use code{' '}
+        <span className="font-bold text-chess-text">NYC</span>.
+      </p>
+
+      {joined ? (
+        <div className="w-full max-w-sm bg-chess-surface rounded-2xl border-2 border-chess-green shadow-sm p-4">
+          <div className="text-xs font-bold text-chess-text-muted uppercase tracking-wide">
+            You&apos;re in
+          </div>
+          <div className="text-xl font-black text-chess-green mt-1 break-all">{joined}</div>
+        </div>
+      ) : (
+        <div className="w-full max-w-sm flex flex-col gap-3">
+          <input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Crew code"
+            autoCapitalize="characters"
+            autoCorrect="off"
+            className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 min-h-[44px] text-chess-text focus:border-chess-green outline-none uppercase bg-chess-surface"
+          />
+          {err && <p className="text-sm text-red-500">{err}</p>}
+          <button
+            onClick={join}
+            disabled={joining || !code.trim()}
+            className="rounded-xl bg-chess-green text-white font-bold py-3 min-h-[44px] disabled:opacity-50"
+          >
+            {joining ? 'Joining…' : 'Join crew'}
+          </button>
+          <button
+            onClick={onSkip}
+            className="text-sm font-bold text-chess-text-muted py-2 min-h-[44px] tap-highlight"
+          >
+            No crew yet — you can join later from the leaderboard
+          </button>
+        </div>
+      )}
+
+      <RookieLine text="A crew means witnesses. Someone should see what you do to your bishops when you're gassed." />
+    </div>
+  );
+}
+
+/* ---------------- Step 4 — camera permission ---------------- */
 
 function StepCamera({ onDone }: { onDone: () => void }) {
   const [state, setState] = useState<'idle' | 'asking' | 'granted' | 'denied'>('idle');

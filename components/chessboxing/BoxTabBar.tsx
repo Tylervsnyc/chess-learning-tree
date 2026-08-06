@@ -28,10 +28,10 @@ const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding'];
  * belong to the Train tab.
  */
 const TABS = [
-  { href: '/box', label: 'Chess Box', icon: GloveIcon, match: [] as string[], color: '#FF4B4B', tint: 'rgba(255,75,75,0.12)' },
-  { href: '/box/train', label: 'Train', icon: TargetIcon, match: ['/solve', '/path', '/openings', '/lesson'], color: '#CE82FF', tint: 'rgba(206,130,255,0.14)' },
-  { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[], color: '#58CC02', tint: 'rgba(88,204,2,0.12)' },
-  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'], color: '#1CB0F6', tint: 'rgba(28,176,246,0.12)' },
+  { href: '/box', label: 'Chess Box', icon: GloveIcon, match: [] as string[], color: '#FF4B4B', shadow: '#CC3939', tint: 'rgba(255,75,75,0.12)' },
+  { href: '/box/train', label: 'Train', icon: TargetIcon, match: ['/solve', '/path', '/openings', '/lesson'], color: '#CE82FF', shadow: '#a855f7', tint: 'rgba(206,130,255,0.14)' },
+  { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[], color: '#58CC02', shadow: '#3d8c01', tint: 'rgba(88,204,2,0.12)' },
+  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'], color: '#1CB0F6', shadow: '#0d7ec4', tint: 'rgba(28,176,246,0.12)' },
 ] as const;
 
 export function BoxTabBar() {
@@ -54,8 +54,8 @@ export function BoxTabBar() {
       aria-label="Chess Boxing tabs"
       className="fixed bottom-0 inset-x-0 z-40 bg-chess-surface border-t border-slate-200 pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="max-w-lg mx-auto flex">
-        {TABS.map(({ href, label, icon: Icon, match, color, tint }) => {
+      <div className="max-w-lg mx-auto flex gap-1.5 px-2 py-1.5">
+        {TABS.map(({ href, label, icon: Icon, match, color, shadow, tint }) => {
           const active =
             pathname === href ||
             (href !== '/box' && pathname?.startsWith(`${href}/`)) ||
@@ -64,26 +64,25 @@ export function BoxTabBar() {
             <Link
               key={href}
               href={href}
-              className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[52px] pt-1.5 pb-1 tap-highlight text-chess-text-muted"
+              className="flex-1 min-w-0 tap-highlight"
             >
-              {/* Every tab keeps its color; inactive ones just dim. Active gets
-                  a tinted pill behind the icon — playful, Duolingo-style. */}
+              {/* Chess Path button language (NavHeader): every tab is a filled
+                  colored button. Active = solid fill, white text, hard 3D
+                  bottom shadow; inactive = its own tint, colored text. */}
               <span
-                className="flex items-center justify-center w-12 h-7 rounded-full transition-all"
+                className="flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-xl border-2 transition-all active:translate-y-[2px]"
                 style={{
-                  background: active ? tint : 'transparent',
-                  color,
-                  opacity: active ? 1 : 0.55,
-                  transform: active ? 'scale(1.08)' : 'scale(1)',
+                  background: active ? color : tint,
+                  borderColor: active ? shadow : 'transparent',
+                  boxShadow: active ? `0 3px 0 0 ${shadow}` : 'none',
+                  color: active ? '#fff' : color,
+                  opacity: active ? 1 : 0.85,
                 }}
               >
                 <Icon />
-              </span>
-              <span
-                className="text-[10px] font-bold leading-none"
-                style={{ color: active ? color : undefined, opacity: active ? 1 : 0.75 }}
-              >
-                {label}
+                <span className="text-[10px] font-extrabold leading-none whitespace-nowrap">
+                  {label}
+                </span>
               </span>
             </Link>
           );

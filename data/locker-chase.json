@@ -42,7 +42,7 @@
   {
     "piece": "n",
     "from": "c4",
-    "to": "b2"
+    "to": "e3"
   },
   {
     "piece": "k",
@@ -51,8 +51,8 @@
   },
   {
     "piece": "n",
-    "from": "b2",
-    "to": "d3"
+    "from": "e3",
+    "to": "g2"
   },
   {
     "piece": "k",
@@ -71,7 +71,7 @@
   },
   {
     "piece": "n",
-    "from": "d3",
+    "from": "g2",
     "to": "e1"
   },
   {

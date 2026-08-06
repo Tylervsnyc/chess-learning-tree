@@ -3,7 +3,9 @@
  * black bishop + knight chase a white king forever, every black move a
  * CHECK, every white reply a legal escape, position repeating -> loop.
  *
- * Constraints (visible painted-board window): files a..g, ranks 1..5.
+ * Constraints (drawn-board window): the full folded half-board, files a..h,
+ * ranks 1..4 — minus the squares whose sprite would stand behind the Enemy's
+ * Tears bottle (h1..h3, front-right corner).
  * Black king parked on a8 (needed for legality, never rendered).
  * A checking piece must never be capturable: not adjacent to the king,
  * or defended by the other black piece.
@@ -14,12 +16,16 @@
 import { Chess } from 'chess.js';
 import { writeFileSync } from 'fs';
 
-// files a-f (g hides behind the bottle), ranks 1-4 (the painted board has
-// 4 full rows — the 5th is a sliver)
-const FILES = 'abcdef';
+// full 8 files x 4 ranks (a board folded in half). The bottle stands in
+// front of the board's front-right corner, so pieces never park there.
+const FILES = 'abcdefgh';
 const RANKS = [1, 2, 3, 4];
+const OCCLUDED = new Set(['h1', 'h2', 'h3']);
 const SQUARES: string[] = [];
-for (const f of FILES) for (const r of RANKS) SQUARES.push(`${f}${r}`);
+for (const f of FILES) for (const r of RANKS) {
+  const sq = `${f}${r}`;
+  if (!OCCLUDED.has(sq)) SQUARES.push(sq);
+}
 const IN_WINDOW = new Set(SQUARES);
 
 type State = { k: string; b: string; n: string; turn: 'b' | 'w' };
@@ -165,14 +171,29 @@ function findCycles(maxSeeds: number, maxDepth: number): { plies: Edge['ply'][];
   return found;
 }
 
-const cycles = findCycles(4000, 20);
+let cycles = findCycles(4000, 20);
 if (cycles.length === 0) {
   console.error('No pure-check cycles found — relax constraints.');
   process.exit(1);
 }
-// prefer: most distinct king squares, then longest
-cycles.sort((a, b) => b.kingSquares - a.kingSquares || b.plies.length - a.plies.length);
+// prefer: most distinct king squares, then widest roam across the 8 files
+// (the whole point of the folded half-board), then longest
+const fileSpread = (c: { plies: { to: string }[] }) =>
+  new Set(c.plies.map((p) => p.to[0])).size;
+// both black pieces must take part — the renderer seeds each piece's start
+// square from its first ply, and a frozen bishop reads as a prop, not a chase
+const active = cycles.filter(
+  (c) => c.plies.some((p) => p.piece === 'b') && c.plies.some((p) => p.piece === 'n'),
+);
+if (active.length) cycles = active;
+cycles.sort(
+  (a, b) =>
+    b.kingSquares - a.kingSquares ||
+    fileSpread(b) - fileSpread(a) ||
+    b.plies.length - a.plies.length,
+);
 const best = cycles[0];
+console.log(`file spread: ${fileSpread(best)} of 8`);
 console.log(`found ${cycles.length} cycles; best: ${best.plies.length} plies, king visits ${best.kingSquares} squares`);
 console.log(best.plies.map((p) => `${p.piece}${p.from}-${p.to}`).join(' '));
 writeFileSync('data/locker-chase.json', JSON.stringify(best.plies, null, 2));

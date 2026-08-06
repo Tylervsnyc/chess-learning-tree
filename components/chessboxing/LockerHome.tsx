@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { getStreak, peekStreak, getStoredUserId, type StreakData } from '@/lib/streak-client';
 import { ChessChase } from '@/components/chessboxing/ChessChase';
 
@@ -205,12 +206,16 @@ function ChalkTallies({ count, perRow = 4 }: { count: number; perRow?: number })
   );
 }
 
+/** localStorage key: the one-time "your first bout is up" cue on the gloves. */
+const FIRST_BOUT_KEY = 'cp:box-first-bout-cue';
+
 export function LockerHome({
   previewStreak,
   streak: streakData,
   lastScore,
   lastScoreWhen,
   rank,
+  rankedLeft,
   onFight,
   onTrain,
 }: {
@@ -221,6 +226,8 @@ export function LockerHome({
   lastScore?: number | null;
   lastScoreWhen?: string | null;
   rank?: { rank: number; total: number } | null;
+  /** Ranked bouts left today (from /api/bout/today). undefined = unknown. */
+  rankedLeft?: number;
   onFight?: () => void;
   onTrain?: () => void;
 }) {
@@ -228,6 +235,23 @@ export function LockerHome({
   const [punchId, setPunchId] = useState(0);
   const [hover, setHover] = useState<'fight' | 'train' | null>(null);
   const [closed, setClosed] = useState(false);
+  const [firstBoutCue, setFirstBoutCue] = useState(false);
+
+  // First-bout cue: shows until the first FIGHT tap (or until we can see the
+  // user already has history — then it's not their first bout).
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(FIRST_BOUT_KEY) === '1') return;
+      if (lastScore === undefined) return; // still loading history
+      if (lastScore !== null) {
+        localStorage.setItem(FIRST_BOUT_KEY, '1'); // veteran — never show
+        return;
+      }
+      setFirstBoutCue(true);
+    } catch {
+      /* private mode — no cue */
+    }
+  }, [lastScore]);
 
   useEffect(() => {
     if (previewStreak !== undefined) {
@@ -277,7 +301,7 @@ export function LockerHome({
           swings shut (it's turning away from us). */}
       <div
         style={{
-          position: 'absolute', left: '2%', top: '12%', width: '15%', height: '58%',
+          position: 'absolute', left: '1%', top: '10%', width: '19%', height: '64%',
           display: 'flex', flexDirection: 'column', gap: '3%',
           // The open door is a panel turned toward us — everything screwed or
           // chalked to it has to live in ITS plane, not flat on the screen.
@@ -313,7 +337,12 @@ export function LockerHome({
 
       {/* FIGHT tap zone (gloves) */}
       <button
-        onClick={() => { setPunchId((p) => p + 1); onFight?.(); }}
+        onClick={() => {
+          try { localStorage.setItem(FIRST_BOUT_KEY, '1'); } catch { /* fine */ }
+          setFirstBoutCue(false);
+          setPunchId((p) => p + 1);
+          onFight?.();
+        }}
         onMouseEnter={() => setHover('fight')} onMouseLeave={() => setHover(null)}
         aria-label="Fight — start a bout"
         style={{ position: 'absolute', left: '22%', top: '18%', width: '58%', height: '38%', background: 'none', border: 'none', cursor: 'pointer' }}
@@ -327,12 +356,31 @@ export function LockerHome({
           filter: hover === 'train' ? 'brightness(1.1)' : 'none' }}
       />
 
+      {/* one-time first-bout cue, pinned to the gloves */}
+      {firstBoutCue && (
+        <div style={{ position: 'absolute', left: '50%', top: '22.5%', transform: 'translateX(-50%)', padding: '5px 12px', borderRadius: 999,
+          background: '#e5484d', color: '#fff', fontSize: 12, fontWeight: 800, letterSpacing: 0.4, whiteSpace: 'nowrap',
+          boxShadow: '0 3px 0 0 #a32e33', pointerEvents: 'none', zIndex: 20 }}>
+          Your first bout is up
+        </div>
+      )}
+
       {/* labels */}
       <div style={{ position: 'absolute', left: '50%', top: '43.5%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 999,
         background: hover === 'fight' ? '#e5484d' : 'rgba(9, 14, 28, 0.65)', color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 1.5,
         transition: 'background 0.2s', pointerEvents: 'none' }}>
         FIGHT
       </div>
+      {/* ranked-status tag under FIGHT — the truth BEFORE you tap */}
+      {rankedLeft !== undefined && (
+        <div style={{ position: 'absolute', left: '50%', top: '47.5%', transform: 'translateX(-50%)', padding: '3px 10px', borderRadius: 999,
+          background: rankedLeft > 0 ? 'rgba(217, 184, 98, 0.95)' : 'rgba(9, 14, 28, 0.65)',
+          color: rankedLeft > 0 ? '#3a2b08' : 'rgba(255,255,255,0.75)',
+          fontSize: 10, fontWeight: 800, letterSpacing: 0.8, whiteSpace: 'nowrap', textTransform: 'uppercase',
+          pointerEvents: 'none' }}>
+          {rankedLeft > 0 ? 'Ranked bout ready' : 'Spent — exhibition only'}
+        </div>
+      )}
       <div style={{ position: 'absolute', left: '50%', top: '82%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 999,
         background: hover === 'train' ? '#e5484d' : 'rgba(9, 14, 28, 0.65)', color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 1.5,
         transition: 'background 0.2s', pointerEvents: 'none' }}>
@@ -362,18 +410,45 @@ interface LeaderRow {
  * taped-up standings and a chalked streak.
  *
  * Standings load lazily — the first time the door is shut — so the home screen
- * doesn't pay for a leaderboard read it may never show.
+ * doesn't pay for a leaderboard read it may never show. Crew scope first (your
+ * gym IS your standings); global only when you're not in a crew.
  */
+interface StandingsData {
+  rows: LeaderRow[];
+  crewName: string | null;
+}
+
 function LockerDoor({ closed, onToggle }: { closed: boolean; onToggle: () => void }) {
-  const [rows, setRows] = useState<LeaderRow[] | null | undefined>(undefined);
+  const [board, setBoard] = useState<StandingsData | null | undefined>(undefined);
 
   useEffect(() => {
-    if (!closed || rows !== undefined) return;
-    fetch('/api/leaderboard?scope=global&period=weekly')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setRows(Array.isArray(d?.rows) ? (d.rows as LeaderRow[]) : null))
-      .catch(() => setRows(null));
-  }, [closed, rows]);
+    if (!closed || board !== undefined) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const crewRes = await fetch('/api/leaderboard?scope=crew&period=weekly');
+        if (crewRes.status === 401) {
+          if (!cancelled) setBoard(null); // logged out — "sign in" note
+          return;
+        }
+        if (crewRes.ok) {
+          const d = await crewRes.json();
+          if (!d?.notInCrew && Array.isArray(d?.rows)) {
+            if (!cancelled) setBoard({ rows: d.rows as LeaderRow[], crewName: d.crew?.name ?? null });
+            return;
+          }
+        }
+        const res = await fetch('/api/leaderboard?scope=global&period=weekly');
+        const d = res.ok ? await res.json() : null;
+        if (!cancelled) {
+          setBoard(Array.isArray(d?.rows) ? { rows: d.rows as LeaderRow[], crewName: null } : null);
+        }
+      } catch {
+        if (!cancelled) setBoard(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [closed, board]);
 
   return (
     <>
@@ -406,7 +481,7 @@ function LockerDoor({ closed, onToggle }: { closed: boolean; onToggle: () => voi
         role={closed ? 'button' : undefined}
         aria-label={closed ? 'Open the locker' : undefined}
         style={{
-          position: 'absolute', left: '9%', top: '0%', width: '87%', height: '92%',
+          position: 'absolute', left: '7%', top: '0%', width: '91%', height: '95%',
           transformOrigin: 'left center',
           transform: `rotateY(${closed ? 0 : DOOR_OPEN_DEG}deg)`,
           transition: 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -446,7 +521,7 @@ function LockerDoor({ closed, onToggle }: { closed: boolean; onToggle: () => voi
         />
 
         {/* the official standings, bolted to the front of the locker */}
-        <Standings rows={rows} />
+        <Standings board={board} />
       </div>
     </>
   );
@@ -498,24 +573,30 @@ function Plaque({ label, value, sub }: { label: string; value: string; sub: stri
         border: '1px solid #8a6b22',
         borderRadius: 4,
         boxShadow: '0 2px 0 0 #6f5518, inset 0 1px 0 rgba(255,255,255,0.35)',
-        padding: '7% 4%',
+        padding: '8% 4%',
       }}
     >
-      <div style={{ fontSize: 'clamp(3px, 1.05cqw, 6.5px)', fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5b4413', lineHeight: 1.25 }}>
+      <div style={{ fontSize: 'clamp(5px, 1.7cqw, 10px)', fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5b4413', lineHeight: 1.25 }}>
         {label}
       </div>
-      <div style={{ fontSize: 'clamp(7px, 2.6cqw, 16px)', fontWeight: 900, lineHeight: 1.15, color: '#3a2b08', fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ fontSize: 'clamp(11px, 3.8cqw, 22px)', fontWeight: 900, lineHeight: 1.15, color: '#3a2b08', fontVariantNumeric: 'tabular-nums' }}>
         {value || ' '}
       </div>
-      <div style={{ fontSize: 'clamp(3px, 0.95cqw, 6px)', fontWeight: 700, color: '#6b5316', lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <div style={{ fontSize: 'clamp(5px, 1.5cqw, 9px)', fontWeight: 700, color: '#6b5316', lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {sub}
       </div>
     </div>
   );
 }
 
-/** The standings sheet — a printout taped inside the door. */
-function Standings({ rows }: { rows: LeaderRow[] | null | undefined }) {
+/**
+ * The standings sheet — a printout taped inside the door. The WHOLE sheet is
+ * a link to /leaderboard (tap it for the full rankings); tapping the door
+ * around it still opens the locker. Crew scope titles the sheet with the
+ * crew's name — your gym's card, not the world's.
+ */
+function Standings({ board }: { board: StandingsData | null | undefined }) {
+  const rows = board?.rows;
   return (
     <div style={{ flex: '1 1 auto', minHeight: 0, position: 'relative', display: 'flex', marginTop: '3%' }}>
       {/* tape */}
@@ -526,7 +607,10 @@ function Standings({ rows }: { rows: LeaderRow[] | null | undefined }) {
         <div key={i} style={{ position: 'absolute', top: '-2.5%', width: '16%', height: '5%', background: 'rgba(240,236,214,0.55)', transform: `rotate(${t.rotate})`, zIndex: 2, ...t }} />
       ))}
 
-      <div
+      <Link
+        href="/leaderboard"
+        onClick={(e) => e.stopPropagation()}
+        aria-label="See the full rankings"
         style={{
           flex: 1, minWidth: 0,
           background: '#f4ecd9',
@@ -537,19 +621,20 @@ function Standings({ rows }: { rows: LeaderRow[] | null | undefined }) {
           display: 'flex', flexDirection: 'column',
           overflow: 'hidden',
           color: '#22293a',
+          textDecoration: 'none',
         }}
       >
         <div style={{ fontSize: 'clamp(7px, 2.8cqw, 13px)', fontWeight: 900, letterSpacing: '0.16em', textAlign: 'center', borderBottom: '1.5px solid #22293a33', paddingBottom: '2%' }}>
-          OFFICIAL STANDINGS
+          {board?.crewName ? board.crewName.toUpperCase() : 'OFFICIAL STANDINGS'}
         </div>
         <div style={{ fontSize: 'clamp(5px, 2cqw, 10px)', fontWeight: 700, letterSpacing: '0.12em', textAlign: 'center', color: '#22293a99', paddingTop: '1%' }}>
           THIS WEEK
         </div>
 
-        {rows === undefined && (
+        {board === undefined && (
           <Note>loading the card…</Note>
         )}
-        {rows === null && (
+        {board === null && (
           <Note>sign in to see where you stand</Note>
         )}
         {rows && rows.length === 0 && (
@@ -575,7 +660,11 @@ function Standings({ rows }: { rows: LeaderRow[] | null | undefined }) {
             ))}
           </div>
         )}
-      </div>
+
+        <div style={{ fontSize: 'clamp(5px, 1.8cqw, 9px)', fontWeight: 800, letterSpacing: '0.14em', textAlign: 'center', color: '#b3261e', paddingTop: '2%' }}>
+          TAP FOR FULL RANKINGS
+        </div>
+      </Link>
     </div>
   );
 }

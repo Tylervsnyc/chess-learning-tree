@@ -264,7 +264,8 @@ html {
    BoxTabBar toggles this class; body is the flex column, so padding here
    shrinks every page's internal scroll container above the bar. */
 html.has-box-tabbar body {
-  padding-bottom: calc(52px + env(safe-area-inset-bottom));
+  /* BoxTabBar: 48px buttons + 6px top/bottom padding */
+  padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 
 body {

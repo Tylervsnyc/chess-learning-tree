@@ -29,6 +29,9 @@ export function BoxToday() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [last, setLast] = useState<LastSession | null | undefined>(undefined);
   const [rank, setRank] = useState<{ rank: number; total: number } | null | undefined>(undefined);
+  const [rankedLeft, setRankedLeft] = useState<number | undefined>(undefined);
+  // Authed but no fighter name yet -> invisible on every leaderboard. Nudge.
+  const [needsUsername, setNeedsUsername] = useState(false);
   // Settings gear only shows inside the app shell.
   const inShell = useBoxShell();
 
@@ -40,10 +43,40 @@ export function BoxToday() {
       .then((d) => setLast(d?.sessions?.[0] ?? null))
       .catch(() => setLast(null));
 
-    fetch('/api/leaderboard?scope=global&period=weekly')
+    // Rank plaque: your crew's board first — global only when you have no
+    // crew (same crew-first read as the standings sheet behind the door).
+    (async () => {
+      try {
+        const crewRes = await fetch('/api/leaderboard?scope=crew&period=weekly');
+        if (crewRes.status === 401) { setRank(null); return; }
+        if (crewRes.ok) {
+          const d = await crewRes.json();
+          if (!d?.notInCrew) {
+            setRank(d?.me ? { rank: d.me.rank, total: d.total } : null);
+            return;
+          }
+        }
+        const res = await fetch('/api/leaderboard?scope=global&period=weekly');
+        const d = res.ok ? await res.json() : null;
+        setRank(d?.me ? { rank: d.me.rank, total: d.total } : null);
+      } catch {
+        setRank(null);
+      }
+    })();
+
+    // Is today's ranked bout still on the table? Tags the FIGHT gloves.
+    fetch('/api/bout/today')
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setRank(d?.me ? { rank: d.me.rank, total: d.total } : null))
-      .catch(() => setRank(null));
+      .then((d) => {
+        if (typeof d?.rankedLeft === 'number') setRankedLeft(d.rankedLeft);
+      })
+      .catch(() => {});
+
+    // 401 = logged out (no nudge); ok + null username = nudge.
+    fetch('/api/profile/username')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setNeedsUsername(d !== null && d.username === null))
+      .catch(() => {});
   }, []);
 
   return (
@@ -72,11 +105,27 @@ export function BoxToday() {
             lastScore={last === undefined ? undefined : (last?.points ?? null)}
             lastScoreWhen={last ? relativeDay(last.createdAt) : null}
             rank={rank === undefined ? undefined : (rank ?? null)}
+            rankedLeft={rankedLeft}
             onFight={() => router.push(FEATURE_FLAGS.BOUT_MODE ? '/box/bout' : '/workout')}
             onTrain={() => router.push('/workout')}
           />
         </div>
       </div>
+
+      {/* Fighter-name nudge — signed in, no handle, invisible on the boards. */}
+      {needsUsername && (
+        <div className="absolute inset-x-0 bottom-0 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <Link
+            href="/leaderboard"
+            className="pointer-events-auto flex items-center gap-1.5 min-h-[44px] px-4 rounded-full bg-chess-surface border-2 border-chess-blue text-chess-blue text-xs font-extrabold shadow-[0_3px_0_0_#0d7ec4] active:translate-y-[3px] active:shadow-none transition-transform tap-highlight"
+          >
+            Pick your fighter name to enter the rankings
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </Link>
+        </div>
+      )}
 
       {/* Gym sign + settings — the only chrome, floating over the scene. */}
       <div className="absolute inset-x-0 top-0 mx-auto max-w-lg md:max-w-xl px-3 pt-[max(0.75rem,env(safe-area-inset-top))] flex items-start justify-center pointer-events-none">
