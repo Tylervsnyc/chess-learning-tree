@@ -23,6 +23,12 @@ export async function updateSession(request: NextRequest) {
 
   // Root path: check auth and redirect accordingly
   if (pathname === '/') {
+    // Chess Boxing native shell: the cp_boxapp cookie (set by the shell's
+    // head script on first launch) sends cold starts straight to /box
+    // server-side — the web home never renders, so there's no flash.
+    if (request.cookies.get('cp_boxapp')?.value === '1') {
+      return redirectPreservingQuery('/box', request);
+    }
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

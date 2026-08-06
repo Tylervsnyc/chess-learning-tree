@@ -9,7 +9,6 @@ import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
 import { NativeSplash } from '@/components/chessboxing/NativeSplash';
 import { BoxTabBar } from '@/components/chessboxing/BoxTabBar';
 import { StatusBarSync } from '@/components/chessboxing/StatusBarSync';
-import { NativeHomeRedirect } from '@/components/chessboxing/NativeHomeRedirect';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
 export const metadata: Metadata = {
@@ -74,12 +73,21 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {/* Chess Boxing shell home redirect — runs before paint so the web
+            home never flashes inside the app. First launch: detect Capacitor
+            (its bridge is injected before page scripts), set the cp_boxapp
+            cookie (the middleware then handles / server-side on every later
+            launch), and replace to /box. Once per session so the Play tab and
+            in-app browsing are left alone. Debug on web with ?boxapp=1. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var p=location.pathname;if(['/','/welcome','/path','/play'].indexOf(p)<0)return;var w=window;var inApp=(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||/[?&]boxapp/.test(location.search)||sessionStorage.getItem('cp:boxapp')==='1';if(!inApp)return;sessionStorage.setItem('cp:boxapp','1');document.cookie='cp_boxapp=1;path=/;max-age=31536000;SameSite=Lax';if(sessionStorage.getItem('cp:box-home-redirected')==='1')return;sessionStorage.setItem('cp:box-home-redirected','1');location.replace('/box');}catch(e){}})();",
+          }}
+        />
       </head>
       <body className="antialiased">
         <NativeSplash />
-        <SilentErrorBoundary label="NativeHomeRedirect">
-          <NativeHomeRedirect />
-        </SilentErrorBoundary>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
