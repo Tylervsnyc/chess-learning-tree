@@ -6,6 +6,9 @@ import { useUser } from '@/hooks/useUser';
 import { getStreak, getTz, type StreakData } from '@/lib/streak-client';
 import RookieCampfire from '@/components/shared/RookieCampfire';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
+import RookieRatingCard from '@/components/profile/RookieRatingCard';
+import { ELO_BASELINE, PROVISIONAL_EVENTS } from '@/lib/elo/estimate';
+import type { EloSeriesPoint } from '@/lib/elo/rookie-rating';
 
 /**
  * /box/profile — the Chess Boxing app's Profile tab. A compact, no-scroll
@@ -33,7 +36,7 @@ interface DashboardData {
     gamesPlayed: number;
     workoutPoints: number;
   };
-  elo?: { current: number; events: number };
+  elo?: { current: number; events: number; series: EloSeriesPoint[] };
   week?: WeekData;
 }
 
@@ -42,6 +45,7 @@ export default function BoxProfilePage() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [dash, setDash] = useState<DashboardData | null>(null);
   const [record, setRecord] = useState<BoutRecord | null>(null);
+  const [showElo, setShowElo] = useState(false);
 
   useEffect(() => {
     getStreak().then(setStreak);
@@ -157,7 +161,19 @@ export default function BoxProfilePage() {
 
         {/* Lifetime tiles — one compact row so the whole card fits an SE */}
         <div className="flex-1 min-h-0 grid grid-cols-4 gap-2 content-start">
-          <Tile label="ELO" value={dash?.elo ? String(dash.elo.current) : '—'} />
+          <button
+            type="button"
+            onClick={() => setShowElo(true)}
+            aria-label="Chess Path ELO — see your rating graph and how it's calculated"
+            className="rounded-2xl bg-chess-surface border border-chess-blue/30 shadow-sm px-2 py-2.5 text-center min-w-0 tap-highlight active:scale-[0.97] transition-transform"
+          >
+            <div className="text-lg font-black tabular-nums text-chess-blue truncate">
+              {dash?.elo ? String(dash.elo.current) : '—'}
+            </div>
+            <div className="text-[10px] font-black uppercase tracking-wide text-chess-text-muted truncate">
+              ELO ›
+            </div>
+          </button>
           <Tile
             label="Points"
             value={dash?.stats ? dash.stats.workoutPoints.toLocaleString() : '—'}
@@ -172,6 +188,64 @@ export default function BoxProfilePage() {
           />
         </div>
       </div>
+
+      {/* Chess Path ELO sheet — the website's rating card, app-compact */}
+      {showElo && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+          onClick={() => setShowElo(false)}
+        >
+          <div
+            className="w-full max-w-lg max-h-[85dvh] overflow-y-auto rounded-t-3xl bg-chess-page px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300" />
+            <RookieRatingCard data={dash?.elo ?? null} loading={dash === null} />
+            <EloExplainer />
+            <button
+              type="button"
+              onClick={() => setShowElo(false)}
+              className="mt-3 w-full rounded-2xl bg-chess-surface border border-slate-200 py-3 text-sm font-black text-chess-text tap-highlight"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Plain-English version of lib/elo/estimate.ts — keep in sync with the model
+ * (baseline, provisional period, puzzle-vs-game weighting) if it changes.
+ */
+function EloExplainer() {
+  return (
+    <div className="mt-3 rounded-3xl bg-chess-surface border border-slate-200 shadow-sm px-4 py-4">
+      <h3 className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+        How your ELO is calculated
+      </h3>
+      <ul className="mt-2 space-y-2 text-[13px] font-semibold leading-snug text-chess-text">
+        <li>
+          We never ask for a rating — we estimate one from everything you do here, replayed in
+          order through standard Elo math.
+        </li>
+        <li>
+          Every puzzle is a mini-match against an opponent rated at that puzzle&apos;s difficulty:
+          solve it and your rating rises, miss it and it dips. Beating something above your level
+          moves it most.
+        </li>
+        <li>
+          Full games against Rookie count double a puzzle, with her level setting the opponent
+          rating (Level 1 ≈ 200, up to Level 10 ≈ 2000).
+        </li>
+        <li>
+          Everyone starts at {ELO_BASELINE}. Your first {PROVISIONAL_EVENTS} results move the
+          number fast so it finds your real level, then it settles down and shifts gradually.
+        </li>
+        <li>It&apos;s an honest estimate (Beta) — it can go down on a rough day — not an official rating.</li>
+      </ul>
     </div>
   );
 }
