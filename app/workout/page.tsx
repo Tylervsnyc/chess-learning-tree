@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import nextDynamic from 'next/dynamic';
 import { Chess, type Square } from 'chess.js';
 import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
@@ -54,6 +55,14 @@ import { PunchTracker } from '@/components/workout/PunchTracker';
 import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+
+// Quadrant Fight (beta) — opt-in camera game for boxing segments. Lazy so the
+// TF.js/game code is code-split and never loads unless the user turns it on.
+// Pure visual layer: no points, no DB, no streak, no analytics.
+const QuadrantFight = nextDynamic(() => import('@/components/box/QuadrantFight'), { ssr: false });
+
+/** localStorage key for the Quadrant Fight opt-in (shared with the Bout flow). */
+const QUAD_FIGHT_KEY = 'cp_quadrant_fight_optin';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -431,6 +440,9 @@ function WorkoutPageInner() {
   // punchesRef accumulates the WHOLE-session total across rounds, using
   // segPunchBaseRef to convert the mount's cumulative total into deltas.
   const [punchCamOn, setPunchCamOn] = useState(false);
+  // Quadrant Fight (beta) opt-in — camera game shown during exercise segments.
+  // Default OFF; persisted so it stays on across rounds/sessions once enabled.
+  const [quadFightOn, setQuadFightOn] = useState(false);
   const punchesRef = useRef(0);
   const segPunchBaseRef = useRef(0);
   const [punchTotal, setPunchTotal] = useState(0); // live display
@@ -837,6 +849,13 @@ function WorkoutPageInner() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setPunchCamOn(window.localStorage.getItem('cp_punch_cam') === '1');
+    setQuadFightOn(window.localStorage.getItem(QUAD_FIGHT_KEY) === '1');
+  }, []);
+
+  const toggleQuadFight = useCallback((on: boolean) => {
+    setQuadFightOn(on);
+    if (typeof window !== 'undefined')
+      window.localStorage.setItem(QUAD_FIGHT_KEY, on ? '1' : '0');
   }, []);
 
   // Each new exercise segment is a fresh tracker mount → reset the per-mount
@@ -2078,6 +2097,16 @@ function WorkoutPageInner() {
                 </button>
                 {isFight && <FrozenFightBoard fen={fightFen} />}
               </>
+            ) : quadFightOn ? (
+              // Quadrant Fight (beta): opt-in camera game for the exercise
+              // segment. Visual/fitness layer ONLY — the workout's own timer,
+              // scoring, and completion flow run exactly as without it.
+              <>
+                <div className="text-6xl font-black text-chess-text tabular-nums">
+                  {fmtTime(secondsLeft)}
+                </div>
+                <QuadrantFight compact onClose={() => toggleQuadFight(false)} />
+              </>
             ) : (
               <>
                 {!FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (
@@ -2112,6 +2141,15 @@ function WorkoutPageInner() {
                     Count my punches
                   </button>
                 )}
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    toggleQuadFight(true);
+                  }}
+                  className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4"
+                >
+                  Quadrant Fight (beta)
+                </button>
               </>
             )}
           </div>

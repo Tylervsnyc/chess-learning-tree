@@ -25,6 +25,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import nextDynamic from 'next/dynamic';
 import { Chess, type Square } from 'chess.js';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
@@ -82,6 +83,15 @@ import {
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
+
+// Quadrant Fight (beta) — OPT-IN camera game for boxing rounds. Lazy so the
+// TF.js/game code never loads unless the user turns it on. It measures and
+// persists NOTHING (no punches counted, no API/DB/analytics writes) — the
+// "no physical tracking" rule for bouts still holds; this is a visual layer.
+const QuadrantFight = nextDynamic(() => import('@/components/box/QuadrantFight'), { ssr: false });
+
+/** localStorage key for the Quadrant Fight opt-in (shared with the workout). */
+const QUAD_FIGHT_KEY = 'cp_quadrant_fight_optin';
 
 /**
  * A finished bout that hit a 401 (logged-out fighter) waits here, and the next
@@ -248,6 +258,19 @@ export default function BoutPage() {
   // Rookie's corner: one line at a time during a boxing round, swapped on a
   // timer. She is the entire round now, so she can't go quiet.
   const [cornerLine, setCornerLine] = useState<string>(BOUT_LINES.boxing[0]);
+
+  // Quadrant Fight (beta) opt-in — default OFF, persisted across sessions.
+  // Purely visual: bell timer, scoring, and bout completion are untouched.
+  const [quadFightOn, setQuadFightOn] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setQuadFightOn(window.localStorage.getItem(QUAD_FIGHT_KEY) === '1');
+  }, []);
+  const toggleQuadFight = useCallback((on: boolean) => {
+    setQuadFightOn(on);
+    if (typeof window !== 'undefined')
+      window.localStorage.setItem(QUAD_FIGHT_KEY, on ? '1' : '0');
+  }, []);
 
   const seg = segments[segIndex];
 
@@ -1392,48 +1415,72 @@ export default function BoutPage() {
           // NOTHING is measured here (2026-08-05, Tyler): no camera, no tap
           // pad, no count. Reaching the bell is the achievement, and Rookie
           // talking you through it is the whole experience.
+          // Exception (opt-in, default OFF): Quadrant Fight (beta) — a camera
+          // GAME the user can turn on for the round. It still measures and
+          // records nothing; the bell timer and bout flow are untouched.
           <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 md:px-6 py-2 text-center gap-4 max-w-md md:max-w-lg mx-auto w-full">
             <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e5484d] shrink-0">
               Boxing round {seg?.round}
             </div>
-            <div className="text-7xl font-black text-chess-text tabular-nums shrink-0 leading-none">
+            <div
+              className={`${quadFightOn ? 'text-4xl' : 'text-7xl'} font-black text-chess-text tabular-nums shrink-0 leading-none`}
+            >
               {fmtClock(roundLeft)}
             </div>
-            {/* Persistent instruction — the one thing this round asks of you.
-                Rookie's rotating corner lines are color; this is the job. */}
-            <p className="text-xs font-black text-chess-text uppercase tracking-wide shrink-0">
-              Gloves up — shadowbox or work the bag until the bell.
-            </p>
-            <BreathingRook size="lg" animate mood="excited" />
-            {/* Rookie's corner — rotates through the round so she keeps talking */}
-            <p
-              key={cornerLine}
-              className="bout-corner-line text-sm font-bold text-chess-text leading-snug max-w-xs min-h-[3rem] flex items-center justify-center shrink-0"
-            >
-              {cornerLine}
-            </p>
-            {/* The frozen game, visible but locked — soaks up whatever height
-                is left (may get small on an SE; it's decoration here) */}
-            <div
-              className="flex-1 min-h-0 w-full flex items-center justify-center"
-              style={{ containerType: 'size' }}
-            >
-              <div
-                className="relative"
-                style={{ width: 'min(100%, 200px, 100cqh)', aspectRatio: '1 / 1' }}
-              >
-                <div className="pointer-events-none opacity-40 grayscale">
-                  <ChessPathBoard
-                    options={{ position: fen, boardOrientation: 'white', animationDurationInMs: 0 }}
-                  />
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="rounded-lg bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5">
-                    Frozen
-                  </span>
-                </div>
+            {quadFightOn ? (
+              // The game soaks up the leftover height; if a small phone can't
+              // fit it, it scrolls inside its own container (page never does).
+              <div className="flex-1 min-h-0 w-full overflow-y-auto">
+                <QuadrantFight compact onClose={() => toggleQuadFight(false)} />
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Persistent instruction — the one thing this round asks of you.
+                    Rookie's rotating corner lines are color; this is the job. */}
+                <p className="text-xs font-black text-chess-text uppercase tracking-wide shrink-0">
+                  Gloves up — shadowbox or work the bag until the bell.
+                </p>
+                <BreathingRook size="lg" animate mood="excited" />
+                {/* Rookie's corner — rotates through the round so she keeps talking */}
+                <p
+                  key={cornerLine}
+                  className="bout-corner-line text-sm font-bold text-chess-text leading-snug max-w-xs min-h-[3rem] flex items-center justify-center shrink-0"
+                >
+                  {cornerLine}
+                </p>
+                {/* The frozen game, visible but locked — soaks up whatever height
+                    is left (may get small on an SE; it's decoration here) */}
+                <div
+                  className="flex-1 min-h-0 w-full flex items-center justify-center"
+                  style={{ containerType: 'size' }}
+                >
+                  <div
+                    className="relative"
+                    style={{ width: 'min(100%, 200px, 100cqh)', aspectRatio: '1 / 1' }}
+                  >
+                    <div className="pointer-events-none opacity-40 grayscale">
+                      <ChessPathBoard
+                        options={{ position: fen, boardOrientation: 'white', animationDurationInMs: 0 }}
+                      />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="rounded-lg bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-[0.2em] px-3 py-1.5">
+                        Frozen
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    toggleQuadFight(true);
+                  }}
+                  className="shrink-0 text-xs font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4 tap-highlight"
+                >
+                  Quadrant Fight (beta)
+                </button>
+              </>
+            )}
           </div>
         ) : (
           // ── Chess round (also shown, dimmed, under the bell overlay) ─────
