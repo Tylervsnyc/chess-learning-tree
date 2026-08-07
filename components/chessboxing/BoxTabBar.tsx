@@ -28,7 +28,7 @@ const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding'];
  * belong to the Train tab.
  */
 const TABS = [
-  { href: '/box', label: 'Chess Box', icon: GloveIcon, match: [] as string[], color: '#FF4B4B', shadow: '#CC3939', tint: 'rgba(255,75,75,0.12)' },
+  { href: '/box', label: 'Chess Box', icon: BellIcon, match: [] as string[], color: '#FF4B4B', shadow: '#CC3939', tint: 'rgba(255,75,75,0.12)' },
   { href: null, label: 'Train', icon: TargetIcon, match: ['/path', '/openings', '/lesson', '/solve'], color: '#CE82FF', shadow: '#a855f7', tint: 'rgba(206,130,255,0.14)' },
   { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[], color: '#58CC02', shadow: '#3d8c01', tint: 'rgba(88,204,2,0.12)' },
   { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'], color: '#1CB0F6', shadow: '#0d7ec4', tint: 'rgba(28,176,246,0.12)' },
@@ -158,13 +158,13 @@ export function BoxTabBar() {
 
 /* Inline icons — 24px stroke style, no emoji. Kept tiny: this ships on every page. */
 
-function GloveIcon() {
+function BellIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      {/* boxing glove: rounded fist + cuff */}
-      <path d="M7 10V7a5 5 0 0 1 10 0v4a5 5 0 0 1-3 4.6V17H9v-1.4A5 5 0 0 1 7 12" />
-      <path d="M7 10a2 2 0 1 0 2 3" />
-      <path d="M9 20h5v-3" />
+      {/* round bell — ding ding */}
+      <path d="M12 4a7 7 0 0 1 7 7v4H5v-4a7 7 0 0 1 7-7Z" />
+      <path d="M12 4V2.5M4 18.5h16" />
+      <path d="M9 21.5h6" />
     </svg>
   );
 }
