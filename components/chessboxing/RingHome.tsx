@@ -213,7 +213,7 @@ export function RingHome() {
             <PeriodToggle period={period} onChange={setPeriod} />
             <div className="flex items-center justify-center gap-2 text-[10.5px] font-bold text-white/45">
               <BellIcon className="w-3.5 h-3.5" />
-              <span className="uppercase tracking-widest">Board resets in</span>
+              <span className="uppercase tracking-widest">Leaderboard resets in</span>
               <span className="font-black text-white/80 tabular-nums">{periodEndsIn(period)}</span>
             </div>
           </div>
