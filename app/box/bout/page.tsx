@@ -37,6 +37,7 @@ import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { BoutEvents } from '@/lib/analytics/posthog';
 import { claimStreakToday } from '@/lib/streak-client';
 import {
@@ -827,19 +828,17 @@ export default function BoutPage() {
   // pre-fight card stack fits a 375×667 window (tab bar hidden on this route).
   if (phase === 'prefight') {
     return (
-      <div className="h-full overflow-hidden bg-chess-page flex flex-col">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2.5 my-auto flex flex-col gap-2 min-h-0">
-          <div
-            className="rounded-2xl p-3 text-center shadow-sm shrink-0"
-            style={{ background: 'linear-gradient(135deg, #b91c1c, #e5484d, #f97316)' }}
-          >
-            <h1
-              className="text-xl md:text-3xl font-black text-white tracking-tight"
-              style={{ textShadow: '0 2px 6px rgba(0,0,0,0.25)' }}
-            >
-              Bout vs Rookie
-            </h1>
-            <p className="text-white/90 text-xs md:text-sm font-bold mt-0.5">
+      <div className="h-full overflow-hidden bg-[#131a2e] flex flex-col relative">
+        <ArenaScene />
+        <ArenaBackButton />
+        {/* The hanging sign — same slot as RingHome so it never moves between windows. */}
+        <div className="pt-[max(0.9rem,env(safe-area-inset-top))] flex justify-center relative z-10 shrink-0">
+          <div className="ring-swing"><GymSign /></div>
+        </div>
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2.5 my-auto flex flex-col gap-2 min-h-0 relative z-10">
+          <div className="text-center shrink-0">
+            <h1 className="text-lg font-black text-white tracking-tight">Bout vs Rookie</h1>
+            <p className="text-[11px] font-bold text-white/60 mt-0.5">
               One game. The bell always wins.
             </p>
           </div>
@@ -861,18 +860,18 @@ export default function BoutPage() {
                     aria-pressed={active}
                     className={`flex-1 rounded-xl px-2 py-2 min-h-[48px] border-2 transition tap-highlight ${
                       active
-                        ? 'border-[#e5484d] bg-red-50'
-                        : 'border-slate-200 bg-chess-surface'
+                        ? 'border-[#e5484d] bg-[#e5484d]/15'
+                        : 'border-white/15 bg-white/[0.07]'
                     }`}
                   >
                     <span
                       className={`block text-[13px] font-black leading-tight ${
-                        active ? 'text-[#e5484d]' : 'text-chess-text'
+                        active ? 'text-[#ff8a8e]' : 'text-white'
                       }`}
                     >
                       {spec.label}
                     </span>
-                    <span className="block text-[10px] font-bold text-chess-text-muted tabular-nums">
+                    <span className="block text-[10px] font-bold text-white/50 tabular-nums">
                       {Math.round(boutDurationSeconds(id) / 60)} min
                       {id === RANKED_FORMAT ? ' · ranked' : ''}
                     </span>
@@ -880,7 +879,7 @@ export default function BoutPage() {
                 );
               })}
             </div>
-            <p className="text-center text-[11px] font-semibold text-chess-text-muted mt-1 leading-snug">
+            <p className="text-center text-[11px] font-semibold text-white/60 mt-1 leading-snug">
               {format === RANKED_FORMAT && rankedLeft === 0
                 ? "Today's ranked bout is spent — this one's an exhibition. Still counts for your streak."
                 : BOUT_FORMATS[format].blurb}
@@ -891,8 +890,8 @@ export default function BoutPage() {
               rounds and this screen never scrolls (see HARD RULE above). The
               widths are proportional to the seconds, so the shape of the bout
               reads at a glance and the breaks look like the rests they are. */}
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-3 shrink-0">
-            <h2 className="text-[10px] font-black text-chess-text-muted uppercase tracking-wide text-center mb-1.5">
+          <div className="bg-white/[0.06] rounded-2xl border border-white/10 p-3 shrink-0">
+            <h2 className="text-[10px] font-black text-white/50 uppercase tracking-wide text-center mb-1.5">
               Round card
             </h2>
             <div className="flex gap-[3px] h-7" aria-hidden>
@@ -904,7 +903,7 @@ export default function BoutPage() {
                       ? 'bg-violet-200 text-violet-900'
                       : s.kind === 'boxing'
                         ? 'bg-orange-200 text-orange-900'
-                        : 'bg-slate-100'
+                        : 'bg-white/15'
                   }`}
                   style={{ flexGrow: s.seconds, flexBasis: 0 }}
                 >
@@ -917,7 +916,7 @@ export default function BoutPage() {
                 </div>
               ))}
             </div>
-            <p className="text-[11px] font-bold text-chess-text-muted text-center mt-1.5 leading-snug">
+            <p className="text-[11px] font-bold text-white/60 text-center mt-1.5 leading-snug">
               {chessRounds} × chess {fmtClock(CHESS_ROUND_SECONDS)}
               {boxingRounds > 0 && <> · {boxingRounds} × boxing {fmtClock(BOXING_ROUND_SECONDS)}</>}
               <br />
@@ -942,7 +941,7 @@ export default function BoutPage() {
             </ul>
           </div>
 
-          <p className="text-center text-xs font-semibold text-chess-text-muted leading-snug px-2 shrink-0">
+          <p className="text-center text-xs font-semibold text-white/55 leading-snug px-2 shrink-0">
             {pickLine(BOUT_LINES.prefight, new Date().getDate())}
           </p>
 
@@ -951,15 +950,6 @@ export default function BoutPage() {
             className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-lg py-3 min-h-[48px] shadow-[0_4px_0_#b53437] tap-highlight shrink-0"
           >
             Fight
-          </button>
-          <button
-            onClick={() => {
-              playButtonClick();
-              router.push('/box');
-            }}
-            className="text-sm font-bold text-chess-text-muted py-1 min-h-[40px] tap-highlight shrink-0"
-          >
-            Back
           </button>
         </div>
       </div>

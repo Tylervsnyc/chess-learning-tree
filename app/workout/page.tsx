@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Chess, type Square } from 'chess.js';
 import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
+import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { usePremove } from '@/hooks/usePremove';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
@@ -345,7 +346,19 @@ interface FinishResult {
 }
 
 export default function WorkoutPage() {
+  // Suspense boundary for useSearchParams (arena styling when entered from /box).
+  return (
+    <Suspense fallback={null}>
+      <WorkoutPageInner />
+    </Suspense>
+  );
+}
+
+function WorkoutPageInner() {
   const router = useRouter();
+  // Entered from the Chess Boxing ring → setup wears the dark arena look and
+  // gets a back button to /box. Reached any other way, nothing changes.
+  const fromBox = useSearchParams().get('from') === 'box';
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [minutes, setMinutes] = useState<number>(16);
@@ -379,6 +392,8 @@ export default function WorkoutPage() {
 
   // 3 strikes: wrong answers in the CURRENT chess segment; the 3rd ends it.
   const strikesRef = useRef(0);
+  // Render mirror of strikesRef — the three X slots in the running header.
+  const [strikes, setStrikes] = useState(0);
   // Rookie's one-liner shown briefly when strikes end a chess segment.
   const [strikeNotice, setStrikeNotice] = useState<string | null>(null);
 
@@ -832,7 +847,10 @@ export default function WorkoutPage() {
       segPunchBaseRef.current = 0;
       segStartPunchesRef.current = punchesRef.current;
     }
-    if (current?.kind === 'chess') strikesRef.current = 0;
+    if (current?.kind === 'chess') {
+      strikesRef.current = 0;
+      setStrikes(0);
+    }
   }, [segIndex, current?.kind]);
 
   // Re-enabling the cam mid-segment is also a fresh mount — a stale base would
@@ -1006,6 +1024,7 @@ export default function WorkoutPage() {
     setTargetElo(START_ELO);
     setHighWaterElo(START_ELO);
     strikesRef.current = 0;
+    setStrikes(0);
     setStrikeNotice(null);
     setFiredUp(false);
     roundPointsRef.current = [];
@@ -1079,6 +1098,7 @@ export default function WorkoutPage() {
     setTargetElo(snap.targetElo ?? START_ELO);
     setHighWaterElo(Math.max(snap.highWaterElo ?? START_ELO, snap.targetElo ?? START_ELO));
     strikesRef.current = 0; // strikes are per-segment; a resume starts the segment fresh
+    setStrikes(0);
     setStrikeNotice(null);
     setFiredUp(false); // Fired Up isn't snapshotted — earn it again
     roundPointsRef.current = snap.roundPoints ?? [];
@@ -1344,6 +1364,7 @@ export default function WorkoutPage() {
     // 3 strikes: the 3rd wrong answer in one chess segment ends it now —
     // mass-failing to tank difficulty costs the rest of the round.
     strikesRef.current += 1;
+    setStrikes(strikesRef.current);
     if (strikesRef.current >= MAX_STRIKES_PER_SEGMENT) {
       setStrikeNotice("Three down — round's over. Shake it off.");
       advanceSegment();
@@ -1375,26 +1396,52 @@ export default function WorkoutPage() {
   // ── SETUP ─────────────────────────────────────────────────────────────────
   if (phase === 'setup') {
     return (
-      <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-4 flex flex-col gap-3">
-          {/* Title in its own fun window */}
-          <div
-            className="rounded-2xl p-3.5 text-center shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef, #f97316)' }}
-          >
-            <h1
-              className="text-2xl font-black text-white tracking-tight"
-              style={{ textShadow: '0 2px 6px rgba(0,0,0,0.25)' }}
-            >
-              Chess Boxing
-            </h1>
+      <div className={`h-full ${fromBox ? 'relative overflow-hidden bg-[#131a2e] flex flex-col' : 'overflow-auto bg-chess-page'}`}>
+        {fromBox && <ArenaScene />}
+        {fromBox && <ArenaBackButton />}
+        {/* The hanging sign — same slot as RingHome so it never moves between windows. */}
+        {fromBox && (
+          <div className="pt-[max(0.9rem,env(safe-area-inset-top))] flex justify-center relative z-10 shrink-0">
+            <div className="ring-swing"><GymSign /></div>
           </div>
+        )}
+        {/* fromBox = ONE fixed window, no scroll (native-shell rule): centered
+            column, everything fits a 375×667 screen. */}
+        <div className={fromBox ? 'flex-1 min-h-0 overflow-hidden relative z-10 flex flex-col' : 'contents'}>
+        <div
+          className={`max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 flex flex-col relative ${
+            fromBox
+              ? 'my-auto gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]'
+              : 'py-4 gap-3'
+          }`}
+        >
+          {fromBox ? (
+            /* Puzzle Boxing is the ranked discipline */
+            <div className="flex items-center justify-center gap-2 text-[11px] font-bold text-white/65 leading-snug">
+              <span className="shrink-0 rounded-full bg-[#f6c445] text-[#3d2e00] px-2.5 py-[3px] text-[9px] font-black uppercase tracking-[0.14em] shadow-[0_2px_0_0_#b8860b]">
+                Ranked
+              </span>
+              Every point you score here goes on the Global &amp; Squad boards.
+            </div>
+          ) : (
+            <div
+              className="rounded-2xl p-3.5 text-center shadow-sm"
+              style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef, #f97316)' }}
+            >
+              <h1
+                className="text-2xl font-black text-white tracking-tight"
+                style={{ textShadow: '0 2px 6px rgba(0,0,0,0.25)' }}
+              >
+                Chess Boxing
+              </h1>
+            </div>
+          )}
 
           {resumable && (
-            <div className="rounded-2xl border-2 border-chess-blue/40 bg-chess-blue/5 p-4 flex flex-col gap-3">
+            <div className={`rounded-2xl border-2 border-chess-blue/40 p-4 flex flex-col gap-3 ${fromBox ? 'bg-chess-blue/15' : 'bg-chess-blue/5'}`}>
               <div>
-                <div className="text-sm font-black text-chess-text">Resume your workout?</div>
-                <div className="text-xs text-chess-text-muted mt-0.5">
+                <div className={`text-sm font-black ${fromBox ? 'text-white' : 'text-chess-text'}`}>Resume your workout?</div>
+                <div className={`text-xs mt-0.5 ${fromBox ? 'text-white/60' : 'text-chess-text-muted'}`}>
                   You left off on round {Math.floor(resumable.segIndex / ROUND_LENGTH) + 1} of{' '}
                   {Math.max(1, Math.round((resumable.minutes * 60) / ROUND_SECONDS))}.
                 </div>
@@ -1411,7 +1458,11 @@ export default function WorkoutPage() {
                     clearResume();
                     setResumable(null);
                   }}
-                  className="rounded-xl bg-chess-surface border border-slate-200 text-chess-text-muted font-black text-sm px-4 py-3 active:translate-y-[1px] transition"
+                  className={`rounded-xl font-black text-sm px-4 py-3 active:translate-y-[1px] transition ${
+                    fromBox
+                      ? 'bg-white/10 border border-white/15 text-white/70'
+                      : 'bg-chess-surface border border-slate-200 text-chess-text-muted'
+                  }`}
                 >
                   Start over
                 </button>
@@ -1419,7 +1470,9 @@ export default function WorkoutPage() {
             </div>
           )}
 
-          {/* One Round — bold title with two lines encompassing the bars */}
+          {/* One Round — bold title with two lines encompassing the bars.
+              Hidden in the ring flow: one window, the rounds picker says it all. */}
+          {!fromBox && (
           <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 pt-5">
             <div className="relative rounded-xl border-2 border-chess-text/15 px-3 pt-6 pb-3">
               {/* "One Round" sits on the top border; the side borders are the two
@@ -1456,9 +1509,10 @@ export default function WorkoutPage() {
               })()}
             </div>
           </div>
+          )}
 
           <div>
-            <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide mb-2 text-center">
+            <h2 className={`text-[11px] font-bold uppercase tracking-wide mb-2 text-center ${fromBox ? 'text-white/50' : 'text-chess-text-muted'}`}>
               How many rounds?
             </h2>
             <div className="grid grid-cols-4 gap-2">
@@ -1473,12 +1527,14 @@ export default function WorkoutPage() {
                     }}
                     className={`rounded-xl border-2 py-2.5 transition flex flex-col items-center leading-none ${
                       minutes === m
-                        ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
-                        : 'border-slate-200 bg-chess-surface text-chess-text'
+                        ? `border-chess-blue text-chess-blue ${fromBox ? 'bg-chess-blue/20' : 'bg-chess-blue/10'}`
+                        : fromBox
+                          ? 'border-white/15 bg-white/[0.07] text-white'
+                          : 'border-slate-200 bg-chess-surface text-chess-text'
                     }`}
                   >
                     <span className="font-black text-lg">{rounds}</span>
-                    <span className="text-[10px] font-semibold text-chess-text-muted mt-0.5">
+                    <span className={`text-[10px] font-semibold mt-0.5 ${fromBox ? 'text-white/50' : 'text-chess-text-muted'}`}>
                       {m} min
                     </span>
                   </button>
@@ -1487,8 +1543,9 @@ export default function WorkoutPage() {
             </div>
           </div>
 
-          {/* Discipline picker — puzzles (default) vs one continuous game */}
-          {fightEnabled && (
+          {/* Discipline picker — puzzles (default) vs one continuous game.
+              Hidden in the ring flow: Play vs Rookie is the other corner. */}
+          {fightEnabled && !fromBox && (
             <div>
               <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide mb-2 text-center">
                 Discipline
@@ -1530,7 +1587,22 @@ export default function WorkoutPage() {
             </div>
           )}
 
+          {/* Ring flow: the rules in three lines, dark, no header. */}
+          {fromBox && (
+            <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-3">
+              <ul className="flex flex-col gap-1.5 text-xs font-bold text-white/85 leading-snug">
+                <li className="flex items-center gap-2">
+                  <span className="text-chess-green">✓</span> Harder puzzle = more points · streaks combo to ×2
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-chess-red">✗</span> 3 wrong in a round = round over
+                </li>
+              </ul>
+            </div>
+          )}
+
           {/* Difficulty adapts — compact bullets */}
+          {!fromBox && (
           <div
             className="rounded-2xl border border-amber-200 shadow-sm p-3"
             style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)' }}
@@ -1558,10 +1630,6 @@ export default function WorkoutPage() {
                   <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                   Checkmate Rookie = big bonus (she plays your /play level)
                 </li>
-                <li className="flex items-center gap-2">
-                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  {FIRED_UP_PUNCH_TARGET}+ punches = next round Fired Up (+25%)
-                </li>
               </ul>
             ) : (
             <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
@@ -1583,13 +1651,10 @@ export default function WorkoutPage() {
                 <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 Easy puzzles below your peak barely pay
               </li>
-              <li className="flex items-center gap-2">
-                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                {FIRED_UP_PUNCH_TARGET}+ punches = next round Fired Up (+25%)
-              </li>
             </ul>
             )}
           </div>
+          )}
 
           <button
             onClick={begin}
@@ -1597,6 +1662,7 @@ export default function WorkoutPage() {
           >
             Begin
           </button>
+        </div>
         </div>
       </div>
     );
@@ -1870,11 +1936,26 @@ export default function WorkoutPage() {
         </div>
         {/* Round progress bar — 4 parts, with the moving playhead */}
         <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 pb-3.5">
-          <div className="flex items-baseline justify-between mb-2">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-black text-chess-text uppercase tracking-wide">
               Round {roundIndex + 1}{' '}
               <span className="text-chess-text-muted">of {roundCount}</span>
             </span>
+            {/* 3 strikes — misses this puzzle segment; the 3rd ends the round. */}
+            {isChess && !isFight && (
+              <span className="flex items-center gap-1" aria-label={`${strikes} of 3 misses this round`}>
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className={`text-[15px] font-black leading-none transition-colors duration-300 ${
+                      i < strikes ? 'text-chess-red' : 'text-chess-text/20'
+                    }`}
+                  >
+                    ✗
+                  </span>
+                ))}
+              </span>
+            )}
           </div>
           <CircuitTimeline
             segments={roundSegments}
