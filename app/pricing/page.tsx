@@ -94,7 +94,7 @@ function PricingContent() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-45px)]">
+    <div className="flex flex-col h-full">
       {/* Success/Cancel Messages — overlay at top if present */}
       {success && (
         <div className="mx-auto mt-2 w-full max-w-md md:max-w-lg px-4 md:px-6">
@@ -244,7 +244,7 @@ function FeatureRow({ icon, title, free }: {
 
 function PricingFallback() {
   return (
-    <div className="flex-1 flex justify-center items-center h-[calc(100dvh-45px)]">
+    <div className="flex-1 flex justify-center items-center h-full">
       <BreathingRook size="lg" animate label="Loading pricing..." />
     </div>
   );

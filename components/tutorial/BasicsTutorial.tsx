@@ -465,7 +465,7 @@ function BasicsDoneScreen({ onContinue, playerName }: { onContinue: () => void; 
   }, []);
 
   return (
-    <div className="h-[100dvh] bg-chess-page text-chess-text flex flex-col">
+    <div className="h-full bg-chess-page text-chess-text flex flex-col">
       <style>{progressBarStyles}</style>
       <TutorialHeader current={TOTAL_SEGMENTS} total={TOTAL_SEGMENTS} />
       <div className="flex-1 flex flex-col items-center justify-center px-6">

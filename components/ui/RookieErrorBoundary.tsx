@@ -49,7 +49,7 @@ export class RookieErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center h-[100dvh] bg-chess-page px-6 text-center gap-6">
+        <div className="flex flex-col items-center justify-center h-full bg-chess-page px-6 text-center gap-6">
           <BreathingRook size="lg" mood="defeated" animate />
           <p className="text-chess-text text-lg max-w-sm">{this.state.message}</p>
           <div className="flex gap-3">

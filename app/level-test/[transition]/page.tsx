@@ -459,7 +459,7 @@ export default function LevelTestPage() {
   // Loading state while validating transition
   if (isValid === null) {
     return (
-      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <BreathingRook size="lg" animate label="Preparing test..." />
       </div>
     );
@@ -488,7 +488,7 @@ export default function LevelTestPage() {
   // Loading state
   if (testState === 'loading') {
     return (
-      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <style>{progressBarStyles}</style>
         <BreathingRook size="lg" animate label="Loading test puzzles..." />
       </div>
@@ -569,7 +569,7 @@ export default function LevelTestPage() {
   // Test passed
   if (testState === 'passed') {
     return (
-      <div className="min-h-screen bg-chess-page flex items-center justify-center px-4 md:px-6 py-4">
+      <div className="h-full overflow-auto bg-chess-page flex items-center justify-center px-4 md:px-6 py-4">
         <div className="text-center max-w-md md:max-w-lg mx-auto w-full">
           <div className="flex justify-center mb-6">
             <AnimatedLogo
@@ -618,7 +618,7 @@ export default function LevelTestPage() {
   // Test failed
   if (testState === 'failed') {
     return (
-      <div className="min-h-screen bg-chess-page flex items-center justify-center px-4 md:px-6 py-4">
+      <div className="h-full overflow-auto bg-chess-page flex items-center justify-center px-4 md:px-6 py-4">
         <div className="text-center max-w-md md:max-w-lg mx-auto w-full">
           <div className="flex justify-center gap-1 mb-4">
             {[0, 1, 2].map(i => (
@@ -693,7 +693,7 @@ export default function LevelTestPage() {
   // Playing state - wait for puzzle to be ready
   if (!currentPuzzle || !currentFen || !chess) {
     return (
-      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <BreathingRook size="lg" animate label="Loading puzzle..." />
       </div>
     );

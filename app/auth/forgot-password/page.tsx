@@ -145,7 +145,7 @@ function ForgotPasswordContent() {
 export default function ForgotPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-chess-page flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <BreathingRook label="Loading..." />
       </div>
     }>

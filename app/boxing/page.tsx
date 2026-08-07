@@ -31,7 +31,7 @@ export default function BoxingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-chess-bg text-white overflow-auto">
+    <div className="h-full bg-chess-bg text-white overflow-auto">
       <div className="mx-auto max-w-xl px-5 pt-10 pb-20">
         <h1 className="text-3xl font-bold tracking-tight">Chess Boxing Puzzle Sheets</h1>
         <p className="mt-2 text-white/70">

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function BasicsPage() {
   return (
-    <div className="h-[100dvh] overflow-auto">
+    <div className="h-full overflow-auto">
       <BasicsTutorial />
     </div>
   );

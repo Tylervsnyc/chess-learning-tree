@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-chess-page text-chess-text">
+    <div className="h-full overflow-auto bg-chess-page text-chess-text">
       <div className="mx-auto w-full max-w-2xl px-4 md:px-6 py-12">
         <Link href="/" className="inline-flex min-h-[44px] items-center text-chess-green text-sm font-medium hover:underline">&larr; Back to Chess Path</Link>
         <h1 className="text-2xl font-bold mt-4 mb-1">Terms of Service</h1>

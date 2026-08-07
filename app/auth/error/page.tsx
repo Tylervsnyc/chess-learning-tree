@@ -29,7 +29,7 @@ function ErrorContent() {
   };
 
   return (
-    <div className="min-h-screen bg-chess-page flex items-center justify-center px-4 md:px-6">
+    <div className="h-full bg-chess-page flex items-center justify-center px-4 md:px-6">
       <div className="mx-auto w-full max-w-md md:max-w-lg text-center">
         <div className="mb-6">
           <div className="flex justify-center mb-4">
@@ -76,7 +76,7 @@ function ErrorContent() {
 export default function AuthErrorPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-chess-page flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <div className="text-chess-text-muted">Loading...</div>
       </div>
     }>
