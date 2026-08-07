@@ -340,7 +340,7 @@ export default function OpeningsPage() {
 
   if (progressLoading) {
     return (
-      <div className="h-[100dvh] bg-chess-page flex items-center justify-center">
+      <div className="h-full bg-chess-page flex items-center justify-center">
         <BreathingRook size="lg" animate label="Loading openings..." />
       </div>
     )

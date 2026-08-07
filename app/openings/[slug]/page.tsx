@@ -184,7 +184,7 @@ export default function OpeningDetailPage({
 
   if (!opening) {
     return (
-      <div className="min-h-screen bg-chess-page flex flex-col items-center justify-center p-6">
+      <div className="h-full bg-chess-page flex flex-col items-center justify-center p-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Opening not found
@@ -203,9 +203,8 @@ export default function OpeningDetailPage({
 
   return (
     <div
-      className="overflow-auto"
+      className="h-full overflow-auto"
       style={{
-        minHeight: '100vh',
         backgroundColor: '#eef6fc',
       }}
     >

@@ -44,7 +44,7 @@ export default function OpeningTreePage({
 
   if (!tree) {
     return (
-      <div className="min-h-screen bg-chess-page flex flex-col items-center justify-center p-6">
+      <div className="h-full bg-chess-page flex flex-col items-center justify-center p-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Opening not found
