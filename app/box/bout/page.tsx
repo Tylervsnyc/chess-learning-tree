@@ -38,6 +38,7 @@ import { useName } from '@/hooks/useName';
 import { useGameReview } from '@/hooks/useGameReview';
 import { GameReview } from '@/components/shared/GameReview';
 import type { ReviewMove } from '@/lib/review/review-core';
+import type { FightNightFrame } from '@/lib/og/fight-night-data';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
@@ -104,6 +105,24 @@ function stashPendingBout(payload: Record<string, unknown>) {
  * break · chess …) is locked in lib/bout/bout.ts — this page only runs it.
  */
 type Phase = 'prefight' | 'chess' | 'break' | 'boxing' | 'done';
+
+/** The last moves of the bout as Fight Night GIF frames: the position before
+    the window, then each ply, stamped on the final one if it was a KO. */
+function buildShareFrames(plies: ReviewMove[], outcome: string): FightNightFrame[] {
+  const tail = plies.slice(-3);
+  if (tail.length === 0) return [];
+  const baseFen =
+    plies.length > tail.length ? plies[plies.length - tail.length - 1].fenAfter : START_FEN;
+  const isKO = outcome === 'ko_win' || outcome === 'ko_loss';
+  return [
+    { fen: baseFen },
+    ...tail.map((m, j) => ({
+      fen: m.fenAfter,
+      last: `${m.from}${m.to}`,
+      stamp: j === tail.length - 1 && isKO,
+    })),
+  ];
+}
 
 /** "a rook" / "2 pawns" — material spoken the way a person would say it. */
 function fmtMaterial(pawns: number): string {
@@ -201,6 +220,9 @@ export default function BoutPage() {
   const finishedRef = useRef(false);
   const tauntedRef = useRef(false); // under-30s taunt fires once per bout
   const confettiFiredRef = useRef(false);
+  // The share GIF renders on-device in the background as soon as the result
+  // screen mounts; Share awaits this instead of a ~40s server render.
+  const shareGifRef = useRef<{ promise: Promise<Blob> } | null>(null);
 
   const seedRef = useRef(1);
   // Boxing rounds the user reached the bell in. Nothing else about a boxing
@@ -731,6 +753,27 @@ export default function BoutPage() {
     });
   }, [phase, result, startGameReview, playerName]);
 
+  // Pre-render the Fight Night share GIF on-device the moment the result
+  // shows, so tapping Share is instant (the server route takes ~40s of
+  // satori renders; canvas takes ~a second and starts before the tap).
+  useEffect(() => {
+    if (phase !== 'done' || !result) return;
+    const frames = buildShareFrames(reviewMovesRef.current, result.outcome);
+    if (frames.length === 0) return;
+    const bout = {
+      outcome: result.outcome,
+      username: playerName || '',
+      moves: result.moves,
+      rounds: result.roundsSurvived,
+      clock: fmtClock(result.clockLeft),
+    };
+    shareGifRef.current = {
+      promise: import('@/lib/share/fight-night-gif').then(({ renderFightNightGif }) =>
+        renderFightNightGif(frames, bout),
+      ),
+    };
+  }, [phase, result, playerName]);
+
   // Confetti when the user wins the bout.
   useEffect(() => {
     if (phase !== 'done' || !result || confettiFiredRef.current) return;
@@ -1049,12 +1092,12 @@ export default function BoutPage() {
 
     const shareBout = async () => {
       setSharing(true);
-      // Fight Night card (lib/og/fight-night). Animated GIF of the last moves
-      // when we have the move log; static PNG of the final position otherwise.
+      // Fight Night card. Primary: the on-device GIF that started rendering
+      // when the result screen mounted (instant by the time anyone taps).
+      // Fallbacks: static server PNG, then just opening it.
       const plies = reviewMovesRef.current;
       const finalFen = plies.length > 0 ? plies[plies.length - 1].fenAfter : START_FEN;
       const finalLast = plies.length > 0 ? `${plies[plies.length - 1].from}${plies[plies.length - 1].to}` : '';
-      const isKO = result.outcome === 'ko_win' || result.outcome === 'ko_loss';
       const base = new URLSearchParams({
         outcome: result.outcome,
         username: playerName || '',
@@ -1064,35 +1107,41 @@ export default function BoutPage() {
       });
       const pngUrl = `/api/og/bout?${base.toString()}&fen=${encodeURIComponent(finalFen)}&last=${finalLast}`;
 
-      const gifParams = new URLSearchParams(base);
-      const tail = plies.slice(-3);
-      const baseFen =
-        plies.length > tail.length ? plies[plies.length - tail.length - 1].fenAfter : START_FEN;
-      gifParams.append('f', `${baseFen}||`);
-      tail.forEach((m, j) => {
-        const stamp = j === tail.length - 1 && isKO ? '1' : '';
-        gifParams.append('f', `${m.fenAfter}|${m.from}${m.to}|${stamp}`);
-      });
-      const gifUrl = `/api/og/bout-gif?${gifParams.toString()}`;
-
       const nav = navigator as Navigator & { canShare?: (d?: unknown) => boolean };
-      const shareFile = async (url: string, name: string, type: string): Promise<boolean> => {
-        const res = await fetch(url);
-        if (!res.ok) return false;
-        const file = new File([await res.blob()], name, { type });
+      const shareOrSave = async (blob: Blob, name: string): Promise<void> => {
+        const file = new File([blob], name, { type: blob.type });
         if (nav.canShare?.({ files: [file] })) {
           await nav.share({ files: [file], title: 'Chess Boxing', text: headline });
-          return true;
+          return;
         }
-        return false;
+        // No file-share (desktop): download the asset instead.
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
       };
 
       try {
-        if (tail.length > 0 && (await shareFile(gifUrl, 'chess-boxing-bout.gif', 'image/gif'))) return;
-        if (await shareFile(pngUrl, 'chess-boxing-bout.png', 'image/png')) return;
-        window.open(pngUrl, '_blank');
-      } catch {
-        window.open(pngUrl, '_blank');
+        if (shareGifRef.current) {
+          await shareOrSave(await shareGifRef.current.promise, 'chess-boxing-bout.gif');
+          setSharing(false);
+          return;
+        }
+      } catch (e) {
+        if ((e as Error)?.name === 'AbortError') {
+          setSharing(false);
+          return; // user closed the share sheet — not a failure
+        }
+        // local render failed — fall through to the server card
+      }
+      try {
+        const res = await fetch(pngUrl);
+        if (!res.ok) throw new Error('og/bout failed');
+        await shareOrSave(await res.blob(), 'chess-boxing-bout.png');
+      } catch (e) {
+        if ((e as Error)?.name !== 'AbortError') window.open(pngUrl, '_blank');
       } finally {
         setSharing(false);
       }
