@@ -91,6 +91,14 @@ export const FEATURE_FLAGS = {
    */
   BOUT_MODE: true,
   /**
+   * The "Living Ring" /box home (2026-08-07, Tyler-approved on
+   * /test/boxing-landing): fight-night ring scene — crowd + flashbulbs,
+   * chessboard canvas, Puzzle Boxing | Play Boxing corners, and live
+   * Global/Squad leaderboards with a daily/weekly/monthly toggle. OFF falls
+   * back to the locker-room scene (LockerHome).
+   */
+  BOX_RING_HOME: true,
+  /**
    * Premove — queue your reply while it's the opponent's turn. Select one of
    * your pieces and a destination during Rookie's think (0.5s on /play and
    * fight rounds, a padded 2-4s in a bout); the instant it's your turn the move

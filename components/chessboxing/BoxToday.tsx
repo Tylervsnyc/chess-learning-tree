@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LockerHome } from '@/components/chessboxing/LockerHome';
+import { RingHome } from '@/components/chessboxing/RingHome';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { getStreak, type StreakData } from '@/lib/streak-client';
@@ -25,6 +26,14 @@ export interface LastSession {
 }
 
 export function BoxToday() {
+  // BOX_RING_HOME (2026-08-07): the Living Ring home replaces the locker
+  // scene. Flag OFF falls back to the locker below, unchanged.
+  if (FEATURE_FLAGS.BOX_RING_HOME) return <RingHome />;
+  return <LockerToday />;
+}
+
+/** Legacy locker-room home — kept as the BOX_RING_HOME=false fallback. */
+function LockerToday() {
   const router = useRouter();
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [last, setLast] = useState<LastSession | null | undefined>(undefined);
