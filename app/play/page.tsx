@@ -71,6 +71,7 @@ import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 import { PlayPageRookie } from '@/components/play/PlayPageRookie';
 import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
+import { getArrowColor, ARROW_BEST, fetchCoachReview } from '@/lib/review/review-core';
 
 // CHE-381: post-game-only UI — code-split so the coaching drawer (and the
 // coaching-prompt lib it pulls in) never loads on the play-page boot path.
@@ -259,16 +260,8 @@ const PIECE_VALUES: Record<string, number> = {
   p: 1, n: 3, b: 3, r: 5, q: 9, k: 0,
 };
 
-// Arrow colors for review mode
-const ARROW_GREEN = 'rgba(88, 204, 2, 0.85)';
-const ARROW_RED = 'rgba(235, 64, 52, 0.85)';
-const ARROW_AMBER = 'rgba(245, 158, 11, 0.85)';
-
-function getArrowColor(type: string): string {
-  if (type === 'blunder' || type === 'mistake') return ARROW_RED;
-  if (type === 'turning-point') return '#F5A623'; // amber
-  return ARROW_GREEN;
-}
+// Arrow colors + review helpers live in lib/review/review-core.ts (shared
+// with the Chess Boxing bout review — one implementation).
 
 // Eval bar: convert eval to white percentage using Lichess sigmoid (50 = even)
 function evalToWhitePercent(cp: number | null, mate: number | null): number {
@@ -1090,48 +1083,24 @@ export default function PlayRookiePage() {
         })
         .catch((err) => console.error('[coaching] failed to load coaching-prompt:', err));
 
-      // Fire Claude coaching commentary (non-blocking)
-      (async () => {
-        try {
-          const evals = positionEvalsRef.current;
-          const coachMoves = analysis.moves.map((mv, i) => ({
-            moveNumber: Math.ceil((i + 1) / 2), // chess move number: 1,1,2,2,3,3...
-            color: (mv.movedBy === 'player' ? playerColor : (playerColor === 'white' ? 'black' : 'white')) as 'white' | 'black',
-            san: mv.san,
-            uci: moves[i] ? (moves[i].from + moves[i].to) : '',
-            fen: i > 0 ? moves[i - 1].fenAfter : START_FEN,
-            evalBefore: evals[i]?.cp ?? null,
-            evalAfter: evals[i + 1]?.cp ?? null,
-            bestMove: evals[i]?.bestMove ?? null,
-            threat: evals[i + 1]?.bestMove ?? null,
-            classification: mv.classification as 'brilliant' | 'great' | 'good' | 'inaccuracy' | 'mistake' | 'blunder' | null,
-          }));
-
-          const res = await fetch('/api/coach-review', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              moves: coachMoves,
-              playerColor,
-              playerElo: getLevelElo(rookieLevel),
-              result: result || 'loss',
-            }),
-          });
-          const data = await res.json();
-          console.log('[coach-review] response:', JSON.stringify(data).slice(0, 500));
-          if (data.review) {
-            coachCommentaryRef.current = data.review.moves || {};
-            coachSummaryRef.current = data.review.summary || null;
-            coachTakeawayRef.current = data.review.takeaway || null;
-            setCoachReady(true);
-            console.log('[coach-review] ready, moves:', Object.keys(data.review.moves || {}).length);
-          } else {
-            console.warn('[coach-review] no review in response:', data);
-          }
-        } catch (err) {
-          console.error('[coach-review] failed:', err);
-        }
-      })();
+      // Fire Claude coaching commentary (non-blocking) — shared pipeline with
+      // the bout review (lib/review/review-core.ts).
+      void fetchCoachReview({
+        analysis,
+        evals: positionEvalsRef.current,
+        moves,
+        playerColor,
+        playerElo: getLevelElo(rookieLevel),
+        result: result || 'loss',
+        startFen: START_FEN,
+      }).then((review) => {
+        if (!review) return;
+        coachCommentaryRef.current = review.moves;
+        coachSummaryRef.current = review.summary;
+        coachTakeawayRef.current = review.takeaway;
+        setCoachReady(true);
+        console.log('[coach-review] ready, moves:', Object.keys(review.moves).length);
+      });
 
       // Honcho: log rich game summary with key moments
       if (user?.id && honchoGameIdRef.current && result && analysis) {
@@ -1602,7 +1571,7 @@ export default function PlayRookiePage() {
     if (posEval?.bestMove) {
       const from = posEval.bestMove.slice(0, 2);
       const to = posEval.bestMove.slice(2, 4);
-      setReviewArrows([{ startSquare: from, endSquare: to, color: 'rgba(218, 165, 32, 0.8)' }]);
+      setReviewArrows([{ startSquare: from, endSquare: to, color: ARROW_BEST }]);
     } else {
       setReviewArrows([]);
     }

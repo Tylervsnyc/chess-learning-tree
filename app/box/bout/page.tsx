@@ -33,6 +33,11 @@ import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
 import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
+import { getLevelElo } from '@/lib/rookie-levels';
+import { useName } from '@/hooks/useName';
+import { useGameReview } from '@/hooks/useGameReview';
+import { GameReview } from '@/components/shared/GameReview';
+import type { ReviewMove } from '@/lib/review/review-core';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
@@ -178,6 +183,9 @@ export default function BoutPage() {
   const [fen, setFen] = useState(START_FEN);
   const fenRef = useRef(START_FEN);
   const movesRef = useRef<string[]>([]); // SAN history (opening book)
+  // Full move log for post-bout review — the whole continuous game across all
+  // chess rounds (one bout = one game, so review covers everything).
+  const reviewMovesRef = useRef<ReviewMove[]>([]);
   const [level, setLevel] = useState(1);
   const levelRef = useRef(1);
   const [selected, setSelected] = useState<Square | null>(null);
@@ -204,6 +212,13 @@ export default function BoutPage() {
   const rankedRef = useRef(true);
 
   const [result, setResult] = useState<BoutResult | null>(null);
+  // ── Post-bout review (shared pipeline — same experience as /play's review) ─
+  const { name: playerName } = useName();
+  const gameReview = useGameReview();
+  // Stable callbacks pulled off the hook so begin()/effects can depend on
+  // them without re-running every render (the data object changes identity).
+  const { start: startGameReview, reset: resetGameReview } = gameReview;
+  const [showReview, setShowReview] = useState(false);
   // "Throw in the towel" is two taps: the first flips the button into a
   // confirm row (no browser dialogs), which auto-reverts after 4s untouched.
   const [towelConfirm, setTowelConfirm] = useState(false);
@@ -337,6 +352,14 @@ export default function BoutPage() {
         fenRef.current = newFen;
         setFen(newFen);
         movesRef.current.push(mv.san);
+        reviewMovesRef.current.push({
+          san: mv.san,
+          from: mv.from,
+          to: mv.to,
+          fenAfter: newFen,
+          movedBy: 'rookie',
+          moveNumber: reviewMovesRef.current.length + 1,
+        });
         setLastMv({ from: mv.from as Square, to: mv.to as Square });
         setSelected((prev) => reconcileSelectionAfterOpponentMove(prev, mv));
         setRookieThinking(false);
@@ -408,6 +431,14 @@ export default function BoutPage() {
       fenRef.current = newFen;
       setFen(newFen);
       movesRef.current.push(mv.san);
+      reviewMovesRef.current.push({
+        san: mv.san,
+        from,
+        to,
+        fenAfter: newFen,
+        movedBy: 'player',
+        moveNumber: reviewMovesRef.current.length + 1,
+      });
       setLastMv({ from, to });
       setSelected(null);
       if (mv.captured) playCaptureSound();
@@ -680,6 +711,26 @@ export default function BoutPage() {
     };
   }, [phase, result, format]);
 
+  // Kick off review analysis as soon as the result card shows, so the review
+  // is warm (or done) by the time the fighter taps Review — same rhythm as
+  // /play, which analyzes in the background behind its result screen.
+  // useGameReview.start is idempotent until reset(), so re-renders are safe.
+  useEffect(() => {
+    if (phase !== 'done' || !result || reviewMovesRef.current.length === 0) return;
+    startGameReview({
+      moves: reviewMovesRef.current,
+      playerColor: 'white', // the bout fighter is always white
+      playerElo: getLevelElo(levelRef.current),
+      result:
+        result.outcome === 'ko_win' || result.outcome === 'decision_win'
+          ? 'win'
+          : result.outcome === 'draw'
+            ? 'draw'
+            : 'loss',
+      playerName: playerName || undefined,
+    });
+  }, [phase, result, startGameReview, playerName]);
+
   // Confetti when the user wins the bout.
   useEffect(() => {
     if (phase !== 'done' || !result || confettiFiredRef.current) return;
@@ -708,6 +759,12 @@ export default function BoutPage() {
     fenRef.current = START_FEN;
     setFen(START_FEN);
     movesRef.current = [];
+    reviewMovesRef.current = [];
+    // Kill the previous bout's review: cancel any in-flight deep analysis and
+    // flush its queued engine work so it can't slow Rookie's moves this bout.
+    resetGameReview();
+    stockfish.cancel();
+    setShowReview(false);
     setSelected(null);
     clearPremove();
     setLastMv(null);
@@ -755,7 +812,7 @@ export default function BoutPage() {
     setRookieLine(null);
     setPhase('chess');
     BoutEvents.started(lvl);
-  }, [bank, boxingRounds, format, rankedLeft, clearPremove]);
+  }, [bank, boxingRounds, format, rankedLeft, clearPremove, resetGameReview]);
 
   // Is today's ranked bout still on the table? Read once on the pre-fight
   // screen and after every finish, so the picker never promises points it
@@ -958,6 +1015,23 @@ export default function BoutPage() {
 
   // ── DONE — result + judges' scorecard reveal ──────────────────────────────
   if (phase === 'done' && result) {
+    // Full game review — the same experience as /play's review phase, over the
+    // whole continuous bout game. Exits back to the result card.
+    if (showReview) {
+      return (
+        <GameReview
+          moves={reviewMovesRef.current}
+          playerColor="white"
+          playerName={playerName || undefined}
+          review={gameReview}
+          onExit={() => {
+            playButtonClick();
+            setShowReview(false);
+          }}
+          exitLabel="Back to the result"
+        />
+      );
+    }
     const won = result.outcome === 'ko_win' || result.outcome === 'decision_win';
     const headline =
       result.outcome === 'ko_win'
@@ -1104,16 +1178,27 @@ export default function BoutPage() {
                   void shareBout();
                 }}
                 disabled={sharing}
-                className="flex-1 rounded-2xl border-2 border-slate-200 text-chess-text font-black text-base py-2.5 transition tap-highlight disabled:opacity-60"
+                className="flex-1 rounded-2xl border-2 border-slate-200 text-chess-text font-black text-sm py-2.5 transition tap-highlight disabled:opacity-60"
               >
                 {sharing ? 'Sharing…' : 'Share'}
               </button>
+              {reviewMovesRef.current.length > 0 && (
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    setShowReview(true);
+                  }}
+                  className="flex-1 rounded-2xl border-2 border-slate-200 text-chess-text font-black text-sm py-2.5 transition tap-highlight"
+                >
+                  Review
+                </button>
+              )}
               <button
                 onClick={() => {
                   playButtonClick();
                   setPhase('prefight');
                 }}
-                className="flex-1 rounded-2xl bg-[#e5484d] text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
+                className="flex-1 rounded-2xl bg-[#e5484d] text-white font-black text-sm py-2.5 shadow-sm transition tap-highlight"
               >
                 Rematch
               </button>
