@@ -253,8 +253,12 @@ function EloExplainer() {
           moves it most.
         </li>
         <li>
-          Full games against Rookie count double a puzzle, with her level setting the opponent
-          rating (Level 1 ≈ 200, up to Level 10 ≈ 2000).
+          Full games against Rookie — Chess Boxing bouts included — count double a puzzle, with
+          her level setting the opponent rating (Level 1 ≈ 200, up to Level 10 ≈ 2000).
+        </li>
+        <li>
+          Winning a bout by checkmate at your level promotes you: Rookie steps up a level
+          everywhere, including regular play.
         </li>
         <li>
           Everyone starts at {ELO_BASELINE}. Your first {PROVISIONAL_EVENTS} results move the

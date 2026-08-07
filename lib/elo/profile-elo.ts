@@ -64,6 +64,12 @@ interface GameRow {
   ended_at: string | null;
 }
 
+interface BoutRow {
+  level: number | null;
+  result: string | null;
+  created_at: string | null;
+}
+
 function puzzleRowToEvent(p: PuzzleRow): EloEvent | null {
   const rating = PUZZLE_RATINGS[p.puzzle_id];
   if (typeof rating !== 'number' || !p.attempted_at) return null;
@@ -74,6 +80,12 @@ function gameRowToEvent(g: GameRow): EloEvent | null {
   const score = scoreFromResult(g.result);
   if (score === null || !g.ended_at) return null;
   return { at: g.ended_at, kind: 'game', opponent: getLevelElo(g.rookie_difficulty ?? 1), score };
+}
+
+function boutRowToEvent(b: BoutRow): EloEvent | null {
+  const score = scoreFromResult(b.result);
+  if (score === null || !b.created_at || typeof b.level !== 'number') return null;
+  return { at: b.created_at, kind: 'game', opponent: getLevelElo(b.level), score };
 }
 
 /**
@@ -105,10 +117,23 @@ async function fetchEvents(
     .limit(5000);
   if (since) gameQ = gameQ.gt('ended_at', since);
 
-  const [puzzles, games] = await Promise.all([puzzleQ, gameQ]);
+  // Chess Boxing bouts are full games vs Rookie too (one game split across
+  // rounds), so they feed the estimate like any /play game. A missing
+  // bout_sessions table (pre-migration) is treated as "no bouts", not an error.
+  let boutQ = supabase
+    .from('bout_sessions')
+    .select('level, result, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true })
+    .limit(5000);
+  if (since) boutQ = boutQ.gt('created_at', since);
+
+  const [puzzles, games, bouts] = await Promise.all([puzzleQ, gameQ, boutQ]);
 
   if (puzzles.error) console.error('elo: puzzle read failed', puzzles.error);
   if (games.error) console.error('elo: game read failed', games.error);
+  const boutsMissing = /bout_sessions/.test(bouts.error?.message ?? '');
+  if (bouts.error && !boutsMissing) console.error('elo: bout read failed', bouts.error);
 
   const events: EloEvent[] = [];
   for (const p of (puzzles.data ?? []) as PuzzleRow[]) {
@@ -119,10 +144,14 @@ async function fetchEvents(
     const e = gameRowToEvent(g);
     if (e) events.push(e);
   }
+  for (const b of (bouts.data ?? []) as BoutRow[]) {
+    const e = boutRowToEvent(b);
+    if (e) events.push(e);
+  }
 
   return {
     events: events.filter(isRatedEloEvent).sort((a, b) => a.at.localeCompare(b.at)),
-    ok: !puzzles.error && !games.error,
+    ok: !puzzles.error && !games.error && (!bouts.error || boutsMissing),
   };
 }
 
@@ -207,7 +236,21 @@ async function getPriorEventIndex(
     console.error('elo: prior game count failed', gameErr);
     return null;
   }
-  const games = count ?? 0;
+  let games = count ?? 0;
+  if (games >= PROVISIONAL_EVENTS) return PROVISIONAL_EVENTS;
+
+  // Bouts are rated game events too (same filter shape as fetchEvents).
+  const { count: boutCount, error: boutErr } = await supabase
+    .from('bout_sessions')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .in('result', ['win', 'draw', 'loss'])
+    .lte('created_at', upTo);
+  if (boutErr && !/bout_sessions/.test(boutErr.message ?? '')) {
+    console.error('elo: prior bout count failed', boutErr);
+    return null;
+  }
+  games += boutCount ?? 0;
   if (games >= PROVISIONAL_EVENTS) return PROVISIONAL_EVENTS;
 
   // Puzzles: rated-ness lives in a JSON index, not SQL — probe the oldest

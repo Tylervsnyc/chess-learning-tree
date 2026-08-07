@@ -91,6 +91,25 @@ export function matchLevel(rookieRating: number, cap = maxLevel()): MatchedLevel
   };
 }
 
+/**
+ * The lowest rating that matchLevel maps to `level` — the promotion floor.
+ *
+ * Used by the bout promotion rule: a checkmate win in a Chess Boxing bout at
+ * your true level lifts your rating to at least this, so the next /play game
+ * is against the next rung. Still ONE number — we move the rating itself,
+ * never a separate level override (see the demotion note above).
+ *
+ * Derivation: matchLevel targets `rating - HANDICAP_ELO` and snaps to the
+ * nearest rung, so the boundary into `level` is the midpoint between it and
+ * the rung below, plus the handicap (+1 to clear a tie, which snaps down).
+ */
+export function floorRatingForLevel(level: number): number {
+  const idx = Math.max(1, Math.min(maxLevel(), Math.round(level))) - 1;
+  if (idx === 0) return 0;
+  const mid = (ROOKIE_LEVELS[idx - 1].elo + ROOKIE_LEVELS[idx].elo) / 2;
+  return Math.round(mid + HANDICAP_ELO) + 1;
+}
+
 export type LevelChange = 'up' | 'down' | 'same';
 
 /** Which way the level moved — drives Rookie's line, nothing else. */

@@ -41,6 +41,15 @@ export interface RookieRating {
 /** Games before the rating is considered settled. Matches the Elo ramp. */
 export const SETTLED_AFTER_GAMES = 15;
 
+/**
+ * A Chess Boxing bout counts as this many games on the rating — it's one game
+ * of chess fought across multiple rounds with boxing between, a bigger test
+ * than a casual /play game. Symmetric: a bout loss costs double too.
+ * Used by BOTH the incremental fold (/api/bout/finish) and the full replay
+ * (derive) — change it in one place only.
+ */
+export const BOUT_GAME_WEIGHT = 2;
+
 /** True when a Supabase error is just "that column/table isn't there yet". */
 function isMissingSchema(message: string | undefined): boolean {
   return /rookie_rating|does not exist|column .* of relation/i.test(message ?? '');
@@ -84,7 +93,35 @@ async function fetchGameEvents(supabase: SupabaseClient, userId: string): Promis
       score,
     });
   }
-  return events;
+
+  // Chess Boxing bouts move this rating too (folded live by /api/bout/finish);
+  // the replay has to mirror that, at the same weight, or a re-derive would
+  // disagree with the incremental value. Missing table = no bouts yet.
+  const bouts = await supabase
+    .from('bout_sessions')
+    .select('level, result, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true });
+  if (bouts.error) {
+    if (!/bout_sessions/.test(bouts.error.message ?? '')) {
+      console.error('rookie rating: bout read failed', bouts.error);
+    }
+  } else {
+    for (const row of bouts.data ?? []) {
+      const score = scoreFromResult(row.result as string | null);
+      const level = row.level as number | null;
+      if (score === null || typeof level !== 'number' || !row.created_at) continue;
+      const event: EloEvent = {
+        at: row.created_at as string,
+        kind: 'game',
+        opponent: getLevelElo(level),
+        score,
+      };
+      for (let i = 0; i < BOUT_GAME_WEIGHT; i++) events.push(event);
+    }
+  }
+
+  return events.sort((a, b) => a.at.localeCompare(b.at));
 }
 
 /** Replay every game from the Chess Path seed. The slow, always-correct path. */
@@ -166,25 +203,52 @@ export async function getRookieRating(
  * rating moves both ways — a loss lowers it, which is the entire point: the
  * level is derived from this number, so falling here is how Rookie eases off
  * without any separate demotion rule to keep in sync.
+ *
+ * `weight` folds the same result more than once (a bout passes
+ * BOUT_GAME_WEIGHT) — heavier evidence, both directions.
  */
 export async function applyGameResult(
   supabase: SupabaseClient,
   userId: string,
   level: number,
   score: 0 | 0.5 | 1,
+  weight = 1,
 ): Promise<RookieRating> {
   const current = await getRookieRating(supabase, userId);
-  const next = applyEloEvent(
-    current.rating,
-    { at: new Date().toISOString(), kind: 'game', opponent: getLevelElo(level), score },
-    current.events,
-  );
+  const event: EloEvent = {
+    at: new Date().toISOString(),
+    kind: 'game',
+    opponent: getLevelElo(level),
+    score,
+  };
+  let rating = current.rating;
+  for (let i = 0; i < weight; i++) {
+    rating = applyEloEvent(rating, event, current.events + i);
+  }
 
   const updated: RookieRating = {
-    rating: Math.round(next),
-    events: current.events + 1,
-    provisional: current.events + 1 < SETTLED_AFTER_GAMES,
+    rating: Math.round(rating),
+    events: current.events + weight,
+    provisional: current.events + weight < SETTLED_AFTER_GAMES,
   };
+  await store(supabase, userId, updated);
+  return updated;
+}
+
+/**
+ * Lift the rating to at least `floor` — the bout promotion rule: a checkmate
+ * win in the ring at your true level guarantees the next rung in /play. Only
+ * ever raises; a rating already past the floor is untouched. Counts no event
+ * (the bout itself was already folded in at full weight).
+ */
+export async function raiseRatingToFloor(
+  supabase: SupabaseClient,
+  userId: string,
+  current: RookieRating,
+  floor: number,
+): Promise<RookieRating> {
+  if (current.rating >= floor) return current;
+  const updated: RookieRating = { ...current, rating: Math.round(floor) };
   await store(supabase, userId, updated);
   return updated;
 }

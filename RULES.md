@@ -1135,7 +1135,7 @@ The raw `Chessboard` component ships with default piece styling and no board col
 
 ## 20. User ELO (Chess Path ELO)
 
-**LIVE since CHE-370 (2026-06-09).** "Chess Path ELO" is a derived rating estimated from the user's puzzle attempts + game results — the legible-progress mechanic shown at the completion popup (day-by-day graph, first-rating ceremony for new logged-out users).
+**LIVE since CHE-370 (2026-06-09).** "Chess Path ELO" is a derived rating estimated from the user's puzzle attempts + game results + Chess Boxing bouts (2026-08-07: `bout_sessions` is a third event source in `lib/elo/profile-elo.ts`, one game event per bout) — the legible-progress mechanic shown at the completion popup (day-by-day graph, first-rating ceremony for new logged-out users).
 
 - **Computation:** `lib/elo/estimate.ts` — every rated event flows through `applyEloEvent` (shared by the batch replay and the incremental fold; never duplicate this step).
 - **Storage (CHE-375):** `profiles.estimated_elo` + `profiles.elo_updated_at`. Reads catch up incrementally — only events newer than the watermark are folded in; a NULL value triggers one full replay that seeds the column. Never recompute the full history on a hot path.
@@ -1150,13 +1150,15 @@ The raw `Chessboard` component ships with default piece styling and no board col
 | | Chess Path ELO | Rookie rating |
 |---|---|---|
 | Job | display / legible progress | how hard Rookie plays |
-| Fed by | puzzles **and** games | games vs Rookie only |
+| Fed by | puzzles **and** games **and** bouts | games + bouts vs Rookie only |
 | Lives | `profiles.estimated_elo` | `profiles.rookie_rating` |
 | Code | `lib/elo/profile-elo.ts` | `lib/rookie/rating.ts` |
 
 - **Seeded** from Chess Path ELO on first read, then moved only by games. Backfilled from `game_sessions` (`rookie_difficulty` + `result`) — no migration needed.
 - **Both directions.** A loss lowers it. That is deliberate: the level is derived from the rating on every read (`matchLevel`, `lib/rookie/matchmaking.ts`), so a falling rating is how Rookie eases off. There is no separate demotion rule, and nothing to keep in sync.
 - **`HANDICAP_ELO = 70`** — Rookie aims that far below you, which puts the player at about a 60% win rate. One constant; retune it to change how hard the whole app feels.
+- **Bouts hit this rating at DOUBLE weight** (`BOUT_GAME_WEIGHT = 2`, both directions — a bout loss costs double too). Folded live in `/api/bout/finish` and mirrored in the replay (`derive`); change the constant in `lib/rookie/rating.ts` only.
+- **Bout promotion rule (2026-08-07):** a checkmate win (`ko_win`) in a bout at your TRUE match level lifts the rating to `floorRatingForLevel(level + 1)` — guaranteed next rung in /play. Never fires when the bout was capped below your real level (`FIGHT_MAX_LEVEL`). Implemented as a rating floor (`raiseRatingToFloor`), NEVER as a separate level override — the level stays derived from one number.
 - **The level is never accepted from a client.** It used to come from localStorage, and bout points scale with it (`/api/bout/finish`) — sending `level: 10` bought a 1.6x multiplier. Server derives it, always.
 - **`WINS_TO_ADVANCE` is gone.** "Win 3 to unlock the next level" could only ratchet up: a lucky run stranded you above your strength permanently. Do not reintroduce a win counter alongside the rating.
 - Client reads go through `lib/rookie/level-client.ts` (`getRookieLevel` / `peekRookieLevel`) — never fetch the endpoint or read the localStorage key directly.

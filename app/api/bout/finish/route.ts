@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { periodStartISO } from '@/lib/leaderboard/period';
-import { getRookieRating, applyGameResult } from '@/lib/rookie/rating';
-import { matchLevel } from '@/lib/rookie/matchmaking';
+import {
+  getRookieRating,
+  applyGameResult,
+  raiseRatingToFloor,
+  BOUT_GAME_WEIGHT,
+} from '@/lib/rookie/rating';
+import { matchLevel, floorRatingForLevel, maxLevel } from '@/lib/rookie/matchmaking';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import {
   boutPoints,
@@ -203,11 +208,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'write failed' }, { status: 500 });
   }
 
-  // A bout is a full game against Rookie, so it moves the Rookie rating like
-  // any other — otherwise a player who only ever fights bouts would never have
-  // her difficulty adapt. Folded HERE rather than from the client so it can't
-  // be replayed, and only on a fresh row (the duplicate path returns above).
-  await applyGameResult(svc, user.id, level, RATING_SCORE[result]);
+  // A bout is a full game against Rookie fought across rounds, so it moves the
+  // Rookie rating at DOUBLE weight (BOUT_GAME_WEIGHT, both directions) —
+  // otherwise a player who only ever fights bouts would never have her
+  // difficulty adapt. Folded HERE rather than from the client so it can't be
+  // replayed, and only on a fresh row (the duplicate path returns above).
+  const updated = await applyGameResult(svc, user.id, level, RATING_SCORE[result], BOUT_GAME_WEIGHT);
+
+  // Promotion rule: a CHECKMATE win in the ring at your true level guarantees
+  // the next rung — the rating is lifted to the next level's floor, so the
+  // next /play game (and the next bout, cap permitting) is against a stronger
+  // Rookie. Skipped when the bout was capped below your real level
+  // (FIGHT_MAX_LEVEL): beating a capped-down Rookie proves nothing new.
+  const trueLevel = matchLevel(rating).level;
+  if (outcome === 'ko_win' && level === trueLevel && level < maxLevel()) {
+    await raiseRatingToFloor(svc, user.id, updated, floorRatingForLevel(level + 1));
+  }
 
   return NextResponse.json({ ok: true, boutId: data.id as string, points, result, ranked });
 }
