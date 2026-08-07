@@ -86,6 +86,7 @@ export async function GET(req: Request) {
           rounds={rounds}
           clock={clock}
           s={S}
+          flashSeed={i}
         />
       ),
       { width: W, height: H },

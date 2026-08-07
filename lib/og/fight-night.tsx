@@ -33,6 +33,9 @@ export type FightNightProps = {
   clock: string;
   /** Scale factor: 1 = 300x533. Static card uses 3.6 (1080x1920). */
   s: number;
+  /** Rotates which ambient flashbulbs fire — pass the frame index so they
+      pop around the house as the GIF plays. */
+  flashSeed?: number;
 };
 
 /** FEN letter -> piece code (uppercase = white). */
@@ -93,13 +96,15 @@ const CROWD_ROWS = [
   { y: 121.7, r: 6.9, sp: 20.8, off: 4.6, fill: '#0a101f', op: 1 },
 ];
 
-/** Flashbulbs (design-space coords). `lit` renders them firing. */
+/** Flashbulb positions (design-space coords), spread like Arena's FLASHES.
+    A rotating few fire every frame; all of them fire on the knockout. */
 const FLASHES = [
-  { x: 26, y: 14 }, { x: 74, y: 40 }, { x: 128, y: 10 },
-  { x: 187, y: 52 }, { x: 236, y: 22 }, { x: 281, y: 46 },
+  { x: 17, y: 12 }, { x: 37, y: 46 }, { x: 71, y: 8 }, { x: 98, y: 58 },
+  { x: 129, y: 24 }, { x: 157, y: 96 }, { x: 180, y: 14 }, { x: 201, y: 62 },
+  { x: 226, y: 34 }, { x: 254, y: 90 }, { x: 271, y: 16 }, { x: 289, y: 50 },
 ];
 
-function Crowd({ s, lit }: { s: number; lit: boolean }) {
+function Crowd({ s, lit, seed }: { s: number; lit: boolean; seed: number }) {
   const heads: React.ReactNode[] = [];
   CROWD_ROWS.forEach((row, ri) => {
     for (let x = row.off - row.sp, i = 0; x <= 300 + row.sp; x += row.sp, i++) {
@@ -177,23 +182,27 @@ function Crowd({ s, lit }: { s: number; lit: boolean }) {
         }}
       />
       {heads}
-      {lit &&
-        FLASHES.map((f, i) => (
+      {/* cameras: a rotating few pop every frame; the knockout lights the
+          whole house up */}
+      {FLASHES.filter((_, i) => lit || (i + seed) % 4 === 0).map((f, i) => {
+        const size = lit ? 9 : 7;
+        return (
           <div
             key={i}
             style={{
               display: 'flex',
               position: 'absolute',
-              left: (f.x - 4) * s,
-              top: (f.y - 4) * s,
-              width: 8 * s,
-              height: 8 * s,
+              left: (f.x - size / 2) * s,
+              top: (f.y - size / 2) * s,
+              width: size * s,
+              height: size * s,
               borderRadius: 999,
-              background: 'rgba(255,255,255,0.92)',
-              boxShadow: `0 0 ${8 * s}px ${3 * s}px rgba(255,255,255,0.55)`,
+              background: 'rgba(255,255,255,0.95)',
+              boxShadow: `0 0 ${(lit ? 11 : 8) * s}px ${(lit ? 5 : 3) * s}px rgba(255,255,255,${lit ? 0.65 : 0.5})`,
             }}
           />
-        ))}
+        );
+      })}
       {/* fade into the card */}
       <div
         style={{
@@ -276,7 +285,7 @@ function Corner({ s, red, name, tag }: { s: number; red: boolean; name: string; 
   );
 }
 
-export function FightNightCard({ frame, outcome, username, moves, rounds, clock, s }: FightNightProps) {
+export function FightNightCard({ frame, outcome, username, moves, rounds, clock, s, flashSeed = 0 }: FightNightProps) {
   const W = 300 * s;
   const H = 533 * s;
   const head = HEADLINES[outcome] || { big: 'BOUT', rest: 'complete', win: false };
@@ -299,7 +308,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
     >
-      <Crowd s={s} lit={!!frame.stamp} />
+      <Crowd s={s} lit={!!frame.stamp} seed={flashSeed} />
 
       <div
         style={{
