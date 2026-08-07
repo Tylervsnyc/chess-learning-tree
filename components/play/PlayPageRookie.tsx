@@ -30,12 +30,16 @@ const WORKOUT_NUDGE_LEARN = [
 
 interface PlayPageRookieProps {
   onQuip?: (quip: string) => void;
+  /** Override pool (e.g. boxing quips in the Chess Boxing shell). When set,
+      taps draw ONLY from this bag — no mood pools, no workout nudges. */
+  quipPool?: readonly string[];
 }
 
-export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
+export function PlayPageRookie({ onQuip, quipPool }: PlayPageRookieProps) {
   const modeBagRef = useRef(createModeBag());
   const quipBagsRef = useRef(createQuipBags());
   const nudgeBagRef = useRef<ShuffleBag<string> | null>(null);
+  const poolBagRef = useRef<ShuffleBag<string> | null>(null);
 
   const { status } = useDailyWorkout();
 
@@ -64,6 +68,16 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
     if (!mode) return;
     if (quipTimerRef.current) return;
 
+    // Override pool (boxing shell): draw from it and skip everything else.
+    if (quipPool && quipPool.length > 0) {
+      if (!poolBagRef.current) poolBagRef.current = new ShuffleBag([...quipPool]);
+      onQuip?.(poolBagRef.current.draw());
+      quipTimerRef.current = setTimeout(() => {
+        quipTimerRef.current = null;
+      }, 4000);
+      return;
+    }
+
     let newQuip: string | null = null;
 
     // First tap (or first eligible tap): try a workout nudge.
@@ -90,7 +104,7 @@ export function PlayPageRookie({ onQuip }: PlayPageRookieProps) {
     quipTimerRef.current = setTimeout(() => {
       quipTimerRef.current = null;
     }, 4000);
-  }, [mode, onQuip, pickNudgePool]);
+  }, [mode, onQuip, pickNudgePool, quipPool]);
 
   useEffect(() => {
     return () => {

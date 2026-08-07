@@ -69,6 +69,9 @@ import {
 import { consumeBreadcrumb } from '@/lib/session-breadcrumb';
 import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 import { PlayPageRookie } from '@/components/play/PlayPageRookie';
+import { useBoxShell } from '@/hooks/useBoxShell';
+import { GymBackdrop } from '@/components/chessboxing/GymBackdrop';
+import { BOXING_PLAY_TAP_QUIPS, BOXING_PLAY_DEFAULT_LINE } from '@/data/quips/boxing-play-quips';
 import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { getArrowColor, ARROW_BEST, fetchCoachReview } from '@/lib/review/review-core';
@@ -120,6 +123,7 @@ function LevelProgressBar({
   animDurationMs = 700,
   celebrate = false,
   onPickLevel,
+  dark = false,
 }: {
   currentLevel: number;
   /** Level currently being played. When !== currentLevel, user has picked a lower level for this session. */
@@ -129,6 +133,7 @@ function LevelProgressBar({
   animDurationMs?: number;
   celebrate?: boolean;
   onPickLevel?: (level: number) => void;
+  dark?: boolean;
 }) {
   const isDev = process.env.NODE_ENV === 'development';
   const activePlayLevel = playingLevel ?? currentLevel;
@@ -154,7 +159,8 @@ function LevelProgressBar({
               className={`absolute -translate-x-1/2 text-[10px] font-bold tabular-nums ${
                 isPlaying ? 'text-chess-green underline decoration-2 underline-offset-2'
                   : isCurrent ? 'text-chess-green'
-                  : isCompleted ? 'text-chess-text-muted' : 'text-chess-disabled'
+                  : isCompleted ? (dark ? 'text-white/70' : 'text-chess-text-muted')
+                  : (dark ? 'text-white/30' : 'text-chess-disabled')
               } ${clickable ? 'cursor-pointer hover:text-chess-green hover:scale-125 transition-transform' : ''}`}
               style={{ left: `${pos}%` }}
             >
@@ -164,8 +170,8 @@ function LevelProgressBar({
         })}
       </div>
       {/* Bar track */}
-      <div className="relative h-3.5 rounded-full overflow-hidden bg-slate-200"
-        style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)' }}
+      <div className={`relative h-3.5 rounded-full overflow-hidden ${dark ? 'bg-black/40 ring-1 ring-white/10' : 'bg-slate-200'}`}
+        style={dark ? undefined : { boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)' }}
       >
         {/* Fill */}
         <div
@@ -217,10 +223,11 @@ function LevelProgressBar({
  * more — Rookie is matched to your rating every game, so what the player needs
  * to know is that she's set to THEM, not how many boxes are left to tick.
  */
-function MatchNote({ level, provisional }: { level: number; provisional: boolean }) {
+function MatchNote({ level, provisional, dark }: { level: number; provisional: boolean; dark?: boolean }) {
+  const muted = dark ? 'text-white/60' : 'text-chess-text-muted';
   if (provisional) {
     return (
-      <span className="text-xs text-chess-text-muted font-semibold text-center">
+      <span className={`text-xs ${muted} font-semibold text-center`}>
         Rookie is still finding your level.
       </span>
     );
@@ -229,7 +236,7 @@ function MatchNote({ level, provisional }: { level: number; provisional: boolean
     return <span className="text-xs font-bold text-chess-gold">SHE IS ALL OUT OF GEARS</span>;
   }
   return (
-    <span className="text-xs text-chess-text-muted font-semibold text-center">
+    <span className={`text-xs ${muted} font-semibold text-center`}>
       Rookie is matched to you. Beat her and she gets harder.
     </span>
   );
@@ -300,6 +307,9 @@ export default function PlayRookiePage() {
   }, [user?.id]);
 
   const [phase, setPhase] = useState<Phase>('setup');
+  // Chess Boxing shell: the setup screen swaps to the "Gym After Hours"
+  // backdrop and Rookie's tap quips come from the boxing pool. Web unchanged.
+  const inBoxShell = useBoxShell();
   const [tapQuip, setTapQuip] = useState<string | null>(null);
   const tapQuipTimerRef = useRef<NodeJS.Timeout | null>(null);
   const handleTapQuip = useCallback((quip: string) => {
@@ -2027,11 +2037,16 @@ export default function PlayRookiePage() {
     const currentRookieLevel = getRookieLevel(rookieLevel);
 
     return (
-      <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-auto" onPointerDown={speakSetupGreeting}>
+      <div
+        className={`h-full ${inBoxShell ? 'relative bg-[#10162a] text-white' : 'bg-chess-page text-chess-text'} flex flex-col overflow-auto`}
+        onPointerDown={speakSetupGreeting}
+      >
+        {inBoxShell && <GymBackdrop />}
         {/* Top: Level progress bar */}
-        <div className="px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto">
+        <div className="relative z-10 px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto">
           <div className="relative">
             <LevelProgressBar
+              dark={inBoxShell}
               currentLevel={levelBarAnim ? levelBarAnim.level : matchedLevel}
               playingLevel={rookieLevel}
               subProgress={levelBarAnim ? levelBarAnim.sub : subProgress}
@@ -2049,23 +2064,28 @@ export default function PlayRookiePage() {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 pb-4">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 md:px-6 pb-4">
           <div className="w-full max-w-sm md:max-w-md mx-auto space-y-5">
             {/* Level badge + Rookie */}
             <div className="flex flex-col items-center gap-2">
               <div
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(88,204,2,0.12), rgba(88,204,2,0.06))',
-                  border: '1px solid rgba(88,204,2,0.2)',
+                  background: inBoxShell
+                    ? 'linear-gradient(135deg, rgba(88,204,2,0.22), rgba(88,204,2,0.10))'
+                    : 'linear-gradient(135deg, rgba(88,204,2,0.12), rgba(88,204,2,0.06))',
+                  border: inBoxShell ? '1px solid rgba(88,204,2,0.45)' : '1px solid rgba(88,204,2,0.2)',
                 }}
               >
                 <span className="text-chess-green font-black text-sm">LV. {rookieLevel}</span>
-                <span className="text-chess-text-muted font-semibold text-xs">&middot;</span>
-                <span className="text-chess-text-muted font-semibold text-xs">{currentRookieLevel.title}</span>
+                <span className={`font-semibold text-xs ${inBoxShell ? 'text-white/50' : 'text-chess-text-muted'}`}>&middot;</span>
+                <span className={`font-semibold text-xs ${inBoxShell ? 'text-white/70' : 'text-chess-text-muted'}`}>{currentRookieLevel.title}</span>
               </div>
 
-              <PlayPageRookie onQuip={handleTapQuip} />
+              <PlayPageRookie
+                onQuip={handleTapQuip}
+                quipPool={inBoxShell ? BOXING_PLAY_TAP_QUIPS : undefined}
+              />
 
               {/* Speech bubble */}
               <div className="relative w-full h-[88px]">
@@ -2075,7 +2095,7 @@ export default function PlayRookiePage() {
                 />
                 <div className="relative bg-white rounded-2xl px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)] h-full flex items-center justify-center">
                   <p key={tapQuip || speech.msgKey} className="text-chess-text text-[14px] leading-relaxed font-medium text-center line-clamp-3">
-                    {tapQuip || speech.displayText || "Let's play."}
+                    {tapQuip || speech.displayText || (inBoxShell ? BOXING_PLAY_DEFAULT_LINE : "Let's play.")}
                   </p>
                 </div>
               </div>
@@ -2083,12 +2103,12 @@ export default function PlayRookiePage() {
 
             {/* How Rookie's difficulty is set */}
             <div className="flex justify-center">
-              <MatchNote level={matchedLevel} provisional={levelProvisional} />
+              <MatchNote level={matchedLevel} provisional={levelProvisional} dark={inBoxShell} />
             </div>
 
             {/* Color picker */}
             <div>
-              <label className="text-[11px] font-semibold text-chess-text-muted uppercase tracking-wide mb-1.5 block">
+              <label className={`text-[11px] font-semibold uppercase tracking-wide mb-1.5 block ${inBoxShell ? 'text-white/60' : 'text-chess-text-muted'}`}>
                 Your color
               </label>
               <div className="flex gap-2">
@@ -2101,7 +2121,9 @@ export default function PlayRookiePage() {
                         ? c === 'white'
                           ? 'bg-white text-chess-text ring-2 ring-chess-green shadow-md'
                           : 'bg-gray-800 text-white ring-2 ring-chess-green shadow-md'
-                        : 'bg-chess-surface text-chess-text-muted border border-slate-200'
+                        : inBoxShell
+                          ? 'bg-white/10 text-white/60 border border-white/15'
+                          : 'bg-chess-surface text-chess-text-muted border border-slate-200'
                     }`}
                   >
                     {c === 'white' ? 'White' : 'Black'}
