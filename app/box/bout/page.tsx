@@ -1049,27 +1049,50 @@ export default function BoutPage() {
 
     const shareBout = async () => {
       setSharing(true);
-      const params = new URLSearchParams({
+      // Fight Night card (lib/og/fight-night). Animated GIF of the last moves
+      // when we have the move log; static PNG of the final position otherwise.
+      const plies = reviewMovesRef.current;
+      const finalFen = plies.length > 0 ? plies[plies.length - 1].fenAfter : START_FEN;
+      const finalLast = plies.length > 0 ? `${plies[plies.length - 1].from}${plies[plies.length - 1].to}` : '';
+      const isKO = result.outcome === 'ko_win' || result.outcome === 'ko_loss';
+      const base = new URLSearchParams({
         outcome: result.outcome,
-        material: String(result.material),
+        username: playerName || '',
         rounds: String(result.roundsSurvived),
         moves: String(result.moves),
         clock: String(result.clockLeft),
-        points: String(earned),
       });
-      const imgUrl = `/api/og/bout?${params.toString()}`;
-      try {
-        const res = await fetch(imgUrl);
-        const blob = await res.blob();
-        const file = new File([blob], 'chess-boxing-bout.png', { type: 'image/png' });
-        const nav = navigator as Navigator & { canShare?: (d?: unknown) => boolean };
+      const pngUrl = `/api/og/bout?${base.toString()}&fen=${encodeURIComponent(finalFen)}&last=${finalLast}`;
+
+      const gifParams = new URLSearchParams(base);
+      const tail = plies.slice(-3);
+      const baseFen =
+        plies.length > tail.length ? plies[plies.length - tail.length - 1].fenAfter : START_FEN;
+      gifParams.append('f', `${baseFen}||`);
+      tail.forEach((m, j) => {
+        const stamp = j === tail.length - 1 && isKO ? '1' : '';
+        gifParams.append('f', `${m.fenAfter}|${m.from}${m.to}|${stamp}`);
+      });
+      const gifUrl = `/api/og/bout-gif?${gifParams.toString()}`;
+
+      const nav = navigator as Navigator & { canShare?: (d?: unknown) => boolean };
+      const shareFile = async (url: string, name: string, type: string): Promise<boolean> => {
+        const res = await fetch(url);
+        if (!res.ok) return false;
+        const file = new File([await res.blob()], name, { type });
         if (nav.canShare?.({ files: [file] })) {
           await nav.share({ files: [file], title: 'Chess Boxing', text: headline });
-          return;
+          return true;
         }
-        window.open(imgUrl, '_blank');
+        return false;
+      };
+
+      try {
+        if (tail.length > 0 && (await shareFile(gifUrl, 'chess-boxing-bout.gif', 'image/gif'))) return;
+        if (await shareFile(pngUrl, 'chess-boxing-bout.png', 'image/png')) return;
+        window.open(pngUrl, '_blank');
       } catch {
-        window.open(imgUrl, '_blank');
+        window.open(pngUrl, '_blank');
       } finally {
         setSharing(false);
       }
