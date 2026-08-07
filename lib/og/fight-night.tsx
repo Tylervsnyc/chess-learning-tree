@@ -33,9 +33,12 @@ export type FightNightProps = {
   clock: string;
   /** Scale factor: 1 = 300x533. Static card uses 3.6 (1080x1920). */
   s: number;
-  /** Rotates which ambient flashbulbs fire — pass the frame index so they
-      pop around the house as the GIF plays. */
+  /** Rotates which ambient flashbulbs fire — pass the GIF frame index so
+      they pop around the house as the GIF plays. */
   flashSeed?: number;
+  /** Pre-rendered crowd band (data URI) — the GIF route bakes the heads
+      once and reuses it, so per-frame renders only redraw the flashes. */
+  crowdImg?: string;
 };
 
 /** FEN letter -> piece code (uppercase = white). */
@@ -104,7 +107,9 @@ const FLASHES = [
   { x: 226, y: 34 }, { x: 254, y: 90 }, { x: 271, y: 16 }, { x: 289, y: 50 },
 ];
 
-function Crowd({ s, lit, seed }: { s: number; lit: boolean; seed: number }) {
+/** The static parts of the house: glow + terraced heads + fade. Rendered
+    inline for single-frame cards, or baked to a PNG once per GIF. */
+export function CrowdBand({ s }: { s: number }) {
   const heads: React.ReactNode[] = [];
   CROWD_ROWS.forEach((row, ri) => {
     for (let x = row.off - row.sp, i = 0; x <= 300 + row.sp; x += row.sp, i++) {
@@ -182,10 +187,47 @@ function Crowd({ s, lit, seed }: { s: number; lit: boolean; seed: number }) {
         }}
       />
       {heads}
-      {/* cameras: a rotating few pop every frame; the knockout lights the
-          whole house up */}
-      {FLASHES.filter((_, i) => lit || (i + seed) % 4 === 0).map((f, i) => {
-        const size = lit ? 9 : 7;
+      {/* fade into the card */}
+      <div
+        style={{
+          display: 'flex',
+          position: 'absolute',
+          left: 0,
+          top: 100 * s,
+          width: 300 * s,
+          height: 50 * s,
+          background: 'linear-gradient(to bottom, rgba(19,26,46,0), #131a2e)',
+        }}
+      />
+    </div>
+  );
+}
+
+/** The full house: static band (inline or pre-baked image) + the flash
+    layer, which is cheap and varies every frame. */
+function Crowd({ s, lit, seed, img }: { s: number; lit: boolean; seed: number; img?: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: 300 * s,
+        height: 150 * s,
+        overflow: 'hidden',
+      }}
+    >
+      {img ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={img} width={300 * s} height={150 * s} alt="" />
+      ) : (
+        <CrowdBand s={s} />
+      )}
+      {/* cameras: a rotating few pop every flash tick; the knockout lights
+          the whole house up, shimmering while the stamp holds */}
+      {FLASHES.filter((_, i) => lit || (i + seed) % 3 === 0).map((f, i) => {
+        const size = lit ? 8 + ((i + seed) % 3) : 7;
         return (
           <div
             key={i}
@@ -203,18 +245,6 @@ function Crowd({ s, lit, seed }: { s: number; lit: boolean; seed: number }) {
           />
         );
       })}
-      {/* fade into the card */}
-      <div
-        style={{
-          display: 'flex',
-          position: 'absolute',
-          left: 0,
-          top: 100 * s,
-          width: 300 * s,
-          height: 50 * s,
-          background: 'linear-gradient(to bottom, rgba(19,26,46,0), #131a2e)',
-        }}
-      />
     </div>
   );
 }
@@ -285,7 +315,7 @@ function Corner({ s, red, name, tag }: { s: number; red: boolean; name: string; 
   );
 }
 
-export function FightNightCard({ frame, outcome, username, moves, rounds, clock, s, flashSeed = 0 }: FightNightProps) {
+export function FightNightCard({ frame, outcome, username, moves, rounds, clock, s, flashSeed = 0, crowdImg }: FightNightProps) {
   const W = 300 * s;
   const H = 533 * s;
   const head = HEADLINES[outcome] || { big: 'BOUT', rest: 'complete', win: false };
@@ -308,7 +338,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
     >
-      <Crowd s={s} lit={!!frame.stamp} seed={flashSeed} />
+      <Crowd s={s} lit={!!frame.stamp} seed={flashSeed} img={crowdImg} />
 
       <div
         style={{
