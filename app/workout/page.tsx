@@ -1421,7 +1421,9 @@ function WorkoutPageInner() {
               <span className="shrink-0 rounded-full bg-[#f6c445] text-[#3d2e00] px-2.5 py-[3px] text-[9px] font-black uppercase tracking-[0.14em] shadow-[0_2px_0_0_#b8860b]">
                 Ranked
               </span>
-              Every point you score here goes on the Global &amp; Squad boards.
+              {FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT
+                ? 'Your best round today is your score on the boards.'
+                : 'Every point you score here goes on the Global & Squad boards.'}
             </div>
           ) : (
             <div
@@ -1597,6 +1599,11 @@ function WorkoutPageInner() {
                 <li className="flex items-center gap-2">
                   <span className="text-chess-red">✗</span> 3 wrong in a round = round over
                 </li>
+                {FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT && (
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#f6c445]">★</span> One slot a day: only your best round scores — come back tomorrow for the next one
+                  </li>
+                )}
               </ul>
             </div>
           )}
@@ -1651,6 +1658,12 @@ function WorkoutPageInner() {
                 <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 Easy puzzles below your peak barely pay
               </li>
+              {FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT && (
+                <li className="flex items-center gap-2">
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  Leaderboard counts your best round each day
+                </li>
+              )}
             </ul>
             )}
           </div>

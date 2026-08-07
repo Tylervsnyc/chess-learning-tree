@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PERIODS, type LeaderboardPeriod } from '@/lib/leaderboard/period';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 type Scope = 'crew' | 'global';
 
@@ -165,7 +166,7 @@ export default function LeaderboardPage() {
         <div className="text-center pt-2">
           <h1 className="text-2xl md:text-3xl font-black text-chess-text">Leaderboard</h1>
           <p className="text-sm text-chess-text-muted mt-1">
-            Box, solve, climb. Every workout counts.
+            Box, solve, climb. Your best each day counts.
           </p>
         </div>
 
@@ -189,6 +190,11 @@ export default function LeaderboardPage() {
         {data?.metric === 'best_round' && (
           <p className="text-center text-xs font-semibold text-chess-text-muted -mt-2">
             Today ranks by your best single round.
+          </p>
+        )}
+        {data?.metric === 'total' && FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT && (
+          <p className="text-center text-xs font-semibold text-chess-text-muted -mt-2">
+            Your best round each day, added up. Show up daily to climb.
           </p>
         )}
 

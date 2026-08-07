@@ -81,6 +81,16 @@ export const FEATURE_FLAGS = {
    */
   LEADERBOARDS: true,
   /**
+   * Daily-slot leaderboard scoring (2026-08-07, Tyler-approved): every user
+   * gets ONE ranked slot per day — their best single effort (best workout
+   * round or best bout) fills it — and the weekly/monthly boards are the SUM
+   * of those daily slots instead of raw point totals. Equal opportunity: a
+   * 5-session grind day contributes exactly one slot, so consistency beats
+   * free time. Read-side only (computed in /api/leaderboard — no schema
+   * change); OFF falls back to raw totals.
+   */
+  LEADERBOARD_DAILY_SLOT: true,
+  /**
    * Bout mode (/box/bout) — the Chess Boxing app's flagship fight: ONE game vs
    * Rookie split across three 3:00 chess rounds with two 60s boxing rounds
    * between them. The board freezes at every bell; you resume the same

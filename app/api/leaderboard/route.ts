@@ -2,15 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { periodStartISO, isPeriod, type LeaderboardPeriod } from '@/lib/leaderboard/period';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 /**
  * GET /api/leaderboard?scope=global|crew&period=daily|weekly|monthly&crewId=
  *
- * Weekly/monthly rank by TOTAL workout points earned within the window
- * (rewards showing up and doing more sessions). DAILY ranks by BEST SINGLE
- * ROUND (max workout_sessions.best_round_points) so grinding many sessions
- * can't buy the day — one great round wins it. Legacy sessions without
- * best_round_points fall back to that user's best single-session points.
+ * DAILY ranks by BEST SINGLE ROUND (max workout_sessions.best_round_points)
+ * so grinding many sessions can't buy the day — one great round wins it.
+ * Legacy sessions without best_round_points fall back to that user's best
+ * single-session points.
+ *
+ * Weekly/monthly (LEADERBOARD_DAILY_SLOT): every user gets ONE ranked slot
+ * per UTC day — their best single effort that day (best workout round or
+ * best bout) fills it — and the window score is the SUM of those daily
+ * slots. Equal opportunity: a 5-session Tuesday contributes exactly one
+ * slot, so showing up 7 days beats grinding 3. With the flag off this
+ * falls back to raw point totals within the window.
  * Scores come straight from workout_sessions — no scoring logic here (Tyler
  * tunes that upstream) — plus bout_sessions (Bout v2), whose points are
  * computed once at /api/bout/finish. A bout counts as one session: it adds to
@@ -83,6 +90,7 @@ export async function GET(request: NextRequest) {
   type SessionRow = {
     user_id: string;
     points: number | null;
+    created_at?: string | null;
     punches?: number | null;
     best_round_points?: number | null;
   };
@@ -110,7 +118,12 @@ export async function GET(request: NextRequest) {
   // Chess Boxing bouts pay into the SAME windows (Bout v2) — a bout is a
   // finished unit like a workout. Read best-effort: bout_sessions is created
   // by hand on the live DB, so a missing table just means no bout points yet.
-  type BoutRow = { user_id: string; points: number | null; punches: number | null };
+  type BoutRow = {
+    user_id: string;
+    points: number | null;
+    punches: number | null;
+    created_at?: string | null;
+  };
   let bouts: BoutRow[] = [];
   const boutRead = await svc
     .from('bout_sessions')
@@ -126,6 +139,8 @@ export async function GET(request: NextRequest) {
 
   const metric: 'best_round' | 'total' = period === 'daily' ? 'best_round' : 'total';
 
+  const dailySlot = FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT;
+
   const totals = new Map<string, number>();
   const punchTotals = new Map<string, number>();
   // Daily fallback for users with only legacy rows (no best_round_points):
@@ -135,6 +150,17 @@ export async function GET(request: NextRequest) {
   // Best single BOUT in the window — competes with the best workout round for
   // the daily crown (see scoreFor).
   const bestBouts = new Map<string, number>();
+  // Daily-slot scoring: per user, per UTC day, the best single effort that
+  // day (best workout round, legacy session points, or bout points). The
+  // weekly/monthly score is the sum of these slots.
+  const daySlots = new Map<string, Map<string, number>>();
+  const bumpSlot = (uid: string, createdAt: string | null | undefined, val: number) => {
+    const day = (createdAt ?? '').slice(0, 10) || 'unknown';
+    let days = daySlots.get(uid);
+    if (!days) daySlots.set(uid, (days = new Map()));
+    days.set(day, Math.max(days.get(day) ?? 0, val));
+  };
+
   for (const row of sessions ?? []) {
     const uid = row.user_id as string;
     if (memberIds && !memberIds.has(uid)) continue;
@@ -146,11 +172,14 @@ export async function GET(request: NextRequest) {
       bestRounds.set(uid, Math.max(bestRounds.get(uid) ?? 0, br));
     }
     bestSessions.set(uid, Math.max(bestSessions.get(uid) ?? 0, pts));
+    // Slot value: best round if this row has one, else the legacy session
+    // total — a fixed 3-minute unit either way, so time can't buy the slot.
+    bumpSlot(uid, row.created_at, typeof br === 'number' ? br : pts);
   }
 
-  // Bouts add to the weekly/monthly total, and each bout stands as a single
-  // "session" for the daily best-single metric — one great bout can win the
-  // day the same way one great workout round can.
+  // A bout stands as a single "session": it competes for the daily
+  // best-single crown, fills its day's ranked slot, and (flag off) adds to
+  // the raw weekly/monthly total.
   for (const row of bouts) {
     const uid = row.user_id;
     if (memberIds && !memberIds.has(uid)) continue;
@@ -158,6 +187,17 @@ export async function GET(request: NextRequest) {
     totals.set(uid, (totals.get(uid) ?? 0) + pts);
     punchTotals.set(uid, (punchTotals.get(uid) ?? 0) + (row.punches ?? 0));
     bestBouts.set(uid, Math.max(bestBouts.get(uid) ?? 0, pts));
+    bumpSlot(uid, row.created_at, pts);
+  }
+
+  // Daily-slot mode replaces raw totals with the sum of each day's best
+  // effort — one scoring slot per day, consistency beats grinding.
+  if (dailySlot) {
+    for (const [uid, days] of daySlots) {
+      let sum = 0;
+      for (const v of days.values()) sum += v;
+      totals.set(uid, sum);
+    }
   }
 
   const scoreFor = (uid: string): number => {
