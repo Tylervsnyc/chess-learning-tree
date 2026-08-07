@@ -37,6 +37,7 @@ import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
 import { getLevelElo } from '@/lib/rookie-levels';
 import { useName } from '@/hooks/useName';
 import { useGameReview } from '@/hooks/useGameReview';
+import { useBoxShell } from '@/hooks/useBoxShell';
 import { GameReview } from '@/components/shared/GameReview';
 import type { ReviewMove } from '@/lib/review/review-core';
 import type { FightNightFrame } from '@/lib/og/fight-night-data';
@@ -261,7 +262,10 @@ export default function BoutPage() {
 
   // Quadrant Fight (beta) opt-in — default OFF, persisted across sessions.
   // Purely visual: bell timer, scoring, and bout completion are untouched.
+  // Chess Boxing APP only — never offered on the chesspath.app website.
   const [quadFightOn, setQuadFightOn] = useState(false);
+  const inBoxShell = useBoxShell();
+  const quadFightActive = quadFightOn && inBoxShell;
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setQuadFightOn(window.localStorage.getItem(QUAD_FIGHT_KEY) === '1');
@@ -1423,11 +1427,11 @@ export default function BoutPage() {
               Boxing round {seg?.round}
             </div>
             <div
-              className={`${quadFightOn ? 'text-4xl' : 'text-7xl'} font-black text-chess-text tabular-nums shrink-0 leading-none`}
+              className={`${quadFightActive ? 'text-4xl' : 'text-7xl'} font-black text-chess-text tabular-nums shrink-0 leading-none`}
             >
               {fmtClock(roundLeft)}
             </div>
-            {quadFightOn ? (
+            {quadFightActive ? (
               // The game soaks up the leftover height; if a small phone can't
               // fit it, it scrolls inside its own container (page never does).
               <div className="flex-1 min-h-0 w-full overflow-y-auto">
@@ -1470,15 +1474,17 @@ export default function BoutPage() {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    toggleQuadFight(true);
-                  }}
-                  className="shrink-0 text-xs font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4 tap-highlight"
-                >
-                  Quadrant Fight (beta)
-                </button>
+                {inBoxShell && (
+                  <button
+                    onClick={() => {
+                      playButtonClick();
+                      toggleQuadFight(true);
+                    }}
+                    className="shrink-0 text-xs font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4 tap-highlight"
+                  >
+                    Quadrant Fight (beta)
+                  </button>
+                )}
               </>
             )}
           </div>

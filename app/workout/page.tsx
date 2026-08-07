@@ -9,6 +9,7 @@ import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { usePremove } from '@/hooks/usePremove';
+import { useBoxShell } from '@/hooks/useBoxShell';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
@@ -442,7 +443,10 @@ function WorkoutPageInner() {
   const [punchCamOn, setPunchCamOn] = useState(false);
   // Quadrant Fight (beta) opt-in — camera game shown during exercise segments.
   // Default OFF; persisted so it stays on across rounds/sessions once enabled.
+  // Chess Boxing APP only — never offered on the chesspath.app website.
   const [quadFightOn, setQuadFightOn] = useState(false);
+  const inBoxShell = useBoxShell();
+  const quadFightActive = quadFightOn && inBoxShell;
   const punchesRef = useRef(0);
   const segPunchBaseRef = useRef(0);
   const [punchTotal, setPunchTotal] = useState(0); // live display
@@ -2097,7 +2101,7 @@ function WorkoutPageInner() {
                 </button>
                 {isFight && <FrozenFightBoard fen={fightFen} />}
               </>
-            ) : quadFightOn ? (
+            ) : quadFightActive ? (
               // Quadrant Fight (beta): opt-in camera game for the exercise
               // segment. Visual/fitness layer ONLY — the workout's own timer,
               // scoring, and completion flow run exactly as without it.
@@ -2141,15 +2145,17 @@ function WorkoutPageInner() {
                     Count my punches
                   </button>
                 )}
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    toggleQuadFight(true);
-                  }}
-                  className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4"
-                >
-                  Quadrant Fight (beta)
-                </button>
+                {inBoxShell && (
+                  <button
+                    onClick={() => {
+                      playButtonClick();
+                      toggleQuadFight(true);
+                    }}
+                    className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4"
+                  >
+                    Quadrant Fight (beta)
+                  </button>
+                )}
               </>
             )}
           </div>
