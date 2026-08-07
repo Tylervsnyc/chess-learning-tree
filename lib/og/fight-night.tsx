@@ -99,13 +99,30 @@ const CROWD_ROWS = [
   { y: 121.7, r: 6.9, sp: 20.8, off: 4.6, fill: '#0a101f', op: 1 },
 ];
 
-/** Flashbulb positions (design-space coords), spread like Arena's FLASHES.
-    A rotating few fire every frame; all of them fire on the knockout. */
+/** Flashbulb positions (design-space coords), spread across the terraces.
+    A rotating handful fire every tick; the knockout adds a scattered flurry
+    on top of the whole pool. */
 const FLASHES = [
-  { x: 17, y: 12 }, { x: 37, y: 46 }, { x: 71, y: 8 }, { x: 98, y: 58 },
-  { x: 129, y: 24 }, { x: 157, y: 96 }, { x: 180, y: 14 }, { x: 201, y: 62 },
-  { x: 226, y: 34 }, { x: 254, y: 90 }, { x: 271, y: 16 }, { x: 289, y: 50 },
+  { x: 17, y: 12 }, { x: 37, y: 46 }, { x: 55, y: 88 }, { x: 71, y: 8 },
+  { x: 86, y: 30 }, { x: 98, y: 58 }, { x: 112, y: 104 }, { x: 129, y: 24 },
+  { x: 143, y: 70 }, { x: 157, y: 96 }, { x: 168, y: 42 }, { x: 180, y: 14 },
+  { x: 195, y: 82 }, { x: 201, y: 62 }, { x: 214, y: 108 }, { x: 226, y: 34 },
+  { x: 241, y: 8 }, { x: 254, y: 90 }, { x: 271, y: 16 }, { x: 289, y: 50 },
 ];
+
+/** Extra knockout-only bulbs: a deterministic scatter that reshuffles every
+    tick so the flurry crackles while the stamp holds. */
+function burstFlashes(seed: number): { x: number; y: number; size: number }[] {
+  const out: { x: number; y: number; size: number }[] = [];
+  for (let k = 0; k < 18; k++) {
+    out.push({
+      x: ((k * 67 + seed * 31) % 288) + 6,
+      y: ((k * 43 + seed * 17) % 118) + 6,
+      size: 5 + ((k + seed) % 4),
+    });
+  }
+  return out;
+}
 
 /** The static parts of the house: glow + terraced heads + fade. Rendered
     inline for single-frame cards, or baked to a PNG once per GIF. */
@@ -224,27 +241,30 @@ function Crowd({ s, lit, seed, img }: { s: number; lit: boolean; seed: number; i
       ) : (
         <CrowdBand s={s} />
       )}
-      {/* cameras: a rotating few pop every flash tick; the knockout lights
-          the whole house up, shimmering while the stamp holds */}
-      {FLASHES.filter((_, i) => lit || (i + seed) % 3 === 0).map((f, i) => {
-        const size = lit ? 8 + ((i + seed) % 3) : 7;
-        return (
-          <div
-            key={i}
-            style={{
-              display: 'flex',
-              position: 'absolute',
-              left: (f.x - size / 2) * s,
-              top: (f.y - size / 2) * s,
-              width: size * s,
-              height: size * s,
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.95)',
-              boxShadow: `0 0 ${(lit ? 11 : 8) * s}px ${(lit ? 5 : 3) * s}px rgba(255,255,255,${lit ? 0.65 : 0.5})`,
-            }}
-          />
-        );
-      })}
+      {/* cameras: a rotating spread pops every flash tick; the knockout is a
+          full flurry — the whole pool plus a reshuffling scatter on top */}
+      {[
+        ...FLASHES.filter((_, i) => lit || (i + seed) % 3 === 0).map((f, i) => ({
+          ...f,
+          size: lit ? 8 + ((i + seed) % 3) : 6 + ((i + seed) % 2),
+        })),
+        ...(lit ? burstFlashes(seed) : []),
+      ].map((f, i) => (
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            position: 'absolute',
+            left: (f.x - f.size / 2) * s,
+            top: (f.y - f.size / 2) * s,
+            width: f.size * s,
+            height: f.size * s,
+            borderRadius: 999,
+            background: 'rgba(255,255,255,0.95)',
+            boxShadow: `0 0 ${(lit ? 11 : 8) * s}px ${(lit ? 5 : 3) * s}px rgba(255,255,255,${lit ? 0.65 : 0.5})`,
+          }}
+        />
+      ))}
     </div>
   );
 }
