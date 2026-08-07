@@ -105,27 +105,29 @@ export default function BoxProfilePage() {
           </Link>
         </div>
 
-        {/* Streak hero — same campfire as the website profile */}
-        <div className="shrink-0 rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-4 py-3 flex items-center gap-4">
+        {/* Streak hero — same campfire as the website profile, app-compact */}
+        <div className="shrink-0 rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-4 py-2.5 flex items-center gap-3">
           <div className="shrink-0">
             <RookieCampfire
-              blockSize={11}
+              blockSize={9}
               active={!!streak && streak.completedToday}
               blaze={Math.max(0.3, Math.min(1, (streak?.current ?? 0) / 60))}
             />
           </div>
           <div className="min-w-0">
-            <div
-              className={`text-4xl font-black tabular-nums leading-none ${
-                streak && streak.completedToday ? 'text-chess-green' : 'text-chess-text'
-              }`}
-            >
-              {streak ? streak.current : '—'}
+            <div className="flex items-baseline gap-1.5">
+              <span
+                className={`text-3xl font-black tabular-nums leading-none ${
+                  streak && streak.completedToday ? 'text-chess-green' : 'text-chess-text'
+                }`}
+              >
+                {streak ? streak.current : '—'}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wide text-chess-text-muted">
+                Day streak
+              </span>
             </div>
-            <div className="text-[10px] font-black uppercase tracking-wide text-chess-text-muted mt-1">
-              Day streak
-            </div>
-            <div className="text-xs font-bold text-chess-text truncate">
+            <div className="text-xs font-bold text-chess-text truncate mt-0.5">
               {streak
                 ? streak.completedToday
                   ? 'Done today. The fire stays lit.'
@@ -136,6 +138,33 @@ export default function BoxProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Chess Path ELO — the chart lives ON the profile; tap for the full
+            card + how-it's-calculated sheet */}
+        <button
+          type="button"
+          onClick={() => setShowElo(true)}
+          aria-label="Chess Path ELO — see the full rating graph and how it's calculated"
+          className="shrink-0 rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-4 py-2.5 text-left tap-highlight active:scale-[0.99] transition-transform"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wide text-chess-blue">
+                Chess Path ELO
+              </span>
+              <span className="rounded-full bg-chess-blue/10 px-1.5 py-px text-[8px] font-black uppercase tracking-wide text-chess-blue">
+                Beta
+              </span>
+            </div>
+            <span className="text-[10px] font-bold text-chess-text-faint">How it&apos;s calculated ›</span>
+          </div>
+          <div className="mt-1 flex items-end gap-3">
+            <div className="shrink-0 text-3xl font-black tabular-nums leading-none text-chess-text">
+              {dash?.elo ? dash.elo.current.toLocaleString() : '—'}
+            </div>
+            <EloSparkline series={dash?.elo?.series ?? null} loading={dash === null} />
+          </div>
+        </button>
 
         {/* The week, in bars — the same chart as the website profile */}
         <div className="shrink-0">
@@ -160,20 +189,7 @@ export default function BoxProfilePage() {
         )}
 
         {/* Lifetime tiles — one compact row so the whole card fits an SE */}
-        <div className="flex-1 min-h-0 grid grid-cols-4 gap-2 content-start">
-          <button
-            type="button"
-            onClick={() => setShowElo(true)}
-            aria-label="Chess Path ELO — see your rating graph and how it's calculated"
-            className="rounded-2xl bg-chess-surface border border-chess-blue/30 shadow-sm px-2 py-2.5 text-center min-w-0 tap-highlight active:scale-[0.97] transition-transform"
-          >
-            <div className="text-lg font-black tabular-nums text-chess-blue truncate">
-              {dash?.elo ? String(dash.elo.current) : '—'}
-            </div>
-            <div className="text-[10px] font-black uppercase tracking-wide text-chess-text-muted truncate">
-              ELO ›
-            </div>
-          </button>
+        <div className="flex-1 min-h-0 grid grid-cols-3 gap-2 content-start">
           <Tile
             label="Points"
             value={dash?.stats ? dash.stats.workoutPoints.toLocaleString() : '—'}
@@ -246,6 +262,72 @@ function EloExplainer() {
         </li>
         <li>It&apos;s an honest estimate (Beta) — it can go down on a rough day — not an official rating.</li>
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Compact all-time rating line for the profile card — same series the full
+ * RookieRatingCard plots, no toggles, sized to share a row with the number.
+ */
+function EloSparkline({ series, loading }: { series: EloSeriesPoint[] | null; loading: boolean }) {
+  const W = 100;
+  const H = 100;
+  const PAD_Y = 10;
+
+  if (loading) return <div className="h-10 flex-1 animate-pulse rounded-lg bg-slate-100" />;
+  if (!series || series.length < 2) {
+    return (
+      <div className="h-10 flex-1 flex items-end">
+        <span className="text-[11px] font-semibold leading-tight text-chess-text-muted">
+          Solve puzzles or play games and your rating line fills in here.
+        </span>
+      </div>
+    );
+  }
+
+  const elos = series.map((p) => p.elo);
+  const lo = Math.min(...elos);
+  const hi = Math.max(...elos);
+  const span = Math.max(1, hi - lo);
+  const n = series.length;
+  const coords = series.map((p, i) => ({
+    x: (i / (n - 1)) * W,
+    y: PAD_Y + (1 - (p.elo - lo) / span) * (H - PAD_Y * 2),
+  }));
+  const line = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(' ');
+  const area = `${line} L${W},${H} L0,${H} Z`;
+  const last = coords[coords.length - 1];
+
+  return (
+    <div className="relative h-10 flex-1 min-w-0">
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-full w-full" aria-hidden>
+        <defs>
+          <linearGradient id="boxEloFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-chess-blue, #3b82f6)" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="var(--color-chess-blue, #3b82f6)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={area} fill="url(#boxEloFill)" />
+        <path
+          d={line}
+          fill="none"
+          stroke="var(--color-chess-blue, #3b82f6)"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+        <circle
+          cx={last.x}
+          cy={last.y}
+          r={3}
+          fill="var(--color-chess-blue, #3b82f6)"
+          stroke="white"
+          strokeWidth={1.5}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
     </div>
   );
 }
