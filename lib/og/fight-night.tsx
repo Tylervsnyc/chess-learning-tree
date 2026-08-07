@@ -78,17 +78,19 @@ const HEADLINES: Record<string, { big: string; rest: string; win: boolean }> = {
   draw: { big: 'DRAW', rest: 'at the final bell', win: false },
 };
 
-/* Crowd: precomputed head positions in the 300-wide design space, mirroring
-   components/chessboxing/Arena.tsx CROWD_ROWS (scaled 390 -> 300). */
+/* Crowd: components/chessboxing/Arena.tsx CROWD_ROWS scaled from its
+   390-wide viewBox into the 300-wide design space (x0.77) — same terraces,
+   same fills, same jitter, so the card's house matches the box homepage. */
 const CROWD_ROWS = [
-  { y: 8, r: 2.6, sp: 10, off: 0, op: 0.5 },
-  { y: 19, r: 3.0, sp: 11, off: 5, op: 0.55 },
-  { y: 31, r: 3.3, sp: 12, off: 2, op: 0.6 },
-  { y: 45, r: 3.7, sp: 13, off: 7, op: 0.65 },
-  { y: 60, r: 4.2, sp: 15, off: 4, op: 0.7 },
-  { y: 77, r: 4.8, sp: 17, off: 9, op: 0.78 },
-  { y: 96, r: 5.5, sp: 19, off: 3, op: 0.88 },
-  { y: 117, r: 6.6, sp: 21, off: 10, op: 1 },
+  { y: 7.7, r: 2.3, sp: 10.0, off: 0, fill: '#121b30', op: 0.6 },
+  { y: 18.5, r: 2.6, sp: 10.8, off: 5.4, fill: '#121b30', op: 0.62 },
+  { y: 30.8, r: 2.9, sp: 11.6, off: 2.3, fill: '#111a2e', op: 0.65 },
+  { y: 43.9, r: 3.3, sp: 13.1, off: 6.9, fill: '#111a2e', op: 0.68 },
+  { y: 57.8, r: 3.7, sp: 13.9, off: 3.9, fill: '#101828', op: 0.7 },
+  { y: 72.4, r: 4.2, sp: 15.4, off: 8.5, fill: '#101828', op: 0.72 },
+  { y: 87.8, r: 4.6, sp: 16.9, off: 3.1, fill: '#0e1526', op: 0.78 },
+  { y: 104.0, r: 5.4, sp: 18.5, off: 9.2, fill: '#0e1526', op: 0.85 },
+  { y: 121.7, r: 6.9, sp: 20.8, off: 4.6, fill: '#0a101f', op: 1 },
 ];
 
 /** Flashbulbs (design-space coords). `lit` renders them firing. */
@@ -103,18 +105,33 @@ function Crowd({ s, lit }: { s: number; lit: boolean }) {
     for (let x = row.off - row.sp, i = 0; x <= 300 + row.sp; x += row.sp, i++) {
       const jx = x + (((i + ri) % 3) - 1) * 1.6;
       const jy = row.y + (((i * 2 + ri) % 4) - 1.5) * 1.3;
+      // Head circle + shoulder block, same construction as Arena's SVG.
       heads.push(
         <div
-          key={`${ri}-${i}`}
+          key={`h${ri}-${i}`}
           style={{
             display: 'flex',
             position: 'absolute',
             left: (jx - row.r) * s,
             top: (jy - row.r) * s,
             width: row.r * 2 * s,
-            height: row.r * 2.9 * s,
-            borderRadius: row.r * s,
-            background: '#1b2440',
+            height: row.r * 2 * s,
+            borderRadius: 999,
+            background: row.fill,
+            opacity: row.op,
+          }}
+        />,
+        <div
+          key={`s${ri}-${i}`}
+          style={{
+            display: 'flex',
+            position: 'absolute',
+            left: (jx - row.r * 1.2) * s,
+            top: (jy + row.r * 0.75) * s,
+            width: row.r * 2.4 * s,
+            height: row.r * 2.2 * s,
+            borderRadius: row.r * 0.9 * s,
+            background: row.fill,
             opacity: row.op,
           }}
         />,
@@ -133,7 +150,7 @@ function Crowd({ s, lit }: { s: number; lit: boolean }) {
         overflow: 'hidden',
       }}
     >
-      {/* house glow so the silhouettes read */}
+      {/* Arena's house glow, lifted ~1.35x so it reads at card scale */}
       <div
         style={{
           display: 'flex',
@@ -143,7 +160,7 @@ function Crowd({ s, lit }: { s: number; lit: boolean }) {
           width: 300 * s,
           height: 150 * s,
           background:
-            'linear-gradient(to bottom, rgba(84,102,153,0.5), rgba(60,76,120,0.32) 55%, rgba(19,26,46,0))',
+            'linear-gradient(to bottom, rgba(63,78,120,0.46), rgba(52,66,105,0.35) 45%, rgba(40,52,86,0.22) 78%, rgba(19,26,46,0))',
         }}
       />
       {/* breathing gold spotlight, frozen at full */}
@@ -265,8 +282,10 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
   const head = HEADLINES[outcome] || { big: 'BOUT', rest: 'complete', win: false };
   const board = parseBoard(frame.fen);
   const hl = lastSquares(frame.last);
-  const BOARD_W = 252 * s; // px-4 + mx-2 in the design
-  const SQ = BOARD_W / 8;
+  // Integer square size — fractional squares leave sub-pixel seam lines
+  // between ranks/files in satori's rasterizer.
+  const SQ = Math.round((252 * s) / 8);
+  const BOARD_W = SQ * 8;
 
   return (
     <div
@@ -355,8 +374,8 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
             position: 'relative',
             flexDirection: 'column',
             marginTop: 12 * s,
-            marginLeft: 8 * s,
-            marginRight: 8 * s,
+            alignSelf: 'center',
+            width: BOARD_W + 4 * s,
             borderRadius: 14 * s,
             border: `${2 * s}px solid #f6c445`,
             boxShadow: `0 0 ${24 * s}px rgba(246,196,69,0.25)`,
