@@ -109,6 +109,21 @@ export const FEATURE_FLAGS = {
    */
   BOX_RING_HOME: true,
   /**
+   * Chess Boxing achievements (2026-08-09, Tyler-approved plan:
+   * docs/chess-boxing-achievements-plan.md). Dungeon-Crawler-Carl-style
+   * achievements in Rookie's voice — bout/puzzle/training/dedication medals
+   * plus a secret "shame" category — with belt-band tiers (Amateur →
+   * Undisputed) that upgrade as you re-earn them at higher Rookie levels.
+   * Detection is server-side in the finish routes (lib/achievements/server.ts,
+   * writes via service role); the client only renders. ON shows the trophy
+   * case on /profile and /box/profile and plays unlock animations on the bout
+   * and workout result screens. OFF: no UI, no detection, nothing written —
+   * the user_achievements table just sits there. Requires the
+   * 2026-08-09-user-achievements.sql migration; until it runs, every surface
+   * degrades to empty/silent.
+   */
+  ACHIEVEMENTS: true,
+  /**
    * Premove — queue your reply while it's the opponent's turn. Select one of
    * your pieces and a destination during Rookie's think (0.5s on /play and
    * fight rounds, a padded 2-4s in a bout); the instant it's your turn the move

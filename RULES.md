@@ -1215,6 +1215,7 @@ The raw `Chessboard` component ships with default piece styling and no board col
 | `SHOW_SHARING` | `lib/config/feature-flags.ts` | `true` | Share buttons/cards on lesson complete and daily challenge |
 | `SHOW_BLOCK_INTROS` | `lib/config/feature-flags.ts` | `false` | Block intro popups at section boundaries |
 | `SHOW_OPENINGS` | `lib/config/feature-flags.ts` | `true` | Openings feature in Learn dropdown |
+| `ACHIEVEMENTS` | `lib/config/feature-flags.ts` | `true` | Chess Boxing achievements: trophy case on /profile + /box/profile, unlock animations on bout/workout result screens, server-side detection in the finish routes. Plan: docs/chess-boxing-achievements-plan.md |
 
 ### Permissions & Limits (not feature flags)
 
@@ -1285,6 +1286,17 @@ revenue_snapshots
   new_subscribers_last_30d, trial_users, free_users, churn_rate_pct,
   ltv_cents, created_at
   -- Nightly snapshot from Stripe. RLS: service_role only.
+
+user_achievements
+  id, user_id, achievement_id, tier, progress, unlocked_at, upgraded_at, seen
+  -- Chess Boxing achievements (2026-08-09). One row per achievement per user;
+  -- the catalog (names, Rookie's lines, thresholds) lives in
+  -- lib/achievements/catalog.ts. tier = belt rung (level 1-10 for
+  -- level-tiered, ladder rung for counts, 0 = counter below first rung).
+  -- RLS: SELECT own only, NO client writes — service role via the finish
+  -- routes (same trust model as bout_sessions).
+  -- UNIQUE(user_id, achievement_id)
+  -- (migration: supabase/migrations/2026-08-09-user-achievements.sql)
 ```
 
 ### Columns/Tables to DELETE:

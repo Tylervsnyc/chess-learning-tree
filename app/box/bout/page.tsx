@@ -47,7 +47,9 @@ import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { BoutEvents } from '@/lib/analytics/posthog';
-import { claimStreakToday } from '@/lib/streak-client';
+import { claimStreakToday, getTz } from '@/lib/streak-client';
+import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
+import type { AchievementUnlock } from '@/lib/achievements/types';
 import {
   warmupAudio,
   playButtonClick,
@@ -204,6 +206,9 @@ export default function BoutPage() {
   // The finish POST came back 401: the fighter isn't signed in, the bout is
   // stashed, and the result card must say so instead of pretending it saved.
   const [needsSignIn, setNeedsSignIn] = useState(false);
+  // Fresh achievement unlocks from /api/bout/finish — played as an overlay
+  // ABOVE the result card (never rows inside it: the card must fit an SE).
+  const [unlocks, setUnlocks] = useState<AchievementUnlock[]>([]);
   // One replay attempt per page load (StrictMode double-mounts effects).
   const replayTriedRef = useRef(false);
   const [sharing, setSharing] = useState(false);
@@ -727,6 +732,7 @@ export default function BoutPage() {
         clockLeftSeconds: result.clockLeft,
         finalFen: result.finalFen,
         clientSessionId: result.boutKey,
+        tz: getTz(),
       };
       try {
         const res = await fetch('/api/bout/finish', {
@@ -742,12 +748,20 @@ export default function BoutPage() {
           return;
         }
         if (!res.ok) return; // a real failure — nothing to claim
-        const body = (await res.json()) as { ok?: boolean; points?: number; ranked?: boolean };
+        const body = (await res.json()) as {
+          ok?: boolean;
+          points?: number;
+          ranked?: boolean;
+          newAchievements?: AchievementUnlock[];
+        };
         if (cancelled) return;
         if (typeof body.points === 'number') setSavedPoints(body.points);
         // The server decides ranked vs exhibition — the card says whichever
         // it actually was, never the client's guess.
         if (typeof body.ranked === 'boolean') setWasRanked(body.ranked);
+        if (Array.isArray(body.newAchievements) && body.newAchievements.length > 0) {
+          setUnlocks(body.newAchievements);
+        }
         // The bout is a finished unit — it can earn the day.
         await claimStreakToday();
       } catch {
@@ -1351,6 +1365,12 @@ export default function BoutPage() {
             </button>
           </div>
         </div>
+
+        {/* Fresh medals play OVER the card (z-110), sized to the moment —
+            never extra rows inside the no-scroll result card. */}
+        {unlocks.length > 0 && (
+          <AchievementUnlockOverlay unlocks={unlocks} onDone={() => setUnlocks([])} />
+        )}
       </div>
     );
   }

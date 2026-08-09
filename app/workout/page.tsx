@@ -52,6 +52,9 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
+import { getTz } from '@/lib/streak-client';
+import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
+import type { AchievementUnlock } from '@/lib/achievements/types';
 import { PunchTracker } from '@/components/workout/PunchTracker';
 import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
@@ -353,6 +356,8 @@ interface FinishResult {
   fightSummary: string | null;
   /** Finish POST came back 401 — session stashed, card must ask for sign-in. */
   needsSignIn: boolean;
+  /** Fresh medals from /api/workout/finish — played over the results popup. */
+  achievements: AchievementUnlock[];
 }
 
 export default function WorkoutPage() {
@@ -382,6 +387,10 @@ function WorkoutPageInner() {
   const [wrong, setWrong] = useState(0);
   const [combo, setCombo] = useState(0); // current correct-streak length
   const comboRef = useRef(0); // mirror for stale-closure-free reads in handlers
+  // Achievement facts, tracked over the whole session for the finish payload.
+  const bestComboRef = useRef(0); // longest combo this session (Combo Meal)
+  const firedUpEverRef = useRef(false); // hit the 80-punch trigger at least once
+  const struckOutFirstRef = useRef(false); // 3 strikes in the FIRST chess segment
 
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
   const [puzzlePos, setPuzzlePos] = useState(0);
@@ -925,6 +934,7 @@ function WorkoutPageInner() {
     let previousBest = 0;
     let recentPoints: number[] = [sessionPoints];
     let needsSignIn = false;
+    let achievements: AchievementUnlock[] = [];
     const rookieLine = pickWorkoutFinishLine();
     const finishPayload = {
       points: sessionPoints,
@@ -937,6 +947,11 @@ function WorkoutPageInner() {
       clientSessionId: clientSessionIdRef.current,
       punches: punchesRef.current,
       bestRoundPoints,
+      // Achievement facts (cosmetic medals only — server clamps everything).
+      bestCombo: bestComboRef.current,
+      firedUp: firedUpEverRef.current,
+      struckOutFirstSegment: struckOutFirstRef.current,
+      tz: getTz(),
     };
     try {
       const res = await fetch('/api/workout/finish', {
@@ -958,6 +973,7 @@ function WorkoutPageInner() {
         if (Array.isArray(data?.recentPoints) && data.recentPoints.length) {
           recentPoints = data.recentPoints;
         }
+        if (Array.isArray(data?.newAchievements)) achievements = data.newAchievements;
       }
     } catch {
       // Network/auth failure — still show the session summary.
@@ -990,6 +1006,7 @@ function WorkoutPageInner() {
       rookieLine,
       fightSummary,
       needsSignIn,
+      achievements,
     });
     setPhase('done');
   }, [score, right, wrong, minutes, isFight, freezeFight, bankFightSegment]);
@@ -1013,7 +1030,9 @@ function WorkoutPageInner() {
       // next chess segment. Only reachable with the punch cam on (no cam →
       // 0 punches → simply not fired up; never a penalty).
       const segPunches = punchesRef.current - segStartPunchesRef.current;
-      setFiredUp(segPunches >= FIRED_UP_PUNCH_TARGET);
+      const hit = segPunches >= FIRED_UP_PUNCH_TARGET;
+      if (hit) firedUpEverRef.current = true;
+      setFiredUp(hit);
     } else if (cur?.kind === 'chess') {
       // Fired Up is spent on the chess segment it powered.
       setFiredUp(false);
@@ -1201,6 +1220,7 @@ function WorkoutPageInner() {
         rookieLine: pickWorkoutFinishLine(),
         fightSummary: null,
         needsSignIn: false,
+        achievements: [],
       });
       setPhase('done');
       return;
@@ -1353,6 +1373,7 @@ function WorkoutPageInner() {
     if (!farm) {
       nextStreak = comboRef.current + 1;
       comboRef.current = nextStreak;
+      bestComboRef.current = Math.max(bestComboRef.current, nextStreak);
       setCombo(nextStreak);
     }
     const pts = pointsForCorrectV2(rating, nextStreak, highWaterElo, firedUp);
@@ -1389,6 +1410,7 @@ function WorkoutPageInner() {
     strikesRef.current += 1;
     setStrikes(strikesRef.current);
     if (strikesRef.current >= MAX_STRIKES_PER_SEGMENT) {
+      if (segIndexRef.current === 0) struckOutFirstRef.current = true;
       setStrikeNotice("Three down — round's over. Shake it off.");
       advanceSegment();
     }
@@ -1708,6 +1730,14 @@ function WorkoutPageInner() {
   if (phase === 'done' && finishResult) {
     return (
       <div className="h-full bg-chess-page">
+        {/* Fresh medals play OVER the results popup (z-110), sized to the
+            moment — never extra rows inside the card. */}
+        {finishResult.achievements.length > 0 && (
+          <AchievementUnlockOverlay
+            unlocks={finishResult.achievements}
+            onDone={() => setFinishResult((r) => (r ? { ...r, achievements: [] } : r))}
+          />
+        )}
         {/* Results popup — celebratory modal over the page */}
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 workout-result-overlay">
           <style>{`

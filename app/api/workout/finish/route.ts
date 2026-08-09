@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
+import { processAchievementEvent } from '@/lib/achievements/server';
 
 // Cap stored missed puzzles to bound the row size.
 const MAX_MISSED = 30;
@@ -52,6 +54,10 @@ export async function POST(request: NextRequest) {
     clientSessionId?: unknown;
     punches?: unknown;
     bestRoundPoints?: unknown;
+    bestCombo?: unknown;
+    firedUp?: unknown;
+    struckOutFirstSegment?: unknown;
+    tz?: unknown;
   };
   try {
     body = await request.json();
@@ -218,6 +224,31 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Achievements — best-effort, only on a fresh session (a replay must never
+  // re-celebrate), after the row landed so streak-derived detectors count it.
+  // These extra fields are client-claimed but only feed cosmetic medals, and
+  // each is clamped to what one session can honestly contain.
+  let newAchievements: Awaited<ReturnType<typeof processAchievementEvent>> = [];
+  if (!replayed) {
+    newAchievements = await processAchievementEvent(
+      createServiceClient(),
+      user.id,
+      {
+        kind: 'workout_finished',
+        correct: Math.min(Math.max(0, correct), 500),
+        punches,
+        perfect,
+        durationMinutes,
+        bestRoundPoints,
+        bestCombo: Math.min(Math.max(0, toInt(body.bestCombo)), 500),
+        firedUp: body.firedUp === true,
+        struckOutFirstSegment: body.struckOutFirstSegment === true,
+        isPersonalBest,
+      },
+      body.tz,
+    );
+  }
+
   return NextResponse.json({
     workoutPoints: nextTotal,
     sessionId,
@@ -225,5 +256,6 @@ export async function POST(request: NextRequest) {
     previousBest,
     recentPoints,
     replayed,
+    newAchievements,
   });
 }

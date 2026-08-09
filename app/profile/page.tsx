@@ -9,6 +9,7 @@ import { PatronModal } from '@/components/subscription/PatronModal';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
 import RookieCampfire from '@/components/shared/RookieCampfire';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
+import { TrophyCase } from '@/components/achievements/TrophyCase';
 
 /**
  * /profile — the user's profile, streak, and lifetime stats.
@@ -572,6 +573,9 @@ export default function ProfilePage() {
             <StatTile kind="points" label="Workout points" value={stats?.workoutPoints} loading={dataLoading} />
           </div>
         </div>
+
+        {/* ── Trophy case — Chess Boxing achievements ──────────────────── */}
+        <TrophyCase />
 
         {/* ── Beta product — the daily workout experiment ──────────────── */}
         <div className="mt-2 flex flex-col gap-4">

@@ -7,6 +7,7 @@ import { getStreak, getTz, type StreakData } from '@/lib/streak-client';
 import RookieCampfire from '@/components/shared/RookieCampfire';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
 import RookieRatingCard from '@/components/profile/RookieRatingCard';
+import { TrophyCaseRow } from '@/components/achievements/TrophyCase';
 import { ELO_BASELINE, PROVISIONAL_EVENTS } from '@/lib/elo/estimate';
 import type { EloSeriesPoint } from '@/lib/elo/rookie-rating';
 
@@ -187,6 +188,11 @@ export default function BoxProfilePage() {
             </div>
           </div>
         )}
+
+        {/* Trophy case — one compact row (no-scroll rule); the full case
+            opens as a bottom sheet, same escape hatch as the ELO card.
+            Renders nothing until there's at least one medal. */}
+        <TrophyCaseRow />
 
         {/* Lifetime tiles — one compact row so the whole card fits an SE */}
         <div className="flex-1 min-h-0 grid grid-cols-3 gap-2 content-start">
