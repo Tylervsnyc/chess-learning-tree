@@ -1,10 +1,12 @@
 import { ACHIEVEMENT_CATALOG, getAchievementDef } from './catalog';
+import type { BoutFacts } from './bout-facts';
 import {
   beltBandForLevel,
   beltBandForRung,
   type AchievementDef,
   type AchievementRow,
   type AchievementUnlock,
+  type BeltBand,
   type CelebrationSize,
 } from './types';
 
@@ -28,6 +30,12 @@ export type AchievementEvent =
       clockLeftSeconds: number;
       /** materialBalance(finalFen) from White's (the user's) POV; null if unknown. */
       material: number | null;
+      /**
+       * Chess facts from the server-side replay of the bout's SAN moves
+       * (lib/achievements/bout-facts.ts). Null/absent when the client sent no
+       * moves or the replay failed — chess/opening detectors just skip.
+       */
+      facts?: BoutFacts | null;
     }
   | {
       kind: 'workout_finished';
@@ -72,14 +80,18 @@ export interface EvaluateResult {
   unlocks: AchievementUnlock[];
 }
 
+/** Display band: tier-derived for ladders, def.band (rarity) for binaries. */
+function bandFor(def: AchievementDef, tier: number): BeltBand {
+  if (def.levelTiered) return beltBandForLevel(tier);
+  if (def.thresholds) return beltBandForRung(tier, def.thresholds.length);
+  return def.band ?? 'amateur';
+}
+
 /** How big the moment plays. Shame stays small — the roast IS the celebration. */
 function celebrationSize(def: AchievementDef, tier: number): CelebrationSize {
+  if (def.celebration) return def.celebration;
   if (def.secret || def.category === 'shame') return 's';
-  const band = def.levelTiered
-    ? beltBandForLevel(tier)
-    : def.thresholds
-      ? beltBandForRung(tier, def.thresholds.length)
-      : 'amateur';
+  const band = bandFor(def, tier);
   if (band === 'champion' || band === 'undisputed') return 'l';
   if (band === 'contender' || band === 'title-shot') return 'm';
   return 's';
@@ -132,11 +144,7 @@ export function evaluate(event: AchievementEvent, ctx: AchievementContext): Eval
       icon: def.icon,
       category: def.category,
       tier,
-      band: def.levelTiered
-        ? beltBandForLevel(tier)
-        : def.thresholds
-          ? beltBandForRung(tier, def.thresholds.length)
-          : 'amateur',
+      band: bandFor(def, tier),
       kind,
       size: celebrationSize(def, tier),
       secret: def.secret === true,
@@ -165,6 +173,38 @@ export function evaluate(event: AchievementEvent, ctx: AchievementContext): Eval
     grant('shame-glass-jaw', event.outcome === 'ko_loss' && event.roundsSurvived === 0);
     grant('shame-flagged', event.outcome === 'flag_loss');
     grant('shame-full-carlsberg', ctx.boutLossesToday >= 5);
+
+    // ── Chess facts (need the replayed move list; skip when absent) ─────────
+    const f = event.facts;
+    if (f) {
+      const koWin = event.outcome === 'ko_win';
+      const mate = koWin ? f.matingPiece : null;
+      grant('mate-her-majesty', mate === 'q');
+      grant('mate-the-lawnmower', mate === 'r');
+      grant('mate-long-distance-call', mate === 'b');
+      grant('mate-the-horse-kick', mate === 'n');
+      grant('mate-pawnbroker', mate === 'p' && !f.isPromotionMate);
+      grant('mate-the-quiet-step', mate === 'k' && !f.isCastleMate);
+      grant('mate-castle-doctrine', koWin && f.isCastleMate);
+      grant('mate-the-sneak', koWin && f.isEnPassantMate);
+      grant('mate-coronation-day', koWin && f.isPromotionMate);
+      grant('mate-philidors-ghost', koWin && f.isSmotheredMate);
+      grant('mate-back-rank-business', koWin && f.isBackRankMate);
+      grant('chess-speedrun', koWin && f.plies <= 20);
+      grant('chess-the-marathon', f.plies >= 120);
+      grant('chess-never-needed-her', koWin && f.userQueenLost);
+      grant('chess-untouchable', koWin && f.userLostNothing);
+      grant('chess-total-demolition', koWin && f.opponentBareKing);
+      grant('chess-field-promotion', won && f.userPromoted);
+      grant('chess-the-long-con', won && f.userUnderpromotedKnight);
+      grant('chess-harassment-campaign', f.checksByUser >= 10);
+
+      // Opening belts: win a bout with the opening on the board; the belt is
+      // the Rookie level beaten, upgrading forever (same ladder as the plan).
+      if (won && f.openingSlug) {
+        highWater(`opening-${f.openingSlug}`, event.level);
+      }
+    }
   } else {
     count('puzzle-grinder', event.correct);
     grant('puzzle-combo-meal', event.bestCombo >= 8);

@@ -75,6 +75,34 @@ const SAMPLES: Record<string, AchievementUnlock[]> = {
     { id: 'bout-meltdown-button', name: 'The Meltdown Button', description: 'I was WINNING. I want that recorded.', icon: '🌋', category: 'bout', tier: 1, band: 'amateur', kind: 'unlocked', size: 's', secret: false },
     { id: 'bout-up-the-ladder', name: 'Up the Ladder', description: 'I stopped going easy on you several levels ago.', icon: '🪜', category: 'bout', tier: 5, band: 'title-shot', kind: 'unlocked', size: 'm', secret: false },
   ],
+  'Opening belt (Caro-Kann L8)': [
+    {
+      id: 'opening-caro-kann',
+      name: 'Caro-Kann',
+      description: "The Caro-Kann was on the board and you didn't lose. Nobody survives the Caro-Kann that well. I've checked.",
+      icon: '🧱',
+      category: 'opening',
+      tier: 8,
+      band: 'champion',
+      kind: 'upgraded',
+      size: 'l',
+      secret: false,
+    },
+  ],
+  'Rare mate (Castle Doctrine)': [
+    {
+      id: 'mate-castle-doctrine',
+      name: 'Castle Doctrine',
+      description: 'Checkmate BY CASTLING. Do you know the odds? I do. I calculated them mid-collapse.',
+      icon: '🏰',
+      category: 'checkmate',
+      tier: 1,
+      band: 'undisputed',
+      kind: 'unlocked',
+      size: 'l',
+      secret: false,
+    },
+  ],
   'Undisputed (shimmer)': [
     {
       id: 'bout-up-the-ladder',

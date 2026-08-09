@@ -14,10 +14,22 @@ export type BeltBand = 'amateur' | 'contender' | 'title-shot' | 'champion' | 'un
 
 export type AchievementCategory =
   | 'bout'
+  | 'checkmate'
+  | 'opening'
   | 'puzzle'
   | 'training'
   | 'dedication'
   | 'shame';
+
+export const CATEGORY_LABELS: Record<AchievementCategory, string> = {
+  bout: 'The Ring',
+  checkmate: 'Finishing Moves',
+  opening: 'Openings',
+  puzzle: 'Puzzles',
+  training: 'Training',
+  dedication: 'Dedication',
+  shame: 'Hall of Shame',
+};
 
 /** How big the unlock moment plays (see AchievementUnlockOverlay). */
 export type CelebrationSize = 's' | 'm' | 'l';
@@ -42,6 +54,14 @@ export interface AchievementDef {
    * Undisputed).
    */
   levelTiered?: boolean;
+  /**
+   * Belt band for a BINARY achievement (rarity coloring — a castling mate is
+   * not an amateur-gray medal). Ignored for tiered achievements, whose band
+   * comes from the tier.
+   */
+  band?: BeltBand;
+  /** Force the unlock-animation size, overriding the band-derived default. */
+  celebration?: CelebrationSize;
   /** Hidden as "???" in the trophy case until unlocked. */
   secret?: boolean;
 }

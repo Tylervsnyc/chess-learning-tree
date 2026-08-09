@@ -23,6 +23,7 @@ import {
   type BoutOutcome,
 } from '@/lib/bout/bout';
 import { processAchievementEvent } from '@/lib/achievements/server';
+import { deriveBoutFacts } from '@/lib/achievements/bout-facts';
 
 /**
  * POST /api/bout/finish — record a finished Chess Boxing bout (Bout v2).
@@ -238,6 +239,11 @@ export async function POST(request: NextRequest) {
       material = null;
     }
   }
+  // Chess facts (mating piece, smothered/back-rank/en-passant mates, the
+  // opening on the board…) come from replaying the client's SAN list through
+  // chess.js — the replay IS the validation, so a fabricated list that
+  // doesn't play out legally yields no facts and no medals.
+  const facts = deriveBoutFacts(body.moveSans);
   const newAchievements = await processAchievementEvent(
     svc,
     user.id,
@@ -252,6 +258,7 @@ export async function POST(request: NextRequest) {
       boxingRounds,
       clockLeftSeconds,
       material,
+      facts,
     },
     body.tz,
   );

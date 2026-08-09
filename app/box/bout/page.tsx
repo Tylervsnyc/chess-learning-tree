@@ -733,6 +733,9 @@ export default function BoutPage() {
         finalFen: result.finalFen,
         clientSessionId: result.boutKey,
         tz: getTz(),
+        // Full SAN history — the server replays it for the chess-fact and
+        // opening achievements (and validates it in the process).
+        moveSans: movesRef.current.slice(0, 400),
       };
       try {
         const res = await fetch('/api/bout/finish', {

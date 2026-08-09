@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AchievementUnlock } from '@/lib/achievements/types';
 import { BELT_BAND_LABELS } from '@/lib/achievements/types';
+import { getAchievementDef } from '@/lib/achievements/catalog';
 import { AchievementTile, BAND_COLORS } from './BeltBadge';
 import { fireConfetti } from '@/lib/confetti';
 import { playWoodClap, playBoxingBell, playCelebrationSound, playErrorSound } from '@/lib/sounds';
@@ -217,12 +218,16 @@ function sizeRank(s: 's' | 'm' | 'l'): number {
 function tierLine(u: AchievementUnlock): string | null {
   if (u.tier <= 0) return null;
   if (u.category === 'shame') return null;
+  const def = getAchievementDef(u.id);
   const band = BELT_BAND_LABELS[u.band];
-  // Level-tiered reads "Champion · Level 8"; ladders read "Contender · Tier II".
-  if (u.id === 'bout-up-the-ladder') return `${band} · Level ${u.tier}`;
-  if (u.tier === 1 && u.band === 'amateur') return null;
-  const roman = ['I', 'II', 'III', 'IV', 'V'][Math.min(4, u.tier - 1)];
-  return `${band} · Tier ${roman}`;
+  // Level-tiered reads "Champion · Level 8"; ladders read "Contender · Tier II";
+  // binary medals show their rarity band alone (amateur binaries show nothing).
+  if (def?.levelTiered) return `${band} · Level ${u.tier}`;
+  if (def?.thresholds && def.thresholds.length > 1) {
+    const roman = ['I', 'II', 'III', 'IV', 'V'][Math.min(4, u.tier - 1)];
+    return `${band} · Tier ${roman}`;
+  }
+  return u.band === 'amateur' ? null : band;
 }
 
 const achKeyframes = `

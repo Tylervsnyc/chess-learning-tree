@@ -6,6 +6,8 @@ import {
   beltBandForLevel,
   beltBandForRung,
   BELT_BAND_LABELS,
+  CATEGORY_LABELS,
+  type AchievementCategory,
   type AchievementDef,
   type AchievementRow,
   type BeltBand,
@@ -68,7 +70,7 @@ function bandFor(def: AchievementDef, row: AchievementRow | null | undefined): B
   if (tier <= 0) return 'amateur';
   if (def.levelTiered) return beltBandForLevel(tier);
   if (def.thresholds) return beltBandForRung(tier, def.thresholds.length);
-  return 'amateur';
+  return def.band ?? 'amateur'; // binary medals carry a rarity band
 }
 
 // ── Full grid ────────────────────────────────────────────────────────────────
@@ -89,34 +91,51 @@ export function TrophyCase() {
           {loaded ? `${earned} / ${merged.length}` : ''}
         </span>
       </div>
-      <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4">
-        <div className="grid grid-cols-4 gap-x-2 gap-y-3">
-          {merged.map((m) => (
-            <button
-              key={m.def.id}
-              type="button"
-              onClick={() => setSelected(m)}
-              className="flex flex-col items-center gap-1 tap-highlight min-w-0"
-              aria-label={m.row || !m.def.secret ? m.def.name : 'Secret achievement'}
-            >
-              <AchievementTile
-                icon={m.def.icon}
-                band={m.band}
-                size={52}
-                locked={!m.row}
-                secret={!!m.def.secret}
-                shimmer={m.band === 'undisputed' && !!m.row}
-              />
-              <span
-                className={`text-[10px] font-bold leading-tight text-center line-clamp-2 ${
-                  m.row ? 'text-chess-text' : 'text-chess-text-faint'
-                }`}
-              >
-                {m.row || !m.def.secret ? m.def.name : '???'}
-              </span>
-            </button>
-          ))}
-        </div>
+      <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-4">
+        {(Object.keys(CATEGORY_LABELS) as AchievementCategory[]).map((cat) => {
+          const group = merged.filter((m) => m.def.category === cat);
+          if (group.length === 0) return null;
+          const got = group.filter((m) => m.row).length;
+          return (
+            <div key={cat}>
+              <div className="flex items-baseline justify-between mb-2">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-chess-text-muted">
+                  {CATEGORY_LABELS[cat]}
+                </h3>
+                <span className="text-[10px] font-bold text-chess-text-faint tabular-nums">
+                  {got}/{group.length}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 gap-x-2 gap-y-3">
+                {group.map((m) => (
+                  <button
+                    key={m.def.id}
+                    type="button"
+                    onClick={() => setSelected(m)}
+                    className="flex flex-col items-center gap-1 tap-highlight min-w-0"
+                    aria-label={m.row || !m.def.secret ? m.def.name : 'Secret achievement'}
+                  >
+                    <AchievementTile
+                      icon={m.def.icon}
+                      band={m.band}
+                      size={52}
+                      locked={!m.row}
+                      secret={!!m.def.secret}
+                      shimmer={m.band === 'undisputed' && !!m.row}
+                    />
+                    <span
+                      className={`text-[10px] font-bold leading-tight text-center line-clamp-2 ${
+                        m.row ? 'text-chess-text' : 'text-chess-text-faint'
+                      }`}
+                    >
+                      {m.row || !m.def.secret ? m.def.name : '???'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
       {selected && <DetailSheet merged={selected} onClose={() => setSelected(null)} />}
     </div>
