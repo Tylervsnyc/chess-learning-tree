@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { BoxOnboardEvents } from '@/lib/analytics/posthog';
 
 /**
  * OnboardFlow — the Chess Boxing app's first-launch onboarding.
@@ -64,7 +65,12 @@ export function OnboardFlow() {
   const stepIdx = Math.min(step, STEPS - 1);
   const stepKey = stepKeys[stepIdx];
 
+  useEffect(() => {
+    if (stepKey) BoxOnboardEvents.stepViewed(stepKey, stepIdx);
+  }, [stepKey, stepIdx]);
+
   const finish = useCallback(() => {
+    BoxOnboardEvents.completed();
     try {
       localStorage.setItem(ONBOARDED_KEY, '1');
     } catch {
@@ -72,6 +78,16 @@ export function OnboardFlow() {
     }
     router.replace('/box');
   }, [router]);
+
+  const skip = useCallback(() => {
+    BoxOnboardEvents.skipped(stepKey);
+    try {
+      localStorage.setItem(ONBOARDED_KEY, '1');
+    } catch {
+      /* private mode — gate just won't persist */
+    }
+    router.replace('/box');
+  }, [router, stepKey]);
 
   const next = useCallback(() => {
     setStep((s) => (s >= STEPS - 1 ? s : s + 1));
@@ -113,7 +129,7 @@ export function OnboardFlow() {
             ))}
           </div>
           <button
-            onClick={finish}
+            onClick={skip}
             className="text-sm font-bold text-chess-text-muted px-3 py-2 min-h-[44px] tap-highlight"
           >
             Skip
@@ -205,8 +221,10 @@ function StepUsername({
         body: JSON.stringify({ username: input.trim() }),
       });
       const d = await res.json();
-      if (res.ok) setUsername(d.username);
-      else setErr(d.error ?? 'Could not save handle.');
+      if (res.ok) {
+        setUsername(d.username);
+        BoxOnboardEvents.usernameSaved();
+      } else setErr(d.error ?? 'Could not save handle.');
     } catch {
       setErr('Network error.');
     } finally {
@@ -292,8 +310,11 @@ function StepCrew({ onSkip }: { onSkip: () => void }) {
         body: JSON.stringify({ code: code.trim() }),
       });
       const d = await res.json();
-      if (res.ok) setJoined(d.crew?.name ?? 'your crew');
-      else setErr(d.error ?? 'Could not join.');
+      if (res.ok) {
+        const name = d.crew?.name ?? 'your crew';
+        setJoined(name);
+        BoxOnboardEvents.crewJoined(name);
+      } else setErr(d.error ?? 'Could not join.');
     } catch {
       setErr('Network error.');
     } finally {
@@ -367,8 +388,10 @@ function StepCamera({ onDone }: { onDone: () => void }) {
       });
       stream.getTracks().forEach((t) => t.stop());
       setState('granted');
+      BoxOnboardEvents.cameraResult(true);
     } catch {
       setState('denied');
+      BoxOnboardEvents.cameraResult(false);
     }
   };
 

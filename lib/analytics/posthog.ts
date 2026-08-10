@@ -194,6 +194,20 @@ export const WorkoutEvents = {
     trackEvent('streak_extended', { current, longest }),
 };
 
+// Chess Boxing app first-launch onboarding (components/chessboxing/OnboardFlow)
+// — distinct from the web OnboardingEvents welcome funnel. `step` is the
+// StepKey ('what' | 'username' | 'crew' | 'camera').
+export const BoxOnboardEvents = {
+  stepViewed: (step: string, index: number) =>
+    trackEvent('box_onboard_step_viewed', { step, index }),
+  skipped: (step: string) => trackEvent('box_onboard_skipped', { step }),
+  usernameSaved: () => trackEvent('box_onboard_username_saved'),
+  crewJoined: (crew: string) => trackEvent('box_onboard_crew_joined', { crew }),
+  cameraResult: (granted: boolean) =>
+    trackEvent('box_onboard_camera_result', { granted }),
+  completed: () => trackEvent('box_onboard_completed'),
+};
+
 // Bout mode (BOUT_MODE) — one game vs Rookie split across chess rounds
 export const BoutEvents = {
   started: (level: number) => trackEvent('bout_started', { level }),
