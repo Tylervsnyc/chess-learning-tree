@@ -147,7 +147,16 @@ async function checkTraffic(): Promise<Line[]> {
   }
 }
 
-export const GET = withCronHeartbeat('pulse', async () => {
+export const GET = withCronHeartbeat('pulse', async (request) => {
+  // ?test=1 forces a post so the Slack pipe itself can be verified. Without it
+  // a healthy run and a missing/empty webhook look IDENTICAL (both return
+  // posted:false) — and on Vercel an env var that "looks set" may be an empty
+  // string, so behavior is the only honest proof. See CLAUDE.md.
+  if (new URL(request.url).searchParams.get('test') === '1') {
+    const res = await postToSlack('live', ':white_check_mark:  Pulse self-test — the webhook is wired up.');
+    return NextResponse.json({ ok: true, test: true, posted: res.ok, reason: res.reason });
+  }
+
   const sinceISO = new Date(Date.now() - PULSE_WINDOW_MIN * 60_000).toISOString();
 
   const [failures, activity, traffic] = await Promise.all([
