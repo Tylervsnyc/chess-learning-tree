@@ -16,11 +16,14 @@ import {
   bankSeconds,
   boxingRoundCount,
   isBoutFormat,
+  materialBalance,
   DAILY_RANKED_BOUT_LIMIT,
   RANKED_FORMAT,
   type BoutFormat,
   type BoutOutcome,
 } from '@/lib/bout/bout';
+import { processAchievementEvent } from '@/lib/achievements/server';
+import { deriveBoutFacts } from '@/lib/achievements/bout-facts';
 
 /**
  * POST /api/bout/finish — record a finished Chess Boxing bout (Bout v2).
@@ -225,5 +228,47 @@ export async function POST(request: NextRequest) {
     await raiseRatingToFloor(svc, user.id, updated, floorRatingForLevel(level + 1));
   }
 
-  return NextResponse.json({ ok: true, boutId: data.id as string, points, result, ranked });
+  // Achievements — best-effort, after the row landed (the streak-derived
+  // detectors count this bout). Runs only on a fresh row: the duplicate path
+  // returned above, so a replayed finish can never re-celebrate.
+  let material: number | null = null;
+  if (finalFen) {
+    try {
+      material = materialBalance(finalFen);
+    } catch {
+      material = null;
+    }
+  }
+  // Chess facts (mating piece, smothered/back-rank/en-passant mates, the
+  // opening on the board…) come from replaying the client's SAN list through
+  // chess.js — the replay IS the validation, so a fabricated list that
+  // doesn't play out legally yields no facts and no medals.
+  const facts = deriveBoutFacts(body.moveSans);
+  const newAchievements = await processAchievementEvent(
+    svc,
+    user.id,
+    {
+      kind: 'bout_finished',
+      outcome,
+      result,
+      level,
+      ranked,
+      format,
+      roundsSurvived,
+      boxingRounds,
+      clockLeftSeconds,
+      material,
+      facts,
+    },
+    body.tz,
+  );
+
+  return NextResponse.json({
+    ok: true,
+    boutId: data.id as string,
+    points,
+    result,
+    ranked,
+    newAchievements,
+  });
 }
