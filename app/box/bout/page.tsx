@@ -1658,6 +1658,7 @@ export default function BoutPage() {
             <h2 className="text-2xl font-black text-chess-text">
               {upNext?.kind === 'boxing' ? 'Gloves on' : 'Back to the board'}
             </h2>
+            <BreathingRook size="sm" animate mood="zen" />
             <div
               className={`text-6xl font-black tabular-nums leading-none my-1 ${
                 roundLeft <= 10 ? 'text-[#e5484d]' : 'text-chess-text'
@@ -1668,6 +1669,31 @@ export default function BoutPage() {
             </div>
             <p className="text-sm font-semibold text-chess-text-muted leading-snug">{bellLine}</p>
             <p className="text-xs font-bold text-chess-text leading-snug">{cornerLine}</p>
+            {/* Same rest window as the puzzle workout: the break is skippable.
+                Rings the bell early through the SAME path the timer uses —
+                rounds themselves are never skippable, only the rest. */}
+            <button
+              onClick={() => {
+                playButtonClick();
+                ringBell();
+              }}
+              className="mt-1 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 text-chess-text font-bold py-2.5 min-h-[44px] hover:bg-chess-page transition tap-highlight"
+            >
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="m5 4 10 8-10 8V4Z" />
+                <path d="M19 5v14" />
+              </svg>
+              Skip
+            </button>
           </div>
         </div>
       )}
