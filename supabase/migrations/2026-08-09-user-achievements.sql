@@ -30,7 +30,6 @@ CREATE TABLE public.user_achievements (
   UNIQUE (user_id, achievement_id)
 );
 
-CREATE INDEX idx_user_achievements_user ON public.user_achievements(user_id);
 
 ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
 
