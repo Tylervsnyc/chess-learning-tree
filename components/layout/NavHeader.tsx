@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 import { DailyWorkoutBadge } from '@/components/shared/DailyWorkoutBadge';
 import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
-import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function LearnDropdown({ pathname }: { pathname: string | null }) {
   const [open, setOpen] = useState(false);
@@ -133,21 +132,6 @@ function NavHeaderInner({ pathname }: { pathname: string | null }) {
 
               {/* Learn dropdown */}
               <LearnDropdown pathname={pathname} />
-
-              {/* Leaderboard (Chess Boxing competition) — logged-in only */}
-              {FEATURE_FLAGS.LEADERBOARDS && user && (
-                <Link
-                  href="/leaderboard"
-                  className={`flex items-center gap-1 px-1.5 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-all hover:opacity-90 whitespace-nowrap border-2 border-chess-green text-chess-green ${
-                    pathname?.startsWith('/leaderboard') ? '' : 'opacity-70'
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 21V9m7 12V4m7 17v-8" />
-                  </svg>
-                  <span className="hidden sm:inline">Ranks</span>
-                </Link>
-              )}
 
               {/* Profile */}
               <Link

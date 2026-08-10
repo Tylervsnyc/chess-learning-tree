@@ -1865,7 +1865,7 @@ function WorkoutPageInner() {
                 >
                   Sign in to save this fight
                 </button>
-                {FEATURE_FLAGS.LEADERBOARDS && (
+                {FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
                   <button
                     onClick={() => {
                       playButtonClick();
@@ -1878,7 +1878,7 @@ function WorkoutPageInner() {
                 )}
               </>
             ) : (
-              FEATURE_FLAGS.LEADERBOARDS && (
+              FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
                 <button
                   onClick={() => {
                     playButtonClick();

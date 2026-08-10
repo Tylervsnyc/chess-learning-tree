@@ -1315,7 +1315,7 @@ export default function BoutPage() {
                 >
                   Sign in to save this fight
                 </button>
-                {FEATURE_FLAGS.LEADERBOARDS && (
+                {FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
                   <button
                     onClick={() => {
                       playButtonClick();
@@ -1328,7 +1328,7 @@ export default function BoutPage() {
                 )}
               </>
             ) : (
-              FEATURE_FLAGS.LEADERBOARDS && (
+              FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
                 <button
                   onClick={() => {
                     playButtonClick();
