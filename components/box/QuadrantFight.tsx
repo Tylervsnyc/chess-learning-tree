@@ -4,7 +4,7 @@
  * QUADRANT FIGHT — the camera boxing mini-game, extracted verbatim from
  * /test/punch-zones (playtest-tuned; game logic/timing/judging FROZEN).
  *
- * Camera divided into quarters. Commands (several can run AT ONCE from round 3):
+ * Camera divided into quarters. Commands (several can run AT ONCE from round 7):
  *   PUNCH      — get a wrist into the lit quadrant before it fills
  *   POWER      — orange, fast, staggers the opponent
  *   DOUBLE     — both hands, one per lit quadrant
@@ -56,20 +56,23 @@ const HALF_BANNERS: Record<HalfSide, string> = {
   top: 'DUCK — GET UNDER THE TOP HALF',
 };
 
-// Base window shrinks each round; then YOUR missing health speeds everything
-// up further — take damage and the whole fight accelerates. Module-scope so
-// the HUD Speed tile shows the exact number the game uses.
+// ONE difficulty dial: the round. (Playtest 2026-08-10: still ramped too
+// hard too fast — window shrink halved to 50ms/round, and the missing-HP
+// acceleration softened so getting hit no longer snowballs into a death
+// spiral. Full speed now lands around round ~15, not ~9.)
+// Module-scope so the HUD Speed tile shows the exact number the game uses.
 function windowMs(round: number, hp: number) {
-  const base = Math.max(1100, 2100 - (round - 1) * 150);
-  return Math.round(base * (0.6 + 0.4 * (hp / HP_MAX)));
+  const base = Math.max(1300, 2400 - (round - 1) * 50);
+  return Math.round(base * (0.8 + 0.2 * (hp / HP_MAX)));
 }
 // Power punches are the fast ones — a bit over half the normal window.
 function powerWindowMs(round: number, hp: number) {
   return Math.max(750, Math.round(windowMs(round, hp) * 0.55));
 }
-// How many commands can be live at once — the chaos dial.
+// How many commands can be live at once — the chaos dial. Overlap starts
+// round 7; the 3-at-once endgame doesn't arrive until round 12.
 function maxConcurrent(round: number) {
-  return round < 3 ? 1 : round < 6 ? 2 : 3;
+  return round < 7 ? 1 : round < 12 ? 2 : 3;
 }
 
 const WIN_LINES = [
@@ -107,7 +110,6 @@ export default function QuadrantFight({
   const [phase, setPhase] = useState<Phase>('boot');
   const [bootMsg, setBootMsg] = useState('Loading pose model…');
   const [score, setScore] = useState(0);
-  const [, setLevel] = useState(1);
   const [playerHp, setPlayerHp] = useState(HP_MAX);
   const [oppHp, setOppHp] = useState(HP_MAX);
   const [round, setRound] = useState(1);
@@ -129,7 +131,6 @@ export default function QuadrantFight({
     staggerUntil: 0, // power punch landed: opponent staggered — slow windows, bonus damage, no blocks
     playerStaggerUntil: 0, // you just got hit — you're rocked: he pours on attacks to dodge
     score: 0,
-    level: 1,
     playerHp: HP_MAX,
     oppHp: HP_MAX,
     round: 1,
@@ -207,7 +208,6 @@ export default function QuadrantFight({
 
     // Returns true if a command was spawned.
     function issueCommand(now: number): boolean {
-      const lvl = g.level;
       const used = usedZones();
       const free = [0, 1, 2, 3].filter((z) => !used.has(z));
       if (free.length === 0) return false;
@@ -221,31 +221,34 @@ export default function QuadrantFight({
       const oppStag = now < g.staggerUntil;
       const youStag = now < g.playerStaggerUntil;
 
-      // Normally only ONE evasion (dodge/halfdodge/combo) at a time — you
-      // can't slip two punches in two directions. But when YOU'RE rocked, he
-      // pours it on: two evasions can run at once.
+      // Only ONE evasion (dodge/halfdodge/combo) at a time — always. Two
+      // dodge directions at once was the "everything is a block" spiral.
       const evasionCount = g.commands.filter((c) => c.kind === 'dodge' || c.kind === 'halfdodge' || c.kind === 'combo').length;
-      const evasionCap = youStag ? 2 : 1;
 
-      // Weighted pool — dodges from the start, defense density climbs with level.
-      let pool: Command['kind'][] = ['punch', 'punch', 'punch', 'dodge'];
-      if (lvl >= 2) pool.push('power', 'dodge', 'halfdodge');
-      if (lvl >= 3) pool.push('double', 'dodge');
-      if (lvl >= 4) pool.push('combo', 'halfdodge', 'double');
+      // Weighted pool — punch-majority always; new moves unlock by ROUND
+      // (the one dial), one new thing every OTHER round so each gets a
+      // round to breathe: r3 power, r5 half dodges, r7 doubles, r9 combos.
+      const pool: Command['kind'][] = ['punch', 'punch', 'punch', 'dodge'];
+      if (g.round >= 3) pool.push('power');
+      if (g.round >= 5) pool.push('halfdodge');
+      if (g.round >= 7) pool.push('double', 'punch');
+      if (g.round >= 9) pool.push('combo');
       // Opponent staggered = YOUR flurry: pure offense (no power — one stagger
-      // per power punch, no chaining). You rocked = his flurry: defense-heavy.
-      if (oppStag) pool = pool.filter((k) => k === 'punch' || k === 'double');
-      else if (youStag) pool.push('dodge', 'dodge', 'halfdodge');
-      if (evasionCount >= evasionCap) pool = pool.filter((k) => k === 'punch' || k === 'power' || k === 'double');
+      // per power punch, no chaining). You rocked = a touch more to dodge, not
+      // a wall of it.
+      let mix = pool;
+      if (oppStag) mix = pool.filter((k) => k === 'punch' || k === 'double');
+      else if (youStag) mix = [...pool, 'dodge'];
+      if (evasionCount >= 1) mix = mix.filter((k) => k === 'punch' || k === 'power' || k === 'double');
       // Feasibility: multi-zone commands need the space.
       const freeSides = (['left', 'right', 'top'] as HalfSide[]).filter((s) => HALF_ZONES[s].every((z) => free.includes(z)));
-      pool = pool.filter((k) => {
+      mix = mix.filter((k) => {
         if (k === 'double' || k === 'combo') return free.length >= 2;
         if (k === 'halfdodge') return freeSides.length > 0;
         return true;
       });
-      if (pool.length === 0) return false;
-      const kind = pool[Math.floor(Math.random() * pool.length)];
+      if (mix.length === 0) return false;
+      const kind = mix[Math.floor(Math.random() * mix.length)];
       const zone = pick(free);
 
       if (kind === 'power') {
@@ -324,8 +327,7 @@ export default function QuadrantFight({
 
       if (ok) {
         g.streak += 1;
-        const base = 10 * g.level + g.streak * 2;
-        if (g.streak % 5 === 0) g.level += 1;
+        const base = 10 * g.round + g.streak * 2;
         const staggered = now < g.staggerUntil;
         // Damage dealt: punches hurt, doubles hurt more, power punches stagger.
         // Surviving a combo stings extra; a clean dodge deals nothing.
@@ -378,7 +380,10 @@ export default function QuadrantFight({
         const dmg = isWhiff ? DMG_WHIFF : DMG_CAUGHT;
         g.playerHp = Math.max(0, g.playerHp - dmg);
         g.hitFlashUntil = now + 350;
-        g.playerStaggerUntil = now + 4000; // rocked: brace for his follow-up barrage
+        // Rocked ONLY when his punch actually lands (caught in a zone) — a
+        // whiffed punch shouldn't trigger the barrage, and it's brief. This
+        // killed the "everything is a block and it never stops" spiral.
+        if (!isWhiff) g.playerStaggerUntil = now + 2500;
         showDmg('you', dmg);
         setQuip(MISS_LINES[Math.floor(Math.random() * MISS_LINES.length)]);
         if (g.playerHp > 0) {
@@ -391,7 +396,6 @@ export default function QuadrantFight({
         }
       }
       setScore(g.score);
-      setLevel(g.level);
       setStreak(g.streak);
       setPlayerHp(g.playerHp);
       setOppHp(g.oppHp);
@@ -469,7 +473,7 @@ export default function QuadrantFight({
         const maxCmds = maxConcurrent(g.round) + (oppStag ? 1 : 0);
         if (now >= g.roundBreakUntil && now >= g.nextSpawnAt && g.commands.length < maxCmds) {
           if (issueCommand(now)) {
-            g.nextSpawnAt = now + (oppStag ? 250 + Math.random() * 350 : youStag ? 450 + Math.random() * 550 : 700 + Math.random() * 900);
+            g.nextSpawnAt = now + (oppStag ? 250 + Math.random() * 350 : youStag ? 550 + Math.random() * 650 : 700 + Math.random() * 900);
           }
         }
 
@@ -681,15 +685,14 @@ export default function QuadrantFight({
 
   function startGame(hard = false) {
     const g = game.current;
-    const startLevel = hard ? 10 : 1;
-    const startRound = hard ? 3 : 1;
-    g.score = 0; g.level = startLevel; g.streak = 0;
+    const startRound = hard ? 5 : 1; // hard = where overlap begins, mid-curve
+    g.score = 0; g.streak = 0;
     g.playerHp = HP_MAX; g.oppHp = HP_MAX; g.round = startRound;
     g.roundBreakUntil = 0; g.hitFlashUntil = 0; g.staggerUntil = 0; g.playerStaggerUntil = 0;
     g.commands = []; g.flashes = [];
     g.nextSpawnAt = performance.now() + 1200;
     g.phase = 'playing';
-    setScore(0); setLevel(startLevel); setStreak(0);
+    setScore(0); setStreak(0);
     setPlayerHp(HP_MAX); setOppHp(HP_MAX); setRound(startRound);
     setYouChip(null); setOppChip(null);
     setQuip(''); setMissShots([]); setBanner('Get ready…');
@@ -756,7 +759,7 @@ export default function QuadrantFight({
               onClick={() => startGame(true)}
               className="min-h-11 px-6 py-2.5 rounded-full bg-orange-500 text-orange-950 font-bold active:scale-95 transition-transform"
             >
-              Hard start — Rd 3 · Lvl 10
+              Hard start — Round 5
             </button>
             {phase === 'ready' && <p className="text-slate-300 text-sm text-center px-4">Stand back so your head + hands are in frame</p>}
           </div>
@@ -768,21 +771,25 @@ export default function QuadrantFight({
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-2 text-center">
-        {[
-          ['Score', score],
-          ['Round', round],
-          ['Speed', `${(windowMs(round, playerHp) / 1000).toFixed(1)}s`],
-          ['Streak', streak],
-        ].map(([label, val]) => (
-          <div key={label as string} className="rounded-xl bg-slate-900 py-2">
-            <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
-            <div className="text-lg font-bold">{val || '—'}</div>
-          </div>
-        ))}
-      </div>
+      {/* Embedded surfaces skip the stat tiles + quip so the card fits a
+          boxing round without scrolling — HP bars + canvas are the game. */}
+      {!compact && (
+        <div className="grid grid-cols-4 gap-2 text-center">
+          {[
+            ['Score', score],
+            ['Round', round],
+            ['Speed', `${(windowMs(round, playerHp) / 1000).toFixed(1)}s`],
+            ['Streak', streak],
+          ].map(([label, val]) => (
+            <div key={label as string} className="rounded-xl bg-slate-900 py-2">
+              <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
+              <div className="text-lg font-bold">{val || '—'}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {quip && <p className="text-center text-slate-300 text-sm italic">&ldquo;{quip}&rdquo;</p>}
+      {!compact && quip && <p className="text-center text-slate-300 text-sm italic">&ldquo;{quip}&rdquo;</p>}
 
       {!compact && missShots.length > 0 && (
         <div className="flex flex-col gap-2">

@@ -1426,11 +1426,13 @@ export default function BoutPage() {
             <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e5484d] shrink-0">
               Boxing round {seg?.round}
             </div>
-            <div
-              className={`${quadFightActive ? 'text-4xl' : 'text-7xl'} font-black text-chess-text tabular-nums shrink-0 leading-none`}
-            >
-              {fmtClock(roundLeft)}
-            </div>
+            {/* No duplicate clock while the game is up — the round time is
+                already at the top, and the card needs the height to fit. */}
+            {!quadFightActive && (
+              <div className="text-7xl font-black text-chess-text tabular-nums shrink-0 leading-none">
+                {fmtClock(roundLeft)}
+              </div>
+            )}
             {quadFightActive ? (
               // The game soaks up the leftover height; if a small phone can't
               // fit it, it scrolls inside its own container (page never does).

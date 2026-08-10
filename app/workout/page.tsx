@@ -2076,9 +2076,8 @@ function WorkoutPageInner() {
           <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 text-center gap-5">
             {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && punchCamOn ? (
               <>
-                <div className="text-6xl font-black text-chess-text tabular-nums">
-                  {fmtTime(secondsLeft)}
-                </div>
+                {/* No big clock here — the header timer already shows the
+                    countdown, and the camera needs the height. */}
                 {FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (
                   <ComboCoach key={`coach-${segIndex}`} segmentSeconds={current.seconds} />
                 )}
@@ -2086,7 +2085,7 @@ function WorkoutPageInner() {
                   key={segIndex}
                   autoStart
                   onPunch={onPunch}
-                  className="w-full max-w-xs"
+                  className="w-full max-w-sm"
                 />
                 <button
                   onClick={() => {
@@ -2104,13 +2103,10 @@ function WorkoutPageInner() {
             ) : quadFightActive ? (
               // Quadrant Fight (beta): opt-in camera game for the exercise
               // segment. Visual/fitness layer ONLY — the workout's own timer,
-              // scoring, and completion flow run exactly as without it.
-              <>
-                <div className="text-6xl font-black text-chess-text tabular-nums">
-                  {fmtTime(secondsLeft)}
-                </div>
-                <QuadrantFight compact onClose={() => toggleQuadFight(false)} />
-              </>
+              // scoring, and completion flow run exactly as without it. No
+              // extra clock here: the segment timer is already at the top,
+              // and the game card needs the height to fit without scrolling.
+              <QuadrantFight compact onClose={() => toggleQuadFight(false)} />
             ) : (
               <>
                 {!FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (

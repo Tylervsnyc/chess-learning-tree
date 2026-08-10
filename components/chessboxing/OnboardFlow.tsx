@@ -178,7 +178,6 @@ function StepWhat() {
         Here you train it: puzzles between boxing rounds while your pulse tries
         to wreck your calculation. Streaks, scores, leaderboards.
       </p>
-      <RookieLine text="Chess while gassed. You are going to hang a queen in round two. I respect it already." />
     </div>
   );
 }
@@ -270,7 +269,6 @@ function StepUsername({
         </div>
       )}
 
-      <RookieLine text="Choose carefully. I will be saying this name a lot, mostly while losing to it." />
     </div>
   );
 }
@@ -348,7 +346,6 @@ function StepCrew({ onSkip }: { onSkip: () => void }) {
         </div>
       )}
 
-      <RookieLine text="A crew means witnesses. Someone should see what you do to your bishops when you're gassed." />
     </div>
   );
 }
@@ -399,8 +396,6 @@ function StepCamera({ onDone }: { onDone: () => void }) {
         </div>
       )}
 
-      <RookieLine text="I count every single punch. It is the only counting I do that is not chess and I take it just as seriously." />
-
       <div className="w-full max-w-sm flex flex-col gap-2 pt-1">
         {state === 'granted' || state === 'denied' ? (
           <button
@@ -427,15 +422,6 @@ function StepCamera({ onDone }: { onDone: () => void }) {
           </>
         )}
       </div>
-    </div>
-  );
-}
-
-function RookieLine({ text }: { text: string }) {
-  return (
-    <div className="max-w-sm bg-chess-surface rounded-2xl border border-slate-200 shadow-sm px-4 py-3 text-left">
-      <div className="text-[10px] font-black uppercase tracking-wide text-[#e5484d]">Rookie</div>
-      <p className="text-sm text-chess-text mt-0.5">{text}</p>
     </div>
   );
 }
