@@ -26,8 +26,14 @@ type Phase = 'boot' | 'ready' | 'playing' | 'gameover' | 'error';
 type HalfSide = 'left' | 'right' | 'top';
 
 // Per-punch tracking travels WITH the command so several can run at once.
-type Track = { clear: number; armed: boolean; hold: number; done: boolean };
-const newTrack = (): Track => ({ clear: 0, armed: false, hold: 0, done: false });
+// Arming is tracked PER WRIST (2026-08-13): a single shared "no wrist is in
+// the zone" gate meant a resting guard hand parked in a bottom quadrant
+// permanently blocked arming, so bottom-quadrant punches never fired.
+type Side = 'L' | 'R';
+type Arm = { clear: number; armed: boolean; hold: number };
+type Track = { L: Arm; R: Arm; done: boolean };
+const newArm = (): Arm => ({ clear: 0, armed: false, hold: 0 });
+const newTrack = (): Track => ({ L: newArm(), R: newArm(), done: false });
 
 type Command =
   | { kind: 'punch'; zone: number; deadline: number; winMs: number; t: Track }
@@ -61,13 +67,18 @@ const HALF_BANNERS: Record<HalfSide, string> = {
 // acceleration softened so getting hit no longer snowballs into a death
 // spiral. Full speed now lands around round ~15, not ~9.)
 // Module-scope so the HUD Speed tile shows the exact number the game uses.
+// (Playtest 2026-08-13: round 1 opened too sleepy — base dropped 2400→1950.)
 function windowMs(round: number, hp: number) {
-  const base = Math.max(1300, 2400 - (round - 1) * 50);
+  const base = Math.max(1250, 1950 - (round - 1) * 50);
   return Math.round(base * (0.8 + 0.2 * (hp / HP_MAX)));
 }
 // Power punches are the fast ones — a bit over half the normal window.
 function powerWindowMs(round: number, hp: number) {
-  return Math.max(750, Math.round(windowMs(round, hp) * 0.55));
+  return Math.max(700, Math.round(windowMs(round, hp) * 0.55));
+}
+// Incoming punches you have to dodge come in HOT — you react, you don't aim.
+function dodgeWindowMs(round: number, hp: number) {
+  return Math.max(800, Math.round(windowMs(round, hp) * 0.7));
 }
 // How many commands can be live at once — the chaos dial. Overlap starts
 // round 7; the 3-at-once endgame doesn't arrive until round 12.
@@ -188,7 +199,7 @@ export default function QuadrantFight({
       return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
     }
 
-    const GAP_MS = 1200; // rest beat once the board clears
+    const GAP_MS = 850; // rest beat once the board clears
     // The dodge is judged ONLY at impact: the rising fill is the punch coming
     // in, and full color is when it LANDS. Being in the zone mid-window is
     // fine — you just have to be out for the final stretch.
@@ -216,6 +227,7 @@ export default function QuadrantFight({
       // A staggered opponent means slower incoming windows — breathing room.
       const stag = now < g.staggerUntil ? 1.35 : 1;
       const win = Math.round(windowMs(g.round, g.playerHp) * stag);
+      const dwin = Math.round(dodgeWindowMs(g.round, g.playerHp) * stag);
       const deadline = now + win;
 
       const oppStag = now < g.staggerUntil;
@@ -261,14 +273,14 @@ export default function QuadrantFight({
         setBanner(`DOUBLE — BOTH HANDS: ${ZONE_LABELS[zone]} + ${ZONE_LABELS[zoneB]}`);
       } else if (kind === 'halfdodge') {
         const side = freeSides[Math.floor(Math.random() * freeSides.length)];
-        g.commands.push({ kind: 'halfdodge', side, deadline, winMs: win, inFrames: 0 });
+        g.commands.push({ kind: 'halfdodge', side, deadline: now + dwin, winMs: dwin, inFrames: 0 });
         setBanner(HALF_BANNERS[side]);
       } else if (kind === 'combo') {
         const dodgeZone = pick(free.filter((z) => z !== zone));
         g.commands.push({ kind: 'combo', punchZone: zone, dodgeZone, deadline, winMs: win, t: newTrack(), punchDone: false, inFrames: 0 });
         setBanner(`PUNCH ${ZONE_LABELS[zone]} — HEAD OUT OF ${ZONE_LABELS[dodgeZone]}`);
       } else if (kind === 'dodge') {
-        g.commands.push({ kind: 'dodge', zone, deadline, winMs: win, inFrames: 0 });
+        g.commands.push({ kind: 'dodge', zone, deadline: now + dwin, winMs: dwin, inFrames: 0 });
         setBanner(`DODGE — head out of ${ZONE_LABELS[zone]}`);
       } else {
         g.commands.push({ kind: 'punch', zone, deadline, winMs: win, t: newTrack() });
@@ -419,7 +431,7 @@ export default function QuadrantFight({
       ctx.drawImage(video, 0, 0, w, h);
       ctx.restore();
 
-      const wrists: { x: number; y: number }[] = [];
+      const wrists: { x: number; y: number; side: Side }[] = [];
       const head: { x: number; y: number }[] = [];
       if (g.detector) {
         try {
@@ -428,37 +440,42 @@ export default function QuadrantFight({
           for (const kp of kps) {
             if (kp.score < CONFIDENCE) continue;
             const p = { x: w - kp.x, y: kp.y }; // mirror keypoints to match the flipped frame
-            if (kp.name === 'left_wrist' || kp.name === 'right_wrist') wrists.push(p);
+            if (kp.name === 'left_wrist') wrists.push({ ...p, side: 'L' });
+            if (kp.name === 'right_wrist') wrists.push({ ...p, side: 'R' });
             if (kp.name === 'nose' || kp.name === 'left_eye' || kp.name === 'right_eye') head.push(p);
           }
         } catch { /* dropped frame — state-based logic tolerates it */ }
       }
 
       const now = performance.now();
-      const wristsDetected = wrists.length > 0;
       const zoneOfPoint = (p: { x: number; y: number }) =>
         (p.x >= w / 2 ? 1 : 0) + (p.y >= h / 2 ? 2 : 0);
 
-      // Arm-then-enter punch tracking. Arms ONLY after 2 frames where wrists
-      // are DETECTED and clear of the zone — losing tracking is not "hands
-      // clear" (that was the early-count bug). Returns true when the punch lands.
+      // Arm-then-enter punch tracking, judged PER WRIST. Each hand arms after 2
+      // frames where THAT hand is detected and clear of the zone (losing
+      // tracking is not "hand clear" — that was the early-count bug), then
+      // lands by entering. Either hand can score, so a guard hand resting in a
+      // bottom quadrant no longer blocks the other hand's punch.
       const trackPunch = (t: Track, zone: number): boolean => {
         if (t.done) return false;
-        const isIn = wrists.some((p) => inZone(p.x, p.y, zone, w, h));
-        if (!t.armed) {
-          if (wristsDetected && !isIn) {
-            t.clear += 1;
-            if (t.clear >= 2) t.armed = true;
-          } else {
-            t.clear = 0;
+        for (const p of wrists) {
+          const a = t[p.side];
+          const isIn = inZone(p.x, p.y, zone, w, h);
+          if (!a.armed) {
+            if (!isIn) {
+              a.clear += 1;
+              if (a.clear >= 2) a.armed = true;
+            } else {
+              a.clear = 0;
+            }
+            continue;
           }
-          return false;
-        }
-        if (isIn) {
-          t.hold += 1;
-          if (t.hold >= PUNCH_FRAMES) { t.done = true; return true; }
-        } else {
-          t.hold = 0;
+          if (isIn) {
+            a.hold += 1;
+            if (a.hold >= PUNCH_FRAMES) { t.done = true; return true; }
+          } else {
+            a.hold = 0;
+          }
         }
         return false;
       };
@@ -473,7 +490,7 @@ export default function QuadrantFight({
         const maxCmds = maxConcurrent(g.round) + (oppStag ? 1 : 0);
         if (now >= g.roundBreakUntil && now >= g.nextSpawnAt && g.commands.length < maxCmds) {
           if (issueCommand(now)) {
-            g.nextSpawnAt = now + (oppStag ? 250 + Math.random() * 350 : youStag ? 550 + Math.random() * 650 : 700 + Math.random() * 900);
+            g.nextSpawnAt = now + (oppStag ? 250 + Math.random() * 350 : youStag ? 450 + Math.random() * 500 : 550 + Math.random() * 700);
           }
         }
 
@@ -690,7 +707,7 @@ export default function QuadrantFight({
     g.playerHp = HP_MAX; g.oppHp = HP_MAX; g.round = startRound;
     g.roundBreakUntil = 0; g.hitFlashUntil = 0; g.staggerUntil = 0; g.playerStaggerUntil = 0;
     g.commands = []; g.flashes = [];
-    g.nextSpawnAt = performance.now() + 1200;
+    g.nextSpawnAt = performance.now() + 800;
     g.phase = 'playing';
     setScore(0); setStreak(0);
     setPlayerHp(HP_MAX); setOppHp(HP_MAX); setRound(startRound);
