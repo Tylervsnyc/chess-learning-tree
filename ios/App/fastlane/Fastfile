@@ -1,0 +1,217 @@
+default_platform(:ios)
+
+APP_ID   = "com.learnthroughstories.rookiesrun"
+TEAM_ID  = "4L856PWBZN"
+KC_PATH  = "/tmp/rookiesrun.keychain-db"
+KC_PASS  = "rookiesrun"
+
+platform :ios do
+  desc "Create app record, cert, profile, archive, upload to TestFlight"
+  lane :beta do
+    api_key = app_store_connect_api_key(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      key_filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8"),
+      in_house: false
+    )
+
+    # 1. Ensure bundle ID + app record exist (via App Store Connect API, no 2FA)
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+
+    bundle = Spaceship::ConnectAPI::BundleId.all.find { |b| b.identifier == APP_ID }
+    if bundle.nil?
+      bundle = Spaceship::ConnectAPI::BundleId.create(name: "Rookies Run", identifier: APP_ID, platform: "IOS")
+      UI.success("Registered bundle ID #{APP_ID}")
+    else
+      UI.message("Bundle ID already registered")
+    end
+
+    if Spaceship::ConnectAPI::App.find(APP_ID).nil?
+      UI.important("No App Store Connect app record yet — Apple blocks creating it via API. Create it in the browser; build continues.")
+    else
+      UI.message("App record already exists")
+    end
+
+    # 2. Distribution certificate into a dedicated unlocked keychain
+    cert(
+      api_key: api_key,
+      keychain_path: KC_PATH,
+      keychain_password: KC_PASS,
+      output_path: "/tmp/rookiesrun_certs"
+    )
+
+    # 3. App Store provisioning profile (no device required)
+    profile_name = get_provisioning_profile(
+      api_key: api_key,
+      app_identifier: APP_ID,
+      readonly: false,
+      output_path: "/tmp/rookiesrun_certs"
+    )
+
+    # 4. Manual signing on the project
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "App.xcodeproj",
+      team_id: TEAM_ID,
+      code_sign_identity: "Apple Distribution",
+      bundle_identifier: APP_ID,
+      profile_name: lane_context[SharedValues::SIGH_NAME],
+      targets: ["App"]
+    )
+
+    # 5. Bump the build number past whatever TestFlight already has.
+    #
+    # This only works because Info.plist reads $(CURRENT_PROJECT_VERSION)
+    # rather than a hardcoded literal (Chess Boxing's bug). Without it, every
+    # upload after the first is rejected with "build number already exists".
+    latest = begin
+      latest_testflight_build_number(app_identifier: APP_ID, api_key: api_key)
+    rescue StandardError
+      0 # no builds yet — first upload for this app
+    end
+    increment_build_number(xcodeproj: "App.xcodeproj", build_number: latest + 1)
+    UI.message("Building #{APP_ID} build #{latest + 1}")
+
+    # 6. Archive + export a signed App Store IPA
+    build_app(
+      project: "App.xcodeproj",
+      scheme: "App",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "/tmp/rookiesrun_build",
+      output_name: "RookiesRun.ipa",
+      export_options: {
+        method: "app-store",
+        signingStyle: "manual",
+        provisioningProfiles: { APP_ID => lane_context[SharedValues::SIGH_NAME] }
+      }
+    )
+
+    UI.success("Signed IPA ready at /tmp/rookiesrun_build/RookiesRun.ipa")
+  end
+
+  desc "Upload the built IPA to TestFlight"
+  lane :upload do
+    api_key = app_store_connect_api_key(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      key_filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8"),
+      in_house: false
+    )
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: "/tmp/rookiesrun_build/RookiesRun.ipa",
+      skip_waiting_for_build_processing: true,
+      skip_submission: true
+    )
+  end
+end
+
+platform :ios do
+  desc "Show latest TestFlight build processing status"
+  lane :status do
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    builds = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 3)
+    UI.important("no builds found") if builds.empty?
+    builds.each { |b| UI.success("v#{b.version} state=#{b.processing_state} uploaded=#{b.uploaded_date}") }
+  end
+end
+
+platform :ios do
+  desc "Distribute latest build to internal testers"
+  lane :invite do
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    groups = app.get_beta_groups
+    groups.each { |g| UI.message("group: #{g.name} internal=#{g.is_internal_group}") }
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 1).first
+    internal = groups.find { |g| g.is_internal_group }
+    if internal.nil?
+      tf = Spaceship::ConnectAPI::TestFlight::Client.new(token: token)
+      body = { data: { attributes: { name: "Internal", isInternalGroup: true, hasAccessToAllBuilds: true },
+                       relationships: { app: { data: { id: app.id, type: "apps" } } },
+                       type: "betaGroups" } }
+      resp = tf.post("v1/betaGroups", body)
+      internal = resp.to_models.first
+      UI.success("created internal group")
+    end
+    build.add_beta_groups(beta_groups: [internal]) rescue UI.message("build already in group or auto-included")
+    UI.success("Internal group '#{internal.name}' wired to build v#{build.version}")
+  end
+end
+
+platform :ios do
+  desc "Add Tyler as internal tester"
+  lane :add_tester do
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    internal = app.get_beta_groups.find { |g| g.is_internal_group }
+    begin
+      Spaceship::ConnectAPI.post_beta_tester_assignment(beta_group_ids: [internal.id], attributes: { email: "tyler@tylervsnyc.com", firstName: "Tyler", lastName: "Schwartz" })
+    rescue => e
+      UI.message("assign skipped: #{e.message.lines.first}")
+    end
+    resp = Spaceship::ConnectAPI.get_beta_testers(filter: { betaGroups: internal.id })
+    UI.success("assignment posted; group testers now: #{resp.to_models.map { |t| "#{t.email}" }.join(', ')}")
+  end
+end
+
+platform :ios do
+  desc "Debug build distribution state"
+  lane :debug_dist do
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 1).first
+    UI.important("build v#{build.version} processing=#{build.processing_state} nonExemptEncryption=#{build.uses_non_exempt_encryption.inspect} expired=#{build.expired}")
+    tf = Spaceship::ConnectAPI::TestFlight::Client.new(token: token)
+    resp = tf.get("v1/builds/#{build.id}/betaGroups")
+    UI.important("groups on build: #{resp.to_models.map(&:name).join(', ')}")
+    inv = tf.get("v1/betaTesters", { filter: { apps: app.id } })
+    inv.to_models.each { |t| UI.important("tester #{t.email}") }
+  end
+end
+
+platform :ios do
+  desc "Set export compliance on latest build"
+  lane :fix_compliance do
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 1).first
+    tf = Spaceship::ConnectAPI::TestFlight::Client.new(token: token)
+    body = { data: { id: build.id, type: "builds", attributes: { usesNonExemptEncryption: false } } }
+    tf.patch("v1/builds/#{build.id}", body)
+    fresh = Spaceship::ConnectAPI::Build.get(build_id: build.id)
+    UI.success("build v#{fresh.version} nonExemptEncryption=#{fresh.uses_non_exempt_encryption.inspect}")
+  end
+end

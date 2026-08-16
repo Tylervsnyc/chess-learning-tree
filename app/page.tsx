@@ -23,6 +23,7 @@ import {
   playMoveSound,
   warmupAudio,
 } from '@/lib/sounds';
+import { haptic, hapticError, hapticSuccess } from '@/lib/haptics';
 import {
   ABILITY_DEFS,
   abilityLegalMoves,
@@ -425,8 +426,10 @@ export default function RookiesRunPage() {
       const wasCapture = state.captures.length > lastRookieCapCountRef.current;
       if (wasCapture) {
         void playCaptureSound();
+        haptic('medium');
       } else if (state.status !== 'lost') {
         void playMoveSound();
+        haptic('light');
       }
       lastRookieMoveRef.current = state.moveCount;
       lastRookieCapCountRef.current = state.captures.length;
@@ -450,6 +453,7 @@ export default function RookiesRunPage() {
   useEffect(() => {
     if (state.status !== 'won') return;
     playLevelClearSound(levelIndex);
+    hapticSuccess();
   }, [state.status, levelIndex]);
 
   // Offer-arrival sfx (reuse card-draw chime).
@@ -457,6 +461,7 @@ export default function RookiesRunPage() {
   useEffect(() => {
     if (state.pendingOffer && !prevPendingOfferRef.current) {
       playCardDrawSound();
+      haptic('light');
     }
     prevPendingOfferRef.current = state.pendingOffer;
   }, [state.pendingOffer]);
@@ -503,6 +508,7 @@ export default function RookiesRunPage() {
     if (state.status !== 'lost') return;
     if (!trackedLossRef.current) {
       trackedLossRef.current = true;
+      hapticError();
       trackEvent('run_level_lost', {
         iso: meta.iso,
         level: levelIndex + 1,
@@ -585,6 +591,7 @@ export default function RookiesRunPage() {
             });
             setState(next);
             playCardPlaySound();
+            haptic('heavy');
           }
           return;
         }
@@ -602,6 +609,7 @@ export default function RookiesRunPage() {
           });
           setState(next);
           playCardPlaySound();
+          haptic('heavy');
           trackEvent('run_ability_used', {
             iso: meta.iso,
             level: levelIndex + 1,
