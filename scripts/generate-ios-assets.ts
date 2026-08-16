@@ -1,5 +1,5 @@
 /**
- * Generate the Rookie's Run iOS app icon and launch splash.
+ * Generate the Rookies Run iOS app icon and launch splash.
  *
  * `npx cap add ios` ships a STOCK CAPACITOR LOGO for both. In Chess Path that
  * placeholder survived into shipped TestFlight builds — the app launched
@@ -11,9 +11,14 @@
  *   ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png  (1024²)
  *   ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732*.png  (2732², x3)
  *
- * The art is the pixel rook from lib/daily-rook-blocks.ts — the same shape
- * BreathingRook and RookiesRunLogo draw — rendered to SVG and rasterised, so
- * there's no binary source asset to keep in sync and no browser needed.
+ * The art is Rookie herself — the breathing rook, frozen. Geometry and shading
+ * mirror components/ui/BreathingRook.tsx exactly (gap = 0.15×block, radius =
+ * 0.14×block, the getMatteBackground gradient, and the same inset top/bottom
+ * edges), so the icon is the character players see on the board rather than a
+ * lookalike. Rendered as SVG through sharp: no browser, no binary source art
+ * to keep in sync.
+ *
+ * If BreathingRook's styling changes, change it here too and re-run.
  *
  * NATIVE ASSETS: these take effect only in a NEW iOS build. A web deploy
  * cannot change them.
@@ -34,12 +39,10 @@ const BG = '#eef6fc';
 const GRID_COLS = 5;
 const GRID_ROWS = 6;
 
-const ICON_PX = 1024;
-const SPLASH_PX = 2732;
+/** Block size per output, chosen so the rook sits comfortably inside the canvas. */
+const ICON = { canvas: 1024, block: 118 };
 /** The launch image is scaleAspectFill, so keep the mark well inside the safe area. */
-const SPLASH_ROOK_PX = 760;
-/** iOS masks the icon's corners; leave room so the crown isn't clipped. */
-const ICON_ROOK_PX = 720;
+const SPLASH = { canvas: 2732, block: 112 };
 
 const ICON_DIR = join(process.cwd(), 'ios/App/App/Assets.xcassets/AppIcon.appiconset');
 const SPLASH_DIR = join(process.cwd(), 'ios/App/App/Assets.xcassets/Splash.imageset');
@@ -50,46 +53,61 @@ const SPLASH_FILES = [
 ];
 
 /**
- * Render the rook as an SVG sized to `rookPx` wide, centred on a `canvasPx`
- * square of BG. Blocks get the same matte treatment as the web components:
- * a light top edge, a dark bottom edge, and a soft drop shadow.
+ * One rook block, styled the way BreathingRook styles it:
+ *  - background: getMatteBackground(color) — a 4-stop vertical gradient
+ *  - box-shadow: inset dark line along the top, light line along the bottom
  */
-function rookSvg(canvasPx: number, rookPx: number): string {
-  const gap = rookPx * 0.03;
-  const block = (rookPx - gap * (GRID_COLS - 1)) / GRID_COLS;
-  const rookH = GRID_ROWS * block + (GRID_ROWS - 1) * gap;
+function blockSvg(px: number, py: number, size: number, radius: number, edge: number, id: string, color: string) {
+  const inner = size - edge * 2;
+  return (
+    `<rect x="${px}" y="${py}" width="${size}" height="${size}" rx="${radius}" fill="url(#${id})"/>` +
+    // inset 0 +Npx 0 rgba(0,0,0,0.15)
+    `<rect x="${px + edge}" y="${py}" width="${inner}" height="${edge}" fill="#000" opacity="0.15"/>` +
+    // inset 0 -Npx 0 rgba(255,255,255,0.15)
+    `<rect x="${px + edge}" y="${py + size - edge}" width="${inner}" height="${edge}" fill="#fff" opacity="0.15"/>`
+  );
+}
 
-  const originX = (canvasPx - rookPx) / 2;
-  const originY = (canvasPx - rookH) / 2;
-  const radius = block * 0.14;
-  const edge = Math.max(1, block * 0.06);
+function rookSvg(canvas: number, block: number): string {
+  // Mirrors BreathingRook's derivation exactly.
+  const gap = Math.max(1, Math.round(block * 0.15));
+  const radius = Math.max(1, Math.round(block * 0.14));
+  const scale = block / 14;
+  const edge = Math.max(1, +(0.75 * scale).toFixed(2));
 
-  const cells = ROOK_BLOCKS.map(({ x, y, color }) => {
-    const px = originX + x * (block + gap);
-    const py = originY + y * (block + gap);
-    return [
-      // Base block.
-      `<rect x="${px.toFixed(2)}" y="${py.toFixed(2)}" width="${block.toFixed(2)}" height="${block.toFixed(2)}" rx="${radius.toFixed(2)}" fill="${color}"/>`,
-      // Lit top edge.
-      `<rect x="${(px + edge).toFixed(2)}" y="${py.toFixed(2)}" width="${(block - edge * 2).toFixed(2)}" height="${edge.toFixed(2)}" rx="${(edge / 2).toFixed(2)}" fill="${lighten(color, 22)}"/>`,
-      // Shaded bottom edge.
-      `<rect x="${(px + edge).toFixed(2)}" y="${(py + block - edge).toFixed(2)}" width="${(block - edge * 2).toFixed(2)}" height="${edge.toFixed(2)}" rx="${(edge / 2).toFixed(2)}" fill="${darken(color, 14)}"/>`,
-    ].join('');
-  }).join('');
+  const gridW = GRID_COLS * block + (GRID_COLS - 1) * gap;
+  const gridH = GRID_ROWS * block + (GRID_ROWS - 1) * gap;
+  const originX = (canvas - gridW) / 2;
+  const originY = (canvas - gridH) / 2;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasPx}" height="${canvasPx}" viewBox="0 0 ${canvasPx} ${canvasPx}">
-  <defs>
-    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="${(block * 0.06).toFixed(2)}" stdDeviation="${(block * 0.05).toFixed(2)}" flood-color="#000" flood-opacity="0.18"/>
-    </filter>
-  </defs>
-  <rect width="${canvasPx}" height="${canvasPx}" fill="${BG}"/>
-  <g filter="url(#drop)">${cells}</g>
+  const gradients: string[] = [];
+  const cells: string[] = [];
+
+  ROOK_BLOCKS.forEach(({ x, y, color }, i) => {
+    const id = `m${i}`;
+    // getMatteBackground: lighten 18 → lighten 12 (20%) → base (40%) → darken 12
+    gradients.push(
+      `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">` +
+        `<stop offset="0%" stop-color="${lighten(color, 18)}"/>` +
+        `<stop offset="20%" stop-color="${lighten(color, 12)}"/>` +
+        `<stop offset="40%" stop-color="${color}"/>` +
+        `<stop offset="100%" stop-color="${darken(color, 12)}"/>` +
+      `</linearGradient>`
+    );
+    cells.push(
+      blockSvg(originX + x * (block + gap), originY + y * (block + gap), block, radius, edge, id, color)
+    );
+  });
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas}" height="${canvas}" viewBox="0 0 ${canvas} ${canvas}">
+  <defs>${gradients.join('')}</defs>
+  <rect width="${canvas}" height="${canvas}" fill="${BG}"/>
+  ${cells.join('')}
 </svg>`;
 }
 
-async function render(canvasPx: number, rookPx: number): Promise<Buffer> {
-  return sharp(Buffer.from(rookSvg(canvasPx, rookPx)))
+async function render(canvas: number, block: number): Promise<Buffer> {
+  return sharp(Buffer.from(rookSvg(canvas, block)))
     // App Store Connect rejects icons with an alpha channel; flattening onto
     // BG also guarantees the splash has no transparent edges.
     .flatten({ background: BG })
@@ -101,14 +119,14 @@ async function main() {
   mkdirSync(ICON_DIR, { recursive: true });
   mkdirSync(SPLASH_DIR, { recursive: true });
 
-  const icon = await render(ICON_PX, ICON_ROOK_PX);
+  const icon = await render(ICON.canvas, ICON.block);
   writeFileSync(join(ICON_DIR, 'AppIcon-512@2x.png'), icon);
-  console.log(`icon    ${ICON_PX}x${ICON_PX}  ${(icon.length / 1024).toFixed(0)}KB`);
+  console.log(`icon    ${ICON.canvas}²  block=${ICON.block}  ${(icon.length / 1024).toFixed(0)}KB`);
 
-  const splash = await render(SPLASH_PX, SPLASH_ROOK_PX);
+  const splash = await render(SPLASH.canvas, SPLASH.block);
   for (const name of SPLASH_FILES) {
     writeFileSync(join(SPLASH_DIR, name), splash);
-    console.log(`splash  ${SPLASH_PX}x${SPLASH_PX}  ${(splash.length / 1024).toFixed(0)}KB  ${name}`);
+    console.log(`splash  ${SPLASH.canvas}²  block=${SPLASH.block}  ${(splash.length / 1024).toFixed(0)}KB  ${name}`);
   }
 
   console.log(`\nBackground ${BG}. Rebuild the iOS app for these to take effect.`);

@@ -1,6 +1,6 @@
 # Ability Designer Agent
 
-> Proposes new candidate abilities for Rookie's Run, filling gaps in the current ability space. Auto-tested via the existing ablation + combo pipelines.
+> Proposes new candidate abilities for Rookies Run, filling gaps in the current ability space. Auto-tested via the existing ablation + combo pipelines.
 
 ## Write Scope
 

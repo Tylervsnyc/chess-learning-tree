@@ -1,8 +1,8 @@
-# Rookie's Run — Nightly Routine Instructions
+# Rookies Run — Nightly Routine Instructions
 
 > This file is the source of truth for what the `rookies-run-nightly-playtest` routine does each night. The routine's prompt is a 1-liner that reads this file. To change behavior, edit this file and push to main.
 
-You are running the Rookie's Run **nightly playtest + ability lab**. Automated routine — work efficiently, no questions, report at the end.
+You are running the Rookies Run **nightly playtest + ability lab**. Automated routine — work efficiently, no questions, report at the end.
 
 ## Part 1: Nightly Playtest (the baseline pipeline)
 
@@ -13,7 +13,7 @@ You are running the Rookie's Run **nightly playtest + ability lab**. Automated r
 5. Stage digest files only: `git add data/run-playtest/digests/`. Do NOT stage `data/run-playtest/raw/`.
 6. Commit using inline git identity:
    ```
-   git -c user.name="Rookie Playtest Bot" -c user.email="playtest@rookies-run.local" commit -m "Rookie's Run: nightly playtest digest $(date +%Y-%m-%d)"
+   git -c user.name="Rookie Playtest Bot" -c user.email="playtest@rookies-run.local" commit -m "Rookies Run: nightly playtest digest $(date +%Y-%m-%d)"
    ```
 7. `git push origin main`.
 
@@ -102,7 +102,7 @@ Also save section 2 (the 10 candidates) alone to `data/run-playtest/ability-lab/
 
 ```
 git add data/run-playtest/digests/ data/run-playtest/ability-lab/
-git -c user.name="Ability Lab Bot" -c user.email="ability-lab@rookies-run.local" commit -m "Rookie's Run: ability lab — ranking + 10 candidates $(date +%Y-%m-%d)"
+git -c user.name="Ability Lab Bot" -c user.email="ability-lab@rookies-run.local" commit -m "Rookies Run: ability lab — ranking + 10 candidates $(date +%Y-%m-%d)"
 git push origin main
 ```
 
@@ -127,4 +127,4 @@ git push origin main
 
 ## Background context
 
-Tyler Schwartz is building an automated playtest system for **Rookie's Run** — the daily roguelike inside his chess-learning app. Linear project: "Rookie's Run Playtest System." The pipeline at `scripts/run-playtest/` runs every level with three AI tiers (T3 Casual, T4 Sharp, T5 Expert), tests how each ability affects difficulty (ablation), extracts level feature vectors, and generates a markdown digest. The morning digest is the deliverable — Tyler reads it on his phone via `/admin/playtest-live`. Reliability over ambition — if anything looks off, surface it rather than trying to recover.
+Tyler Schwartz is building an automated playtest system for **Rookies Run** — the daily roguelike inside his chess-learning app. Linear project: "Rookies Run Playtest System." The pipeline at `scripts/run-playtest/` runs every level with three AI tiers (T3 Casual, T4 Sharp, T5 Expert), tests how each ability affects difficulty (ablation), extracts level feature vectors, and generates a markdown digest. The morning digest is the deliverable — Tyler reads it on his phone via `/admin/playtest-live`. Reliability over ambition — if anything looks off, surface it rather than trying to recover.

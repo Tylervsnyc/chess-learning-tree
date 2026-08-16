@@ -53,7 +53,7 @@ export interface DigestInput {
 
 export function renderDigest(input: DigestInput): string {
   const lines: string[] = [];
-  lines.push(`# Rookie's Run — Morning Digest`);
+  lines.push(`# Rookies Run — Morning Digest`);
   lines.push(``);
   lines.push(`**Date:** ${input.date}`);
   lines.push(

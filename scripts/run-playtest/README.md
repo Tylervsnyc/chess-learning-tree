@@ -1,10 +1,10 @@
-# Rookie's Run — Playtest System
+# Rookies Run — Playtest System
 
-Automated headless playtesting + difficulty calibration. Linear project: [Rookie's Run Playtest System](https://linear.app/chesspathapp/project/rookies-run-playtest-system-02df85b27f07).
+Automated headless playtesting + difficulty calibration. Linear project: [Rookies Run Playtest System](https://linear.app/chesspathapp/project/rookies-run-playtest-system-02df85b27f07).
 
 ## What it does
 
-Runs all current Rookie's Run levels with three AI player tiers (T3 Casual, T4 Sharp, T5 Expert) and produces a morning digest covering:
+Runs all current Rookies Run levels with three AI player tiers (T3 Casual, T4 Sharp, T5 Expert) and produces a morning digest covering:
 
 - Per-level win % at each tier
 - Fail-mode histograms (captured-by / move-limit / dead-end)

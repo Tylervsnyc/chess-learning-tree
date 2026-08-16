@@ -1,6 +1,6 @@
 #!/usr/bin/env -S npx tsx
 /**
- * Rookie's Run — candidate level generator.
+ * Rookies Run — candidate level generator.
  *
  * Emits 50 candidate levels (10 archetype templates × 5 seeded variations
  * each) and playtests every one with T3 + T4 bots. Writes per-level markdown

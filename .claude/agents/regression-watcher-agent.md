@@ -1,6 +1,6 @@
 # Regression Watcher Agent
 
-> Catches Rookie's Run balance regressions before they ship. Fires on every push to main.
+> Catches Rookies Run balance regressions before they ship. Fires on every push to main.
 
 ## Write Scope
 

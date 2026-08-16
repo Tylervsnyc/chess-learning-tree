@@ -1,5 +1,5 @@
 /**
- * Rookie's Run scoring.
+ * Rookies Run scoring.
  *
  * One number, derived from four forces:
  *   - Move economy        (lower = better)

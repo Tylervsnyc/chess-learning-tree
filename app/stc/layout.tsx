@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const TITLE = 'Story Time Chess × Rookie’s Run';
+const TITLE = 'Story Time Chess × Rookies Run';
 const DESCRIPTION =
   'A co-branded basics mini-run series. Learn how each piece moves the Story Time Chess way — Kings, Bishops, Pawns, Knights, Queens.';
 const URL = 'https://run.chesspath.app/stc';
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: URL,
-    siteName: 'Rookie’s Run',
+    siteName: 'Rookies Run',
     type: 'website',
   },
   twitter: {

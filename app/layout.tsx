@@ -7,7 +7,7 @@ import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
 import { NativeSplash } from '@/components/run/NativeSplash';
 import { StatusBarSync } from '@/components/run/StatusBarSync';
 
-const TITLE = "Rookie's Run";
+const TITLE = "Rookies Run";
 const DESCRIPTION =
   'A daily chess roguelike. Help Rookie cross the board: unlock powers, clear 10 levels, new board every day.';
 const SITE_URL = 'https://run.chesspath.app';
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Rookie's Run — a daily chess roguelike",
+        alt: "Rookies Run — a daily chess roguelike",
       },
     ],
     type: 'website',

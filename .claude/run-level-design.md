@@ -1,6 +1,6 @@
-# Rookie's Run — Level Design
+# Rookies Run — Level Design
 
-The single source of truth for **authoring** Rookie's Run levels. Sister doc to:
+The single source of truth for **authoring** Rookies Run levels. Sister doc to:
 
 - **`.claude/run-strategy-bible.md`** — *why* a position is hard (bot/eval reasoning).
 - **`RULES.md §49`** — engine rules (what's legal, what's wired up).

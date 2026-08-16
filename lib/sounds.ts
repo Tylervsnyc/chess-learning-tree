@@ -295,7 +295,7 @@ export async function playCaptureSound(): Promise<void> {
 }
 
 /**
- * Play level-clear sound for Rookie's Run — ascending major arpeggio whose
+ * Play level-clear sound for Rookies Run — ascending major arpeggio whose
  * root climbs by exactly ONE semitone per level (true chromatic staircase).
  * Uses the same CHROMATIC_SCALE as playCorrectSound (each index = 1 semitone).
  * @param levelIndex 0-based level index inside the current run

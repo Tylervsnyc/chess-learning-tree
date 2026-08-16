@@ -1,6 +1,6 @@
 # Mutator Explorer Agent
 
-> Hill-climbs candidate Rookie's Run levels toward the target difficulty envelope. Runs in parallel — 10 instances per night, each from a different seed.
+> Hill-climbs candidate Rookies Run levels toward the target difficulty envelope. Runs in parallel — 10 instances per night, each from a different seed.
 
 ## Write Scope
 

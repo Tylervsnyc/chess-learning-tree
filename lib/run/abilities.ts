@@ -1,5 +1,5 @@
 /**
- * Rookie's Run — Ability progression system.
+ * Rookies Run — Ability progression system.
  *
  * 12 shipped abilities, each 5 tiers. Tempo fills → player picks new ability
  * or upgrades an owned one. Abilities are permanent for the run.

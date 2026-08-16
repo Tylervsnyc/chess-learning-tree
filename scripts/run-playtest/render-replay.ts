@@ -1,5 +1,5 @@
 /**
- * Rookie's Run — replay video renderer.
+ * Rookies Run — replay video renderer.
  *
  * Reads a DecisionTrace JSON, invokes Remotion to produce a portrait MP4,
  * and optionally a GIF. Intended for marketing — pick the best sims, render

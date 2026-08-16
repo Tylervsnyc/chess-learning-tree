@@ -1,5 +1,5 @@
 /**
- * Rookie's Run — local history of finished runs.
+ * Rookies Run — local history of finished runs.
  *
  * Wordle-style aggregate stored in localStorage. One entry per finished run
  * (win or loss). Powers the results-screen distribution chart and streaks.

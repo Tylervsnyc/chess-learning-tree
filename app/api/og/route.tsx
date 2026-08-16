@@ -4,7 +4,7 @@ import { ROOK_BLOCKS, getMatteBackground, getMatteBoxShadow } from '@/lib/daily-
 export const runtime = 'edge';
 
 /**
- * OG image for Rookie's Run.
+ * OG image for Rookies Run.
  * Design: /normalize Centered Hero — cream wash, multi-colored rookie, three pills.
  */
 export async function GET() {

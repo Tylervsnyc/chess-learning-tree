@@ -9,7 +9,7 @@ interface RunPickerModalProps {
   onClose: () => void;
   /** Optional filter — if provided, only matching runs appear in the picker. */
   filter?: (runId: string) => boolean;
-  /** Optional logo override (e.g. STC co-brand). Defaults to Rookie's Run logo. */
+  /** Optional logo override (e.g. STC co-brand). Defaults to Rookies Run logo. */
   logo?: React.ReactNode;
   /** Optional caption above the list. */
   caption?: string;

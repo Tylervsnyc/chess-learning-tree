@@ -1,5 +1,5 @@
 /**
- * Core types for Rookie's Run.
+ * Core types for Rookies Run.
  *
  * Sprint 2: 10-level run, Rookie can temporarily transform into Knight or Bishop
  * via the Tempo system (capture pieces → spend tempo to transform).

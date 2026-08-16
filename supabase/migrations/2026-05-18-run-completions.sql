@@ -1,4 +1,4 @@
--- Rookie's Run daily completions.
+-- Rookies Run daily completions.
 -- One row per (user, local-TZ date). Streak is DERIVED from this table — never stored.
 
 CREATE TABLE IF NOT EXISTS public.run_completions (

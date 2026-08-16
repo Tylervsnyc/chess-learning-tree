@@ -3,7 +3,7 @@
 import { ROOK_BLOCKS, getMatteBackground, getMatteBoxShadow } from '@/lib/daily-rook-blocks';
 
 /**
- * Rookie's Run logo — leaning 22-block rook + "Rookie's" wordmark over a
+ * Rookies Run logo — leaning 22-block rook + "Rookie's" wordmark over a
  * blue "RUN" pill. Solid blocks / solid colors only — embroidery-safe.
  *
  * Pass `scale` to resize the whole lockup proportionally.

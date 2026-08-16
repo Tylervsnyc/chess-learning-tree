@@ -1,6 +1,6 @@
-# Build Rookie's Run Level
+# Build Rookies Run Level
 
-Author, playtest, and iterate Rookie's Run levels until they hit their target difficulty band.
+Author, playtest, and iterate Rookies Run levels until they hit their target difficulty band.
 
 ## Input
 
@@ -100,7 +100,7 @@ If any fails, return to Step 6.
 When all checks pass, commit with:
 
 ```
-Rookie's Run: add <run-name> run (10 levels, calibrated)
+Rookies Run: add <run-name> run (10 levels, calibrated)
 ```
 
 Update `RULES.md §49` only if shipping new mechanics (new ability, new hazard, etc.) — not for new levels alone.

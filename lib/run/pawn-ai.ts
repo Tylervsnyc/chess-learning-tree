@@ -1,5 +1,5 @@
 /**
- * Enemy AI for Rookie's Run.
+ * Enemy AI for Rookies Run.
  *
  * One enemy acts per turn — keeps the animation legible. Priority is global
  * across all enemies:

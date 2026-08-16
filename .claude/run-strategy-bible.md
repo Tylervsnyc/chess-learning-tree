@@ -1,6 +1,6 @@
-# Rookie's Run — Strategy Bible
+# Rookies Run — Strategy Bible
 
-The reference document for understanding **why** a position is good or bad in Rookie's Run. Used by the playtest discovery scripts to annotate moves with chess reasoning, and by agents writing strategy commentary.
+The reference document for understanding **why** a position is good or bad in Rookies Run. Used by the playtest discovery scripts to annotate moves with chess reasoning, and by agents writing strategy commentary.
 
 This is not a memo — it's a working document. Update it when sims reveal patterns that aren't here.
 

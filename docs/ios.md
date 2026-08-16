@@ -33,7 +33,7 @@ when you change:
    registers the bundle ID but Apple blocks creating the app record via API —
    the `beta` lane prints a warning and continues without it, and the upload
    then fails. Bundle ID `com.learnthroughstories.rookiesrun`, name
-   "Rookie's Run".
+   "Rookies Run".
 
 ## Build and ship
 
@@ -60,7 +60,7 @@ fastlane add_tester  # add tyler@tylervsnyc.com
 | Trap | Status |
 |---|---|
 | `Info.plist` hardcoded `CFBundleVersion` to a literal while the pbxproj said something else, so build bumps did nothing and TestFlight rejected uploads with "build number already exists" | Fixed — reads `$(CURRENT_PROJECT_VERSION)`, and `fastlane beta` now calls `increment_build_number` off the latest TestFlight build |
-| Shipped TestFlight builds showing **Capacitor's stock logo**, because nobody replaced the generated placeholder splash | Fixed — `npm run ios:assets` generates the icon and splash from the pixel rook in `lib/daily-rook-blocks.ts`; both are committed |
+| Shipped TestFlight builds showing **Capacitor's stock logo**, because nobody replaced the generated placeholder splash | Fixed — `npm run ios:assets` generates the icon and splash from Rookie herself, mirroring BreathingRook's exact geometry and shading; both are committed |
 | Splash background mismatched between config, imageset, launch storyboard and the web overlay, flashing white on every cold start | Fixed — `#eef6fc` in all four places. The storyboard uses an explicit colour, not `systemBackgroundColor` (which is **black** in dark mode) |
 | `NSCameraUsageDescription` for a camera feature that isn't shipping | Removed |
 | `@capacitor/haptics` installed but never imported | Actually used — see `lib/haptics.ts` |

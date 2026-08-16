@@ -1,5 +1,5 @@
 /**
- * Deterministic daily seed for Rookie's Run.
+ * Deterministic daily seed for Rookies Run.
  *
  * Same YYYY-MM-DD → same starting file (b–g). Each day a player faces the
  * same 10 levels in sequence — what varies between days is Rookie's spawn

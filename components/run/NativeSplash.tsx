@@ -1,12 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RookiesRunLogo } from '@/components/run/RookiesRunLogo';
+import { BreathingRook } from '@/components/ui/BreathingRook';
 
 /**
- * NativeSplash — full-screen logo shown ONLY inside the Capacitor native shell
- * while the web app cold-loads from run.chesspath.app. Web visitors never see
- * it. Debug on web with ?nativeSplash=1.
+ * NativeSplash — Rookie, breathing, shown ONLY inside the Capacitor native
+ * shell while the web app cold-loads from run.chesspath.app. Web visitors
+ * never see it. Debug on web with ?nativeSplash=1.
+ *
+ * This is the same BreathingRook sprite the native launch image freezes (see
+ * scripts/generate-ios-assets.ts), so the handoff from the static launch
+ * screen to the web overlay is invisible — Rookie simply starts moving.
  *
  * Why it exists: the shell is a WKWebView pointed at a live URL, so without
  * this the first paint after the native launch image is a blank white view.
@@ -68,7 +72,15 @@ export function NativeSplash() {
         pointerEvents: phase === 'fading' ? 'none' : 'auto',
       }}
     >
-      <RookiesRunLogo />
+      {/* `breathe`, not `powerOn`: powerOn layers infinite Morse-code flickers
+          on two blocks that spell CHESS and PATH — a Chess Path easter egg
+          that shouldn't ride along into a standalone app.
+
+          BreathingRook maxes out at blockSize 36 (`xl`); scale up so Rookie
+          reads at splash scale without inventing a second size token. */}
+      <div style={{ transform: 'scale(1.6)', transformOrigin: 'center' }}>
+        <BreathingRook size="xl" animate mood="neutral" />
+      </div>
     </div>
   );
 }

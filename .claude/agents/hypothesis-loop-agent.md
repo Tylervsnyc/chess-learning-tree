@@ -1,6 +1,6 @@
 # Hypothesis Loop Agent
 
-> Forms testable hypotheses about Rookie's Run difficulty, runs experiments, scores them, refines the model.
+> Forms testable hypotheses about Rookies Run difficulty, runs experiments, scores them, refines the model.
 
 ## Write Scope
 

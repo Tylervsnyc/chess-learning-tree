@@ -56,7 +56,7 @@ import { fromSquare, toSquare } from '@/lib/run/types';
 import type { BoardState, Coord, RunPuzzle } from '@/lib/run/types';
 
 /**
- * Rookie's Run — Sprint 3.
+ * Rookies Run — Sprint 3.
  *
  * 10-level single daily run. Capturing pieces grants tempo; filling the tempo
  * meter offers 3 ability choices (new ability or upgrade). Abilities are

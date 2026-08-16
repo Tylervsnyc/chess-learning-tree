@@ -1,5 +1,5 @@
 /**
- * Replay viewer for a single Rookie's Run playtest sim.
+ * Replay viewer for a single Rookies Run playtest sim.
  *
  * URL pattern: /admin/playtest-replay/[runId]/[level]/[tier]/[trial]
  *

@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 /**
- * Rookie's Run — native iOS shell around the live web app.
+ * Rookies Run — native iOS shell around the live web app.
  *
  * The app is SSR + API-route heavy (it can't static-export), so the shell
  * loads the production site via `server.url` and `webDir` is only an offline
@@ -26,7 +26,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
  */
 const config: CapacitorConfig = {
   appId: 'com.learnthroughstories.rookiesrun',
-  appName: "Rookie's Run",
+  appName: "Rookies Run",
   // Local fallback bundle (shown only if the remote URL is unreachable).
   webDir: 'capacitor-shell',
   server: {

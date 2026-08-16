@@ -1,4 +1,4 @@
-# Rookie's Run
+# Rookies Run
 
 A daily chess roguelike. Rookie spawns on rank 1 and has to reach rank 8 — no
 checkmate, just cross the board. Enemies move 1–3 times per turn. Capturing

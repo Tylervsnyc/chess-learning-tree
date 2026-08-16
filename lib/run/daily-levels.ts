@@ -1,5 +1,5 @@
 /**
- * Rookie's Run — Daily Climb (10 levels).
+ * Rookies Run — Daily Climb (10 levels).
  *
  * Each builder takes Rookie's starting coord (always rank 1, file 2..7 from
  * the daily seed) and returns a fully-formed RunPuzzle.

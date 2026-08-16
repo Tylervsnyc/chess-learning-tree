@@ -13,7 +13,7 @@ import { getMatteBackground } from '@/lib/daily-rook-blocks';
  * filled cell as a matte block in Rookie's palette.
  *
  * Use this anywhere we want Rookie to "transform" into another piece in
- * Rookie's Run. For the rook itself, use <BreathingRook /> directly so
+ * Rookies Run. For the rook itself, use <BreathingRook /> directly so
  * we keep the canonical 5×6 sprite.
  *
  * Tweak per-piece grid dimensions in PIECE_TEMPLATES below — pawn is
