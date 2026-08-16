@@ -1,0 +1,53 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# next
+.next/
+out/
+build/
+next-env.d.ts
+
+# env
+.env
+.env*
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+# os
+.DS_Store
+*.pem
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# video — one exception: the landing board loop is a shipped asset
+*.mp4
+!public/run/landing-board.mp4
+
+# playtest output: raw sim dumps and captured human traces are regenerated,
+# not committed. Curated replays and digests under data/run-playtest/ ARE.
+data/run-playtest/raw/
+data/run-playtest/human-traces/
+
+# ios — Capacitor/Xcode build output. The project itself IS committed.
+ios/App/App/public/
+ios/App/Pods/
+ios/App/build/
+ios/App/DerivedData/
+ios/App/output/
+ios/App/fastlane/report.xml
+ios/App/fastlane/Preview.html
+ios/App/fastlane/screenshots
+ios/App/fastlane/test_output
+*.ipa
+*.dSYM.zip

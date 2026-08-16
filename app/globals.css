@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+/* Self-hosted DM Sans variable font (weights 400-800) — no render-blocking
+   Google Fonts request. Preloaded in app/layout.tsx. */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/dm-sans.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* === Brand Colors === */
+  --color-chess-gold: #FFD700;
+  --color-chess-gold-dark: #B8860B;
+  --color-chess-green: #58CC02;
+  --color-chess-green-dark: #46A302;
+  --color-chess-green-shadow: #3d8c01;
+  --color-chess-blue: #1CB0F6;
+  --color-chess-blue-dark: #1899D6;
+  --color-chess-blue-shadow: #0d7ec4;
+  --color-chess-purple: #CE82FF;
+  --color-chess-orange: #FF9500;
+  --color-chess-red: #FF4B4B;
+  --color-chess-red-shadow: #CC3939;
+  --color-chess-gray: #4B4B4B;
+  --color-chess-gray-light: #6B6B6B;
+
+  /* === Background Colors === */
+  --color-chess-bg: #131F24;
+  --color-chess-bg-deep: #0D1A1F;
+  --color-chess-bg-light: #1A2C35;
+  --color-chess-page: #eef6fc;
+  --color-chess-surface: #ffffff;
+
+  /* === Feedback Colors === */
+  --color-chess-correct-bg: #D7FFB8;
+  --color-chess-wrong-bg: #FFDFE0;
+  --color-chess-hint-bg: #FFF3CD;
+  --color-chess-hint-title: #7A6200;
+  --color-chess-hint-text: #8B7000;
+  --color-chess-disabled: #c5d4de;
+
+  /* === Text Colors (light theme) === */
+  --color-chess-text: #2A3C45;
+  --color-chess-text-muted: #6b7c8a;
+  --color-chess-text-faint: #94a3b8;
+  --color-chess-text-light: #A3B8C2;
+
+  /* === Animations === */
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-bounce-subtle: bounce-subtle 1s ease-in-out infinite;
+  --animate-expand: expand 0.3s ease-out;
+  --animate-scale-tap: scale-tap 0.1s ease-out;
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+:root {
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px currentColor, 0 0 25px currentColor;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes decoyPulse {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 3px rgba(217, 70, 239, 0.95),
+      inset 0 0 16px rgba(255, 215, 122, 0.7);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 4px rgba(232, 121, 249, 1),
+      inset 0 0 26px rgba(255, 215, 122, 1);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes expand {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: scaleY(0.8);
+  }
+  100% {
+    opacity: 1;
+    max-height: 500px;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes scale-tap {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* === Lesson Complete / Share animations === */
+@keyframes floatUp0 {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  20%  { opacity: 0.5; }
+  80%  { opacity: 0.35; }
+  100% { transform: translateY(-80px) scale(0.4); opacity: 0; }
+}
+
+@keyframes floatUp1 {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  25%  { opacity: 0.45; }
+  75%  { opacity: 0.3; }
+  100% { transform: translateY(-90px) scale(0.3); opacity: 0; }
+}
+
+@keyframes floatUp2 {
+  0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+  15%  { opacity: 0.6; }
+  85%  { opacity: 0.25; }
+  100% { transform: translateY(-70px) scale(0.2); opacity: 0; }
+}
+
+@keyframes hintFadeIn {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastSlideUp {
+  0% { opacity: 0; transform: translateY(8px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastFadeOut {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-4px) scale(0.96); }
+}
+
+.share-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  animation: hintFadeIn 0.6s ease forwards;
+  animation-delay: 0.8s;
+  letter-spacing: 0.3px;
+}
+
+.share-hint-green {
+  color: rgba(88, 204, 2, 0.7);
+}
+
+.share-hint-gold {
+  color: rgba(180, 140, 0, 0.8);
+}
+
+.share-toast-enter {
+  animation: toastSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.share-toast-exit {
+  animation: toastFadeOut 0.25s ease-in forwards;
+}
+
+.rook-share-button {
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
+
+.rook-share-button:active {
+  transform: scale(0.96);
+}
+
+/* Smooth scrolling for the tree */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Active tap state for mobile */
+.tap-highlight {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tap-highlight:active {
+  transform: scale(0.97);
+}
+
+html {
+  background-color: var(--color-chess-page);
+  height: 100dvh; /* Use dynamic viewport height for mobile */
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background-color: var(--color-chess-page);
+  color: var(--color-chess-text);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Body itself doesn't scroll - pages control their own overflow */
+}
+
+/* Daily Rook results celebratory glow */
+@keyframes celebratoryGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,150,0,0.3), 0 0 24px rgba(255,107,107,0.15), inset 0 0 0 1px rgba(255,150,0,0.2); }
+  50% { box-shadow: 0 0 20px rgba(255,150,0,0.5), 0 0 40px rgba(255,107,107,0.25), inset 0 0 0 1px rgba(255,150,0,0.35); }
+}
+
+.celebratory-glow {
+  border: 2px solid rgba(255,150,0,0.4);
+  animation: celebratoryGlow 2.5s ease-in-out infinite;
+}
+
+/* Daily Rook animations */
+@keyframes block-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes block-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes heart-shake {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  15% { transform: scale(1.2) rotate(-10deg); }
+  30% { transform: scale(0.9) rotate(5deg); }
+  45% { transform: scale(1.1) rotate(-5deg); }
+  60% { transform: scale(0.95) rotate(3deg); }
+  75% { transform: scale(1.05) rotate(-2deg); }
+}
+
+.animate-block-pop {
+  animation: block-pop 0.4s ease-out;
+}
+
+.animate-block-shake {
+  animation: block-shake 0.4s ease-out;
+}
+
+.animate-heart-shake {
+  animation: heart-shake 0.6s ease-out;
+}
+
+/* PWA install prompt slide-up */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Guide arrow: gentle breathing opacity */
+@keyframes guideArrowBreathe {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 0.45; }
+}
+.guide-arrow-breathe {
+  animation: guideArrowBreathe 2s ease-in-out infinite;
+}
+
+/* Rookie's Run — T5 foil ability card */
+.foil-card {
+  background: linear-gradient(135deg, #ffd8a8, #ffb3ec, #b3e5ff, #ffe9a8, #ffd8a8);
+  background-size: 300% 300%;
+  animation: foil-shift 6s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+.foil-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.7) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: foil-sweep 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes foil-shift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes foil-sweep { 0%{transform:translateX(-100%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }

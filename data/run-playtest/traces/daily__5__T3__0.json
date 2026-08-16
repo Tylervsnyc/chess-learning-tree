@@ -1,0 +1,529 @@
+{
+  "runId": "daily",
+  "level": 5,
+  "levelIndex": 4,
+  "levelId": "daily/4",
+  "tier": "T3",
+  "trial": 0,
+  "seed": "daily/4__T3__0",
+  "generatedAt": "2026-05-12T23:06:33.518Z",
+  "outcome": {
+    "win": true,
+    "movesUsed": 5,
+    "failMode": "won",
+    "captures": [
+      "knight",
+      "pawn"
+    ],
+    "abilitiesOffered": 0,
+    "abilitiesTaken": [],
+    "abilitiesUsed": [],
+    "nearDeathTurns": 1,
+    "excludedAbilities": [],
+    "seed": 2114654798,
+    "levelId": "daily/4",
+    "runId": "daily",
+    "levelIndex": 4,
+    "level": 5,
+    "tier": "T3",
+    "trial": 0
+  },
+  "decisionLog": [
+    {
+      "turn": 0,
+      "moveCount": 0,
+      "beforeBoard": {
+        "rookie": {
+          "file": 4,
+          "rank": 1
+        },
+        "pieces": [
+          {
+            "type": "pawn",
+            "file": 2,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 4,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 4
+          },
+          {
+            "type": "pawn",
+            "file": 5,
+            "rank": 4
+          },
+          {
+            "type": "knight",
+            "file": 4,
+            "rank": 5
+          },
+          {
+            "type": "knight",
+            "file": 5,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 1,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 7,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 7
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 7
+          }
+        ],
+        "hazards": [],
+        "frozenSquares": [],
+        "shieldUp": false,
+        "form": "rook",
+        "formMovesLeft": 0,
+        "tempo": 0,
+        "moveCount": 0,
+        "moveLimit": null,
+        "bonusMovesLeft": 0,
+        "abilities": [],
+        "pendingOffer": null,
+        "turn": "rookie",
+        "status": "playing"
+      },
+      "action": {
+        "kind": "move",
+        "target": {
+          "file": 7,
+          "rank": 1
+        }
+      },
+      "reason": "d1 → g1; sidesteps — 1-ply best of 9 (eval 17.6)",
+      "evalScore": 17.6
+    },
+    {
+      "turn": 1,
+      "moveCount": 1,
+      "beforeBoard": {
+        "rookie": {
+          "file": 7,
+          "rank": 1
+        },
+        "pieces": [
+          {
+            "type": "pawn",
+            "file": 2,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 4,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 4
+          },
+          {
+            "type": "pawn",
+            "file": 5,
+            "rank": 4
+          },
+          {
+            "type": "knight",
+            "file": 5,
+            "rank": 3
+          },
+          {
+            "type": "knight",
+            "file": 4,
+            "rank": 4
+          },
+          {
+            "type": "pawn",
+            "file": 1,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 7,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 7
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 7
+          }
+        ],
+        "hazards": [],
+        "frozenSquares": [],
+        "shieldUp": false,
+        "form": "rook",
+        "formMovesLeft": 0,
+        "tempo": 0,
+        "moveCount": 1,
+        "moveLimit": null,
+        "bonusMovesLeft": 0,
+        "abilities": [],
+        "pendingOffer": null,
+        "turn": "rookie",
+        "status": "playing"
+      },
+      "action": {
+        "kind": "move",
+        "target": {
+          "file": 7,
+          "rank": 5
+        }
+      },
+      "reason": "g1 → g5; advances 4 ranks — 1-ply best of 12 (eval 37.1)",
+      "evalScore": 37.1
+    },
+    {
+      "turn": 2,
+      "moveCount": 2,
+      "beforeBoard": {
+        "rookie": {
+          "file": 7,
+          "rank": 5
+        },
+        "pieces": [
+          {
+            "type": "pawn",
+            "file": 2,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 4,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 4
+          },
+          {
+            "type": "pawn",
+            "file": 5,
+            "rank": 4
+          },
+          {
+            "type": "knight",
+            "file": 7,
+            "rank": 4
+          },
+          {
+            "type": "knight",
+            "file": 6,
+            "rank": 5
+          },
+          {
+            "type": "pawn",
+            "file": 1,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 7,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 7
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 7
+          }
+        ],
+        "hazards": [],
+        "frozenSquares": [],
+        "shieldUp": false,
+        "form": "rook",
+        "formMovesLeft": 0,
+        "tempo": 0,
+        "moveCount": 2,
+        "moveLimit": null,
+        "bonusMovesLeft": 0,
+        "abilities": [],
+        "pendingOffer": null,
+        "turn": "rookie",
+        "status": "playing"
+      },
+      "action": {
+        "kind": "move",
+        "target": {
+          "file": 7,
+          "rank": 4
+        }
+      },
+      "reason": "g5 → g4, captures knight; retreats — 1-ply best of 4 (eval 37.5)",
+      "evalScore": 37.5
+    },
+    {
+      "turn": 3,
+      "moveCount": 3,
+      "beforeBoard": {
+        "rookie": {
+          "file": 7,
+          "rank": 4
+        },
+        "pieces": [
+          {
+            "type": "pawn",
+            "file": 2,
+            "rank": 2
+          },
+          {
+            "type": "pawn",
+            "file": 4,
+            "rank": 2
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 4
+          },
+          {
+            "type": "pawn",
+            "file": 5,
+            "rank": 4
+          },
+          {
+            "type": "knight",
+            "file": 6,
+            "rank": 5
+          },
+          {
+            "type": "pawn",
+            "file": 1,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 7,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 7
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 7
+          }
+        ],
+        "hazards": [],
+        "frozenSquares": [],
+        "shieldUp": false,
+        "form": "rook",
+        "formMovesLeft": 0,
+        "tempo": 2,
+        "moveCount": 3,
+        "moveLimit": null,
+        "bonusMovesLeft": 0,
+        "abilities": [],
+        "pendingOffer": null,
+        "turn": "rookie",
+        "status": "playing"
+      },
+      "action": {
+        "kind": "move",
+        "target": {
+          "file": 5,
+          "rank": 4
+        }
+      },
+      "reason": "g4 → e4, captures pawn; sidesteps — 1-ply best of 8 (eval 43.9)",
+      "evalScore": 43.9
+    },
+    {
+      "turn": 4,
+      "moveCount": 4,
+      "beforeBoard": {
+        "rookie": {
+          "file": 5,
+          "rank": 4
+        },
+        "pieces": [
+          {
+            "type": "queen",
+            "file": 2,
+            "rank": 1
+          },
+          {
+            "type": "bishop",
+            "file": 4,
+            "rank": 1
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 3
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 4
+          },
+          {
+            "type": "knight",
+            "file": 6,
+            "rank": 5
+          },
+          {
+            "type": "pawn",
+            "file": 1,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 7,
+            "rank": 6
+          },
+          {
+            "type": "pawn",
+            "file": 3,
+            "rank": 7
+          },
+          {
+            "type": "pawn",
+            "file": 6,
+            "rank": 7
+          }
+        ],
+        "hazards": [],
+        "frozenSquares": [],
+        "shieldUp": false,
+        "form": "rook",
+        "formMovesLeft": 0,
+        "tempo": 3,
+        "moveCount": 4,
+        "moveLimit": null,
+        "bonusMovesLeft": 0,
+        "abilities": [],
+        "pendingOffer": null,
+        "turn": "rookie",
+        "status": "playing"
+      },
+      "action": {
+        "kind": "move",
+        "target": {
+          "file": 5,
+          "rank": 8
+        }
+      },
+      "reason": "e4 → e8; advances 4 ranks — 1-ply best of 12 (eval 10000.0)",
+      "evalScore": 10000
+    }
+  ],
+  "finalBoard": {
+    "rookie": {
+      "file": 5,
+      "rank": 8
+    },
+    "pieces": [
+      {
+        "type": "queen",
+        "file": 2,
+        "rank": 1
+      },
+      {
+        "type": "bishop",
+        "file": 4,
+        "rank": 1
+      },
+      {
+        "type": "pawn",
+        "file": 6,
+        "rank": 3
+      },
+      {
+        "type": "pawn",
+        "file": 3,
+        "rank": 4
+      },
+      {
+        "type": "knight",
+        "file": 6,
+        "rank": 5
+      },
+      {
+        "type": "pawn",
+        "file": 1,
+        "rank": 6
+      },
+      {
+        "type": "pawn",
+        "file": 7,
+        "rank": 6
+      },
+      {
+        "type": "pawn",
+        "file": 3,
+        "rank": 7
+      },
+      {
+        "type": "pawn",
+        "file": 6,
+        "rank": 7
+      }
+    ],
+    "hazards": [],
+    "frozenSquares": [],
+    "shieldUp": false,
+    "form": "rook",
+    "formMovesLeft": 0,
+    "tempo": 5,
+    "moveCount": 5,
+    "moveLimit": null,
+    "bonusMovesLeft": 0,
+    "abilities": [],
+    "pendingOffer": null,
+    "turn": "rookie",
+    "status": "won"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "rookies-run",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "check": "eslint . && tsc --noEmit",
+    "validate": "npm run check && next build",
+    "playtest": "tsx scripts/run-playtest/nightly.ts",
+    "playtest:sweep": "tsx scripts/run-playtest/sweep.ts",
+    "ios:add": "cap add ios",
+    "ios:sync": "cap sync ios",
+    "ios:open": "cap open ios",
+    "ios:assets": "tsx scripts/generate-ios-assets.ts"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.4.2",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.4.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.90.1",
+    "canvas-confetti": "^1.9.4",
+    "next": "16.1.2",
+    "posthog-js": "^1.334.1",
+    "react": "^19.2.3",
+    "react-chessboard": "^5.8.6",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.4.2",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.2",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.1.18",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3"
+  }
+}
