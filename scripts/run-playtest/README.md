@@ -30,9 +30,14 @@ npx tsx scripts/run-playtest/nightly.ts
 - `features.ts` — extract feature vector per level
 - `digest.ts` — markdown writer
 - `nightly.ts` — top-level orchestrator (sweep + ablation + features + digest)
-- `bots/t3.ts` — 1-ply principled
-- `bots/t4.ts` — 2-ply minimax
-- `bots/t5.ts` — 3-ply minimax (v0.1, no ability-aware planner yet)
+- `bots/mcts.ts` — the shared MCTS-rollouts brain (`createMctsBot`); scores
+  every candidate (moves AND ability casts) by forward rollouts, with
+  `ability-eval.ts` strategic priors and `offerUsefulness`-scored offer picks
+  in rollouts. All abilities are castable — `candidatesForAbility` is
+  exhaustive over `AbilityId` (typechecked via never-assert).
+- `bots/t3.ts` — MCTS, 40 rollouts (casual)
+- `bots/t4.ts` — MCTS, 80 rollouts (sharp)
+- `bots/t5.ts` — MCTS, 160 rollouts (expert)
 - `bots/shared.ts` — eval + helpers
 
 ## Output

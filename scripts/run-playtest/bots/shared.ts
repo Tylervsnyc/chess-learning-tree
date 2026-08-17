@@ -15,7 +15,14 @@
  */
 
 import type { AbilityId, OwnedAbility } from '../../../lib/run/abilities';
-import { abilityLegalMoves, visibleEnemySquares } from '../../../lib/run/abilities';
+import {
+  convertTargets,
+  detonateVictims,
+  phalanxSpawnSquares,
+  visibleEnemySquares,
+  yankDestination,
+  yankEligibleTypes,
+} from '../../../lib/run/abilities';
 import { rookieLegalMoves, enemyAt } from '../../../lib/run/movement';
 import { TEMPO_MAX, TEMPO_REWARD } from '../../../lib/run/scoring';
 import type {
@@ -341,14 +348,45 @@ function candidatesForAbility(
         out.push({ kind: 'activate-ability', abilityId: owned.id });
       }
       return out;
-    case 'phase-step':
-    case 'leap': {
-      const legals = abilityLegalMoves(state, owned.id);
-      for (const target of legals) {
-        out.push({ kind: 'ability-target', abilityId: owned.id, target });
+    case 'detonate':
+      // Instant: only worth enumerating when it would actually hit something.
+      if (detonateVictims(state, owned.tier).length > 0) {
+        out.push({ kind: 'activate-ability', abilityId: 'detonate' });
+      }
+      return out;
+    case 'yank': {
+      // Targeted: pull a visible, tier-eligible enemy adjacent (needs a free
+      // adjacent square).
+      const elig = yankEligibleTypes(owned.tier);
+      for (const c of visibleEnemySquares(state)) {
+        const enemy = state.pieces.find((p) => p.file === c.file && p.rank === c.rank);
+        if (!enemy || !elig.has(enemy.type)) continue;
+        if (!yankDestination(state, c)) continue;
+        out.push({ kind: 'ability-target', abilityId: 'yank', target: { file: c.file, rank: c.rank } });
       }
       return out;
     }
+    case 'phalanx':
+      if (phalanxSpawnSquares(state, owned.tier).length > 0) {
+        out.push({ kind: 'activate-ability', abilityId: 'phalanx' });
+      }
+      return out;
+    case 'convert': {
+      // Targeted: flip an eligible enemy to Rookie's side. convertTargets()
+      // is the same eligibility the engine enforces (tier-scaled types).
+      for (const c of convertTargets(state)) {
+        out.push({ kind: 'ability-target', abilityId: 'convert', target: c });
+      }
+      return out;
+    }
+    case 'drones':
+      // Instant: launch drones along tier-scaled directions.
+      out.push({ kind: 'activate-ability', abilityId: 'drones' });
+      return out;
+    case 'squad':
+      // Passive: allies auto-spawn at level start — nothing to cast. The
+      // bot's value for squad lives entirely in the OFFER decision.
+      return out;
     case 'freeze-ray':
     case 'poison-dart':
     case 'rabies-dart': {
@@ -392,8 +430,14 @@ function candidatesForAbility(
       }
       return out;
     }
+    default: {
+      // Exhaustiveness guard: a new AbilityId that isn't handled here fails
+      // typecheck instead of silently becoming un-castable by bots (the bug
+      // that made every convert/squad-gated level false-flag as unbeatable).
+      const _exhaustive: never = owned.id;
+      return _exhaustive;
+    }
   }
-  return out;
 }
 
 /** Identify which enemy piece *did* capture Rookie, given a state where rookie is gone. */

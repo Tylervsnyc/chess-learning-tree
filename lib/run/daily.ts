@@ -1,8 +1,11 @@
-import { RUNS, STC_RUN_IDS } from './runs';
+import { EXPERIMENTAL_RUN_IDS, RUNS, STC_RUN_IDS } from './runs';
 
-const STC = new Set<string>(STC_RUN_IDS);
+// STC mini-runs and experimental playtest runs never rotate as dailies.
+// CRITICAL: the daily is index math over this pool — its LENGTH and ORDER
+// define every date's run, so excluded sets must keep existing entries stable.
+const EXCLUDED = new Set<string>([...STC_RUN_IDS, ...EXPERIMENTAL_RUN_IDS]);
 
-const DAILY_POOL = RUNS.filter((r) => !STC.has(r.id));
+const DAILY_POOL = RUNS.filter((r) => !EXCLUDED.has(r.id));
 
 const EPOCH_DATE = '2026-01-01';
 

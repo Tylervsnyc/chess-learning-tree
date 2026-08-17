@@ -73,6 +73,20 @@ export interface BoardState {
   // (allies is required, but legacy fixture states in /test pages may omit it;
   // see harden notes — we keep it required for runtime invariants.)
   hazards: Coord[]; // no-go squares for Rookie (introduced level 8+)
+  /**
+   * EXPERIMENTAL (Smoke ability). Cloud squares enemies cannot see through:
+   * enemy rays stop before them, enemies cannot move into or capture on
+   * them. Rookie + allies move freely. `turnsLeft` ticks down at the end of
+   * each full enemy turn; expired squares vanish. Absent/empty = no smoke.
+   */
+  smoke?: Array<{ file: number; rank: number; turnsLeft: number }>;
+  /**
+   * EXPERIMENTAL (Boulder ability). Rocks that block EVERYONE for the rest
+   * of the level: Rookie's rays stop before them (knight-form may jump over
+   * but not land), enemy rays stop before them, and no piece — enemy, ally
+   * or drone — may move onto them. Cleared at level start.
+   */
+  boulders?: Coord[];
   turn: Turn;
   status: GameStatus;
   moveCount: number; // counts Rookie's moves only

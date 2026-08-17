@@ -3895,6 +3895,82 @@ export const STC_RUN_IDS = [
   'stc-queen',
 ] as const;
 
+/**
+ * Human playtest run for the EXPERIMENTAL abilities (Detonate / Grapple /
+ * Phalanx). Reach it at /run?run=abilities-x — it is EXCLUDED from the daily
+ * rotation (see EXPERIMENTAL_RUN_IDS + lib/run/daily.ts), so adding it does
+ * NOT shift the daily calendar. Levels mirror the abilities-v2 escalation:
+ * early freebies to try each ability, then boards where they must carry.
+ */
+const RUN_ABILITIES_X: RunDef = {
+  id: 'abilities-x',
+  name: 'Experimental Abilities',
+  blurb: 'Trying out Detonate, Grapple, and Phalanx.',
+  allowedAbilities: ['detonate', 'yank', 'phalanx'],
+  levels: [
+    make(
+      1,
+      [
+        pawn(2, 4), pawn(5, 4), pawn(7, 4),
+        pawn(3, 6), pawn(6, 6),
+        pawn(4, 7), pawn(6, 7),
+      ],
+      { enemiesPerTurn: 1 },
+    ),
+    make(
+      2,
+      [
+        pawn(1, 4), pawn(3, 4), pawn(5, 4), pawn(7, 4),
+        knight(4, 5),
+        pawn(2, 6), pawn(6, 6),
+        bishop(5, 7),
+      ],
+      { enemiesPerTurn: 2 },
+    ),
+    make(
+      3,
+      [
+        pawn(1, 3), pawn(3, 3), pawn(5, 3), pawn(7, 3),
+        pawn(2, 4), pawn(4, 4), pawn(6, 4), pawn(8, 4),
+        knight(3, 6), knight(6, 6),
+        bishop(5, 7),
+      ],
+      { enemiesPerTurn: 2 },
+    ),
+    make(
+      4,
+      [
+        // Grapple bait: a back-rank queen guarding the goal.
+        pawn(2, 4), pawn(4, 4), pawn(6, 4),
+        pawn(3, 5), pawn(5, 5),
+        queen(4, 8),
+        knight(6, 6),
+      ],
+      { enemiesPerTurn: 2 },
+    ),
+    make(
+      5,
+      [
+        // Detonate playground: a dense mid-board cluster.
+        pawn(3, 4), pawn(4, 4), pawn(5, 4),
+        pawn(3, 5), pawn(5, 5),
+        knight(4, 5),
+        bishop(2, 6), bishop(6, 6),
+        queen(4, 7),
+      ],
+      { enemiesPerTurn: 3, moveLimit: 18 },
+    ),
+  ],
+};
+
+/**
+ * Runs that must NEVER enter the daily rotation (human playtest surfaces).
+ * lib/run/daily.ts excludes these alongside the STC mini-runs — REQUIRED for
+ * any appended test run, or the modulus over DAILY_POOL shifts every
+ * historical + future daily assignment.
+ */
+export const EXPERIMENTAL_RUN_IDS = ['abilities-x'] as const;
+
 export const RUNS: ReadonlyArray<RunDef> = [
 
   RUN_DAILY,
@@ -3933,6 +4009,7 @@ export const RUNS: ReadonlyArray<RunDef> = [
   RUN_X,
   RUN_BRIDGE,
   RUN_PLUS,
+  RUN_ABILITIES_X, // appended last + excluded from the daily pool (EXPERIMENTAL_RUN_IDS)
 ];
 
 export const DEFAULT_RUN_ID = RUNS[0].id;

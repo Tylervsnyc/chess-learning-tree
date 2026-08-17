@@ -35,6 +35,15 @@ export interface SimulateOpts {
   puzzle: RunPuzzle;
   bot: Bot;
   seed: string;
+  /**
+   * Run id the puzzle belongs to. Threading it into puzzleToBoardState makes
+   * the engine honor per-run rules the way the real /run page does — the
+   * `allowedAbilities` offer allowlist and STC form locks. Without it, sweeps
+   * offered the FULL ability pool on restricted runs (e.g. aegis on
+   * abilities-v2), skewing every measurement of ability-gated levels.
+   * Optional: synthetic/candidate levels have no run.
+   */
+  runId?: string;
   excludedAbilities?: ReadonlySet<AbilityId>;
   /**
    * Force the bot to accept these abilities whenever offered. Used by the
@@ -59,6 +68,13 @@ export interface SimulateOpts {
   carryTempo?: number;
   carryAbilities?: ReadonlyArray<OwnedAbility>;
   carryPendingOffer?: BoardState['pendingOffer'];
+  /**
+   * EXPERIMENT HOOK (summon-persistence-test.ts): override the allies the
+   * level starts with, AFTER the engine's own seeding. Receives the freshly
+   * seeded state (so callers can see the Squad roster the engine spawned) and
+   * returns the ally list to start the level with. Not used in production.
+   */
+  allyOverride?: (state: BoardState) => BoardState['allies'];
   /**
    * When true, the simulator records a per-decision trace and returns it
    * inside the outcome. Off by default — opt-in because the trace adds
@@ -95,6 +111,7 @@ export function simulateGame(opts: SimulateOpts): SimulateResult {
     tempo: opts.carryTempo,
     abilities: opts.carryAbilities ? [...opts.carryAbilities] : undefined,
     pendingOffer: opts.carryPendingOffer ?? undefined,
+    runId: opts.runId,
   });
   // Inject pre-owned abilities AFTER puzzleToBoardState so we layer on top of
   // whatever the puzzle's own starting state was. Dedupe by id (existing
@@ -110,6 +127,9 @@ export function simulateGame(opts: SimulateOpts): SimulateResult {
         abilities: refreshAbilityUses([...state.abilities, ...additions]),
       };
     }
+  }
+  if (opts.allyOverride) {
+    state = { ...state, allies: opts.allyOverride(state) };
   }
   let prevState = state;
 
@@ -181,7 +201,7 @@ export function simulateGame(opts: SimulateOpts): SimulateResult {
       continue;
     }
 
-    if (state.turn === 'enemy') {
+    if (state.turn !== 'rookie') {
       // Snapshot before the enemy turn so inferCapturer can locate the
       // capturer at Rookie's last square. Without this, prevState stays at
       // Rookie's pre-move square and we miss-classify captures as dead-ends

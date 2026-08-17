@@ -19,8 +19,10 @@ import {
   ABILITY_DEFS,
   type AbilityId,
   convertEligibleTypes,
+  detonateVictims,
   formForAbility,
   type OwnedAbility,
+  phalanxSpawnSquares,
   transformDurationForTier,
 } from '../../../lib/run/abilities';
 import { rookieLegalMoves } from '../../../lib/run/movement';
@@ -107,6 +109,35 @@ function rawBonus(
       return transformBonus(state, owned);
     case 'decoy':
       return target ? decoyBonus(state, target) : 0;
+    case 'detonate': {
+      // Value = material destroyed, doubled when a victim currently threatens
+      // Rookie (a blast that doubles as an escape is the dream cast).
+      const victims = detonateVictims(state, owned.tier);
+      let v = 0;
+      for (const p of victims) v += PIECE_VALUE[p.type] * 2;
+      if (victims.length > 0 && rookieInThreat(state)) v += 10;
+      return v;
+    }
+    case 'yank': {
+      // Pulling a piece adjacent + frozen ≈ a delayed free capture of it.
+      if (!target) return 0;
+      const enemy = state.pieces.find(
+        (p) => p.file === target.file && p.rank === target.rank,
+      );
+      if (!enemy) return 0;
+      // Distant heavies are the point; adjacent enemies gain nothing.
+      const dist = Math.max(
+        Math.abs(enemy.file - state.rookie.file),
+        Math.abs(enemy.rank - state.rookie.rank),
+      );
+      if (dist <= 1) return 0;
+      return PIECE_VALUE[enemy.type] * 2.5;
+    }
+    case 'phalanx': {
+      // Bodyguards are worth the most under fire; mild value otherwise.
+      const n = phalanxSpawnSquares(state, owned.tier).length;
+      return n * (rookieInThreat(state) ? 6 : 2);
+    }
   }
   return 0;
 }

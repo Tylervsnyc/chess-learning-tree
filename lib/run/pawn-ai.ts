@@ -10,7 +10,8 @@
  *      - Sliders/knights/queen: closest piece to Rookie steps toward her.
  *   3. If no one can act, the turn passes back to Rookie.
  *
- * Enemy pieces never step onto hazard squares either.
+ * Enemy pieces never step onto hazard squares either — nor onto Smoke or
+ * Boulder squares (experimental board-editing abilities; `enemyNoGo`).
  */
 
 import {
@@ -18,7 +19,7 @@ import {
   relocateStatusMarkers,
   tryAegisIntercept,
 } from './abilities';
-import { enemyAt } from './movement';
+import { enemyAt, enemyNoGo } from './movement';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
 import { mulberry32 } from './seed';
 import { fromSquare, toSquare } from './types';
@@ -81,9 +82,9 @@ function inBounds(c: Coord): boolean {
   return c.file >= 1 && c.file <= 8 && c.rank >= 1 && c.rank <= 8;
 }
 
-function isHazard(hazards: Coord[], at: Coord): boolean {
-  return hazards.some((h) => h.file === at.file && h.rank === at.rank);
-}
+// Enemy no-go squares = hazards + Smoke clouds + Boulders (experimental
+// board-editing abilities) — see `enemyNoGo` in movement.ts. Enemies never
+// slide through, land on, or capture on any of them.
 
 /** True if a rainbow ally occupies this square — treat like a friendly blocker. */
 function isAllyAt(state: BoardState, at: Coord): boolean {
@@ -154,7 +155,7 @@ function pieceLegalMovesRaw(piece: EnemyPiece, state: BoardState): Coord[] {
       const out: Coord[] = [];
       if (
         inBounds(target) &&
-        !isHazard(state.hazards, target) &&
+        !enemyNoGo(state, target) &&
         !enemyAt(state.pieces, target) &&
         !isAllyAt(state, target) &&
         !isVacated(vacated, target) &&
@@ -166,7 +167,7 @@ function pieceLegalMovesRaw(piece: EnemyPiece, state: BoardState): Coord[] {
       for (const df of [-1, 1]) {
         const cap: Coord = { file: piece.file + df, rank: piece.rank + BLACK_FORWARD };
         if (!inBounds(cap)) continue;
-        if (isHazard(state.hazards, cap)) continue;
+        if (enemyNoGo(state, cap)) continue;
         const hitsRookie = state.rookie.file === cap.file && state.rookie.rank === cap.rank;
         const hitsAlly = isAllyAt(state, cap);
         if (hitsRookie || hitsAlly) {
@@ -180,7 +181,7 @@ function pieceLegalMovesRaw(piece: EnemyPiece, state: BoardState): Coord[] {
       for (const [df, dr] of KNIGHT_DELTAS) {
         const c: Coord = { file: piece.file + df, rank: piece.rank + dr };
         if (!inBounds(c)) continue;
-        if (isHazard(state.hazards, c)) continue;
+        if (enemyNoGo(state, c)) continue;
         if (isVacated(vacated, c)) continue; // ghost blocker
         const blocker = enemyAt(state.pieces, c);
         if (blocker && blocker !== piece) continue; // can't land on friendly
@@ -208,7 +209,7 @@ function slidingMoves(
     let r = piece.rank + dr;
     while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
       const c: Coord = { file: f, rank: r };
-      if (isHazard(state.hazards, c)) break;
+      if (enemyNoGo(state, c)) break;
       if (isVacated(vacated, c)) break; // ghost blocker — stop before
       const blocker = enemyAt(state.pieces, c);
       const isRookie = state.rookie.file === f && state.rookie.rank === r;
@@ -466,7 +467,7 @@ function chooseEnemyActionAgainst(
       const target: Coord = { file: p.file, rank: p.rank + BLACK_FORWARD };
       if (
         inBounds(target) &&
-        !isHazard(state.hazards, target) &&
+        !enemyNoGo(state, target) &&
         !enemyAt(state.pieces, target) &&
         !isAllyAt(state, target) &&
         !isVacated(vacated, target) &&
@@ -510,7 +511,7 @@ function rabidCaptureSquares(piece: EnemyPiece, state: BoardState): Coord[] {
       for (const df of [-1, 1]) {
         const c: Coord = { file: piece.file + df, rank: piece.rank + BLACK_FORWARD };
         if (!inBounds(c)) continue;
-        if (isHazard(state.hazards, c)) continue;
+        if (enemyNoGo(state, c)) continue;
         if (isVacated(vacated, c)) continue;
         const isRookie = state.rookie.file === c.file && state.rookie.rank === c.rank;
         const friendly = enemyAt(state.pieces, c);
@@ -522,7 +523,7 @@ function rabidCaptureSquares(piece: EnemyPiece, state: BoardState): Coord[] {
       for (const [df, dr] of KNIGHT_DELTAS) {
         const c: Coord = { file: piece.file + df, rank: piece.rank + dr };
         if (!inBounds(c)) continue;
-        if (isHazard(state.hazards, c)) continue;
+        if (enemyNoGo(state, c)) continue;
         if (isVacated(vacated, c)) continue;
         const isRookie = state.rookie.file === c.file && state.rookie.rank === c.rank;
         const friendly = enemyAt(state.pieces, c);
@@ -538,7 +539,7 @@ function rabidCaptureSquares(piece: EnemyPiece, state: BoardState): Coord[] {
         let r = piece.rank + dr;
         while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
           const c: Coord = { file: f, rank: r };
-          if (isHazard(state.hazards, c)) break;
+          if (enemyNoGo(state, c)) break;
           if (isVacated(vacated, c)) break;
           const isRookie = state.rookie.file === f && state.rookie.rank === r;
           const friendly = enemyAt(state.pieces, c);
@@ -853,6 +854,13 @@ export function stepEnemyTurn(state: BoardState): BoardState {
         nextFormMovesLeft = 0;
       }
     }
+    // Smoke clouds tick down at the end of each full enemy turn; expired
+    // squares vanish. (Undefined stays undefined — no smoke was ever cast.)
+    const nextSmoke = s.smoke
+      ? s.smoke
+          .map((c) => ({ ...c, turnsLeft: c.turnsLeft - 1 }))
+          .filter((c) => c.turnsLeft > 0)
+      : s.smoke;
     return {
       ...s,
       pieces,
@@ -861,6 +869,7 @@ export function stepEnemyTurn(state: BoardState): BoardState {
       turn: 'rookie',
       form: nextForm,
       formMovesLeft: nextFormMovesLeft,
+      smoke: nextSmoke,
       enemyMovedSquares: [],
       enemyVacatedSquares: [],
       frozenSquares: nextFrozenSquares,

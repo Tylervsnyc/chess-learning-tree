@@ -22,6 +22,7 @@ import { mulberry32 } from '../../../lib/run/seed';
 import type { BoardState } from '../../../lib/run/types';
 import { toSquare } from '../../../lib/run/types';
 import { applyBotAction } from './apply';
+import { strategicBonus } from './ability-eval';
 import { type ActionCandidate, legalCandidates } from './shared';
 import { settleEnemyTurns } from './t3';
 import { describeAction } from '../utils/reason';
@@ -92,10 +93,15 @@ function decideMcts(
       continue;
     }
     for (let r = 0; r < perCand; r++) {
-      const result = playout(after, rng);
+      const result = playout(after, rng, opts.id);
       if (result.win) wins[ci] += 1;
       scoreSum[ci] += result.score;
     }
+    // Strategic prior (ability-eval): abilities with delayed/positional payoff
+    // (convert, squad, decoy, poison) look flat to short rollouts — the prior
+    // breaks ties toward the strategically right cast. Scaled by perCand so it
+    // stays comparable to the summed playout scores.
+    scoreSum[ci] += strategicBonus(state, action, opts.id) * perCand;
   }
 
   let bestIdx = 0;
@@ -124,6 +130,7 @@ function decideMcts(
 function playout(
   start: BoardState,
   rng: () => number,
+  tier: MctsOpts['id'],
 ): { win: boolean; score: number } {
   let state = start;
   let depth = 0;
@@ -132,13 +139,21 @@ function playout(
 
   while (state.status === 'playing' && depth < MAX_ROLLOUT_DEPTH) {
     if (state.pendingOffer) {
-      // Take whichever offer scores better by quick eval, or randomly.
-      // Simple: prefer "new" (kind === 'new'), else first option.
+      // Score each option with the same offerUsefulness the root decision
+      // uses — random offer picks build incoherent loadouts and poison the
+      // win estimate on ability-dependent levels.
       const offer = state.pendingOffer;
       if (offer.length > 0) {
-        const idx = rng() < 0.7 ? 0 : Math.min(1, offer.length - 1);
-        const opt = offer[idx];
-        state = opt ? applyOfferPick(state, opt) : applyDismissOffer(state);
+        let bestIdx = 0;
+        let bestScore = -Infinity;
+        for (let i = 0; i < offer.length; i++) {
+          const s = offerUsefulness(state, offer[i]);
+          if (s > bestScore) {
+            bestScore = s;
+            bestIdx = i;
+          }
+        }
+        state = applyOfferPick(state, offer[bestIdx]);
       } else {
         state = applyDismissOffer(state);
       }
@@ -153,7 +168,7 @@ function playout(
     // Rookie's turn — pick action by weighted-random over top-K.
     const cands = legalCandidates(state, EMPTY_SET);
     if (cands.length === 0) break;
-    const pick = pickRolloutAction(state, cands, rng);
+    const pick = pickRolloutAction(state, cands, rng, tier);
     const action = candidateToAction(pick);
     const next = applyBotAction(state, action);
     if (next === state) break;
@@ -186,6 +201,7 @@ function pickRolloutAction(
   state: BoardState,
   cands: ActionCandidate[],
   rng: () => number,
+  tier: MctsOpts['id'],
 ): ActionCandidate {
   if (cands.length === 1) return cands[0];
 
@@ -210,7 +226,11 @@ function pickRolloutAction(
       c.kind === 'activate-ability' || c.kind === 'ability-target';
     // Encourage occasional ability casts so rollouts explore ability use.
     if (isAbilityCast) {
-      s += rng() * 3; // jitter — keeps abilities competitive on ties
+      // Per-ability strategic scoring (tier-scaled) — the reason a convert,
+      // decoy, or poison cast can look better than a null move to a rollout
+      // that will never see its delayed payoff.
+      s += strategicBonus(state, action, tier);
+      s += rng(); // small jitter — exploration on near-ties
       // A transform that gives the new form an advancing move when the rook
       // had none is the key out of the trap — make rollouts take it.
       if (
@@ -362,6 +382,12 @@ function offerUsefulness(state: BoardState, opt: { id: AbilityId; kind: 'new' | 
   // Surge / Aegis are always handy but shouldn't outrank the one transform
   // that unwalls the board, so keep their bump modest.
   if (opt.id === 'surge' || opt.id === 'aegis') s += 2;
+  // v2 set (convert/squad/drones): board-presence abilities whose value
+  // scales with enemy density. Without a bump here squad-gated levels
+  // false-flag — bots would never draft the ability the level is built on.
+  if (opt.id === 'squad' || opt.id === 'drones' || opt.id === 'convert') {
+    s += Math.min(6, state.pieces.length * 0.5);
+  }
   return s;
 }
 
