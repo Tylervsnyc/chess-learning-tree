@@ -388,6 +388,12 @@ function offerUsefulness(state: BoardState, opt: { id: AbilityId; kind: 'new' | 
   if (opt.id === 'squad' || opt.id === 'drones' || opt.id === 'convert') {
     s += Math.min(6, state.pieces.length * 0.5);
   }
+  // Experimental board-editing terrain (smoke/boulder): defensive tools whose
+  // value scales with slider density (bishops/queens are what they cut).
+  if (opt.id === 'smoke' || opt.id === 'boulder') {
+    const sliders = state.pieces.filter((p) => p.type === 'bishop' || p.type === 'queen').length;
+    s += Math.min(5, 1 + sliders * 1.5);
+  }
   return s;
 }
 

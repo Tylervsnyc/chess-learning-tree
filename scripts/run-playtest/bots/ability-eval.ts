@@ -18,6 +18,7 @@
 import {
   ABILITY_DEFS,
   type AbilityId,
+  boulderCanCrush,
   convertEligibleTypes,
   detonateVictims,
   formForAbility,
@@ -25,7 +26,7 @@ import {
   phalanxSpawnSquares,
   transformDurationForTier,
 } from '../../../lib/run/abilities';
-import { rookieLegalMoves } from '../../../lib/run/movement';
+import { enemyNoGo, rookieLegalMoves } from '../../../lib/run/movement';
 import type {
   BoardState,
   Coord,
@@ -137,6 +138,36 @@ function rawBonus(
       // Bodyguards are worth the most under fire; mild value otherwise.
       const n = phalanxSpawnSquares(state, owned.tier).length;
       return n * (rookieInThreat(state) ? 6 : 2);
+    }
+    case 'smoke': {
+      // A cloud is an escape hatch: worth a lot when Rookie is in threat,
+      // scaled by how many attackers it blanks. Nothing when unthreatened.
+      if (!rookieInThreat(state)) return 0;
+      const attackers = enemiesAttackingRookie(state).length;
+      return 8 + attackers * 3 + owned.tier;
+    }
+    case 'boulder': {
+      // Rock value = enemy lines to Rookie it cuts (+ material if it crushes).
+      if (!target) return 0;
+      let v = 0;
+      const crushed = state.pieces.find(
+        (p) => p.file === target.file && p.rank === target.rank,
+      );
+      if (crushed && boulderCanCrush(owned.tier)) v += PIECE_VALUE[crushed.type] * 2;
+      const before = enemiesAttackingRookie(state).length;
+      const withRock: BoardState = {
+        ...state,
+        pieces: crushed ? state.pieces.filter((p) => p !== crushed) : state.pieces,
+        boulders: [...(state.boulders ?? []), { file: target.file, rank: target.rank }],
+      };
+      const after = enemiesAttackingRookie(withRock).length;
+      v += Math.max(0, before - after) * 8;
+      if (before > 0 && after === 0) v += 6; // fully out of danger
+      // Don't wall Rookie in: penalize rocks that remove her only advancing squares.
+      const movesBefore = rookieLegalMoves(state).length;
+      const movesAfter = rookieLegalMoves(withRock).length;
+      if (movesAfter < movesBefore) v -= (movesBefore - movesAfter) * 1.5;
+      return v;
     }
   }
   return 0;
@@ -466,6 +497,7 @@ function pieceAttackSquares(state: BoardState, piece: EnemyPiece): Set<string> {
         const f = piece.file + df;
         const r = piece.rank - 1;
         if (f < 1 || f > 8 || r < 1 || r > 8) continue;
+        if (enemyNoGo(state, { file: f, rank: r })) continue;
         out.add(toSquare({ file: f, rank: r }));
       }
       return out;
@@ -477,6 +509,7 @@ function pieceAttackSquares(state: BoardState, piece: EnemyPiece): Set<string> {
         const f = piece.file + df;
         const r = piece.rank + dr;
         if (f < 1 || f > 8 || r < 1 || r > 8) continue;
+        if (enemyNoGo(state, { file: f, rank: r })) continue;
         out.add(toSquare({ file: f, rank: r }));
       }
       return out;
@@ -504,6 +537,7 @@ function addSlide(
     let f = piece.file + df;
     let r = piece.rank + dr;
     while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+      if (enemyNoGo(state, { file: f, rank: r })) break; // hazard/smoke/boulder
       out.add(toSquare({ file: f, rank: r }));
       const blockedByEnemy = state.pieces.find(
         (q) => q !== piece && q.file === f && q.rank === r,
@@ -519,3 +553,9 @@ function addSlide(
 
 // Re-export to ensure ABILITY_DEFS is treated as used by tsc (avoids unused-import warning).
 void ABILITY_DEFS;
+
+/** Enemies whose attack set currently includes Rookie's square (per-piece, real blockers). */
+function enemiesAttackingRookie(state: BoardState): EnemyPiece[] {
+  const rookieSq = toSquare(state.rookie);
+  return state.pieces.filter((p) => pieceAttackSquares(state, p).has(rookieSq));
+}

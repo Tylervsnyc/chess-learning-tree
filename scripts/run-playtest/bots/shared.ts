@@ -16,6 +16,7 @@
 
 import type { AbilityId, OwnedAbility } from '../../../lib/run/abilities';
 import {
+  boulderTargets,
   convertTargets,
   detonateVictims,
   phalanxSpawnSquares,
@@ -23,7 +24,7 @@ import {
   yankDestination,
   yankEligibleTypes,
 } from '../../../lib/run/abilities';
-import { rookieLegalMoves, enemyAt } from '../../../lib/run/movement';
+import { rookieLegalMoves, enemyAt, enemyNoGo } from '../../../lib/run/movement';
 import { TEMPO_MAX, TEMPO_REWARD } from '../../../lib/run/scoring';
 import type {
   BoardState,
@@ -76,6 +77,8 @@ function addAttacksForPiece(
         const f = piece.file + df;
         const r = piece.rank - 1;
         if (f < 1 || f > 8 || r < 1 || r > 8) continue;
+        // Enemies can't capture ON hazard / smoke / boulder squares.
+        if (enemyNoGo(state, { file: f, rank: r })) continue;
         out.add(toSquare({ file: f, rank: r }));
       }
       return;
@@ -93,6 +96,7 @@ function addAttacksForPiece(
         const f = piece.file + df;
         const r = piece.rank + dr;
         if (f < 1 || f > 8 || r < 1 || r > 8) continue;
+        if (enemyNoGo(state, { file: f, rank: r })) continue;
         out.add(toSquare({ file: f, rank: r }));
       }
       return;
@@ -129,6 +133,9 @@ function addSlideAttacks(
     let f = piece.file + df;
     let r = piece.rank + dr;
     while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+      // Rays stop BEFORE hazards / smoke clouds / boulders (enemy no-go) —
+      // mirrors slidingMoves in pawn-ai.ts.
+      if (enemyNoGo(state, { file: f, rank: r })) break;
       out.add(toSquare({ file: f, rank: r }));
       // Slide stops at any occupant (own piece or rookie).
       const blockedByEnemy = state.pieces.find(
@@ -369,6 +376,19 @@ function candidatesForAbility(
     case 'phalanx':
       if (phalanxSpawnSquares(state, owned.tier).length > 0) {
         out.push({ kind: 'activate-ability', abilityId: 'phalanx' });
+      }
+      return out;
+    case 'smoke':
+      // Instant terrain: only worth enumerating when Rookie is actually in
+      // threat — an unthreatened cloud is a wasted use.
+      if (rookieInThreat(state)) {
+        out.push({ kind: 'activate-ability', abilityId: 'smoke' });
+      }
+      return out;
+    case 'boulder':
+      // Targeted terrain: every legal drop square (T5 may also crush an enemy).
+      for (const c of boulderTargets(state, owned.tier)) {
+        out.push({ kind: 'ability-target', abilityId: 'boulder', target: c });
       }
       return out;
     case 'convert': {

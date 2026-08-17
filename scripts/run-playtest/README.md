@@ -53,3 +53,7 @@ All artifacts land in `data/run-playtest/`:
 ## Determinism
 
 The engine is deterministic given a state — RNG is only used in offer rolls (seeded by `level + moveCount + captures.length`). Bots add controlled stochasticity by sampling from top-K moves when several tie in eval (T3/T4 only). T5 plays deterministically. Sweep seeds are `levelId__tier__trialIndex` hashed → consistent re-runs.
+
+## Experimental board-editing abilities (Smoke + Boulder)
+
+`smoke` and `boulder` are bot-only experimental abilities (`EXPERIMENTAL_ABILITY_IDS`) that add terrain to `BoardState` (`smoke`, `boulders`) rather than acting on pieces. Bots enumerate them in `bots/shared.ts` (`candidatesForAbility`: smoke only when Rookie is in threat; boulder = every legal drop square), score them in `bots/ability-eval.ts` (smoke = escape value, boulder = enemy lines to Rookie it cuts) and bump them in `bots/mcts.ts` `offerUsefulness`. The bot attack maps (`enemyAttackedSquares`, `pieceAttackSquares`) now respect `enemyNoGo` (hazards / smoke / boulders) so the eval matches the engine. Measure with `npx tsx scripts/run-playtest/ability-power-test.ts <trials> <tier>`.
