@@ -54,7 +54,16 @@ export const FEATURE_FLAGS = {
    * camera never appears anywhere: the workout runs timer + Combo Coach, the
    * bout's boxing round uses the tap-per-punch pad, onboarding drops its
    * camera-permission step, and Settings hides the camera row. Turn back on
-   * once the detector is trustworthy; nothing else needs to change.
+   * once the detector is trustworthy.
+   *
+   * NOTE: this flag being off does NOT mean the app is camera-free. Quadrant
+   * Fight (components/box/QuadrantFight.tsx) is a separate, live, opt-in camera
+   * game in the workout's exercise segments and the bout's boxing rounds — it
+   * is gated only by localStorage `cp_quadrant_fight_optin` (default off), not
+   * by this flag. Its per-round FightStats feed the bout's judges' cards +
+   * boxing bonus when BOUT_BOXING_CARDS is on. ios/App/App/Info.plist
+   * therefore MUST keep NSCameraUsageDescription, or opting in hard-crashes
+   * the native app.
    */
   WORKOUT_PUNCH_CAM: false,
   /**
@@ -95,11 +104,23 @@ export const FEATURE_FLAGS = {
    * Rookie split across three 3:00 chess rounds with two 60s boxing rounds
    * between them. The board freezes at every bell; you resume the same
    * position. One real clock (the user's 9:00 bank — flagging is a real loss);
-   * Rookie's clock is pacing/flavor only. Final bell with no mate goes to the
-   * judges' cards (boxing-round punch scores, tie to the user). Design:
+   * Rookie's clock is pacing/flavor only. Final bell with no mate is decided
+   * on MATERIAL first; when the board is dead level the judges' cards decide
+   * (see BOUT_BOXING_CARDS), tie to the user. Design:
    * docs/chess-boxing-app-structure.md.
    */
   BOUT_MODE: true,
+  /**
+   * Judges' cards + boxing bonus in a bout (2026-08-17, Tyler): when the
+   * Quadrant Fight camera game is opted in, every boxing round is scored 0-100
+   * for you (`cardScore`) and for Rookie (`rookieCard`, lib/bout/bout.ts).
+   * The cards add half a point each to bout points (max 50/round), settle a
+   * material-level final bell, and are stored in bout_sessions.user_cards /
+   * rookie_cards with `punches` = landed punches. OFF: cards stay `[]`,
+   * punches 0, and the bout scores exactly as before — the camera game itself
+   * stays playable, it just doesn't count.
+   */
+  BOUT_BOXING_CARDS: true,
   /**
    * The "Living Ring" /box home (2026-08-07, Tyler-approved on
    * /test/boxing-landing): fight-night ring scene — crowd + flashbulbs,

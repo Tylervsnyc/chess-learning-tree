@@ -23,6 +23,7 @@ import {
   type BoutOutcome,
 } from '@/lib/bout/bout';
 import { processAchievementEvent } from '@/lib/achievements/server';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { deriveBoutFacts } from '@/lib/achievements/bout-facts';
 
 /**
@@ -37,6 +38,9 @@ import { deriveBoutFacts } from '@/lib/achievements/bout-facts';
  *   clockLeftSeconds: number,
  *   finalFen?: string,
  *   clientSessionId: string,  // idempotency key, generated per bout
+ *   userCards?: number[],     // judges' cards 0-100, one per boxing round (Quadrant Fight)
+ *   rookieCards?: number[],   // Rookie's cards, same shape
+ *   punches?: number,         // punches landed across boxing rounds
  * }
  *
  * The stored row makes a bout a real finished unit: it feeds the streak
@@ -45,9 +49,10 @@ import { deriveBoutFacts } from '@/lib/achievements/bout-facts';
  *
  * TRUST: points are NOT accepted from the client — they are recomputed here
  * from the reported result via boutPoints(), on inputs clamped to what the
- * reported format can actually contain. There is NO physical tracking in a
- * bout (no camera, no tap pad), so there is nothing a client could inflate
- * beyond that. The write uses the service role because bout_sessions has no
+ * reported format can actually contain. The judges' cards ARE client-reported
+ * (the camera game runs on-device), so they are clamped hard: 0-100 each, at
+ * most one per boxing round, punches <= MAX_PUNCHES_PER_ROUND per round — a
+ * hand-written card can buy at most the honest ceiling. The write uses the service role because bout_sessions has no
  * public insert policy (a user must not be able to hand-write a row onto a
  * public board).
  *
@@ -68,6 +73,15 @@ import { deriveBoutFacts } from '@/lib/achievements/bout-facts';
 
 // Even the 6-chess-round Championship card can't run past this.
 const MAX_MOVES = 400;
+
+// A landed punch every 3s for a full 3:00 round is already a monster pace.
+const MAX_PUNCHES_PER_ROUND = 60;
+
+/** Clamp a client card list: numbers only, 0-100 each, at most `max` entries. */
+function clampCards(v: unknown, max: number): number[] {
+  if (!Array.isArray(v)) return [];
+  return v.slice(0, max).map((c) => clampInt(c, 100));
+}
 
 /** Fight-record bucket → Elo score for the Rookie rating. */
 const RATING_SCORE = { win: 1, draw: 0.5, loss: 0 } as const;
@@ -126,6 +140,11 @@ export async function POST(request: NextRequest) {
       ? body.clientSessionId
       : null;
 
+  const cardsOn = FEATURE_FLAGS.BOUT_BOXING_CARDS;
+  const userCards = cardsOn ? clampCards(body.userCards, boxingRounds) : [];
+  const rookieCards = cardsOn ? clampCards(body.rookieCards, boxingRounds) : [];
+  const punches = cardsOn ? clampInt(body.punches, MAX_PUNCHES_PER_ROUND * boxingRounds) : 0;
+
   const result = boutResult(outcome);
 
   const svc = createServiceClient();
@@ -178,7 +197,7 @@ export async function POST(request: NextRequest) {
     if ((todaysRanked ?? []).length >= DAILY_RANKED_BOUT_LIMIT) ranked = false;
   }
 
-  const points = boutPoints({ outcome, roundsSurvived, level, boxingRounds, ranked });
+  const points = boutPoints({ outcome, roundsSurvived, level, boxingRounds, ranked, userCards });
 
   const { data, error } = await svc
     .from('bout_sessions')
@@ -187,11 +206,11 @@ export async function POST(request: NextRequest) {
       outcome,
       result,
       points,
-      punches: 0, // no physical tracking; column retained for schema stability
+      punches,
       moves,
       level,
-      user_cards: [],
-      rookie_cards: [],
+      user_cards: userCards,
+      rookie_cards: rookieCards,
       clock_left_seconds: clockLeftSeconds,
       final_fen: finalFen,
       client_session_id: clientSessionId,
@@ -259,6 +278,8 @@ export async function POST(request: NextRequest) {
       clockLeftSeconds,
       material,
       facts,
+      punches,
+      userCards,
     },
     body.tz,
   );

@@ -1,10 +1,10 @@
 'use client';
 
 /**
- * QUADRANT FIGHT — the camera boxing mini-game, extracted verbatim from
- * /test/punch-zones (playtest-tuned; game logic/timing/judging FROZEN).
+ * QUADRANT FIGHT — the camera boxing mini-game, extracted from
+ * /test/punch-zones (playtest-tuned; judging/tracking logic FROZEN).
  *
- * Camera divided into quarters. Commands (several can run AT ONCE from round 7):
+ * Camera divided into quarters. Commands (several can run AT ONCE later on):
  *   PUNCH      — get a wrist into the lit quadrant before it fills
  *   POWER      — orange, fast, staggers the opponent
  *   DOUBLE     — both hands, one per lit quadrant
@@ -12,17 +12,30 @@
  *   HALF DODGE — clear a whole side (left/right) or DUCK under the top half
  *   COMBO      — punch while a dodge zone runs
  *
- * Pose model: MoveNet SinglePose Lightning via TF.js, loaded from CDN so the
- * app bundle is untouched (zero npm deps — deliberate). Scripts + camera only
- * load when this component MOUNTS, so embedding surfaces must gate the mount
- * behind the user's opt-in. Camera stream is stopped on unmount.
+ * ONE ROUND, ONE CLOCK (2026-08-17): the fight is a single `durationMs` round
+ * (a real boxing round — 3:00 in the bout). Difficulty ramps with PROGRESS
+ * through the round (`p = elapsed / durationMs`) plus the Rookie fight
+ * `level`; there are no internal "rounds". Emptying his HP is a KNOCKDOWN
+ * (bonus, he gets up, tempo unchanged); emptying yours is a knockdown against
+ * you (short freeze, HP refill, fight continues). ONLY THE BELL ENDS IT: at
+ * `durationMs` the board freezes, a compact card summary shows, and
+ * `onFinish(stats)` fires exactly once. `onStats` streams the same numbers
+ * ~1/s for a live HUD.
  *
- * PURE VISUAL LAYER: no API calls, no DB, no analytics, no streak/points.
+ * Pose model: MoveNet SinglePose Lightning via TF.js from npm, weights
+ * self-hosted (lib/punch/movenet.ts — memoized per tab, so rounds 2+ boot in
+ * the time it takes to re-open the camera). Camera stream is stopped on
+ * unmount. Embedding surfaces gate the mount behind the user's opt-in.
+ *
+ * No API calls, no DB, no analytics here — the parent owns persistence.
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { getMoveNet } from '@/lib/punch/movenet';
+import { emptyFightStats, type FightStats } from '@/lib/box/fight-stats';
+import type { PoseDetector } from '@tensorflow-models/pose-detection';
 
-type Phase = 'boot' | 'ready' | 'playing' | 'gameover' | 'error';
+type Phase = 'boot' | 'ready' | 'playing' | 'done' | 'error';
 type HalfSide = 'left' | 'right' | 'top';
 
 // Per-punch tracking travels WITH the command so several can run at once.
@@ -52,7 +65,12 @@ const PUNCH_FRAMES = 2; // consecutive frames a wrist must be in-zone
 const HP_MAX = 100;
 const DMG_CAUGHT = 15; // their punch landed (you got caught in a dodge zone)
 const DMG_WHIFF = 8; // you whiffed a punch and ate the counter
-const ROUND_HEAL = 30; // corner recovery between rounds
+const KNOCKDOWN_BONUS = 150; // you put him down
+const KNOCKDOWN_HEAL = 15; // small breather while he's on the canvas
+const KNOCKDOWN_REFILL = 60; // your HP after YOU get up
+const OPP_DOWN_MS = 1500; // board wipe while he takes the count
+const YOU_DOWN_MS = 2000; // freeze while you take the count
+const DEFAULT_DURATION_MS = 180_000;
 
 const ZONE_LABELS = ['TOP LEFT', 'TOP RIGHT', 'BOTTOM LEFT', 'BOTTOM RIGHT'];
 const HALF_ZONES: Record<HalfSide, number[]> = { left: [0, 2], right: [1, 3], top: [0, 1] };
@@ -62,28 +80,36 @@ const HALF_BANNERS: Record<HalfSide, string> = {
   top: 'DUCK — GET UNDER THE TOP HALF',
 };
 
-// ONE difficulty dial: the round. (Playtest 2026-08-10: still ramped too
-// hard too fast — window shrink halved to 50ms/round, and the missing-HP
-// acceleration softened so getting hit no longer snowballs into a death
-// spiral. Full speed now lands around round ~15, not ~9.)
-// Module-scope so the HUD Speed tile shows the exact number the game uses.
-// (Playtest 2026-08-13: round 1 opened too sleepy — base dropped 2400→1950.)
-function windowMs(round: number, hp: number) {
-  const base = Math.max(1250, 1950 - (round - 1) * 50);
+// ---- Pacing: progress through the round (0→1) + Rookie fight level ----
+// Playtest 2026-08-10/13 lineage: the old per-round ramp got fast too soon.
+// Now the ramp is eased over the WHOLE round so the last minute is the hard
+// one. Level 1 opens at ~2.0s windows and ends ~1.4s; level 10 opens ~1.6s
+// and ends ~1.0s. The missing-HP scale (0.8–1.0) stays: getting hit doesn't
+// snowball. Module-scope so the HUD Speed tile shows the exact number used.
+const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeIn = (t: number) => t * t;
+const levelT = (level: number) => (Math.min(10, Math.max(1, level)) - 1) / 9;
+function startWindow(level: number) { return lerp(2000, 1600, levelT(level)); }
+function endWindow(level: number) { return lerp(1400, 1000, levelT(level)); }
+function windowMs(p: number, level: number, hp: number) {
+  const base = lerp(startWindow(level), endWindow(level), easeIn(clamp01(p)));
   return Math.round(base * (0.8 + 0.2 * (hp / HP_MAX)));
 }
 // Power punches are the fast ones — a bit over half the normal window.
-function powerWindowMs(round: number, hp: number) {
-  return Math.max(700, Math.round(windowMs(round, hp) * 0.55));
+function powerWindowMs(p: number, level: number, hp: number) {
+  return Math.max(700, Math.round(windowMs(p, level, hp) * 0.55));
 }
 // Incoming punches you have to dodge come in HOT — you react, you don't aim.
-function dodgeWindowMs(round: number, hp: number) {
-  return Math.max(800, Math.round(windowMs(round, hp) * 0.7));
+function dodgeWindowMs(p: number, level: number, hp: number) {
+  return Math.max(800, Math.round(windowMs(p, level, hp) * 0.7));
 }
-// How many commands can be live at once — the chaos dial. Overlap starts
-// round 7; the 3-at-once endgame doesn't arrive until round 12.
-function maxConcurrent(round: number) {
-  return round < 7 ? 1 : round < 12 ? 2 : 3;
+// How many commands can be live at once — the chaos dial. One at a time for
+// the first half; two after; three only in the last fifth at level 5+.
+function maxConcurrent(p: number, level: number) {
+  if (p < 0.5) return 1;
+  if (p >= 0.8 && level >= 5) return 3;
+  return 2;
 }
 
 const WIN_LINES = [
@@ -94,36 +120,65 @@ const MISS_LINES = [
   'The quadrant wins that exchange.', 'Too slow. It happens. Once.',
   'Shake it out. Reset.', 'That square is feeling very smug right now.',
 ];
+const KNOCKDOWN_LINES = [
+  'He is down. He is getting up. I want him down again.',
+  'That is a knockdown. I am going to be insufferable about this.',
+  'On the canvas. Keep your hands up while he counts.',
+];
+const YOU_DOWN_LINES = [
+  'You are down. That is fine. Get up. I have seen you get up.',
+  'Take the eight. Breathe. He is not as tired as you.',
+];
+const BELL_LINES = [
+  'That is the bell. Every one of those punches counts.',
+  'Bell. Hands down. I am proud of you and I am not being subtle about it.',
+];
 
-function loadScript(src: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error(`Failed to load ${src}`));
-    document.head.appendChild(s);
-  });
-}
+const fmtClock = (ms: number) => {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
 
 export default function QuadrantFight({
   onClose,
   compact = false,
+  durationMs = DEFAULT_DURATION_MS,
+  level = 1,
+  onFinish,
+  onStats,
 }: {
   /** Rendered as a small "Turn off" control when provided (embedded surfaces). */
   onClose?: () => void;
   /** Embedded mode: dark self-contained card, evidence gallery trimmed. */
   compact?: boolean;
+  /** Round length. The clock starts at MOUNT (the parent's bell and ours agree). */
+  durationMs?: number;
+  /** Rookie fight level 1–10 → base tempo. */
+  level?: number;
+  /** Fires exactly once — at the bell (or from unmount cleanup if the parent's bell rang first). */
+  onFinish?: (stats: FightStats) => void;
+  /** Live stats, throttled to ~1/s while playing. */
+  onStats?: (stats: FightStats) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
+  // Generation counter: a boot superseded mid-await (StrictMode double-mount,
+  // fast toggle) bails instead of driving a dead component.
+  const genRef = useRef(0);
+  const onFinishRef = useRef(onFinish);
+  const onStatsRef = useRef(onStats);
+  useEffect(() => { onFinishRef.current = onFinish; }, [onFinish]);
+  useEffect(() => { onStatsRef.current = onStats; }, [onStats]);
 
   const [phase, setPhase] = useState<Phase>('boot');
-  const [bootMsg, setBootMsg] = useState('Loading pose model…');
+  const [bootMsg, setBootMsg] = useState('Starting camera…');
+  const [bootMs, setBootMs] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [playerHp, setPlayerHp] = useState(HP_MAX);
   const [oppHp, setOppHp] = useState(HP_MAX);
-  const [round, setRound] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(durationMs);
+  const [progress, setProgress] = useState(0);
   // Damage chips: red −N on your bar = damage you TOOK; amber −N on his = damage you DEALT.
   const [youChip, setYouChip] = useState<{ amt: number; id: number } | null>(null);
   const [oppChip, setOppChip] = useState<{ amt: number; id: number } | null>(null);
@@ -131,11 +186,12 @@ export default function QuadrantFight({
   const [banner, setBanner] = useState('');
   const [quip, setQuip] = useState('');
   const [missShots, setMissShots] = useState<{ url: string; label: string }[]>([]);
+  const [finalStats, setFinalStats] = useState<FightStats | null>(null);
 
   // Mutable game state lives in a ref so the rAF loop never sees stale closures.
   const game = useRef({
     phase: 'boot' as Phase,
-    detector: null as any,
+    detector: null as PoseDetector | null,
     commands: [] as Command[], // several can be live at once — the chaos
     flashes: [] as Flash[],
     nextSpawnAt: 0,
@@ -144,46 +200,90 @@ export default function QuadrantFight({
     score: 0,
     playerHp: HP_MAX,
     oppHp: HP_MAX,
-    round: 1,
-    roundBreakUntil: 0, // corner break after a KO — no commands until this passes
+    level,
+    durationMs,
+    clockStart: 0, // the round clock — set at mount, reset by "Run it back"
+    freezeUntil: 0, // knockdown count (either way) — no commands until this passes
+    freezeLabel: '' as '' | 'KNOCKDOWN' | 'YOU ARE DOWN',
     hitFlashUntil: 0, // red vignette when you take damage
     streak: 0,
+    stats: emptyFightStats(durationMs),
+    finished: false, // onFinish fired
+    lastStatsAt: 0,
+    lastTickSec: -1,
   });
+  useEffect(() => { game.current.level = level; }, [level]);
 
+  // Boot + game loop. Runs once per mount: `durationMs` is read at mount (the
+  // clock starts here) — parents remount (key) to change the round length.
   useEffect(() => {
-    let cancelled = false;
+    const gen = ++genRef.current;
     const g = game.current;
+    g.clockStart = performance.now();
+    g.durationMs = durationMs;
+    g.stats = emptyFightStats(durationMs);
+    g.finished = false;
+
+    const snapshot = (): FightStats => ({
+      ...g.stats,
+      score: g.score,
+      durationMs: Math.min(g.durationMs, Math.round(performance.now() - g.clockStart)),
+    });
+
+    // The bell. Freezes the board, fires onFinish ONCE, shows the card.
+    function finish() {
+      if (g.finished) return;
+      g.finished = true;
+      g.commands = [];
+      g.phase = 'done';
+      const s = snapshot();
+      s.durationMs = g.durationMs;
+      setFinalStats(s);
+      setPhase('done');
+      setBanner('');
+      setQuip(BELL_LINES[Math.floor(Math.random() * BELL_LINES.length)]);
+      setTimeLeft(0);
+      onFinishRef.current?.(s);
+    }
 
     async function boot() {
       try {
-        setBootMsg('Loading TensorFlow.js…');
-        await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js');
-        await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js');
-        if (cancelled) return;
+        performance.mark('qf-boot-start');
+        // Model first so the download/warm-up overlaps the camera permission
+        // prompt; awaited after the camera is up. Memoized per tab — round 2+
+        // resolves instantly.
+        const det = getMoveNet();
+        det.catch(() => {}); // observed at the await below
 
         setBootMsg('Starting camera…');
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false,
         });
-        if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
+        if (gen !== genRef.current) { stream.getTracks().forEach((t) => t.stop()); return; }
         const video = videoRef.current!;
         video.srcObject = stream;
         await video.play();
+        performance.mark('qf-boot-camera');
 
-        setBootMsg('Warming up MoveNet…');
-        const pd = (window as any).poseDetection;
-        g.detector = await pd.createDetector(pd.SupportedModels.MoveNet, {
-          modelType: pd.movenet.modelType.SINGLEPOSE_LIGHTNING,
-        });
-        if (cancelled) return;
+        setBootMsg('Almost ready…');
+        g.detector = await det;
+        if (gen !== genRef.current) return;
+        performance.mark('qf-boot-model');
+
+        const ms = (a: string, b: string) => Math.round(performance.measure(`${a}->${b}`, a, b).duration);
+        const camMs = ms('qf-boot-start', 'qf-boot-camera');
+        const modelMs = ms('qf-boot-camera', 'qf-boot-model');
+        const total = ms('qf-boot-start', 'qf-boot-model');
+        console.info(`[qf-boot] camera ${camMs}ms model ${modelMs}ms total ${total}ms`);
+        setBootMs(total);
 
         g.phase = 'ready';
         setPhase('ready');
         loop();
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('[quadrant-fight]', err);
-        setBootMsg(err?.message ?? 'Something broke while booting');
+        setBootMsg(err instanceof Error ? err.message : 'Something broke while booting');
         setPhase('error');
       }
     }
@@ -205,6 +305,8 @@ export default function QuadrantFight({
     // fine — you just have to be out for the final stretch.
     const IMPACT_MS = 300;
 
+    const progressAt = (now: number) => clamp01((now - g.clockStart) / g.durationMs);
+
     // Zones already claimed by live commands — new commands never overlap them.
     function usedZones(): Set<number> {
       const s = new Set<number>();
@@ -224,10 +326,11 @@ export default function QuadrantFight({
       if (free.length === 0) return false;
       const pick = (arr: number[]) => arr[Math.floor(Math.random() * arr.length)];
 
+      const p = progressAt(now);
       // A staggered opponent means slower incoming windows — breathing room.
       const stag = now < g.staggerUntil ? 1.35 : 1;
-      const win = Math.round(windowMs(g.round, g.playerHp) * stag);
-      const dwin = Math.round(dodgeWindowMs(g.round, g.playerHp) * stag);
+      const win = Math.round(windowMs(p, g.level, g.playerHp) * stag);
+      const dwin = Math.round(dodgeWindowMs(p, g.level, g.playerHp) * stag);
       const deadline = now + win;
 
       const oppStag = now < g.staggerUntil;
@@ -237,14 +340,14 @@ export default function QuadrantFight({
       // dodge directions at once was the "everything is a block" spiral.
       const evasionCount = g.commands.filter((c) => c.kind === 'dodge' || c.kind === 'halfdodge' || c.kind === 'combo').length;
 
-      // Weighted pool — punch-majority always; new moves unlock by ROUND
-      // (the one dial), one new thing every OTHER round so each gets a
-      // round to breathe: r3 power, r5 half dodges, r7 doubles, r9 combos.
+      // Weighted pool — punch-majority always; new moves unlock by PROGRESS
+      // through the round so each gets time to breathe: power at 15%, half
+      // dodges at 30%, doubles at 50%, combos at 70% (never at level 1–2).
       const pool: Command['kind'][] = ['punch', 'punch', 'punch', 'dodge'];
-      if (g.round >= 3) pool.push('power');
-      if (g.round >= 5) pool.push('halfdodge');
-      if (g.round >= 7) pool.push('double', 'punch');
-      if (g.round >= 9) pool.push('combo');
+      if (p >= 0.15) pool.push('power');
+      if (p >= 0.3) pool.push('halfdodge');
+      if (p >= 0.5) pool.push('double', 'punch');
+      if (p >= 0.7 && g.level >= 3) pool.push('combo');
       // Opponent staggered = YOUR flurry: pure offense (no power — one stagger
       // per power punch, no chaining). You rocked = a touch more to dodge, not
       // a wall of it.
@@ -264,7 +367,7 @@ export default function QuadrantFight({
       const zone = pick(free);
 
       if (kind === 'power') {
-        const pw = Math.round(powerWindowMs(g.round, g.playerHp) * stag);
+        const pw = Math.round(powerWindowMs(p, g.level, g.playerHp) * stag);
         g.commands.push({ kind: 'power', zone, deadline: now + pw, winMs: pw, t: newTrack() });
         setBanner(`POWER PUNCH ${ZONE_LABELS[zone]} — NOW!`);
       } else if (kind === 'double') {
@@ -327,10 +430,11 @@ export default function QuadrantFight({
       }
     }
 
-    // The single damage bookkeeper: all HP changes, round transitions, and
-    // KO handling live here. flashZones: every zone that gets a result mark.
+    // The single damage bookkeeper: all HP changes, knockdowns, and the stat
+    // counters live here. flashZones: every zone that gets a result mark.
     function resolveCmd(cmd: Command, ok: boolean, flashZones: number[]) {
       const now = performance.now();
+      const st = g.stats;
       g.commands = g.commands.filter((c) => c !== cmd);
       for (const z of flashZones) g.flashes.push({ zone: z, ok, until: now + 550 });
       // Empty board = rest beat — unless a flurry is on, then keep it coming.
@@ -339,28 +443,40 @@ export default function QuadrantFight({
 
       if (ok) {
         g.streak += 1;
-        const base = 10 * g.round + g.streak * 2;
+        st.bestStreak = Math.max(st.bestStreak, g.streak);
+        const base = 10 + Math.round(15 * progressAt(now)) + g.streak * 2;
         const staggered = now < g.staggerUntil;
+        const isEvasion = cmd.kind === 'dodge' || cmd.kind === 'halfdodge';
         // Damage dealt: punches hurt, doubles hurt more, power punches stagger.
         // Surviving a combo stings extra; a clean dodge deals nothing.
         let dmg = cmd.kind === 'power' ? 25 : cmd.kind === 'double' ? 20 + Math.min(5, g.streak) : 10 + Math.min(5, g.streak);
         if (cmd.kind === 'combo') dmg += 5;
-        if (cmd.kind === 'dodge' || cmd.kind === 'halfdodge') dmg = 0;
+        if (isEvasion) dmg = 0;
         if (staggered) dmg = Math.round(dmg * 1.5);
 
         // Not every punch connects — he blocks ~1 in 5. Power punches always
         // land, and a staggered opponent can't block anything.
         const blockable = cmd.kind === 'punch' || cmd.kind === 'double' || cmd.kind === 'combo';
         const blocked = blockable && !staggered && Math.random() < 0.2;
+        if (isEvasion) st.dodgesMade += 1;
+        if (cmd.kind === 'combo') st.dodgesMade += 1; // you survived the dodge half too
         if (blocked) {
+          st.punchesBlocked += 1;
           g.flashes = g.flashes.filter((f) => !flashZones.includes(f.zone));
           for (const z of flashZones) g.flashes.push({ zone: z, ok: true, blocked: true, until: now + 550 });
           g.score += Math.round(base / 2);
           setQuip('Blocked. He is learning. That is concerning.');
         } else {
+          if (!isEvasion) {
+            st.punchesLanded += 1;
+            if (cmd.kind === 'power') st.powerLanded += 1;
+            if (cmd.kind === 'double') st.doublesLanded += 1;
+            if (cmd.kind === 'combo') st.combosLanded += 1;
+          }
           g.score += cmd.kind === 'power' ? base * 3 : base;
           if (dmg > 0) {
             g.oppHp = Math.max(0, g.oppHp - dmg);
+            st.damageDealt += dmg;
             showDmg('opp', dmg);
           }
           if (cmd.kind === 'power') {
@@ -371,17 +487,19 @@ export default function QuadrantFight({
           }
         }
         if (g.oppHp <= 0) {
-          // Round won: fresh opponent, faster base clock, corner heal.
-          g.round += 1;
+          // KNOCKDOWN: bonus, small breather, he gets up at 8 with a full bar.
+          // Tempo is unchanged — the clock is the only thing that speeds this up.
+          st.knockdownsScored += 1;
           g.oppHp = HP_MAX;
-          g.staggerUntil = 0; // the new opponent walks in fresh
-          g.playerHp = Math.min(HP_MAX, g.playerHp + ROUND_HEAL);
-          g.score += 50 * g.round;
-          g.commands = []; // wipe the board for the interstitial
-          g.roundBreakUntil = now + 2200;
-          g.nextSpawnAt = g.roundBreakUntil + 400;
-          setBanner(`ROUND ${g.round} — faster now`);
-          setQuip('Opponent down. The next one is quicker. I believe in you an alarming amount.');
+          g.staggerUntil = 0; // he gets up clear-headed
+          g.playerHp = Math.min(HP_MAX, g.playerHp + KNOCKDOWN_HEAL);
+          g.score += KNOCKDOWN_BONUS;
+          g.commands = []; // wipe the board for the count
+          g.freezeUntil = now + OPP_DOWN_MS;
+          g.freezeLabel = 'KNOCKDOWN';
+          g.nextSpawnAt = g.freezeUntil + 400;
+          setBanner('KNOCKDOWN — he is up at 8');
+          setQuip(KNOCKDOWN_LINES[Math.floor(Math.random() * KNOCKDOWN_LINES.length)]);
         }
       } else {
         const isWhiff = cmd.kind === 'punch' || cmd.kind === 'power' || cmd.kind === 'double' ||
@@ -390,6 +508,8 @@ export default function QuadrantFight({
         captureEvidence(flashZones[0], label);
         g.streak = 0;
         const dmg = isWhiff ? DMG_WHIFF : DMG_CAUGHT;
+        if (isWhiff) st.punchesMissed += 1; else st.hitsTaken += 1;
+        st.damageTaken += dmg;
         g.playerHp = Math.max(0, g.playerHp - dmg);
         g.hitFlashUntil = now + 350;
         // Rocked ONLY when his punch actually lands (caught in a zone) — a
@@ -401,23 +521,33 @@ export default function QuadrantFight({
         if (g.playerHp > 0) {
           setBanner(`${label} — took ${dmg} damage`);
         } else {
+          // YOU are down: take the count, get up with 60, the fight goes on.
+          // The bell is the only thing that ends a round.
+          st.knockdownsTaken += 1;
+          g.playerHp = KNOCKDOWN_REFILL;
+          g.playerStaggerUntil = 0;
           g.commands = [];
-          g.phase = 'gameover';
-          setPhase('gameover');
-          setBanner('');
+          g.freezeUntil = now + YOU_DOWN_MS;
+          g.freezeLabel = 'YOU ARE DOWN';
+          g.nextSpawnAt = g.freezeUntil + 500;
+          setBanner('KNOCKDOWN — you are up at 8');
+          setQuip(YOU_DOWN_LINES[Math.floor(Math.random() * YOU_DOWN_LINES.length)]);
         }
       }
       setScore(g.score);
       setStreak(g.streak);
       setPlayerHp(g.playerHp);
       setOppHp(g.oppHp);
-      setRound(g.round);
     }
+
+    let lastVideoTime = -1;
+    let lastWrists: { x: number; y: number; side: Side }[] = [];
+    let lastHead: { x: number; y: number }[] = [];
 
     async function loop() {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      if (!video || !canvas || cancelled) return;
+      if (!video || !canvas || gen !== genRef.current) return;
 
       const w = video.videoWidth || 640;
       const h = video.videoHeight || 480;
@@ -431,25 +561,46 @@ export default function QuadrantFight({
       ctx.drawImage(video, 0, 0, w, h);
       ctx.restore();
 
-      const wrists: { x: number; y: number; side: Side }[] = [];
-      const head: { x: number; y: number }[] = [];
-      if (g.detector) {
+      // Only run inference on a NEW camera frame — rAF outpaces the camera,
+      // and re-inferring the same frame is pure wasted GPU.
+      if (g.detector && video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime;
         try {
           const poses = await g.detector.estimatePoses(video);
+          const wr: typeof lastWrists = [];
+          const hd: typeof lastHead = [];
           const kps = poses?.[0]?.keypoints ?? [];
           for (const kp of kps) {
-            if (kp.score < CONFIDENCE) continue;
+            if ((kp.score ?? 0) < CONFIDENCE) continue;
             const p = { x: w - kp.x, y: kp.y }; // mirror keypoints to match the flipped frame
-            if (kp.name === 'left_wrist') wrists.push({ ...p, side: 'L' });
-            if (kp.name === 'right_wrist') wrists.push({ ...p, side: 'R' });
-            if (kp.name === 'nose' || kp.name === 'left_eye' || kp.name === 'right_eye') head.push(p);
+            if (kp.name === 'left_wrist') wr.push({ ...p, side: 'L' });
+            if (kp.name === 'right_wrist') wr.push({ ...p, side: 'R' });
+            if (kp.name === 'nose' || kp.name === 'left_eye' || kp.name === 'right_eye') hd.push(p);
           }
+          lastWrists = wr;
+          lastHead = hd;
         } catch { /* dropped frame — state-based logic tolerates it */ }
       }
+      const wrists = lastWrists;
+      const head = lastHead;
 
       const now = performance.now();
       const zoneOfPoint = (p: { x: number; y: number }) =>
         (p.x >= w / 2 ? 1 : 0) + (p.y >= h / 2 ? 2 : 0);
+
+      // ---- The clock: ticks from mount; the bell ends everything. ----
+      const remaining = g.clockStart + g.durationMs - now;
+      const sec = Math.max(0, Math.ceil(remaining / 1000));
+      if (sec !== g.lastTickSec) {
+        g.lastTickSec = sec;
+        setTimeLeft(Math.max(0, remaining));
+        setProgress(progressAt(now));
+      }
+      if (remaining <= 0 && (g.phase === 'playing' || g.phase === 'ready')) finish();
+      if (g.phase === 'playing' && now - g.lastStatsAt >= 1000) {
+        g.lastStatsAt = now;
+        onStatsRef.current?.(snapshot());
+      }
 
       // Arm-then-enter punch tracking, judged PER WRIST. Each hand arms after 2
       // frames where THAT hand is detected and clear of the zone (losing
@@ -481,21 +632,21 @@ export default function QuadrantFight({
       };
 
       if (g.phase === 'playing') {
-        // Spawner: overlapping commands from round 3 — a punch can arrive
+        // Spawner: overlapping commands from mid-round — a punch can arrive
         // while a dodge is still live, or before the last punch resolved.
         // Staggers turn up the density: opponent staggered = your flurry
         // (+1 slot, rapid spawns); you rocked = his flurry (faster spawns).
         const oppStag = now < g.staggerUntil;
         const youStag = now < g.playerStaggerUntil;
-        const maxCmds = maxConcurrent(g.round) + (oppStag ? 1 : 0);
-        if (now >= g.roundBreakUntil && now >= g.nextSpawnAt && g.commands.length < maxCmds) {
+        const maxCmds = maxConcurrent(progressAt(now), g.level) + (oppStag ? 1 : 0);
+        if (now >= g.freezeUntil && now >= g.nextSpawnAt && g.commands.length < maxCmds) {
           if (issueCommand(now)) {
             g.nextSpawnAt = now + (oppStag ? 250 + Math.random() * 350 : youStag ? 450 + Math.random() * 500 : 550 + Math.random() * 700);
           }
         }
 
         for (const cmd of [...g.commands]) {
-          if (!g.commands.includes(cmd)) continue; // removed by an earlier resolve (KO/round)
+          if (!g.commands.includes(cmd)) continue; // removed by an earlier resolve (knockdown wipe)
           if (now > cmd.deadline) {
             // Time up: dodges succeed if you're out at impact; combo succeeds
             // if the punch landed AND you survived; punch/power/double fail.
@@ -561,9 +712,9 @@ export default function QuadrantFight({
         for (const cmd of g.commands) {
           // Elapsed fraction: color RISES from the bottom of the zone as time
           // runs out — full color = impact.
-          const remaining = Math.max(0, cmd.deadline - now);
-          const elapsed = Math.min(1, Math.max(0, 1 - remaining / cmd.winMs));
-          const secs = (remaining / 1000).toFixed(1);
+          const remainingCmd = Math.max(0, cmd.deadline - now);
+          const elapsed = Math.min(1, Math.max(0, 1 - remainingCmd / cmd.winMs));
+          const secs = (remainingCmd / 1000).toFixed(1);
           const paint = (zone: number, rgb: string) => {
             const r = zoneRect(zone, w, h);
             ctx.fillStyle = `rgba(${rgb},0.18)`; // faint base so the target reads instantly
@@ -581,7 +732,7 @@ export default function QuadrantFight({
             ctx.lineWidth = Math.max(3, h / 140);
             ctx.strokeStyle = 'rgba(2,6,23,0.8)';
             ctx.strokeText(secs, r.x + r.w / 2, r.y + r.h * 0.28);
-            ctx.fillStyle = remaining < 500 ? '#f87171' : '#fff';
+            ctx.fillStyle = remainingCmd < 500 ? '#f87171' : '#fff';
             ctx.fillText(secs, r.x + r.w / 2, r.y + r.h * 0.28);
           };
           if (cmd.kind === 'punch') paint(cmd.zone, '34,197,94');
@@ -640,7 +791,7 @@ export default function QuadrantFight({
       }
 
       // Stagger indicators — his wobble is your flurry; yours is his.
-      if (g.phase === 'playing' && now >= g.roundBreakUntil) {
+      if (g.phase === 'playing' && now >= g.freezeUntil) {
         ctx.textAlign = 'center';
         if (now < g.staggerUntil) {
           ctx.font = `bold ${Math.round(h / 18)}px sans-serif`;
@@ -654,20 +805,20 @@ export default function QuadrantFight({
         }
       }
 
-      // Red vignette while a hit stings, then the round interstitial on top.
+      // Red vignette while a hit stings, then the knockdown count on top.
       if (now < g.hitFlashUntil) {
         const a = (g.hitFlashUntil - now) / 350;
         ctx.strokeStyle = `rgba(239,68,68,${0.8 * a})`;
         ctx.lineWidth = 18;
         ctx.strokeRect(9, 9, w - 18, h - 18);
       }
-      if (g.phase === 'playing' && now < g.roundBreakUntil) {
+      if (g.phase === 'playing' && now < g.freezeUntil) {
         ctx.fillStyle = 'rgba(2,6,23,0.55)';
         ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#fff';
-        ctx.font = `bold ${Math.round(h / 8)}px sans-serif`;
+        ctx.fillStyle = g.freezeLabel === 'KNOCKDOWN' ? '#facc15' : '#f87171';
+        ctx.font = `bold ${Math.round(h / 9)}px sans-serif`;
         ctx.textAlign = 'center';
-        ctx.fillText(`ROUND ${g.round}`, w / 2, h / 2);
+        ctx.fillText(g.freezeLabel, w / 2, h / 2);
       }
 
       // ---- Draw tracked points ----
@@ -692,29 +843,42 @@ export default function QuadrantFight({
 
     boot();
     return () => {
-      cancelled = true;
+      genRef.current++;
       cancelAnimationFrame(rafRef.current);
       const v = videoRef.current;
       if (v?.srcObject) (v.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
+      // The parent's bell rang first (or the surface was torn down mid-round):
+      // hand over whatever was counted so far, exactly once.
+      if (!g.finished && (g.phase === 'playing' || g.phase === 'ready')) {
+        g.finished = true;
+        onFinishRef.current?.(snapshot());
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function startGame(hard = false) {
+  function startGame() {
     const g = game.current;
-    const startRound = hard ? 5 : 1; // hard = where overlap begins, mid-curve
+    const now = performance.now();
     g.score = 0; g.streak = 0;
-    g.playerHp = HP_MAX; g.oppHp = HP_MAX; g.round = startRound;
-    g.roundBreakUntil = 0; g.hitFlashUntil = 0; g.staggerUntil = 0; g.playerStaggerUntil = 0;
+    g.playerHp = HP_MAX; g.oppHp = HP_MAX;
+    g.freezeUntil = 0; g.freezeLabel = ''; g.hitFlashUntil = 0; g.staggerUntil = 0; g.playerStaggerUntil = 0;
     g.commands = []; g.flashes = [];
-    g.nextSpawnAt = performance.now() + 800;
+    g.nextSpawnAt = now + 800;
+    g.stats = emptyFightStats(g.durationMs);
+    // "Run it back" (harness) restarts the clock; a first Fight keeps the
+    // mount clock so our bell matches the parent's.
+    if (g.phase === 'done') { g.clockStart = now; g.finished = false; g.lastTickSec = -1; }
     g.phase = 'playing';
     setScore(0); setStreak(0);
-    setPlayerHp(HP_MAX); setOppHp(HP_MAX); setRound(startRound);
+    setPlayerHp(HP_MAX); setOppHp(HP_MAX);
     setYouChip(null); setOppChip(null);
+    setFinalStats(null);
     setQuip(''); setMissShots([]); setBanner('Get ready…');
     setPhase('playing');
   }
+
+  const clock = fmtClock(timeLeft);
 
   return (
     <div
@@ -758,31 +922,57 @@ export default function QuadrantFight({
             <p className="text-red-400 text-sm">{bootMsg}<br />Camera permission + a non-Safari-private window usually fixes it.</p>
           </div>
         )}
-        {(phase === 'ready' || phase === 'gameover') && (
+        {phase === 'ready' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/60">
-            {phase === 'gameover' && (
-              <div className="text-center">
-                <p className="text-3xl font-bold">KO — Round {round}</p>
-                <p className="text-slate-300">Final score: {score}</p>
-              </div>
-            )}
             <button
-              onClick={() => startGame(false)}
+              onClick={startGame}
               className="min-h-11 px-8 py-3 rounded-full bg-green-500 text-green-950 font-bold text-lg active:scale-95 transition-transform"
             >
-              {phase === 'gameover' ? 'Run it back' : 'Fight'}
+              Fight
             </button>
-            <button
-              onClick={() => startGame(true)}
-              className="min-h-11 px-6 py-2.5 rounded-full bg-orange-500 text-orange-950 font-bold active:scale-95 transition-transform"
-            >
-              Hard start — Round 5
-            </button>
-            {phase === 'ready' && <p className="text-slate-300 text-sm text-center px-4">Stand back so your head + hands are in frame</p>}
+            <p className="text-slate-300 text-sm text-center px-4">Stand back so your head + hands are in frame</p>
+          </div>
+        )}
+        {phase === 'done' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/70 p-4">
+            <p className="text-2xl font-bold tracking-wide">THE BELL</p>
+            {finalStats && (
+              <div className="grid grid-cols-4 gap-2 text-center w-full max-w-xs">
+                {[
+                  ['Landed', finalStats.punchesLanded],
+                  ['Dodged', finalStats.dodgesMade],
+                  ['Hits taken', finalStats.hitsTaken],
+                  ['Score', finalStats.score],
+                ].map(([label, val]) => (
+                  <div key={label as string} className="rounded-xl bg-slate-900/90 py-2">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div>
+                    <div className="text-lg font-bold tabular-nums">{val}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {finalStats && (finalStats.knockdownsScored > 0 || finalStats.knockdownsTaken > 0) && (
+              <p className="text-xs text-slate-300">
+                Knockdowns: {finalStats.knockdownsScored} for you, {finalStats.knockdownsTaken} against
+              </p>
+            )}
+            {!onFinish && (
+              <button
+                onClick={startGame}
+                className="min-h-11 px-8 py-3 rounded-full bg-green-500 text-green-950 font-bold text-lg active:scale-95 transition-transform"
+              >
+                Run it back
+              </button>
+            )}
+          </div>
+        )}
+        {(phase === 'playing' || phase === 'ready') && (
+          <div className="absolute top-2 right-2 rounded-full bg-slate-950/70 px-3 py-1 text-sm font-bold tabular-nums">
+            {clock}
           </div>
         )}
         {phase === 'playing' && banner && (
-          <div className="absolute top-2 inset-x-2 text-center">
+          <div className="absolute top-2 left-2 right-16 text-center">
             <span className="inline-block rounded-full bg-slate-950/70 px-4 py-1.5 text-sm font-bold">{banner}</span>
           </div>
         )}
@@ -794,16 +984,20 @@ export default function QuadrantFight({
         <div className="grid grid-cols-4 gap-2 text-center">
           {[
             ['Score', score],
-            ['Round', round],
-            ['Speed', `${(windowMs(round, playerHp) / 1000).toFixed(1)}s`],
+            ['Time', clock],
+            ['Speed', `${(windowMs(progress, level, playerHp) / 1000).toFixed(1)}s`],
             ['Streak', streak],
           ].map(([label, val]) => (
             <div key={label as string} className="rounded-xl bg-slate-900 py-2">
               <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
-              <div className="text-lg font-bold">{val || '—'}</div>
+              <div className="text-lg font-bold tabular-nums">{val || '—'}</div>
             </div>
           ))}
         </div>
+      )}
+
+      {!compact && bootMs !== null && (
+        <p className="text-center text-[10px] text-slate-500 tabular-nums">boot {bootMs}ms · level {level}</p>
       )}
 
       {!compact && quip && <p className="text-center text-slate-300 text-sm italic">&ldquo;{quip}&rdquo;</p>}
@@ -813,7 +1007,7 @@ export default function QuadrantFight({
           <p className="text-xs uppercase tracking-wide text-slate-400">
             Evidence ({missShots.length} miss{missShots.length === 1 ? '' : 'es'})
           </p>
-          {phase === 'gameover' ? (
+          {phase === 'done' ? (
             <div className="grid grid-cols-2 gap-2">
               {missShots.map((s, i) => (
                 // eslint-disable-next-line @next/next/no-img-element

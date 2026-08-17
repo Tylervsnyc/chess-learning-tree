@@ -18,7 +18,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public files (public folder)
+     * - .bin/.json under public/models (MoveNet weights — no auth call per shard)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2|woff|ttf|mp3|wav|mp4|MP4|wasm|onnx|ico|task|js)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2|woff|ttf|mp3|wav|mp4|MP4|wasm|onnx|ico|task|js|bin|json)$).*)',
   ],
 };

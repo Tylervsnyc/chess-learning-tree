@@ -15,6 +15,8 @@
  * - Three ways to lose: checkmated, flagged, behind on material at the bell.
  */
 
+import type { FightStats } from '@/lib/box/fight-stats';
+
 // ─── The round card ──────────────────────────────────────────────────────────
 // LOCKED STRUCTURE (2026-08-05, Tyler): a bout is always
 //   chess 3:00 · break 1:00 · boxing 3:00 · break 1:00 · chess 3:00 · …
@@ -142,10 +144,13 @@ export function boutDurationSeconds(format: BoutFormat): number {
 }
 
 // ─── The decision ────────────────────────────────────────────────────────────
-// There is NO physical tracking (2026-08-05, Tyler): boxing rounds are a timer
-// plus Rookie in your corner, nothing counted. So the final bell is decided on
-// the BOARD — material when time runs out. "You were up a rook when the bell
-// rang, that's your decision." Tie goes to the user (crowd favorite).
+// The final bell is decided on the BOARD first — material when time runs out.
+// "You were up a rook when the bell rang, that's your decision." When material
+// is dead level, the JUDGES' CARDS decide (2026-08-17, Tyler): Quadrant Fight
+// scores every boxing round 0-100 for you and for Rookie (`cardScore` /
+// `rookieCard`); higher total takes the level. Still tied → the user (crowd
+// favorite). If the camera game is off, the cards are empty and it plays
+// exactly like the pure material rule.
 //
 // Deliberately NOT an engine eval: material is the one thing a beginner can
 // look at and agree with. A decision you can't understand isn't a decision.
@@ -182,6 +187,64 @@ export type BoutOutcome =
  */
 export function decideOnMaterial(fen: string): BoutOutcome {
   return materialBalance(fen) >= 0 ? 'decision_win' : 'decision_loss';
+}
+
+/** Sum of a card list, each entry clamped to the 0-100 judges' scale. */
+export function sumCards(cards: readonly number[]): number {
+  return cards.reduce((sum, c) => sum + clampCard(c), 0);
+}
+
+/**
+ * Decision at the final bell with judges' cards. Material decides whenever a
+ * side is up at least a pawn; when the board is dead level, the cards decide;
+ * cards tied (or no cards) → the user.
+ */
+export function decideAtBell(
+  fen: string,
+  userCards: readonly number[] = [],
+  rookieCards: readonly number[] = [],
+): BoutOutcome {
+  const balance = materialBalance(fen);
+  if (balance >= 1) return 'decision_win';
+  if (balance <= -1) return 'decision_loss';
+  return sumCards(userCards) >= sumCards(rookieCards) ? 'decision_win' : 'decision_loss';
+}
+
+/** Did the cards (not material) settle this bell? For the result screen. */
+export function cardsDecided(fen: string, userCards: readonly number[], rookieCards: readonly number[]): boolean {
+  return userCards.length > 0 && rookieCards.length > 0 && Math.abs(materialBalance(fen)) < 1;
+}
+
+// ─── Judges' cards ───────────────────────────────────────────────────────────
+// One card per boxing round, 0-100 (a 10-point must system is too coarse for a
+// leaderboard column). Pure functions of the FightStats Quadrant Fight reports.
+
+function clampCard(n: number): number {
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+/** Your card for one boxing round. */
+export function cardScore(stats: FightStats): number {
+  const raw =
+    stats.punchesLanded * 3 +
+    stats.powerLanded * 2 +
+    stats.doublesLanded * 2 +
+    stats.combosLanded * 3 +
+    stats.dodgesMade * 2 -
+    stats.punchesMissed * 1 -
+    stats.hitsTaken * 3 -
+    stats.knockdownsTaken * 10;
+  return clampCard(raw);
+}
+
+/**
+ * Rookie's card for the round — a deterministic foil so `rookie_cards` means
+ * something: she scores when she lands on you and loses ground when you slip.
+ */
+export function rookieCard(stats: FightStats, level: number): number {
+  const lvl = Math.max(1, Math.min(10, Math.trunc(level) || 1));
+  return clampCard(35 + lvl * 4 + stats.hitsTaken * 2 - stats.dodgesMade);
 }
 
 export function fmtClock(s: number): string {
@@ -364,6 +427,8 @@ export interface BoutScoreInput {
   boxingRounds: number;
   /** Unranked formats and bouts over the daily cap are exhibition: 0 points. */
   ranked?: boolean;
+  /** Judges' cards, one per boxing round (0-100). Empty when the camera game is off. */
+  userCards?: readonly number[];
 }
 
 /**
@@ -376,13 +441,18 @@ export function boutPoints({
   level,
   boxingRounds,
   ranked = true,
+  userCards = [],
 }: BoutScoreInput): number {
   if (!ranked) return 0;
   const maxRounds = Math.max(0, Math.trunc(boxingRounds));
   const rounds = Math.max(0, Math.min(maxRounds, Math.trunc(roundsSurvived)));
   const wentTheDistance = maxRounds > 0 && rounds >= maxRounds;
   const scored = (BOUT_BASE_POINTS + (BOUT_OUTCOME_POINTS[outcome] ?? 0)) * levelMultiplier(level);
-  return Math.max(0, Math.round(scored) + (wentTheDistance ? BOUT_DISTANCE_BONUS : 0));
+  // Boxing bonus: half a point per card point, max 50/round — about the same
+  // weight as the distance bonus, so a big night on the pads is felt but a
+  // checkmate still pays more.
+  const boxingBonus = Math.round(sumCards(userCards.slice(0, maxRounds)) * 0.5);
+  return Math.max(0, Math.round(scored) + (wentTheDistance ? BOUT_DISTANCE_BONUS : 0) + boxingBonus);
 }
 
 /** 'win' | 'loss' | 'draw' — the fight-record bucket for an outcome. */

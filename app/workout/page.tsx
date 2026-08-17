@@ -59,6 +59,7 @@ import { PunchTracker } from '@/components/workout/PunchTracker';
 import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import type { FightStats } from '@/lib/box/fight-stats';
 
 // Quadrant Fight (beta) — opt-in camera game for boxing segments. Lazy so the
 // TF.js/game code is code-split and never loads unless the user turns it on.
@@ -456,6 +457,9 @@ function WorkoutPageInner() {
   const [quadFightOn, setQuadFightOn] = useState(false);
   const inBoxShell = useBoxShell();
   const quadFightActive = quadFightOn && inBoxShell;
+  // Quadrant Fight's card for the exercise round just fought — surfaced as a
+  // one-liner in the segment. Display only: workout points are UNCHANGED by it.
+  const [fightCard, setFightCard] = useState<{ segIndex: number; stats: FightStats } | null>(null);
   const punchesRef = useRef(0);
   const segPunchBaseRef = useRef(0);
   const [punchTotal, setPunchTotal] = useState(0); // live display
@@ -473,6 +477,16 @@ function WorkoutPageInner() {
   }, []);
 
   const current = schedule[segIndex];
+
+  // Preload the pose model at workout start when Quadrant Fight is opted in, so
+  // the first exercise segment doesn't cold-boot the detector. Dynamic import
+  // keeps TF.js out of this chunk; the module memoizes across segments.
+  useEffect(() => {
+    if (!quadFightActive || phase !== 'running') return;
+    import('@/lib/punch/movenet')
+      .then((m) => m.warmMoveNet())
+      .catch(() => {});
+  }, [quadFightActive, phase]);
 
   // ── Fight rounds (WORKOUT_FIGHT_ROUNDS) ───────────────────────────────────
   // One continuous game vs Rookie; freezes during exercise/break segments.
@@ -2136,7 +2150,20 @@ function WorkoutPageInner() {
               // scoring, and completion flow run exactly as without it. No
               // extra clock here: the segment timer is already at the top,
               // and the game card needs the height to fit without scrolling.
-              <QuadrantFight compact onClose={() => toggleQuadFight(false)} />
+              <>
+                <QuadrantFight
+                  compact
+                  onClose={() => toggleQuadFight(false)}
+                  durationMs={current.seconds * 1000}
+                  onFinish={(stats: FightStats) => setFightCard({ segIndex, stats })}
+                />
+                {fightCard?.segIndex === segIndex && (
+                  <p className="text-xs font-semibold text-chess-text-muted tabular-nums">
+                    {fightCard.stats.punchesLanded} landed · {fightCard.stats.dodgesMade} dodged ·{' '}
+                    {fightCard.stats.hitsTaken} hits taken
+                  </p>
+                )}
+              </>
             ) : (
               <>
                 {!FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (

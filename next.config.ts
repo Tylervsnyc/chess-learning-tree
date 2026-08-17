@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'node:path';
 
 /**
  * Trim what Next traces into serverless lambdas.
@@ -38,9 +39,24 @@ const LAMBDA_EXCLUDES = [
   './data/run-playtest/replays/**/*',
 ];
 
+// @tensorflow-models/pose-detection statically imports the BlazePose-MediaPipe
+// runtime (`@mediapipe/pose`, a global-injecting script with no ES exports —
+// Turbopack fails the build on it). Quadrant Fight only uses MoveNet, so the
+// import is pointed at a tiny stub. See lib/punch/mediapipe-pose-stub.ts.
+const MEDIAPIPE_POSE_STUB = './lib/punch/mediapipe-pose-stub.ts';
+
 const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['posthog-js'],
+  },
+  turbopack: {
+    resolveAlias: {
+      '@mediapipe/pose': MEDIAPIPE_POSE_STUB,
+    },
+  },
+  webpack: (config) => {
+    config.resolve.alias = { ...config.resolve.alias, '@mediapipe/pose': path.resolve(MEDIAPIPE_POSE_STUB) };
+    return config;
   },
   outputFileTracingExcludes: {
     '**': LAMBDA_EXCLUDES,

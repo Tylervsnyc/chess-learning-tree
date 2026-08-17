@@ -36,6 +36,10 @@ export type AchievementEvent =
        * moves or the replay failed — chess/opening detectors just skip.
        */
       facts?: BoutFacts | null;
+      /** Punches landed across the boxing rounds (Quadrant Fight); 0/absent when the camera game was off. */
+      punches?: number;
+      /** Judges' cards for the user, one per boxing round (0-100); empty when the camera game was off. */
+      userCards?: number[];
     }
   | {
       kind: 'workout_finished';

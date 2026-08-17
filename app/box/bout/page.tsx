@@ -10,10 +10,12 @@
  * Engine: pickRookieMove (lib/rookie/pick-move.ts) — the SAME picker /play and
  * the workout's Fight Rounds use. No second implementation.
  *
- * Boxing rounds have NO physical tracking (2026-08-05, Tyler): no camera, no
- * tap pad, nothing counted. A boxing round is a timer and Rookie in your
- * corner — reaching the bell IS the achievement. Consequently the final bell
- * is decided on the BOARD (material, decideOnMaterial), not on judges' cards.
+ * Boxing rounds: by default a timer and Rookie in your corner — reaching the
+ * bell IS the achievement, nothing counted. With the Quadrant Fight camera game
+ * opted in (app only), each boxing round reports FightStats and is scored on
+ * judges' cards (cardScore / rookieCard, lib/bout/bout.ts) when
+ * FEATURE_FLAGS.BOUT_BOXING_CARDS is on. The final bell is decided on the
+ * BOARD first (material); dead level → the cards decide (decideAtBell).
  *
  * v2 (2026-08-05): a finished bout is a real finished unit. On the result
  * screen it POSTs to /api/bout/finish (idempotent per bout), which stores the
@@ -50,6 +52,7 @@ import { BoutEvents } from '@/lib/analytics/posthog';
 import { claimStreakToday, getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
 import type { AchievementUnlock } from '@/lib/achievements/types';
+import type { FightStats } from '@/lib/box/fight-stats';
 import {
   warmupAudio,
   playButtonClick,
@@ -75,7 +78,11 @@ import {
   BOXING_ROUND_SECONDS,
   BREAK_SECONDS,
   boutPoints,
-  decideOnMaterial,
+  decideAtBell,
+  cardsDecided,
+  cardScore,
+  rookieCard,
+  sumCards,
   materialBalance,
   fmtClock,
   pickLine,
@@ -88,9 +95,9 @@ const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const ANIM_MS = 300;
 
 // Quadrant Fight (beta) — OPT-IN camera game for boxing rounds. Lazy so the
-// TF.js/game code never loads unless the user turns it on. It measures and
-// persists NOTHING (no punches counted, no API/DB/analytics writes) — the
-// "no physical tracking" rule for bouts still holds; this is a visual layer.
+// TF.js/game code never loads unless the user turns it on. It reports one
+// FightStats per round via onFinish; with BOUT_BOXING_CARDS on, that becomes
+// the judges' cards + boxing bonus (stored by /api/bout/finish).
 const QuadrantFight = nextDynamic(() => import('@/components/box/QuadrantFight'), { ssr: false });
 
 /** localStorage key for the Quadrant Fight opt-in (shared with the workout). */
@@ -153,6 +160,13 @@ interface BoutResult {
   meltdown: boolean;
   /** Material at the final bell, in pawns, from the user's side. */
   material: number;
+  /** Judges' cards, one per boxing round fought (empty when the camera game was off). */
+  userCards: number[];
+  rookieCards: number[];
+  /** Punches landed across the boxing rounds. */
+  punches: number;
+  /** True when material was level and the cards settled the decision. */
+  cardsDecidedIt: boolean;
   /** Boxing rounds the user reached the bell in. */
   roundsSurvived: number;
   /** Frozen at the final bell so the result card and the share card agree. */
@@ -248,6 +262,14 @@ export default function BoutPage() {
   // has no deps) scores the bout that was actually fought.
   const boxingRoundsRef = useRef(boxingRounds);
   const rankedRef = useRef(true);
+  // Judges' cards — one entry per boxing round, indexed by round-1, filled by
+  // QuadrantFight's onFinish. Stays empty when the camera game is off, so the
+  // bout scores exactly as it did before cards existed.
+  const boxingCardsRef = useRef<{ user: number[]; rookie: number[]; stats: FightStats[] }>({
+    user: [],
+    rookie: [],
+    stats: [],
+  });
 
   const [result, setResult] = useState<BoutResult | null>(null);
   // ── Post-bout review (shared pipeline — same experience as /play's review) ─
@@ -282,6 +304,50 @@ export default function BoutPage() {
   }, []);
 
   const seg = segments[segIndex];
+  const cardsOn = FEATURE_FLAGS.BOUT_BOXING_CARDS && quadFightActive;
+
+  // Preload the pose model so round 1 isn't a cold boot: on the pre-fight
+  // screen and at the start of every break that leads INTO a boxing round.
+  // The detector is memoized in lib/punch/movenet, so it survives QuadrantFight
+  // unmounting between rounds. Dynamic import keeps TF.js out of this chunk.
+  useEffect(() => {
+    if (!cardsOn) return;
+    const nextSeg = segments[segIndex + 1];
+    const warm =
+      phase === 'prefight' || (phase === 'break' && nextSeg?.kind === 'boxing');
+    if (!warm) return;
+    import('@/lib/punch/movenet')
+      .then((m) => m.warmMoveNet())
+      .catch(() => {});
+  }, [cardsOn, phase, segIndex, segments]);
+
+  /** One boxing round's stats landed — score both cards for that round. */
+  const onBoxingRoundFinish = useCallback(
+    (round: number, stats: FightStats) => {
+      if (!FEATURE_FLAGS.BOUT_BOXING_CARDS) return;
+      const i = Math.max(0, round - 1);
+      const cards = boxingCardsRef.current;
+      cards.stats[i] = stats;
+      cards.user[i] = cardScore(stats);
+      cards.rookie[i] = rookieCard(stats, levelRef.current);
+    },
+    [],
+  );
+
+  /** Cards as dense arrays (a round with no report scores 0-0). */
+  const collectCards = useCallback(() => {
+    const c = boxingCardsRef.current;
+    const n = Math.max(c.user.length, c.rookie.length);
+    const user: number[] = [];
+    const rookie: number[] = [];
+    let punches = 0;
+    for (let i = 0; i < n; i++) {
+      user.push(c.user[i] ?? 0);
+      rookie.push(c.rookie[i] ?? 0);
+      punches += c.stats[i]?.punchesLanded ?? 0;
+    }
+    return { user, rookie, punches };
+  }, []);
 
   // ── Finish ────────────────────────────────────────────────────────────────
   const finishBout = useCallback(
@@ -294,6 +360,10 @@ export default function BoutPage() {
       setRookieThinking(false);
 
       const material = materialBalance(fenRef.current);
+      const cards = collectCards();
+      const cardsDecidedIt =
+        (outcome === 'decision_win' || outcome === 'decision_loss') &&
+        cardsDecided(fenRef.current, cards.user, cards.rookie);
       // Meltdown: mated in a position she was WINNING on material. She does not
       // take that well.
       const meltdown = outcome === 'ko_win' && material < 0;
@@ -319,7 +389,7 @@ export default function BoutPage() {
       BoutEvents.finished({
         outcome,
         moves: movesRef.current.length,
-        punches: 0, // no physical tracking — kept for event-schema stability
+        punches: cards.punches,
         level: levelRef.current,
       });
 
@@ -328,6 +398,10 @@ export default function BoutPage() {
         rookieLine: line,
         meltdown,
         material,
+        userCards: cards.user,
+        rookieCards: cards.rookie,
+        punches: cards.punches,
+        cardsDecidedIt,
         roundsSurvived: roundsSurvivedRef.current,
         moves: movesRef.current.length,
         clockLeft: userBankRef.current,
@@ -339,13 +413,14 @@ export default function BoutPage() {
           level: levelRef.current,
           boxingRounds: boxingRoundsRef.current,
           ranked: rankedRef.current,
+          userCards: cards.user,
         }),
         finalFen: fenRef.current,
         boutKey: boutKeyRef.current,
       });
       setPhase('done');
     },
-    [],
+    [collectCards],
   );
 
   // ── Game over on the board = KO / draw, ends the bout immediately ─────────
@@ -624,8 +699,10 @@ export default function BoutPage() {
       setRookieThinking(false);
       rookieThinkingRef.current = false;
       if (isLast) {
-        // Final bell, nobody mated: the decision is the position itself.
-        finishBout(decideOnMaterial(fenRef.current));
+        // Final bell, nobody mated: material decides; dead level → the
+        // judges' cards (empty when the camera game is off → user).
+        const cards = collectCards();
+        finishBout(decideAtBell(fenRef.current, cards.user, cards.rookie));
         return;
       }
       setBellLine(pickLine(BOUT_LINES.bellFreeze, segIndex + movesRef.current.length));
@@ -640,7 +717,7 @@ export default function BoutPage() {
       playBoxingBell();
     }
     advance();
-  }, [segIndex, finishBout, advance]);
+  }, [segIndex, finishBout, advance, collectCards]);
 
   // Rookie's corner rotation — a fresh line every ~12s for the whole boxing
   // round, walking forward through the pool from a per-round offset so two
@@ -733,6 +810,10 @@ export default function BoutPage() {
         finalFen: result.finalFen,
         clientSessionId: result.boutKey,
         tz: getTz(),
+        // Judges' cards + landed punches from Quadrant Fight ([] / 0 when off).
+        userCards: result.userCards,
+        rookieCards: result.rookieCards,
+        punches: result.punches,
         // Full SAN history — the server replays it for the chess-fact and
         // opening achievements (and validates it in the process).
         moveSans: movesRef.current.slice(0, 400),
@@ -870,6 +951,7 @@ export default function BoutPage() {
         ? crypto.randomUUID()
         : `bout-${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
     roundsSurvivedRef.current = 0;
+    boxingCardsRef.current = { user: [], rookie: [], stats: [] };
     finishedRef.current = false;
     tauntedRef.current = false;
     confettiFiredRef.current = false;
@@ -1221,8 +1303,8 @@ export default function BoutPage() {
               {result.rookieLine}
             </div>
 
-            {/* The decision — material when the bell rang. No judges, no
-                cards: nothing about the boxing rounds is measured. */}
+            {/* The decision — material when the bell rang; if the board was
+                dead level, the judges' cards below settled it. */}
             <div className="w-full rounded-2xl border border-slate-200 overflow-hidden">
               <div className="bg-chess-page px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
                 On the board
@@ -1243,6 +1325,51 @@ export default function BoutPage() {
                     : 'Ended before the gloves came on'}
                 </div>
               </div>
+              {result.userCards.length > 0 && (
+                <div className="border-t border-slate-200 px-3 py-2.5 flex flex-col gap-1.5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
+                      Judges&apos; cards
+                    </span>
+                    <span className="text-[10px] font-semibold text-chess-text-muted">
+                      You · Rookie
+                    </span>
+                  </div>
+                  <ul className="flex flex-col gap-1">
+                    {result.userCards.map((u, i) => {
+                      const r = result.rookieCards[i] ?? 0;
+                      return (
+                        <li
+                          key={i}
+                          className="flex items-center justify-between gap-2 text-xs font-semibold text-chess-text"
+                        >
+                          <span className="text-chess-text-muted">Round {i + 1}</span>
+                          <span className="tabular-nums">
+                            <span className={u >= r ? 'font-black' : ''}>{u}</span>
+                            <span className="text-chess-text-muted"> · </span>
+                            <span className={r > u ? 'font-black' : ''}>{r}</span>
+                          </span>
+                        </li>
+                      );
+                    })}
+                    {result.userCards.length > 1 && (
+                      <li className="flex items-center justify-between gap-2 text-xs font-black text-chess-text border-t border-slate-100 pt-1">
+                        <span>Total</span>
+                        <span className="tabular-nums">
+                          {sumCards(result.userCards)}
+                          <span className="text-chess-text-muted font-semibold"> · </span>
+                          {sumCards(result.rookieCards)}
+                        </span>
+                      </li>
+                    )}
+                  </ul>
+                  <div className="text-[11px] font-semibold text-chess-text-muted leading-snug">
+                    {result.cardsDecidedIt
+                      ? 'Dead level on the board — the cards decided it.'
+                      : `${result.punches} ${result.punches === 1 ? 'punch' : 'punches'} landed`}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-center gap-4 w-full pt-2 border-t border-slate-100">
@@ -1443,8 +1570,8 @@ export default function BoutPage() {
           // pad, no count. Reaching the bell is the achievement, and Rookie
           // talking you through it is the whole experience.
           // Exception (opt-in, default OFF): Quadrant Fight (beta) — a camera
-          // GAME the user can turn on for the round. It still measures and
-          // records nothing; the bell timer and bout flow are untouched.
+          // GAME the user can turn on for the round. It reports FightStats at
+          // the bell (judges' cards); the bell timer and bout flow are untouched.
           <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 md:px-6 py-2 text-center gap-4 max-w-md md:max-w-lg mx-auto w-full">
             <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e5484d] shrink-0">
               Boxing round {seg?.round}
@@ -1460,7 +1587,13 @@ export default function BoutPage() {
               // The game soaks up the leftover height; if a small phone can't
               // fit it, it scrolls inside its own container (page never does).
               <div className="flex-1 min-h-0 w-full overflow-y-auto">
-                <QuadrantFight compact onClose={() => toggleQuadFight(false)} />
+                <QuadrantFight
+                  compact
+                  onClose={() => toggleQuadFight(false)}
+                  durationMs={(seg?.seconds ?? BOXING_ROUND_SECONDS) * 1000}
+                  level={levelRef.current}
+                  onFinish={(stats: FightStats) => onBoxingRoundFinish(seg?.round ?? 1, stats)}
+                />
               </div>
             ) : (
               <>
