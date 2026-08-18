@@ -287,7 +287,7 @@ export default function BoutPage() {
   const towelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Rookie's corner: one line at a time during a boxing round, swapped on a
   // timer. She is the entire round now, so she can't go quiet.
-  const [cornerLine, setCornerLine] = useState<string>(BOUT_LINES.boxing[0]);
+  const [cornerLine, setCornerLine] = useState<string>('');
 
   // Quadrant Fight (beta) opt-in — default OFF, persisted across sessions.
   // Purely visual: bell timer, scoring, and bout completion are untouched.
@@ -723,20 +723,9 @@ export default function BoutPage() {
     advance();
   }, [segIndex, finishBout, advance, collectCards]);
 
-  // Rookie's corner rotation — a fresh line every ~12s for the whole boxing
-  // round, walking forward through the pool from a per-round offset so two
-  // rounds in one bout don't hear the same run of lines.
-  useEffect(() => {
-    if (phase !== 'boxing') return;
-    const pool = BOUT_LINES.boxing;
-    let i = (segIndex * 5 + movesRef.current.length) % pool.length;
-    setCornerLine(pool[i]);
-    const t = setInterval(() => {
-      i = (i + 1) % pool.length;
-      setCornerLine(pool[i]);
-    }, 12000);
-    return () => clearInterval(t);
-  }, [phase, segIndex]);
+  // (Rookie's rotating corner lines during the boxing round were removed
+  // 2026-08-18 — they read as nagging mid-round. She still talks at the bell
+  // and in the break.)
 
   // Rookie's break line — one per break, picked when the break starts.
   useEffect(() => {
@@ -1623,19 +1612,11 @@ export default function BoutPage() {
               </div>
             ) : (
               <>
-                {/* Persistent instruction — the one thing this round asks of you.
-                    Rookie's rotating corner lines are color; this is the job. */}
+                {/* Persistent instruction — the one thing this round asks of you. */}
                 <p className="text-xs font-black text-chess-text uppercase tracking-wide shrink-0">
                   Gloves up — shadowbox or work the bag until the bell.
                 </p>
                 <BreathingRook size="lg" animate mood="excited" />
-                {/* Rookie's corner — rotates through the round so she keeps talking */}
-                <p
-                  key={cornerLine}
-                  className="bout-corner-line text-sm font-bold text-chess-text leading-snug max-w-xs min-h-[3rem] flex items-center justify-center shrink-0"
-                >
-                  {cornerLine}
-                </p>
                 {/* The frozen game, visible but locked — soaks up whatever height
                     is left (may get small on an SE; it's decoration here) */}
                 <div
