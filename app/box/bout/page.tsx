@@ -77,7 +77,7 @@ import {
   CHESS_ROUND_SECONDS,
   BOXING_ROUND_SECONDS,
   BREAK_SECONDS,
-  boutPoints,
+  boutPointsBreakdown,
   decideAtBell,
   cardsDecided,
   cardScore,
@@ -173,6 +173,8 @@ interface BoutResult {
   moves: number;
   clockLeft: number;
   points: number;
+  /** The same preview split chess · boxing (server may zero the total; the split keeps the shape). */
+  pointsSplit: { chess: number; boxing: number };
   finalFen: string;
   /** Idempotency key for /api/bout/finish — one per bout, not per render. */
   boutKey: string;
@@ -393,6 +395,14 @@ export default function BoutPage() {
         level: levelRef.current,
       });
 
+      const split = boutPointsBreakdown({
+        outcome,
+        roundsSurvived: roundsSurvivedRef.current,
+        level: levelRef.current,
+        boxingRounds: boxingRoundsRef.current,
+        ranked: rankedRef.current,
+        userCards: cards.user,
+      });
       setResult({
         outcome,
         rookieLine: line,
@@ -407,14 +417,8 @@ export default function BoutPage() {
         clockLeft: userBankRef.current,
         // Client-side PREVIEW only — the server recomputes and may zero it out
         // (unranked format, or today's ranked bout already spent).
-        points: boutPoints({
-          outcome,
-          roundsSurvived: roundsSurvivedRef.current,
-          level: levelRef.current,
-          boxingRounds: boxingRoundsRef.current,
-          ranked: rankedRef.current,
-          userCards: cards.user,
-        }),
+        points: split.total,
+        pointsSplit: { chess: split.chess, boxing: split.boxing },
         finalFen: fenRef.current,
         boutKey: boutKeyRef.current,
       });
@@ -1385,17 +1389,39 @@ export default function BoutPage() {
                 </div>
                 <div className="text-[11px] font-semibold text-chess-text-muted">clock left</div>
               </div>
-              <div>
-                <div
-                  className={`text-xl font-black tabular-nums ${
-                    earned > 0 ? 'text-chess-green' : 'text-chess-text-muted'
-                  }`}
-                >
-                  {earned.toLocaleString()}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">points</div>
-              </div>
             </div>
+
+            {/* Points, split the way the bout is: chess side + boxing side = total.
+                `earned` is server-confirmed (may be 0: unranked / already spent
+                today); the split scales to it so the three numbers always add up. */}
+            {(() => {
+              const previewTotal = result.pointsSplit.chess + result.pointsSplit.boxing;
+              const scale = previewTotal > 0 ? earned / previewTotal : 0;
+              const chessPts = Math.round(result.pointsSplit.chess * scale);
+              const boxingPts = Math.max(0, earned - chessPts);
+              const tone = earned > 0 ? 'text-chess-green' : 'text-chess-text-muted';
+              return (
+                <div className="w-full rounded-2xl border border-slate-200 overflow-hidden">
+                  <div className="bg-chess-page px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
+                    Points
+                  </div>
+                  <div className="grid grid-cols-3 divide-x divide-slate-200">
+                    <div className="px-2 py-2.5 text-center">
+                      <div className={`text-xl font-black tabular-nums ${tone}`}>{chessPts.toLocaleString()}</div>
+                      <div className="text-[11px] font-semibold text-chess-text-muted">chess</div>
+                    </div>
+                    <div className="px-2 py-2.5 text-center">
+                      <div className={`text-xl font-black tabular-nums ${tone}`}>{boxingPts.toLocaleString()}</div>
+                      <div className="text-[11px] font-semibold text-chess-text-muted">boxing</div>
+                    </div>
+                    <div className="px-2 py-2.5 text-center bg-chess-page/60">
+                      <div className={`text-xl font-black tabular-nums ${tone}`}>{earned.toLocaleString()}</div>
+                      <div className="text-[11px] font-semibold text-chess-text-muted">total</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Not signed in: the fight is stashed, not saved — say so plainly
                 and make signing in the loudest thing on the card. */}

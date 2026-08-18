@@ -435,24 +435,38 @@ export interface BoutScoreInput {
  * Leaderboard points for one finished bout. Deterministic and pure so the
  * client preview and the server's stored value can never disagree.
  */
-export function boutPoints({
+export interface BoutPointsBreakdown {
+  /** Chess side: base + outcome, scaled by Rookie's level, plus the distance bonus. */
+  chess: number;
+  /** Boxing side: half a point per judges' card point (0 when the camera game was off). */
+  boxing: number;
+  total: number;
+}
+
+/** The payout split the way the result card shows it: chess · boxing · total. */
+export function boutPointsBreakdown({
   outcome,
   roundsSurvived,
   level,
   boxingRounds,
   ranked = true,
   userCards = [],
-}: BoutScoreInput): number {
-  if (!ranked) return 0;
+}: BoutScoreInput): BoutPointsBreakdown {
+  if (!ranked) return { chess: 0, boxing: 0, total: 0 };
   const maxRounds = Math.max(0, Math.trunc(boxingRounds));
   const rounds = Math.max(0, Math.min(maxRounds, Math.trunc(roundsSurvived)));
   const wentTheDistance = maxRounds > 0 && rounds >= maxRounds;
   const scored = (BOUT_BASE_POINTS + (BOUT_OUTCOME_POINTS[outcome] ?? 0)) * levelMultiplier(level);
+  const chess = Math.max(0, Math.round(scored) + (wentTheDistance ? BOUT_DISTANCE_BONUS : 0));
   // Boxing bonus: half a point per card point, max 50/round — about the same
   // weight as the distance bonus, so a big night on the pads is felt but a
   // checkmate still pays more.
-  const boxingBonus = Math.round(sumCards(userCards.slice(0, maxRounds)) * 0.5);
-  return Math.max(0, Math.round(scored) + (wentTheDistance ? BOUT_DISTANCE_BONUS : 0) + boxingBonus);
+  const boxing = Math.round(sumCards(userCards.slice(0, maxRounds)) * 0.5);
+  return { chess, boxing, total: chess + boxing };
+}
+
+export function boutPoints(input: BoutScoreInput): number {
+  return boutPointsBreakdown(input).total;
 }
 
 /** 'win' | 'loss' | 'draw' — the fight-record bucket for an outcome. */
