@@ -36,10 +36,11 @@ Alternates:
 
 ## Promotional text (170 char max, editable without review)
 
+LIVE in ASC (2026-08-18):
 ```
-Chess boxing is 11 alternating rounds of speed chess and boxing. The hard part isn't the chess. It's the chess after round six. This is the trainer for that.
+The only app that trains your chess while you work out. Speed chess rounds, boxing rounds, and puzzle rounds. Compete against your friends and the world.
 ```
-155 characters.
+152 characters.
 
 ## Description
 
@@ -53,16 +54,17 @@ chess is easy. Playing chess gassed is a different game entirely.
 
 Chess Boxing is a trainer for it.
 
+PUZZLE BOXING (RANKED)
+The scored mode. Tactics puzzles in the chess rounds, conditioning in the boxing
+rounds, all on one bout clock. Every puzzle you solve while gassed earns points, and
+points are how you climb the daily, weekly, and monthly leaderboards. This is where
+you compete against your friends and the world.
+
 BOUT MODE
 One game against Rookie, split across the chess rounds of a real bout. The board
 freezes when the bell rings, you work through the boxing round, then you come back
 to the exact same position — only now you're breathing hard. Win by checkmate, by
 flagging your opponent, or on points at the final bell.
-
-THE WORKOUT
-The interval trainer: alternating chess and conditioning segments on a real bout
-clock, with tactics puzzles in the chess rounds. Scored, so you can watch the number
-move as your conditioning improves.
 
 QUADRANT FIGHT (BETA, OPTIONAL)
 Point your phone at yourself and the boxing round becomes a game: the screen splits
@@ -71,8 +73,8 @@ head out of the way when it goes red. Runs entirely on your phone. The video is 
 recorded, uploaded, or seen by anyone. Off unless you turn it on.
 
 LEADERBOARDS
-Daily, weekly, and monthly boards. Compete globally, or start a crew with a join
-code and keep it to your gym.
+Global rankings, reset daily, weekly, and monthly, fed by your Puzzle Boxing points.
+Or start a crew with a join code and keep the fight inside your gym.
 
 TRAIN
 Daily puzzles and tactics lessons from Chess Path, for the days you're not fighting.
