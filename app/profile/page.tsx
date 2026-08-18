@@ -7,6 +7,7 @@ import { useUser } from '@/hooks/useUser';
 import { getStoredUserId, getStreak, getTz, peekStreak, type StreakData } from '@/lib/streak-client';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
+import { useIsNativeApp } from '@/lib/native-app';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
 import RookieCampfire from '@/components/shared/RookieCampfire';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
@@ -400,6 +401,8 @@ export default function ProfilePage() {
   const { user, profile, loading: userLoading, refetchProfile } = useUser();
 
   const [patronOpen, setPatronOpen] = useState(false);
+  // Inside the Chess Boxing iOS shell: no Patron purchase CTA (Apple 3.1.1).
+  const nativeApp = useIsNativeApp();
   // Daily-stable streak line (computed once, won't flicker on re-render).
   const [keptLine] = useState(pickDailyKeptLine);
   // ?preview=gold — see the gold profile without a premium/patron account.
@@ -564,7 +567,7 @@ export default function ProfilePage() {
 
         {/* Become a Patron — big, fun gold CTA. Hidden once gold. Gated on
             profileReady so it never flashes in then out for gold users. */}
-        {profileReady && user && !isGold && (
+        {profileReady && user && !isGold && !nativeApp && (
           <button
             onClick={() => setPatronOpen(true)}
             className="group w-full rounded-3xl p-5 flex items-center gap-4 text-left active:scale-[0.99] transition-transform"
@@ -692,7 +695,7 @@ export default function ProfilePage() {
         <DeleteAccount />
       </div>
 
-      <PatronModal isOpen={patronOpen} onClose={() => setPatronOpen(false)} />
+      <PatronModal isOpen={patronOpen && !nativeApp} onClose={() => setPatronOpen(false)} />
     </div>
   );
 }

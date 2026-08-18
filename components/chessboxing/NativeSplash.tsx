@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
+import { isNativeApp } from '@/lib/native-app';
 
 /**
  * NativeSplash — full-screen animated logo shown ONLY inside the Capacitor
@@ -11,12 +12,6 @@ import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
  * Plays the BoxingLogoLoader intro (~2s), then fades out.
  */
 
-declare global {
-  interface Window {
-    Capacitor?: { isNativePlatform?: () => boolean };
-  }
-}
-
 const INTRO_MS = 2200;
 const FADE_MS = 400;
 
@@ -24,7 +19,7 @@ export function NativeSplash() {
   const [phase, setPhase] = useState<'hidden' | 'shown' | 'fading'>('hidden');
 
   useEffect(() => {
-    const isNative = window.Capacitor?.isNativePlatform?.() === true;
+    const isNative = isNativeApp();
     const isDebug = new URLSearchParams(window.location.search).has('nativeSplash');
     if (!isNative && !isDebug) return;
     setPhase('shown');

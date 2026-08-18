@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent, SubscriptionEvents, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
+import { NativeNoSaleGuard } from '@/components/subscription/NativeNoSaleGuard';
 
 // CHE-387: OAuth callback URL carrying first-touch attribution through the
 // IG in-app -> system browser handoff (where cookies don't survive).
@@ -306,12 +307,14 @@ function PremiumSignupContent() {
 
 export default function PremiumSignupPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-full bg-chess-page flex items-center justify-center">
-        <div className="text-chess-text-muted">Loading...</div>
-      </div>
-    }>
-      <PremiumSignupContent />
-    </Suspense>
+    <NativeNoSaleGuard>
+      <Suspense fallback={
+        <div className="min-h-full bg-chess-page flex items-center justify-center">
+          <div className="text-chess-text-muted">Loading...</div>
+        </div>
+      }>
+        <PremiumSignupContent />
+      </Suspense>
+    </NativeNoSaleGuard>
   );
 }

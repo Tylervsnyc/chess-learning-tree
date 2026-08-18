@@ -57,6 +57,7 @@ import { useGameSession } from '@/hooks/useGameSession';
 import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import { writeBreadcrumb } from '@/lib/session-breadcrumb';
+import { useIsNativeApp } from '@/lib/native-app';
 
 
 interface Puzzle {
@@ -168,6 +169,9 @@ export default function LessonPage() {
 
   // Overall daily streak for the share card (null until loaded)
   const dailyStreak = useDailyStreak();
+
+  // Inside the Chess Boxing iOS shell: no purchase surfaces (Apple 3.1.1)
+  const nativeApp = useIsNativeApp();
 
   // State for lesson limit modal / create profile modal
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -1163,15 +1167,19 @@ export default function LessonPage() {
             <div className="flex justify-center mb-4"><BreathingRook size="md" /></div>
             <h1 className="text-2xl font-bold mb-2">Daily Limit Reached</h1>
             <p className="text-white/60 mb-6">
-              You&apos;ve completed your 4 free lessons today. Come back tomorrow or upgrade for unlimited access!
+              {nativeApp
+                ? 'You\u2019ve completed your 4 free lessons today. Come back tomorrow for more!'
+                : 'You\u2019ve completed your 4 free lessons today. Come back tomorrow or upgrade for unlimited access!'}
             </p>
             <div className="flex flex-col gap-3">
-              <button
-                onClick={() => router.push('/pricing')}
-                className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-chess-green-dark transition-colors"
-              >
-                Upgrade to Premium
-              </button>
+              {!nativeApp && (
+                <button
+                  onClick={() => router.push('/pricing')}
+                  className="px-8 py-3 bg-chess-green text-white font-bold rounded-xl hover:bg-chess-green-dark transition-colors"
+                >
+                  Upgrade to Premium
+                </button>
+              )}
               <button
                 onClick={() => router.push('/')}
                 className="px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:brightness-110 transition-colors"

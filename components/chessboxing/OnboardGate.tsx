@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ONBOARDED_KEY } from '@/components/chessboxing/OnboardFlow';
+import { isNativeApp } from '@/lib/native-app';
 
 /**
  * OnboardGate — first-launch gate for the Chess Boxing app, mounted by
@@ -24,7 +25,7 @@ export function OnboardGate() {
 
   useEffect(() => {
     if (pathname !== '/box') return;
-    const isNative = window.Capacitor?.isNativePlatform?.() === true;
+    const isNative = isNativeApp();
     let isDebug = false;
     let onboarded = true; // storage unavailable → never trap in a redirect loop
     try {

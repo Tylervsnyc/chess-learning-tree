@@ -6,6 +6,7 @@ import { SubscriptionEvents } from '@/lib/analytics/posthog';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { useSubscription } from '@/hooks/useSubscription';
 import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
+import { useIsNativeApp } from '@/lib/native-app';
 
 const GUEST_QUIPS = [
   'Your chess moves are too good to lose!',
@@ -25,6 +26,8 @@ interface LessonLimitModalProps {
 export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn }: LessonLimitModalProps) {
   const router = useRouter();
   const { startCheckout } = useSubscription();
+  // Inside the Chess Boxing iOS shell: no Premium CTA (Apple 3.1.1); keep the close path.
+  const nativeApp = useIsNativeApp();
   const [variant, setVariant] = useState('control');
   const [monthlyPrice, setMonthlyPrice] = useState<number | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -134,6 +137,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
           </div>
 
           {/* Or go premium */}
+          {!nativeApp && (
           <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-xl p-4 border border-yellow-500/20">
             <p className="text-white font-bold text-center mb-2">
               Want unlimited lessons?
@@ -148,6 +152,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
               Sign Up for Premium
             </button>
           </div>
+          )}
 
           <button
             onClick={handleMaybeLater}
@@ -195,6 +200,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
         </div>
 
         {/* Premium upsell */}
+        {!nativeApp && (
         <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-xl p-4 mb-4 border border-yellow-500/20">
           <p className="text-white font-bold text-center mb-2">
             Want to keep going?
@@ -221,6 +227,7 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
             {checkoutLoading ? 'Loading...' : 'Upgrade to Premium'}
           </button>
         </div>
+        )}
 
         <button
           onClick={handleMaybeLater}
@@ -229,9 +236,11 @@ export function LessonLimitModal({ isOpen, onClose, lessonsCompleted, isLoggedIn
           Done for Today
         </button>
 
-        <p className="text-center text-chess-text-faint text-xs mt-3">
-          Cancel anytime
-        </p>
+        {!nativeApp && (
+          <p className="text-center text-chess-text-faint text-xs mt-3">
+            Cancel anytime
+          </p>
+        )}
       </div>
     </div>
   );

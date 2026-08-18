@@ -1,12 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useIsNativeApp } from '@/lib/native-app';
 
 interface SelfPromoCardProps {
   onClick?: () => void;
 }
 
 export function SelfPromoCard({ onClick }: SelfPromoCardProps) {
+  // No purchase surface inside the iOS shell (Apple 3.1.1).
+  const nativeApp = useIsNativeApp();
+  if (nativeApp) return null;
   return (
     <Link
       href="/pricing"

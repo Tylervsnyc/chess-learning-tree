@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { BreathingRook } from '@/components/ui/BreathingRook';
+import { NativeNoSaleGuard } from '@/components/subscription/NativeNoSaleGuard';
 
 function SetupContent() {
   const router = useRouter();
@@ -234,12 +235,14 @@ function SetupContent() {
 
 export default function SubscriptionSetupPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-full bg-chess-page flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
-      </div>
-    }>
-      <SetupContent />
-    </Suspense>
+    <NativeNoSaleGuard>
+      <Suspense fallback={
+        <div className="min-h-full bg-chess-page flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chess-green"></div>
+        </div>
+      }>
+        <SetupContent />
+      </Suspense>
+    </NativeNoSaleGuard>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { isNativeApp } from '@/lib/native-app';
 
 /**
  * StatusBarSync — makes the iPhone status bar (clock/battery) blend with the
@@ -27,7 +28,7 @@ export function StatusBarSync() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (window.Capacitor?.isNativePlatform?.() !== true) return;
+    if (!isNativeApp()) return;
     let cancelled = false;
     import('@capacitor/status-bar')
       .then(({ StatusBar, Style }) => {

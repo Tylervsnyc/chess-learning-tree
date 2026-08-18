@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import type { PostHog } from 'posthog-js';
+import { isNativeApp } from '@/lib/native-app';
 
 // Lazy-load posthog-js — keeps it out of the initial bundle
 async function loadAndInitPostHog(): Promise<PostHog | null> {
@@ -26,10 +27,7 @@ async function loadAndInitPostHog(): Promise<PostHog | null> {
   // Tag every event from the Chess Boxing iOS shell (Capacitor injects its
   // bridge even though the webview loads the remote site). Super property, so
   // it rides on ALL events — the daily report can split app vs web traffic.
-  const isNativeApp =
-    (window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor
-      ?.isNativePlatform?.() === true;
-  posthog.register({ in_native_app: isNativeApp });
+  posthog.register({ in_native_app: isNativeApp() });
 
   return posthog;
 }

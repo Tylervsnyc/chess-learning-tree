@@ -6,6 +6,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
+import { NativeNoSaleGuard } from '@/components/subscription/NativeNoSaleGuard';
 
 type PricingVariant = 'control' | 'low' | 'high';
 
@@ -252,10 +253,12 @@ function PricingFallback() {
 
 export default function PricingPage() {
   return (
-    <div className="h-full bg-chess-page overflow-hidden">
-      <Suspense fallback={<PricingFallback />}>
-        <PricingContent />
-      </Suspense>
-    </div>
+    <NativeNoSaleGuard>
+      <div className="h-full bg-chess-page overflow-hidden">
+        <Suspense fallback={<PricingFallback />}>
+          <PricingContent />
+        </Suspense>
+      </div>
+    </NativeNoSaleGuard>
   );
 }
