@@ -75,7 +75,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-base font-semibold text-chess-text mb-2">10. Contact</h2>
-            <p>Questions? Email <a href="mailto:support@chesspath.com" className="text-chess-green hover:underline">support@chesspath.com</a>.</p>
+            <p>Questions? Email <a href="mailto:tyler@tylervsnyc.com" className="text-chess-green hover:underline">tyler@tylervsnyc.com</a>.</p>
           </section>
         </div>
 

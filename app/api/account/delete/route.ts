@@ -55,7 +55,8 @@ export async function POST() {
   const userId = user.id;
   const service = createServiceClient();
 
-  // Check for a subscription so it can be flagged (never touched).
+  // Billing: deleting the Stripe customer cancels any active subscription
+  // immediately and removes stored card data. Never blocks the account delete.
   const { data: profile } = await service
     .from('profiles')
     .select('subscription_status, stripe_customer_id, is_patron')
@@ -65,12 +66,19 @@ export async function POST() {
     profile?.subscription_status === 'premium' ||
     profile?.is_patron === true ||
     !!profile?.stripe_customer_id;
-  if (hadSubscription) {
-    console.warn(
-      `[account/delete] user ${userId} (${user.email}) had billing data ` +
-        `(status=${profile?.subscription_status}, patron=${profile?.is_patron}, ` +
-        `stripe_customer=${profile?.stripe_customer_id}). Stripe NOT touched — cancel manually.`,
-    );
+  let stripeCancelled = false;
+  if (profile?.stripe_customer_id) {
+    try {
+      const { getStripe } = await import('@/lib/stripe');
+      await getStripe().customers.del(profile.stripe_customer_id);
+      stripeCancelled = true;
+      console.info(`[account/delete] Stripe customer ${profile.stripe_customer_id} deleted for user ${userId}`);
+    } catch (err) {
+      console.error(
+        `[account/delete] user ${userId} (${user.email}): failed to delete Stripe customer ` +
+          `${profile.stripe_customer_id} — cancel manually. ${(err as Error).message}`,
+      );
+    }
   }
 
   // Best-effort explicit deletes (cascades should already cover these).
@@ -91,7 +99,7 @@ export async function POST() {
 
   // Sign out + clear session cookies (same approach as /api/auth/logout).
   await supabase.auth.signOut().catch(() => {});
-  const response = NextResponse.json({ ok: true, hadSubscription });
+  const response = NextResponse.json({ ok: true, hadSubscription, stripeCancelled });
   const cookieStore = await cookies();
   for (const cookie of cookieStore.getAll()) {
     if (cookie.name.includes('supabase') || cookie.name.includes('sb-')) {

@@ -70,7 +70,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-base font-semibold text-chess-text mb-2">Contact</h2>
-            <p>Questions about this policy? Email us at <a href="mailto:support@chesspath.com" className="text-chess-green hover:underline">support@chesspath.com</a>.</p>
+            <p>Questions about this policy? Email us at <a href="mailto:tyler@tylervsnyc.com" className="text-chess-green hover:underline">tyler@tylervsnyc.com</a>.</p>
           </section>
         </div>
 
