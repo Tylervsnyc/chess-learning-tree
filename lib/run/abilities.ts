@@ -225,8 +225,12 @@ export const EXPERIMENTAL_ABILITY_IDS: readonly AbilityId[] = [
   'detonate',
   'yank',
   'phalanx',
-  // Board-editing (terrain) abilities.
-  'smoke',
+  // Board-editing (terrain) abilities. `smoke` was promoted to the offer
+  // pool 2026-08-18 (power test T4×12: 19.2/30.0/37.5pp at T1/T3/T5, above
+  // freeze-ray at every tier). `boulder` stays bot-only: T1 8.3 / T3 11.7pp
+  // is below the weakest shipped ability by more than the 5pp band.
+  // Suggested next buff: T3 range 3 + 3 rocks + crush PAWNS from T3 (move
+  // the T4 pawn-crush down a tier), then retest.
   'boulder',
 ];
 
@@ -302,13 +306,15 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
       if (tier <= 2) return 1;
       return 2;
     case 'smoke':
-      if (tier <= 2) return 1;
-      return 2;
-    case 'boulder':
-      // Uses = rocks per level: 1/1/2/2/3.
+      // Uses per level: 1/1/2/2/3.
       if (tier <= 2) return 1;
       if (tier <= 4) return 2;
       return 3;
+    case 'boulder':
+      // Uses = rocks per level: 2/2/3/3/4.
+      if (tier <= 2) return 2;
+      if (tier <= 4) return 3;
+      return 4;
     case 'surge':
       if (tier === 1) return 1;
       if (tier === 2) return 2;
@@ -505,17 +511,18 @@ function whatForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier >= 2) return 'Summon 2 pawn allies around Rookie.';
       return 'Summon a pawn ally in front of Rookie.';
     case 'smoke':
-      if (tier === 5) return 'A 5×5 cloud hides Rookie for 3 enemy turns.';
-      if (tier === 4) return 'A 3×3 cloud hides Rookie for 3 enemy turns.';
-      if (tier === 3) return 'A 3×3 cloud hides Rookie for 2 enemy turns.';
-      if (tier === 2) return 'Hide Rookie\'s square for 2 enemy turns.';
-      return 'Hide Rookie\'s square for 1 enemy turn.';
+      if (tier === 5) return 'A 5×5 cloud hides Rookie for 4 enemy turns.';
+      if (tier === 4) return 'A 5×5 cloud hides Rookie for 3 enemy turns.';
+      if (tier === 3) return 'A 3×3 cloud hides Rookie for 3 enemy turns.';
+      if (tier === 2) return 'A 3×3 cloud hides Rookie for 2 enemy turns.';
+      return 'A 3×3 cloud hides Rookie for 1 enemy turn.';
     case 'boulder':
       if (tier === 5)
         return 'Drop a rock within 3 squares — even onto an enemy, crushing it. Blocks everyone.';
-      if (tier === 4) return 'Drop a rock on an empty square within 3. Blocks everyone.';
-      if (tier >= 2) return 'Drop a rock on an empty square within 2. Blocks everyone.';
-      return 'Drop a rock on an empty square next to Rookie. Blocks everyone.';
+      if (tier === 4)
+        return 'Drop a rock within 3 squares — even onto a pawn, crushing it. Blocks everyone.';
+      if (tier >= 3) return 'Drop a rock on an empty square within 3. Blocks everyone.';
+      return 'Drop a rock on an empty square within 2. Blocks everyone.';
   }
 }
 
@@ -616,17 +623,17 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 2) return '2 pawn allies. 1/level.';
       return '1 pawn ally. 1/level.';
     case 'smoke':
-      if (tier === 5) return '5×5 cloud, 3 turns. 2/level.';
-      if (tier === 4) return '3×3 cloud, 3 turns. 2/level.';
-      if (tier === 3) return '3×3 cloud, 2 turns. 2/level.';
-      if (tier === 2) return '1 square, 2 turns. 1/level.';
-      return '1 square, 1 turn. 1/level.';
+      if (tier === 5) return '5×5 cloud, 4 turns. 3/level.';
+      if (tier === 4) return '5×5 cloud, 3 turns. 2/level.';
+      if (tier === 3) return '3×3 cloud, 3 turns. 2/level.';
+      if (tier === 2) return '3×3 cloud, 2 turns. 1/level.';
+      return '3×3 cloud, 1 turn. 1/level.';
     case 'boulder':
-      if (tier === 5) return 'Range 3, crushes enemies. 3 rocks/level.';
-      if (tier === 4) return 'Range 3. 2 rocks/level.';
-      if (tier === 3) return 'Range 2. 2 rocks/level.';
-      if (tier === 2) return 'Range 2. 1 rock/level.';
-      return 'Range 1. 1 rock/level.';
+      if (tier === 5) return 'Range 3, crushes enemies. 4 rocks/level.';
+      if (tier === 4) return 'Range 3, crushes pawns. 3 rocks/level.';
+      if (tier === 3) return 'Range 3. 3 rocks/level.';
+      if (tier === 2) return 'Range 2. 2 rocks/level.';
+      return 'Range 2. 2 rocks/level.';
   }
 }
 
@@ -798,8 +805,11 @@ export function abilityLegalMoves(
   abilityId: AbilityId,
 ): Coord[] {
   // v2: no movement abilities remain; convert/drones use other UI paths.
-  void state;
-  void abilityId;
+  // Boulder is the one square-targeting ability: highlight its legal drops.
+  if (abilityId === 'boulder') {
+    const owned = state.abilities.find((a) => a.id === 'boulder');
+    return owned ? boulderTargets(state, owned.tier) : [];
+  }
   return [];
 }
 
@@ -971,18 +981,18 @@ function applyPhalanx(state: BoardState, tier: AbilityTier): BoardState {
 // boulders additionally block Rookie, allies and drones.
 // ---------------------------------------------------------------------------
 
-/** Chebyshev radius of the Smoke cloud: T1/T2 = 0 (1×1), T3/T4 = 1 (3×3), T5 = 2 (5×5). */
+/** Chebyshev radius of the Smoke cloud: T1-T3 = 1 (3×3), T4/T5 = 2 (5×5). */
 export function smokeRadius(tier: AbilityTier): number {
-  if (tier <= 2) return 0;
-  if (tier <= 4) return 1;
+  if (tier <= 3) return 1;
   return 2;
 }
 
-/** Enemy turns a Smoke cloud lasts: T1 = 1, T2/T3 = 2, T4/T5 = 3. */
+/** Enemy turns a Smoke cloud lasts: T1 = 1, T2 = 2, T3/T4 = 3, T5 = 4. */
 export function smokeTurns(tier: AbilityTier): number {
   if (tier === 1) return 1;
-  if (tier <= 3) return 2;
-  return 3;
+  if (tier === 2) return 2;
+  if (tier <= 4) return 3;
+  return 4;
 }
 
 /** Squares a Smoke cast would cover right now (centered on Rookie, clipped to the board). */
@@ -1019,26 +1029,30 @@ function applySmoke(state: BoardState, tier: AbilityTier): BoardState {
   };
 }
 
-/** Chebyshev drop range for Boulder: T1 = 1, T2/T3 = 2, T4/T5 = 3. */
+/** Chebyshev drop range for Boulder: T1/T2 = 2, T3-T5 = 3. */
 export function boulderRange(tier: AbilityTier): number {
-  if (tier === 1) return 1;
-  if (tier <= 3) return 2;
+  if (tier <= 2) return 2;
   return 3;
 }
 
-/** T5 Boulder may be dropped ON an enemy, crushing it. */
-export function boulderCanCrush(tier: AbilityTier): boolean {
-  return tier >= 5;
+/**
+ * Whether a Boulder at this tier may be dropped ON an enemy of this type,
+ * crushing it. T4 crushes pawns only; T5 crushes anything.
+ */
+export function boulderCanCrush(tier: AbilityTier, pieceType?: PieceType): boolean {
+  if (tier >= 5) return true;
+  if (tier === 4) return pieceType === undefined || pieceType === 'pawn';
+  return false;
 }
 
 /**
  * Legal Boulder targets right now: squares within range of Rookie that are
  * empty (no enemy, ally, hazard, existing boulder, not Rookie's own square).
- * At T5 enemy-occupied squares in range are ALSO legal (crush).
+ * At T4 pawn-occupied and at T5 any enemy-occupied squares in range are ALSO
+ * legal (crush).
  */
 export function boulderTargets(state: BoardState, tier: AbilityTier): Coord[] {
   const r = boulderRange(tier);
-  const crush = boulderCanCrush(tier);
   const out: Coord[] = [];
   for (let df = -r; df <= r; df++) {
     for (let dr = -r; dr <= r; dr++) {
@@ -1050,8 +1064,8 @@ export function boulderTargets(state: BoardState, tier: AbilityTier): Coord[] {
       if (boulderAt(state, c)) continue;
       if (state.hazards.some((h) => h.file === file && h.rank === rank)) continue;
       if (state.allies.some((a) => a.file === file && a.rank === rank)) continue;
-      const enemy = state.pieces.some((p) => p.file === file && p.rank === rank);
-      if (enemy && !crush) continue;
+      const enemy = state.pieces.find((p) => p.file === file && p.rank === rank);
+      if (enemy && !boulderCanCrush(tier, enemy.type)) continue;
       out.push(c);
     }
   }

@@ -153,7 +153,7 @@ function rawBonus(
       const crushed = state.pieces.find(
         (p) => p.file === target.file && p.rank === target.rank,
       );
-      if (crushed && boulderCanCrush(owned.tier)) v += PIECE_VALUE[crushed.type] * 2;
+      if (crushed && boulderCanCrush(owned.tier, crushed.type)) v += PIECE_VALUE[crushed.type] * 2;
       const before = enemiesAttackingRookie(state).length;
       const withRock: BoardState = {
         ...state,
