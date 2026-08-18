@@ -59,6 +59,7 @@ const ROUTES: Route[] = [
   { label: 'About', url: '/about', group: 'Secondary' },
   { label: 'Privacy', url: '/privacy', group: 'Secondary' },
   { label: 'Terms', url: '/terms', group: 'Secondary' },
+  { label: 'Support', url: '/support', group: 'Secondary' },
 
   // Auth
   { label: 'Login', url: '/auth/login', group: 'Auth' },

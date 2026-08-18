@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { getStoredUserId, getStreak, getTz, peekStreak, type StreakData } from '@/lib/streak-client';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -318,6 +319,83 @@ function RecentWorkouts({ sessions, loading }: { sessions: WorkoutSession[] | nu
   );
 }
 
+// ── Delete account — Apple 5.1.1(v). Quiet red link at the bottom that
+// expands into an inline confirm (type DELETE). No browser dialogs.
+function DeleteAccount() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const armed = text.trim() === 'DELETE';
+
+  const onDelete = async () => {
+    if (!armed || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      if (!res.ok) throw new Error('Delete failed');
+      try { localStorage.clear(); } catch {}
+      router.replace('/');
+      router.refresh();
+    } catch {
+      setError('Something went wrong. Please try again or email support.');
+      setBusy(false);
+    }
+  };
+
+  if (!open) {
+    return (
+      <div className="mt-6 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="min-h-[44px] px-4 text-xs font-medium text-red-500 hover:underline"
+        >
+          Delete account
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 bg-chess-surface rounded-2xl border border-red-200 p-4 flex flex-col gap-3">
+      <p className="text-sm text-chess-text">
+        This permanently deletes your account, progress, streak and rating. Type <strong>DELETE</strong> to confirm.
+      </p>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="DELETE"
+        autoCapitalize="characters"
+        autoCorrect="off"
+        className="w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-sm text-chess-text bg-white focus:outline-none focus:border-red-400"
+      />
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => { setOpen(false); setText(''); setError(null); }}
+          disabled={busy}
+          className="flex-1 min-h-[44px] rounded-xl border border-slate-300 text-sm font-semibold text-chess-text-muted"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={!armed || busy}
+          className="flex-1 min-h-[44px] rounded-xl bg-red-600 text-white text-sm font-bold disabled:opacity-40"
+        >
+          {busy ? 'Deleting...' : 'Delete my account'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const { user, profile, loading: userLoading, refetchProfile } = useUser();
 
@@ -610,6 +688,8 @@ export default function ProfilePage() {
 
           <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
         </div>
+
+        <DeleteAccount />
       </div>
 
       <PatronModal isOpen={patronOpen} onClose={() => setPatronOpen(false)} />
