@@ -82,7 +82,7 @@ export function TrophyCase() {
 
   return (
     <div>
-      <style>{`@keyframes achShimmer { 0% { background-position: 200% 0;} 100% { background-position: -50% 0;} }`}</style>
+      <style>{`@keyframes popShimmer { 0% { background-position: 200% 0;} 100% { background-position: -50% 0;} }`}</style>
       <div className="flex items-baseline justify-between px-1 mb-2">
         <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
           Trophy Case
