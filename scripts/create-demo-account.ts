@@ -9,15 +9,17 @@
  * bouts are not paywalled so Premium is not needed).
  *
  * Run: npx tsx scripts/create-demo-account.ts
+ * Throwaway (e.g. to demo account deletion on video):
+ *   DEMO_EMAIL=demo-delete@chesspath.app DEMO_PASSWORD=... DEMO_NAME=Throwaway npx tsx scripts/create-demo-account.ts
  */
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
 dotenv.config({ path: '.env.local' });
 
-const EMAIL = 'appreview@chesspath.app';
-const PASSWORD = 'ChessBoxing-Review-2026!';
-const DISPLAY_NAME = 'App Review';
+const EMAIL = (process.env.DEMO_EMAIL ?? 'appreview@chesspath.app').toLowerCase();
+const PASSWORD = process.env.DEMO_PASSWORD ?? 'ChessBoxing-Review-2026!';
+const DISPLAY_NAME = process.env.DEMO_NAME ?? 'App Review';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.replace(/\s+/g, '');
