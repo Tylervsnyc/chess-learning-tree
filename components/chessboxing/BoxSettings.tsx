@@ -180,8 +180,16 @@ export function BoxSettings() {
             {/* Account — Apple 5.1.1(v): in-app account deletion, reachable
                 from settings. Row opens a sub-panel (view swap, no scroll). */}
             {!loggedOut && (
-              <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm shrink-0">
-                <NavRow title="Account" value="Delete account" onClick={() => setView('delete')} />
+              <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 shrink-0">
+                <NavRow
+                  title="Sign out"
+                  value=""
+                  onClick={() => {
+                    try { localStorage.clear(); } catch {}
+                    window.location.href = '/api/auth/logout?next=/box';
+                  }}
+                />
+                <NavRow title="Delete account" value="" danger onClick={() => setView('delete')} />
               </section>
             )}
           </div>
@@ -514,11 +522,13 @@ function NavRow({
   value,
   onClick,
   disabled,
+  danger,
 }: {
   title: string;
   value: string;
   onClick: () => void;
   disabled?: boolean;
+  danger?: boolean;
 }) {
   return (
     <button
@@ -526,7 +536,7 @@ function NavRow({
       disabled={disabled}
       className="w-full flex items-center justify-between gap-3 px-4 py-3 min-h-[52px] text-left tap-highlight disabled:opacity-60"
     >
-      <span className="font-black text-chess-text shrink-0">{title}</span>
+      <span className={`font-black shrink-0 ${danger ? 'text-red-600' : 'text-chess-text'}`}>{title}</span>
       <span className="flex items-center gap-1.5 min-w-0">
         <span className="text-sm text-chess-text-muted truncate">{value}</span>
         <ChevronIcon />

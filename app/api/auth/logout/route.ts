@@ -14,7 +14,10 @@ export async function GET(request: NextRequest) {
 
   // Get the origin for redirect
   const origin = request.nextUrl.origin;
-  const response = NextResponse.redirect(`${origin}/`);
+  // Optional same-site return path (e.g. /box for the Chess Boxing shell).
+  const next = request.nextUrl.searchParams.get('next');
+  const dest = next && next.startsWith('/') && !next.startsWith('//') ? next : '/';
+  const response = NextResponse.redirect(`${origin}${dest}`);
 
   // Clear all Supabase auth cookies
   for (const cookie of allCookies) {
