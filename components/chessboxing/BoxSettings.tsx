@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 /**
@@ -34,7 +35,7 @@ interface Crew {
   name: string;
 }
 
-type View = 'list' | 'handle' | 'crew';
+type View = 'list' | 'handle' | 'crew' | 'delete';
 
 export function BoxSettings() {
   // undefined = still loading; null = logged out.
@@ -97,7 +98,7 @@ export function BoxSettings() {
             </button>
           )}
           <h1 className="text-xl md:text-2xl font-black text-chess-text">
-            {view === 'list' ? 'Settings' : view === 'handle' ? 'Handle' : 'Crew'}
+            {view === 'list' ? 'Settings' : view === 'handle' ? 'Handle' : view === 'crew' ? 'Crew' : 'Delete account'}
           </h1>
         </div>
 
@@ -107,6 +108,7 @@ export function BoxSettings() {
         {view === 'crew' && (
           <CrewPanel crew={crew} onChanged={(c) => { setCrew(c); backToList(); }} />
         )}
+        {view === 'delete' && <DeletePanel onCancel={backToList} />}
 
         {view === 'list' && (
           <div className="flex flex-col gap-3 min-h-0">
@@ -174,10 +176,82 @@ export function BoxSettings() {
             )}
 
             {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && <CameraSection />}
+
+            {/* Account — Apple 5.1.1(v): in-app account deletion, reachable
+                from settings. Row opens a sub-panel (view swap, no scroll). */}
+            {!loggedOut && (
+              <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm shrink-0">
+                <NavRow title="Account" value="Delete account" onClick={() => setView('delete')} />
+              </section>
+            )}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+/* ── Delete-account sub-panel ────────────────────────────────────────────── */
+
+// Same endpoint as the web profile (/api/account/delete) — one implementation.
+function DeletePanel({ onCancel }: { onCancel: () => void }) {
+  const router = useRouter();
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const armed = text.trim() === 'DELETE';
+
+  const onDelete = async () => {
+    if (!armed || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      if (!res.ok) throw new Error('Delete failed');
+      try { localStorage.clear(); } catch {}
+      router.replace('/box');
+      router.refresh();
+    } catch {
+      setError('Something went wrong. Please try again or email support.');
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="bg-chess-surface rounded-2xl border border-red-200 shadow-sm p-4 flex flex-col gap-3 shrink-0">
+      <p className="text-sm text-chess-text">
+        This permanently deletes your account, streak, rating, bouts and
+        leaderboard entries. Type <strong>DELETE</strong> to confirm.
+      </p>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="DELETE"
+        autoCapitalize="characters"
+        autoCorrect="off"
+        className="w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-sm text-chess-text bg-white focus:outline-none focus:border-red-400"
+      />
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={busy}
+          className="flex-1 min-h-[44px] rounded-xl border border-slate-300 text-sm font-semibold text-chess-text-muted tap-highlight"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={!armed || busy}
+          className="flex-1 min-h-[44px] rounded-xl bg-red-600 text-white text-sm font-bold disabled:opacity-40 tap-highlight"
+        >
+          {busy ? 'Deleting...' : 'Delete my account'}
+        </button>
+      </div>
+    </section>
   );
 }
 
