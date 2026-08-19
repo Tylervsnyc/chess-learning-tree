@@ -2,7 +2,8 @@
 
 import { useCallback, useMemo } from 'react';
 import type { AchievementUnlock } from '@/lib/achievements/types';
-import { BELT_BAND_LABELS } from '@/lib/achievements/types';
+import { BELT_BAND_LABELS, beltBandForLevel, beltBandForRung } from '@/lib/achievements/types';
+import type { BeltBand } from '@/lib/achievements/types';
 import { getAchievementDef } from '@/lib/achievements/catalog';
 import { BAND_COLORS } from './BeltBadge';
 import AchievementPop, { type PopItem } from './AchievementPop';
@@ -57,6 +58,7 @@ function toPopItem(u: AchievementUnlock): PopItem {
     mood: roast ? 'roast' : 'proud',
     shimmer: u.band === 'undisputed',
     tierLabel: roast ? null : tierLine(u),
+    ladder: roast ? undefined : ladderFor(u),
     eyebrow: roast
       ? 'Achievement… unlocked'
       : u.size === 'l'
@@ -86,6 +88,26 @@ function playFx(item: PopItem, { reducedMotion }: { reducedMotion: boolean }) {
       setTimeout(() => fireConfetti({ particleCount: 60, spread: 120, origin: { y: 0.4 }, colors }), 450);
     }
   }
+}
+
+const BANDS: BeltBand[] = ['amateur', 'contender', 'title-shot', 'champion', 'undisputed'];
+
+/** Belt-notch strip for leveled medals: one notch per rung (ladders) or per belt band (level-tiered). */
+function ladderFor(u: AchievementUnlock): PopItem['ladder'] {
+  if (u.tier <= 0) return undefined;
+  const def = getAchievementDef(u.id);
+  if (def?.levelTiered) {
+    return { filled: BANDS.indexOf(beltBandForLevel(u.tier)) + 1, total: 5, labels: BANDS.map((b) => BELT_BAND_LABELS[b]) };
+  }
+  if (def?.thresholds && def.thresholds.length > 1) {
+    const n = def.thresholds.length;
+    return {
+      filled: Math.min(n, u.tier),
+      total: n,
+      labels: def.thresholds.map((_, i) => BELT_BAND_LABELS[beltBandForRung(i + 1, n)]),
+    };
+  }
+  return undefined;
 }
 
 function tierLine(u: AchievementUnlock): string | null {

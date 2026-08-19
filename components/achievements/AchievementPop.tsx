@@ -12,6 +12,9 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
  * sound / confetti / haptic side effects through `fx`. If you change this
  * file, copy it to the other repo — the look and the timing are the contract.
  *
+ * Look: "Ringside" — navy card inside a thick foil-gold rim, foil medal with
+ * ribbon (picked by Tyler 2026-08-19 from /test/achievement-designs, option B).
+ *
  * Three sizes, one queue, biggest moment last:
  *   s — "the nod": edge toast (top or bottom), auto-dismisses.
  *   m — "new belt": centered card over a dark backdrop, auto-dismisses.
@@ -54,6 +57,14 @@ export interface PopItem {
   mood?: 'proud' | 'roast';
   /** Shimmer sweep across the tile (reserved for the top rarity). */
   shimmer?: boolean;
+  /**
+   * Leveled achievements: the belt ladder, rendered as a notch strip under
+   * the name. `filled` notches are lit (the last one in foil gold), `labels`
+   * run left→right (optional; first/current/last are shown).
+   */
+  ladder?: { filled: number; total: number; labels?: string[] };
+  /** Small progress footer, e.g. "25 / 50 to the next notch". */
+  footer?: string | null;
 }
 
 export interface PopFx {
@@ -167,30 +178,29 @@ export default function AchievementPop({
           type="button"
           onClick={skip}
           aria-live="polite"
-          className="pointer-events-auto w-full max-w-xs rounded-2xl bg-chess-surface border border-slate-200 shadow-2xl px-3 py-2.5 flex items-center gap-3 text-left active:scale-[0.98] transition-transform"
+          className="pointer-events-auto w-full max-w-xs rounded-2xl p-[3px] text-left active:scale-[0.98] transition-transform"
           style={{
+            background: roast ? ROAST_RIM : FOIL,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.35)',
             animation: anim(
               leaving
                 ? `${top ? 'popToastOutTop' : 'popToastOut'} .25s ease-in forwards`
                 : `${top ? 'popToastInTop' : 'popToastIn'} .4s cubic-bezier(.2,.9,.3,1.2)`,
             ),
             opacity: reducedMotion && leaving ? 0 : undefined,
-            boxShadow: `0 0 0 2px ${c.ring}22, 0 20px 40px rgba(0,0,0,0.25)`,
           }}
         >
-          <PopTile icon={current.icon} accent={c} size={44} shimmer={current.shimmer} />
-          <div className="min-w-0">
-            <div className="text-[10px] font-black uppercase tracking-wide" style={{ color: c.text }}>
-              {eyebrow}
-              {current.tierLabel ? ` · ${current.tierLabel}` : ''}
+          <div className="rounded-[13px] px-3 py-2.5 flex items-center gap-3" style={{ background: NAVY }}>
+            <PopTile icon={current.icon} accent={c} size={42} shimmer={current.shimmer} roast={roast} />
+            <div className="min-w-0 text-white">
+              <div className="text-[9px] font-black uppercase" style={{ letterSpacing: '.25em', color: roast ? '#94A3B8' : GOLD }}>
+                {eyebrow}
+                {current.tierLabel ? ` · ${current.tierLabel}` : ''}
+              </div>
+              <div className="text-sm font-black truncate">{current.name}</div>
+              <div className="text-[11px] font-medium text-white/70 leading-snug line-clamp-2">{current.line}</div>
+              {overflowNote && <div className="text-[10px] font-bold text-white/40 mt-0.5">{overflowNote}</div>}
             </div>
-            <div className="text-sm font-black text-chess-text truncate">{current.name}</div>
-            <div className="text-[11px] font-semibold text-chess-text-muted leading-snug line-clamp-2">
-              {current.line}
-            </div>
-            {overflowNote && (
-              <div className="text-[10px] font-bold text-chess-text-faint mt-0.5">{overflowNote}</div>
-            )}
           </div>
         </button>
       </div>
@@ -199,10 +209,11 @@ export default function AchievementPop({
 
   // ── M and L — centered over a backdrop ────────────────────────────────────
   const isL = current.size === 'l';
+  const rim = isL ? 6 : 4;
   return (
     <div
       className="fixed inset-0 flex items-center justify-center p-6"
-      style={{ zIndex, background: isL ? 'rgba(10,14,26,0.88)' : 'rgba(10,14,26,0.6)' }}
+      style={{ zIndex, background: isL ? 'rgba(6,9,18,0.9)' : 'rgba(6,9,18,0.66)' }}
       onClick={skip}
       role="dialog"
       aria-live="polite"
@@ -211,95 +222,152 @@ export default function AchievementPop({
       {isL && !reducedMotion && (
         <div
           aria-hidden
-          className="absolute inset-0 pointer-events-none"
+          className="absolute pointer-events-none"
           style={{
-            background: `conic-gradient(from 0deg, transparent 0 20deg, ${c.ring}14 20deg 40deg, transparent 40deg 60deg, ${c.ring}14 60deg 80deg, transparent 80deg 100deg, ${c.ring}14 100deg 120deg, transparent 120deg 140deg, ${c.ring}14 140deg 160deg, transparent 160deg 180deg, ${c.ring}14 180deg 200deg, transparent 200deg 220deg, ${c.ring}14 220deg 240deg, transparent 240deg 260deg, ${c.ring}14 260deg 280deg, transparent 280deg 300deg, ${c.ring}14 300deg 320deg, transparent 320deg 340deg, ${c.ring}14 340deg 360deg)`,
-            animation: 'popRays 28s linear infinite',
-            transformOrigin: '50% 50%',
             inset: '-50%',
+            background: `repeating-conic-gradient(from 0deg, transparent 0 18deg, ${GOLD}14 18deg 36deg)`,
+            animation: 'popRays 40s linear infinite',
+            transformOrigin: '50% 50%',
           }}
         />
       )}
       <div
-        className="relative w-full max-w-xs rounded-3xl bg-chess-surface shadow-2xl px-5 py-6 flex flex-col items-center gap-3 text-center"
+        className="relative w-full max-w-xs rounded-[28px]"
         style={{
+          padding: rim,
+          background: roast ? ROAST_RIM : FOIL,
+          boxShadow: isL ? `0 0 0 1px rgba(0,0,0,.4), 0 0 60px ${GOLD}55, 0 30px 70px rgba(0,0,0,.6)` : '0 24px 60px rgba(0,0,0,.55)',
           animation: anim(leaving ? 'popCardOut .2s ease-in forwards' : 'popCardIn .5s cubic-bezier(.2,.9,.3,1.2)'),
-          boxShadow: isL ? `0 0 0 3px ${c.ring}, 0 24px 60px rgba(0,0,0,0.45)` : undefined,
         }}
       >
-        <div className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: c.text }}>
-          {eyebrow}
-        </div>
-        <div style={{ animation: anim('popPunch .6s cubic-bezier(.2,.9,.3,1.4) .1s both') }}>
-          <PopTile icon={current.icon} accent={c} size={isL ? 96 : 72} shimmer={current.shimmer} />
-        </div>
-        <div>
-          <div className={`font-black text-chess-text leading-tight ${isL ? 'text-2xl' : 'text-lg'}`}>
+        <div
+          className="rounded-[22px] px-5 py-6 flex flex-col items-center gap-3 text-center text-white"
+          style={{ background: `radial-gradient(120% 80% at 50% 0%, #1c2a4a 0%, ${NAVY} 60%)` }}
+        >
+          <div className="text-[10px] font-black uppercase" style={{ letterSpacing: '.3em', color: roast ? '#94A3B8' : GOLD }}>
+            {eyebrow}
+          </div>
+          <div style={{ animation: anim('popPunch .6s cubic-bezier(.2,.9,.3,1.4) .1s both') }}>
+            <PopTile icon={current.icon} accent={c} size={isL ? 96 : 72} shimmer={current.shimmer} roast={roast} ribbon />
+          </div>
+          <div
+            className={`font-black leading-tight ${isL ? 'text-2xl' : 'text-lg'}`}
+            style={roast ? undefined : { background: FOIL, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}
+          >
             {current.name}
           </div>
+          {current.ladder && <Ladder {...current.ladder} />}
           {current.tierLabel && (
-            <div
-              className="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide"
-              style={{ background: c.bg, color: c.text }}
-            >
-              {current.tierLabel}
-            </div>
+            <div className="text-[10px] font-black uppercase tracking-[.2em] text-white/60">{current.tierLabel}</div>
           )}
-        </div>
-        <div className="w-full rounded-xl bg-chess-page px-3 py-2 text-xs font-semibold text-chess-text leading-snug">
-          {current.line}
-        </div>
-        <div className="text-[11px] font-bold text-chess-text-faint">
-          {overflowNote ? `${overflowNote} · ` : ''}
-          {isL ? 'Tap to continue' : 'Tap to skip'}
+          <div className="w-full border-t border-white/10 pt-3 text-xs font-medium text-white/80 leading-snug italic">
+            “{current.line}”
+          </div>
+          <div className="text-[10px] font-bold text-white/40">
+            {current.footer ? `${current.footer} · ` : ''}
+            {overflowNote ? `${overflowNote} · ` : ''}
+            {isL ? 'Tap to continue' : 'Tap to skip'}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-/** The round medal tile — ring + tinted disc + icon. Exported for trophy grids. */
+/** Belt-notch strip for leveled achievements. */
+function Ladder({ filled, total, labels }: { filled: number; total: number; labels?: string[] }) {
+  const cur = labels?.[filled - 1];
+  return (
+    <div className="w-full">
+      <div className="flex w-full gap-1">
+        {Array.from({ length: total }).map((_, i) => (
+          <div
+            key={i}
+            className="flex-1 h-2.5 rounded-sm"
+            style={{
+              background: i < filled ? (i === filled - 1 ? FOIL : 'rgba(255,255,255,.45)') : 'rgba(255,255,255,.12)',
+              boxShadow: i === filled - 1 ? `0 0 10px ${GOLD}88` : undefined,
+            }}
+          />
+        ))}
+      </div>
+      {labels && (
+        <div className="flex justify-between text-[8px] font-black uppercase tracking-wider mt-1 text-white/45">
+          <span>{labels[0]}</span>
+          {cur && cur !== labels[0] && cur !== labels[labels.length - 1] && <span style={{ color: GOLD }}>{cur} ✓</span>}
+          <span>{labels[labels.length - 1]}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** The ringside medal — foil disc (band-tinted below champion), optional ribbon. Exported for trophy grids. */
 export function PopTile({
   icon,
   accent,
   size = 56,
   locked = false,
   shimmer = false,
+  roast = false,
+  ribbon = false,
 }: {
   icon: ReactNode;
   accent: PopAccent;
   size?: number;
   locked?: boolean;
   shimmer?: boolean;
+  roast?: boolean;
+  ribbon?: boolean;
 }) {
+  const gold = accent.ring.toLowerCase() === GOLD.toLowerCase() || accent.ring.toLowerCase() === '#e9b53a';
+  const disc = locked
+    ? '#E2E8F0'
+    : roast
+      ? 'linear-gradient(135deg,#cbd5e1,#64748b)'
+      : gold
+        ? FOIL
+        : `linear-gradient(135deg, ${accent.ring}, ${accent.bg})`;
   return (
-    <div
-      className="relative flex items-center justify-center rounded-full select-none overflow-hidden"
-      style={{
-        width: size,
-        height: size,
-        background: locked ? '#F1F5F9' : accent.bg,
-        boxShadow: locked ? 'inset 0 0 0 3px #E2E8F0' : `inset 0 0 0 3px ${accent.ring}`,
-        fontSize: size * 0.45,
-        lineHeight: 1,
-      }}
-      aria-hidden
-    >
-      {shimmer && !locked && (
-        <span
-          className="absolute inset-0 rounded-full pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.75) 50%, transparent 70%)',
-            backgroundSize: '250% 250%',
-            animation: 'popShimmer 2.2s linear infinite',
-          }}
+    <div className="relative flex flex-col items-center select-none" aria-hidden>
+      {ribbon && (
+        <div
+          className="-mb-2 relative z-0"
+          style={{ width: size * 0.25, height: size * 0.32, background: roast ? '#475569' : '#b3261e', clipPath: 'polygon(0 0,100% 0,100% 100%,50% 72%,0 100%)' }}
         />
       )}
-      <span className={`flex items-center justify-center ${locked ? 'grayscale opacity-40' : ''}`}>{icon}</span>
+      <div
+        className="relative z-10 flex items-center justify-center rounded-full overflow-hidden"
+        style={{
+          width: size,
+          height: size,
+          background: disc,
+          boxShadow: locked ? 'inset 0 0 0 3px #CBD5E1' : `0 ${size * 0.08}px ${size * 0.25}px rgba(0,0,0,.45), inset 0 0 0 2px rgba(255,255,255,.35)`,
+          fontSize: size * 0.42,
+          lineHeight: 1,
+        }}
+      >
+        <div className="absolute rounded-full pointer-events-none" style={{ inset: size * 0.09, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.25)' }} />
+        {shimmer && !locked && (
+          <span
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.75) 50%, transparent 70%)',
+              backgroundSize: '250% 250%',
+              animation: 'popShimmer 2.2s linear infinite',
+            }}
+          />
+        )}
+        <span className={`relative flex items-center justify-center ${locked ? 'grayscale opacity-40' : ''}`}>{icon}</span>
+      </div>
     </div>
   );
 }
+
+export const GOLD = '#e9b53a';
+export const NAVY = '#0f1729';
+export const FOIL = 'linear-gradient(135deg,#f7d774 0%,#e9b53a 40%,#fff0b8 55%,#d39a1e 100%)';
+const ROAST_RIM = 'linear-gradient(135deg,#94a3b8,#475569)';
 
 const popKeyframes = `
 @keyframes popToastIn { 0% { opacity:0; transform: translateY(24px);} 100% { opacity:1; transform:none;} }
