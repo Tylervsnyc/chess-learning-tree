@@ -207,19 +207,63 @@ export default function AchievementPop({
     );
   }
 
-  // ── M and L — centered over a backdrop ────────────────────────────────────
-  const isL = current.size === 'l';
-  const rim = isL ? 6 : 4;
+  // ── M — plaque: landscape card, medal left, thinner rim ───────────────────
+  if (current.size === 'm') {
+    return (
+      <div
+        className="fixed inset-0 flex items-center justify-center p-6"
+        style={{ zIndex, background: 'rgba(6,9,18,0.62)' }}
+        onClick={skip}
+        role="dialog"
+        aria-live="polite"
+      >
+        <style>{popKeyframes}</style>
+        <div
+          className="relative w-full max-w-sm rounded-2xl"
+          style={{
+            padding: 3,
+            background: roast ? ROAST_RIM : FOIL,
+            boxShadow: '0 24px 60px rgba(0,0,0,.55)',
+            animation: anim(leaving ? 'popCardOut .2s ease-in forwards' : 'popCardIn .5s cubic-bezier(.2,.9,.3,1.2)'),
+          }}
+        >
+          <div className="rounded-[13px] px-4 py-4 flex items-center gap-4 text-left text-white" style={{ background: NAVY }}>
+            <div className="shrink-0" style={{ animation: anim('popPunch .6s cubic-bezier(.2,.9,.3,1.4) .1s both') }}>
+              <PopTile icon={current.icon} accent={c} size={64} shimmer={current.shimmer} roast={roast} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-[9px] font-black uppercase" style={{ letterSpacing: '.25em', color: roast ? '#94A3B8' : GOLD }}>
+                {eyebrow}
+              </div>
+              <div className="text-lg font-black leading-tight">{current.name}</div>
+              {current.tierLabel && (
+                <div className="text-[10px] font-black uppercase tracking-[.18em] text-white/55 mt-0.5">{current.tierLabel}</div>
+              )}
+              {current.ladder && <div className="mt-2"><Ladder {...current.ladder} /></div>}
+              <div className="mt-2 text-xs font-medium text-white/75 leading-snug">{current.line}</div>
+              <div className="mt-2 text-[10px] font-bold text-white/35">
+                {current.footer ? `${current.footer} · ` : ''}
+                {overflowNote ? `${overflowNote} · ` : ''}
+                Tap to skip
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── L — ceremony: tall card, thick rim, ribbon medal, gold rays ──────────
   return (
     <div
       className="fixed inset-0 flex items-center justify-center p-6"
-      style={{ zIndex, background: isL ? 'rgba(6,9,18,0.9)' : 'rgba(6,9,18,0.66)' }}
+      style={{ zIndex, background: 'rgba(6,9,18,0.9)' }}
       onClick={skip}
       role="dialog"
       aria-live="polite"
     >
       <style>{popKeyframes}</style>
-      {isL && !reducedMotion && (
+      {!reducedMotion && (
         <div
           aria-hidden
           className="absolute pointer-events-none"
@@ -234,9 +278,9 @@ export default function AchievementPop({
       <div
         className="relative w-full max-w-xs rounded-[28px]"
         style={{
-          padding: rim,
+          padding: 6,
           background: roast ? ROAST_RIM : FOIL,
-          boxShadow: isL ? `0 0 0 1px rgba(0,0,0,.4), 0 0 60px ${GOLD}55, 0 30px 70px rgba(0,0,0,.6)` : '0 24px 60px rgba(0,0,0,.55)',
+          boxShadow: `0 0 0 1px rgba(0,0,0,.4), 0 0 60px ${GOLD}55, 0 30px 70px rgba(0,0,0,.6)`,
           animation: anim(leaving ? 'popCardOut .2s ease-in forwards' : 'popCardIn .5s cubic-bezier(.2,.9,.3,1.2)'),
         }}
       >
@@ -248,10 +292,10 @@ export default function AchievementPop({
             {eyebrow}
           </div>
           <div style={{ animation: anim('popPunch .6s cubic-bezier(.2,.9,.3,1.4) .1s both') }}>
-            <PopTile icon={current.icon} accent={c} size={isL ? 96 : 72} shimmer={current.shimmer} roast={roast} ribbon />
+            <PopTile icon={current.icon} accent={c} size={96} shimmer={current.shimmer} roast={roast} ribbon />
           </div>
           <div
-            className={`font-black leading-tight ${isL ? 'text-2xl' : 'text-lg'}`}
+            className="font-black leading-tight text-2xl"
             style={roast ? undefined : { background: FOIL, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}
           >
             {current.name}
@@ -266,7 +310,7 @@ export default function AchievementPop({
           <div className="text-[10px] font-bold text-white/40">
             {current.footer ? `${current.footer} · ` : ''}
             {overflowNote ? `${overflowNote} · ` : ''}
-            {isL ? 'Tap to continue' : 'Tap to skip'}
+            Tap to continue
           </div>
         </div>
       </div>
