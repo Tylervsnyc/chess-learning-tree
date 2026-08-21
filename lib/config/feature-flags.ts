@@ -82,7 +82,7 @@ export const FEATURE_FLAGS = {
    * lib/workout/combo-coach.ts; pre-generated Rookie voice clips in
    * public/audio/combo-coach via scripts/generate-combo-voice.ts).
    */
-  WORKOUT_COMBO_CALLS: true,
+  WORKOUT_COMBO_CALLS: false,
   /**
    * Chess Boxing leaderboards — daily/weekly/monthly boards ranked off workout
    * session points, with a global (opt-in) scope and crew boards joined by code
