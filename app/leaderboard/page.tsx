@@ -231,8 +231,9 @@ export default function LeaderboardPage() {
             <div>
               <h2 className="font-black text-chess-text">Join a crew</h2>
               <p className="text-sm text-chess-text-muted mt-1">
-                Enter your crew&apos;s code to see its board. Training at Gleason&apos;s?
-                Use code <span className="font-bold text-chess-text">NYC</span>.
+                Enter your crew&apos;s code to see its board. Gleason&apos;s? Use code{' '}
+                <span className="font-bold text-chess-text">GLEASONS.NYC</span>. Church Street?{' '}
+                <span className="font-bold text-chess-text">CHURCH.NYC</span>.
               </p>
             </div>
             <input
