@@ -7,12 +7,30 @@
  * scripts/check-oauth-webview.ts). Auth surfaces use this to hide the
  * guaranteed-dead Google button and lead with email instead.
  *
+ * The Chess Boxing iOS shell (Capacitor WKWebView) counts too: an OAuth tap
+ * navigates to an external host, which Capacitor opens in Safari — and Safari
+ * has no PKCE verifier cookie (that lives in the shell's webview), so the
+ * /auth/callback exchange fails with "PKCE code verifier not found". In the
+ * shell, email/password is the only flow that completes in-place, so auth
+ * surfaces hide BOTH OAuth buttons there (see isNativeShell).
+ *
  * Gated by FEATURE_FLAGS.WEBVIEW_SAFE_AUTH at the call sites.
  */
 
-/** True when running inside a social app's embedded browser (IG/FB/TikTok…). */
+import { isNativeAppOrDebug } from '@/lib/native-app';
+
+/** True inside the Chess Boxing Capacitor shell — OAuth escapes to Safari and
+ *  dies there (no PKCE verifier), so even Apple's web flow must be hidden.
+ *  Honors the ?boxapp=1 web-preview key like the rest of the shell UI. */
+export function isNativeShell(): boolean {
+  return isNativeAppOrDebug();
+}
+
+/** True when OAuth can't complete here: a social app's embedded browser
+ *  (IG/FB/TikTok…) or the Chess Boxing native shell. */
 export function isInAppWebview(): boolean {
   if (typeof navigator === 'undefined') return false;
+  if (isNativeShell()) return true;
   const ua = navigator.userAgent || '';
   // Instagram + Facebook (FBAN/FBAV/FB_IAB) + TikTok identify themselves in the
   // UA. Android webviews also carry the "; wv)" token.

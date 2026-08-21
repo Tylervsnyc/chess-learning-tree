@@ -8,7 +8,7 @@ import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
-import { isInAppWebview } from '@/lib/auth/webview';
+import { isInAppWebview, isNativeShell } from '@/lib/auth/webview';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function SignupContent() {
@@ -28,8 +28,14 @@ function SignupContent() {
   // CHE-390: Google OAuth is blocked inside in-app webviews (IG/FB) — hide the
   // dead button there and let email lead. Resolved in an effect (SSR-safe).
   const [inWebview, setInWebview] = useState(false);
+  // Chess Boxing shell: OAuth escapes to Safari and dies (no PKCE verifier
+  // there), so Apple must be hidden too — email is the only working flow.
+  const [nativeShell, setNativeShell] = useState(false);
   useEffect(() => {
-    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) setInWebview(isInAppWebview());
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) {
+      setInWebview(isInAppWebview());
+      setNativeShell(isNativeShell());
+    }
   }, []);
 
   const humanizeError = humanizeAuthError;
@@ -314,8 +320,9 @@ function SignupContent() {
               </button>
             </form>
 
-            {/* Webview only: Apple offered below email as a secondary option. */}
-            {inWebview && (
+            {/* Social webview only: Apple offered below email as a secondary
+                option. Hidden in the native shell where it can't complete. */}
+            {inWebview && !nativeShell && (
               <>
                 <div className="flex items-center gap-3 my-4">
                   <div className="flex-1 h-px bg-slate-200" />

@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useExperiment } from '@/hooks/useExperiment';
 import { OnboardingEvents, type OnboardingSource } from '@/lib/analytics/posthog';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
-import { isInAppWebview } from '@/lib/auth/webview';
+import { isInAppWebview, isNativeShell } from '@/lib/auth/webview';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 const ROOKIE_LINES = [
@@ -75,8 +75,14 @@ export function SignupPrompt({
   // the Google button is a guaranteed dead end there — swap it for email-first.
   // Resolved in an effect to avoid an SSR hydration mismatch.
   const [inWebview, setInWebview] = useState(false);
+  // Chess Boxing shell: OAuth escapes to Safari and dies (no PKCE verifier
+  // there), so Apple must be hidden too — email is the only working flow.
+  const [nativeShell, setNativeShell] = useState(false);
   useEffect(() => {
-    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) setInWebview(isInAppWebview());
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) {
+      setInWebview(isInAppWebview());
+      setNativeShell(isNativeShell());
+    }
   }, []);
 
   // Log the impression exactly once, after the variant has settled — never the
@@ -264,6 +270,7 @@ export function SignupPrompt({
                 </button>
               )}
 
+              {!nativeShell && (
               <button
                 type="button"
                 onClick={() => oauth('apple')}
@@ -284,6 +291,7 @@ export function SignupPrompt({
                   </>
                 )}
               </button>
+              )}
 
               {!inWebview && (
                 <button

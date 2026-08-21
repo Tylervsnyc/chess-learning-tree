@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
-import { isInAppWebview } from '@/lib/auth/webview';
+import { isInAppWebview, isNativeShell } from '@/lib/auth/webview';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function LoginContent() {
@@ -28,8 +28,14 @@ function LoginContent() {
   // CHE-390: Google OAuth is blocked inside in-app webviews (IG/FB) — hide the
   // dead button there. Resolved in an effect (SSR-safe).
   const [inWebview, setInWebview] = useState(false);
+  // Chess Boxing shell: OAuth escapes to Safari and dies (no PKCE verifier
+  // there), so Apple must be hidden too — email is the only working flow.
+  const [nativeShell, setNativeShell] = useState(false);
   useEffect(() => {
-    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) setInWebview(isInAppWebview());
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) {
+      setInWebview(isInAppWebview());
+      setNativeShell(isNativeShell());
+    }
   }, []);
 
   const humanizeError = humanizeAuthError;
@@ -174,7 +180,9 @@ function LoginContent() {
                 point Google-account users at a real browser instead. */}
             {inWebview && (
               <p className="text-chess-text-faint text-xs text-center mb-2">
-                Signed up with Google? Open chesspath.app in your browser to sign in.
+                {nativeShell
+                  ? 'Signed up with Google or Apple? Open chesspath.app in Safari to sign in.'
+                  : 'Signed up with Google? Open chesspath.app in your browser to sign in.'}
               </p>
             )}
             {!inWebview && (
@@ -203,6 +211,7 @@ function LoginContent() {
             </button>
             )}
 
+            {!nativeShell && (
             <button
               type="button"
               onClick={handleAppleLogin}
@@ -223,12 +232,15 @@ function LoginContent() {
                 </>
               )}
             </button>
+            )}
 
+            {!nativeShell && (
             <div className="flex items-center gap-3 my-3">
               <div className="flex-1 h-px bg-slate-200" />
               <span className="text-chess-text-faint text-xs uppercase">or</span>
               <div className="flex-1 h-px bg-slate-200" />
             </div>
+            )}
 
             <form onSubmit={handleLogin} className="space-y-3">
               <div>
