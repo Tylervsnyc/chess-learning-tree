@@ -150,13 +150,13 @@ export function RingHome() {
               tagIcon={<TrophyIcon className="w-3 h-3" />}
               tag="Ranked"
               icon={
-                <div className="mx-auto w-[64px] h-[58px] relative">
+                <div className="mx-auto w-[68px] h-[62px] relative">
                   <Image
-                    src="/boxing/locker/gloves.webp"
+                    src="/boxing/locker/corner-puzzle.webp"
                     alt=""
                     fill
-                    sizes="64px"
-                    className="object-cover object-[50%_22%] scale-[1.35] drop-shadow-[0_3px_2px_rgba(0,0,0,0.35)]"
+                    sizes="68px"
+                    className="object-contain drop-shadow-[0_3px_2px_rgba(0,0,0,0.35)]"
                   />
                 </div>
               }
@@ -168,12 +168,12 @@ export function RingHome() {
               sub="Boxing"
               tag="vs Rookie"
               icon={
-                <div className="mx-auto w-[64px] h-[58px] relative">
+                <div className="mx-auto w-[68px] h-[62px] relative">
                   <Image
-                    src="/boxing/locker/piece-bn.webp"
+                    src="/boxing/locker/corner-play.webp"
                     alt=""
                     fill
-                    sizes="64px"
+                    sizes="68px"
                     className="object-contain drop-shadow-[0_3px_2px_rgba(0,0,0,0.35)]"
                   />
                 </div>

@@ -296,7 +296,7 @@ function GymBackground() {
           className="text-[13px] font-black uppercase tracking-[0.42em] text-[#ff7a7a]"
           style={{ textShadow: '0 0 8px rgba(255,90,90,0.9), 0 0 22px rgba(255,60,60,0.55)' }}
         >
-          no easy rounds
+          there is no tomorrow
         </span>
       </div>
       {/* bulb */}

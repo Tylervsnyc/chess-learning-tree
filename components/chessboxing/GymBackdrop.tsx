@@ -4,7 +4,7 @@
  * GymBackdrop — "The Gym After Hours" background for the /play setup screen
  * inside the Chess Boxing shell (picked by Tyler from /test/play-boxing-bg,
  * 2026-08-07). Heavy bags on chains framing the edges, one warm bulb, the
- * "NO EASY ROUNDS" neon, cinderblock wall, chalk dust, and a soft spotlight
+ * "THERE IS NO TOMORROW" neon, cinderblock wall, chalk dust, and a soft spotlight
  * pooling where Rookie stands. Pure CSS/SVG — no assets, no state.
  *
  * Render absolutely inside a relative dark container (bg-[#10162a]); put the
@@ -39,10 +39,10 @@ export function GymBackdrop() {
       {/* neon */}
       <div className="absolute top-[54px] left-1/2 -translate-x-1/2 whitespace-nowrap" style={{ animation: 'cbgFlicker 7s linear infinite' }}>
         <span
-          className="text-[13px] font-black uppercase tracking-[0.42em] text-[#ff7a7a]"
+          className="text-[12px] font-black uppercase tracking-[0.3em] text-[#ff7a7a]"
           style={{ textShadow: '0 0 8px rgba(255,90,90,0.9), 0 0 22px rgba(255,60,60,0.55)' }}
         >
-          no easy rounds
+          there is no tomorrow
         </span>
       </div>
       {/* bulb */}
