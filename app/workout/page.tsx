@@ -52,6 +52,8 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { pickWorkoutFinishLine } from '@/lib/workout/finish-lines';
 import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
+import { FightResultCard } from '@/components/chessboxing/result/FightResultCard';
+import { buildPuzzleShareFrames } from '@/lib/share/fight-night-frames';
 import { getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
 import type { AchievementUnlock } from '@/lib/achievements/types';
@@ -355,6 +357,10 @@ interface FinishResult {
   rookieLine: string; // Rookie's post-workout encouragement
   /** Fight sessions only — the game-result line ("You beat Rookie (Level 3)"). */
   fightSummary: string | null;
+  /** Fight sessions only — true/false for the game result; null for puzzle sessions. */
+  fightWon: boolean | null;
+  /** Highest-rated puzzle solved this session — the Share card. */
+  toughestSolved: WorkoutPuzzleData | null;
   /** Finish POST came back 401 — session stashed, card must ask for sign-in. */
   needsSignIn: boolean;
   /** Fresh medals from /api/workout/finish — played over the results popup. */
@@ -426,6 +432,11 @@ function WorkoutPageInner() {
 
   // Missed puzzles collected this session, stored for later replay.
   const missedRef = useRef<WorkoutPuzzleData[]>([]);
+  // Every puzzle solved this session; the toughest one is the share card.
+  const solvedRef = useRef<WorkoutPuzzleData[]>([]);
+  // Pre-rendered Fight Night GIF for the toughest solve (starts at finish).
+  const shareGifRef = useRef<{ promise: Promise<Blob> } | null>(null);
+  const [sharing, setSharing] = useState(false);
 
   // Every puzzle id shown this session (solved + missed). Sent on finish so
   // future workouts can exclude them and stay fresh.
@@ -932,6 +943,7 @@ function WorkoutPageInner() {
       : Math.max(0, score) + (perfect ? PERFECT_SESSION_BONUS : 0);
 
     let fightSummary: string | null = null;
+    let fightWon: boolean | null = null;
     if (isFight) {
       const w = fightWinsRef.current;
       const l = fightLossesRef.current;
@@ -941,6 +953,7 @@ function WorkoutPageInner() {
       else if (l > 0) fightSummary = `Rookie won this one (Level ${lvl})`;
       else if (d > 0) fightSummary = `Draw vs Rookie (Level ${lvl})`;
       else fightSummary = 'Went to the scorecards';
+      fightWon = w > 0;
     }
     const bestRoundPoints = roundPointsRef.current.reduce((m, p) => Math.max(m, p ?? 0), 0);
     let lifetime: number | null = null;
@@ -1019,6 +1032,11 @@ function WorkoutPageInner() {
       recentPoints,
       rookieLine,
       fightSummary,
+      fightWon,
+      toughestSolved: solvedRef.current.reduce<WorkoutPuzzleData | null>(
+        (best, p) => (best === null || p.rating > best.rating ? p : best),
+        null,
+      ),
       needsSignIn,
       achievements,
     });
@@ -1085,6 +1103,8 @@ function WorkoutPageInner() {
     setFiredUp(false);
     roundPointsRef.current = [];
     missedRef.current = [];
+    solvedRef.current = [];
+    shareGifRef.current = null;
     seenIdsRef.current = [];
     punchesRef.current = 0;
     segPunchBaseRef.current = 0;
@@ -1159,6 +1179,7 @@ function WorkoutPageInner() {
     setFiredUp(false); // Fired Up isn't snapshotted — earn it again
     roundPointsRef.current = snap.roundPoints ?? [];
     missedRef.current = snap.missed ?? [];
+    solvedRef.current = snap.solved ?? [];
     seenIdsRef.current = snap.seenIds ?? [];
     // Punches aren't snapshotted; a resumed session counts from here.
     punchesRef.current = 0;
@@ -1233,6 +1254,8 @@ function WorkoutPageInner() {
         recentPoints: [180, 240, 300, 210, 360, 280, 420],
         rookieLine: pickWorkoutFinishLine(),
         fightSummary: null,
+        fightWon: null,
+        toughestSolved: null,
         needsSignIn: false,
         achievements: [],
       });
@@ -1293,6 +1316,7 @@ function WorkoutPageInner() {
       highWaterElo,
       roundPoints: roundPointsRef.current,
       missed: missedRef.current,
+      solved: solvedRef.current,
       seenIds: seenIdsRef.current,
       clientSessionId: clientSessionIdRef.current,
       queue,
@@ -1311,6 +1335,60 @@ function WorkoutPageInner() {
         : undefined,
     });
   }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, highWaterElo, queue, isFight, fightFen]);
+
+  // Pre-render the Fight Night share GIF (toughest solve) the moment the
+  // result shows, so tapping Share is instant — same rhythm as the bout.
+  useEffect(() => {
+    if (phase !== 'done' || !finishResult?.toughestSolved) return;
+    const { fen, moves, rating } = finishResult.toughestSolved;
+    const frames = buildPuzzleShareFrames(fen, moves);
+    if (frames.length === 0) return;
+    const bout = {
+      outcome: 'puzzle_win',
+      username: '',
+      moves: 0,
+      rounds: 0,
+      clock: '',
+      headline: { big: 'SOLVED', rest: `a ${rating} puzzle`, win: true },
+      stats: [
+        [String(finishResult.right), 'SOLVED'],
+        [String(finishResult.sessionPoints), 'POINTS'],
+        [String(rating), 'TOUGHEST'],
+      ] as [string, string][],
+      stampText: 'SOLVED',
+    };
+    shareGifRef.current = {
+      promise: import('@/lib/share/fight-night-gif').then(({ renderFightNightGif }) =>
+        renderFightNightGif(frames, bout),
+      ),
+    };
+  }, [phase, finishResult]);
+
+  const shareToughest = async () => {
+    if (!finishResult?.toughestSolved || !shareGifRef.current) return;
+    setSharing(true);
+    const headline = `Solved a ${finishResult.toughestSolved.rating} puzzle at Chess Boxing`;
+    try {
+      const blob = await shareGifRef.current.promise;
+      const file = new File([blob], 'chess-boxing-solve.gif', { type: blob.type });
+      const nav = navigator as Navigator & { canShare?: (d?: unknown) => boolean };
+      if (nav.canShare?.({ files: [file] })) {
+        await nav.share({ files: [file], title: 'Chess Boxing', text: headline });
+      } else {
+        // No file-share (desktop): download the asset instead.
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      }
+    } catch {
+      // AbortError (closed the sheet) or a render failure — nothing to show
+    } finally {
+      setSharing(false);
+    }
+  };
 
   // Confetti when the results popup appears — extra burst on a personal best.
   useEffect(() => {
@@ -1395,6 +1473,15 @@ function WorkoutPageInner() {
     roundPointsRef.current[rIdx] = (roundPointsRef.current[rIdx] ?? 0) + pts;
     setScore((s) => s + pts);
     setRight((r) => r + 1);
+    if (currentPuzzle) {
+      solvedRef.current.push({
+        puzzleId: currentPuzzle.puzzleId,
+        id: currentPuzzle.id,
+        fen: currentPuzzle.fen,
+        moves: currentPuzzle.moves,
+        rating: currentPuzzle.rating,
+      });
+    }
     setTargetElo((e) => Math.min(MAX_ELO, e + ELO_UP_ON_CORRECT));
     setPuzzlePos((p) => p + 1);
   }, [currentPuzzle, highWaterElo, firedUp, segIndex]);
@@ -1752,7 +1839,34 @@ function WorkoutPageInner() {
             onDone={() => setFinishResult((r) => (r ? { ...r, achievements: [] } : r))}
           />
         )}
-        {/* Results popup — celebratory modal over the page */}
+        {FEATURE_FLAGS.FIGHT_RESULT_CARD ? (
+          <FightResultCard
+            data={{
+              kind: 'workout',
+              sessionPoints: finishResult.sessionPoints,
+              bestRoundPoints: finishResult.bestRoundPoints,
+              lifetime: finishResult.lifetime,
+              right: finishResult.right,
+              wrong: finishResult.wrong,
+              perfect: finishResult.perfect,
+              perfectBonus: PERFECT_SESSION_BONUS,
+              isPersonalBest: finishResult.isPersonalBest,
+              previousBest: finishResult.previousBest,
+              punches: punchTotal,
+              rookieLine: finishResult.rookieLine,
+              fightSummary: finishResult.fightSummary,
+              fightWon: finishResult.fightWon,
+            }}
+            needsSignIn={finishResult.needsSignIn}
+            showLeaderboard={FEATURE_FLAGS.LEADERBOARDS && inBoxShell}
+            leaderboardLabel="See the leaderboard"
+            onSignIn={() => router.push('/auth/login?redirect=/workout')}
+            onLeaderboard={() => router.push('/leaderboard')}
+            onDone={() => router.push('/profile')}
+            sharing={sharing}
+            onShare={finishResult.toughestSolved ? shareToughest : undefined}
+          />
+        ) : (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 workout-result-overlay">
           <style>{`
             @keyframes workoutResultIn { 0% { opacity:0; transform: scale(.7) translateY(16px);} 60%{opacity:1; transform: scale(1.04);} 100%{transform: scale(1);} }
@@ -1946,6 +2060,7 @@ function WorkoutPageInner() {
             </button>
           </div>
         </div>
+        )}
       </div>
     );
   }

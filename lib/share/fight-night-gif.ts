@@ -239,6 +239,7 @@ function drawBoard(
   ctx: Ctx,
   pieces: Record<string, HTMLImageElement>,
   frame: FightNightFrame,
+  stampText = 'CHECKMATE',
 ) {
   // gold ropes
   ctx.save();
@@ -279,7 +280,7 @@ function drawBoard(
     const track = 0.1 * 19 * S;
     ctx.textAlign = 'center';
     let tw = -track;
-    for (const ch of 'CHECKMATE') tw += ctx.measureText(ch).width + track;
+    for (const ch of stampText) tw += ctx.measureText(ch).width + track;
     const pw = tw + 28 * S;
     const ph = 19 * S + 10 * S + 7 * S;
     ctx.fillStyle = 'rgba(13,26,31,0.85)';
@@ -290,13 +291,13 @@ function drawBoard(
     rr(ctx, -pw / 2, -ph / 2, pw, ph, 10 * S);
     ctx.stroke();
     ctx.fillStyle = '#FF4B4B';
-    drawTrackedCentered(ctx, 'CHECKMATE', 0, 6.5 * S, track);
+    drawTrackedCentered(ctx, stampText, 0, 6.5 * S, track);
     ctx.restore();
   }
 }
 
 function drawResultAndStats(ctx: Ctx, bout: FightNightBout) {
-  const head = HEADLINES[bout.outcome] || { big: 'BOUT', rest: 'complete', win: false };
+  const head = bout.headline ?? HEADLINES[bout.outcome] ?? { big: 'BOUT', rest: 'complete', win: false };
   const by = BOARD_Y + BOARD_W + 2 * S;
 
   // headline (rotated -2deg around its center)
@@ -324,7 +325,7 @@ function drawResultAndStats(ctx: Ctx, bout: FightNightBout) {
   const statY = ctaY - 8 * S - statH;
   const gap = 6 * S;
   const w = (300 * S - 32 * S - gap * 2) / 3;
-  const stats: [string, string][] = [
+  const stats: [string, string][] = bout.stats ?? [
     [String(bout.moves), 'MOVES'],
     [bout.rounds > 0 ? `R${bout.rounds}` : '—', 'ROUND'],
     [bout.clock, 'CLOCK LEFT'],
@@ -393,7 +394,7 @@ export async function renderFightNightGif(
     drawCrowdBand(ctx);
     drawBrand(ctx);
     drawTape(ctx, bout.username);
-    drawBoard(ctx, pieces, frames[i]);
+    drawBoard(ctx, pieces, frames[i], bout.stampText);
     drawResultAndStats(ctx, bout);
     const base = ctx.getImageData(0, 0, W, H);
 

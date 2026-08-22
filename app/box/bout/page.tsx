@@ -41,8 +41,9 @@ import { useName } from '@/hooks/useName';
 import { useGameReview } from '@/hooks/useGameReview';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { GameReview } from '@/components/shared/GameReview';
+import { FightResultCard } from '@/components/chessboxing/result/FightResultCard';
 import type { ReviewMove } from '@/lib/review/review-core';
-import type { FightNightFrame } from '@/lib/og/fight-night-data';
+import { buildBoutShareFrames } from '@/lib/share/fight-night-frames';
 import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
@@ -125,24 +126,6 @@ function stashPendingBout(payload: Record<string, unknown>) {
  * break · chess …) is locked in lib/bout/bout.ts — this page only runs it.
  */
 type Phase = 'prefight' | 'chess' | 'break' | 'boxing' | 'done';
-
-/** The last moves of the bout as Fight Night GIF frames: the position before
-    the window, then each ply, stamped on the final one if it was a KO. */
-function buildShareFrames(plies: ReviewMove[], outcome: string): FightNightFrame[] {
-  const tail = plies.slice(-3);
-  if (tail.length === 0) return [];
-  const baseFen =
-    plies.length > tail.length ? plies[plies.length - tail.length - 1].fenAfter : START_FEN;
-  const isKO = outcome === 'ko_win' || outcome === 'ko_loss';
-  return [
-    { fen: baseFen },
-    ...tail.map((m, j) => ({
-      fen: m.fenAfter,
-      last: `${m.from}${m.to}`,
-      stamp: j === tail.length - 1 && isKO,
-    })),
-  ];
-}
 
 /** "a rook" / "2 pawns" — material spoken the way a person would say it. */
 function fmtMaterial(pawns: number): string {
@@ -876,7 +859,7 @@ export default function BoutPage() {
   // satori renders; canvas takes ~a second and starts before the tap).
   useEffect(() => {
     if (phase !== 'done' || !result) return;
-    const frames = buildShareFrames(reviewMovesRef.current, result.outcome);
+    const frames = buildBoutShareFrames(reviewMovesRef.current, result.outcome);
     if (frames.length === 0) return;
     const bout = {
       outcome: result.outcome,
@@ -1265,6 +1248,65 @@ export default function BoutPage() {
         setSharing(false);
       }
     };
+
+    if (FEATURE_FLAGS.FIGHT_RESULT_CARD) {
+      const previewTotal = result.pointsSplit.chess + result.pointsSplit.boxing;
+      const scale = previewTotal > 0 ? earned / previewTotal : 0;
+      const chessPts = Math.round(result.pointsSplit.chess * scale);
+      const boxingPts = Math.max(0, earned - chessPts);
+      const exhibitionNote =
+        wasRanked === false
+          ? format === RANKED_FORMAT
+            ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
+            : `Exhibition — only the ${BOUT_FORMATS[RANKED_FORMAT].label} card is ranked. It still counts for your streak.`
+          : null;
+      return (
+        <div className="h-full overflow-hidden bg-chess-page">
+          <FightResultCard
+            data={{
+              kind: 'bout',
+              won,
+              draw: result.outcome === 'draw',
+              headline,
+              rookieLine: result.rookieLine,
+              meltdown: result.meltdown,
+              earned,
+              chessPts,
+              boxingPts,
+              moves: result.moves,
+              clockLeft: fmtClock(result.clockLeft),
+              roundsSurvived: result.roundsSurvived,
+              punches: result.punches,
+              materialLine:
+                result.material > 0
+                  ? `You up ${fmtMaterial(result.material)}`
+                  : result.material < 0
+                    ? `Rookie up ${fmtMaterial(-result.material)}`
+                    : 'Dead level',
+              userCards: result.userCards,
+              rookieCards: result.rookieCards,
+              cardsDecidedIt: result.cardsDecidedIt,
+              ranked: wasRanked === true,
+              exhibitionNote,
+            }}
+            needsSignIn={needsSignIn}
+            showLeaderboard={FEATURE_FLAGS.LEADERBOARDS && inBoxShell}
+            leaderboardLabel="See the standings"
+            sharing={sharing}
+            onShare={() => void shareBout()}
+            onReview={reviewMovesRef.current.length > 0 ? () => setShowReview(true) : undefined}
+            reviewLabel="Review"
+            onRematch={() => setPhase('prefight')}
+            onSignIn={() => router.push('/auth/login?redirect=/box/bout')}
+            onLeaderboard={() => router.push('/leaderboard')}
+            onDone={() => router.push('/box')}
+          />
+          {unlocks.length > 0 && (
+            <AchievementUnlockOverlay unlocks={unlocks} onDone={() => setUnlocks([])} />
+          )}
+        </div>
+      );
+    }
 
     return (
       <div className="h-full overflow-hidden bg-chess-page">

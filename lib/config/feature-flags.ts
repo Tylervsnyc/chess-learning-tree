@@ -155,6 +155,14 @@ export const FEATURE_FLAGS = {
    * as a wrong answer.
    */
   PREMOVE: true,
+  /**
+   * Chess Boxing finish window (2026-08-22) — the "Card & Rays" result card
+   * (components/chessboxing/result/FightResultCard) replaces the plain white
+   * results popups on /workout and /box/bout: vintage-gym hero strip (card
+   * rising on sunrays, coins, count-up) with the same stats, streak slot,
+   * share/review/done actions underneath. OFF = the old popups.
+   */
+  FIGHT_RESULT_CARD: true,
 } as const;
 
 /**

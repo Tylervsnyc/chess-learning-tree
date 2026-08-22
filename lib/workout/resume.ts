@@ -52,6 +52,8 @@ export interface WorkoutResumeState {
   /** Puzzle points earned per round (index = round), for best-round tracking. */
   roundPoints: number[];
   missed: WorkoutPuzzleData[];
+  /** Solved this session (for the toughest-solve share card). Optional: older snapshots lack it. */
+  solved?: WorkoutPuzzleData[];
   /** Ids of every puzzle shown so far, so finish records them after a resume. */
   seenIds: string[];
   /** Idempotency key for this workout, so a resumed-then-finished session can't double-award points. */

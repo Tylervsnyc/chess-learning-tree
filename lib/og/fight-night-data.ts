@@ -21,6 +21,12 @@ export type FightNightBout = {
   rounds: number;
   /** Formatted clock, e.g. "1:24". */
   clock: string;
+  /** Override the outcome headline (workout share: "SOLVED a 1650 puzzle"). */
+  headline?: { big: string; rest: string; win: boolean };
+  /** Override the 3 stat tiles ([value, LABEL]); default = moves/round/clock. */
+  stats?: [string, string][];
+  /** Stamp word over the final frame (default CHECKMATE). */
+  stampText?: string;
 };
 
 /** FEN letter -> piece code (uppercase = white). */
