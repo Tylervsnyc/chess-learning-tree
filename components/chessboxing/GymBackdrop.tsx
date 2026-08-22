@@ -7,14 +7,20 @@
  * "THERE IS NO TOMORROW" neon, cinderblock wall, chalk dust, and a soft spotlight
  * pooling where Rookie stands. Pure CSS/SVG — no assets, no state.
  *
+ * The two bags are painted sprites (gpt-image-1, vintage enamel style, same as
+ * the RingHome corner icons) and are HITTABLE: the speed bag (left) springs
+ * when punched, the heavy bag (right) swings on its chain when tapped. Both
+ * run a damped spring. The wrapper is pointer-events-none; only the bags opt in.
+ *
  * Render absolutely inside a relative dark container (bg-[#10162a]); put the
  * screen content above it with z-10.
  */
 
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 const GYM_CSS = `
+@keyframes cbgPop { 0%{opacity:1; transform:translateY(0) scale(.8)} 100%{opacity:0; transform:translateY(-18px) scale(1.3)} }
 @keyframes cbgFlicker { 0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.55} 94%{opacity:1} 97%{opacity:.75} 98%{opacity:1} }
-@keyframes cbgSway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2.4deg)} }
-@keyframes cbgSwaySlow { 0%,100%{transform:rotate(1.4deg)} 50%{transform:rotate(-1.6deg)} }
 @keyframes cbgBreathe { 0%,100%{opacity:.7} 50%{opacity:1} }
 @keyframes cbgGlow { 0%,100%{opacity:.55} 50%{opacity:1} }
 @keyframes cbgDust { 0%{transform:translateY(0); opacity:.4} 100%{transform:translateY(-46px); opacity:0} }
@@ -51,9 +57,9 @@ export function GymBackdrop() {
         className="absolute left-1/2 top-7 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#ffd98a] shadow-[0_0_16px_6px_rgba(255,200,110,0.5)]"
         style={{ animation: 'cbgGlow 4s ease-in-out infinite' }}
       />
-      {/* heavy bags framing the edges */}
-      <HeavyBag side="left" delay={0} h={170} />
-      <HeavyBag side="right" delay={1.6} h={140} slow />
+      {/* the bags — painted sprites, hittable */}
+      <SpeedBag />
+      <HeavyBag />
       {/* chalk dust */}
       {[20, 46, 64, 80, 33].map((x, i) => (
         <span
@@ -72,68 +78,75 @@ export function GymBackdrop() {
   );
 }
 
-function HeavyBag({ side, delay, h, slow }: { side: 'left' | 'right'; delay: number; h: number; slow?: boolean }) {
-  const bagTop = 58;
-  const total = bagTop + h + 8;
+/** Damped spring oscillator — angle in degrees plus hit(impulse). */
+function useSwing(stiffness: number, damping: number) {
+  const [angle, setAngle] = useState(0);
+  const st = useRef({ a: 0, v: 0, raf: 0, last: 0 });
+  const tick = useCallback((t: number) => {
+    const s = st.current;
+    const dt = Math.min(0.032, (t - s.last) / 1000 || 0.016);
+    s.last = t;
+    s.v += (-stiffness * s.a - damping * s.v) * dt;
+    s.a += s.v * dt;
+    setAngle(s.a);
+    if (Math.abs(s.a) > 0.05 || Math.abs(s.v) > 0.5) s.raf = requestAnimationFrame(tick);
+    else { s.a = 0; s.v = 0; s.raf = 0; setAngle(0); }
+  }, [stiffness, damping]);
+  const hit = useCallback((impulse: number) => {
+    const s = st.current;
+    s.v += impulse;
+    if (!s.raf) { s.last = performance.now(); s.raf = requestAnimationFrame(tick); }
+  }, [tick]);
+  useEffect(() => {
+    const s = st.current;
+    return () => cancelAnimationFrame(s.raf);
+  }, []);
+  return { angle, hit };
+}
+
+function sideOf(e: React.PointerEvent) {
+  const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  return e.clientX < r.left + r.width / 2 ? 1 : -1;
+}
+
+function SpeedBag() {
+  const { angle, hit } = useSwing(420, 5);
+  const [pop, setPop] = useState(0);
   return (
-    <div
-      className="absolute top-0 drop-shadow-[0_16px_20px_rgba(0,0,0,0.55)]"
-      style={{
-        [side]: '-14px',
-        transformOrigin: 'top center',
-        animation: `${slow ? 'cbgSwaySlow' : 'cbgSway'} ${slow ? 7.5 : 6}s ease-in-out ${delay}s infinite`,
-      }}
-    >
-      <svg width={76} height={total} viewBox={`0 0 76 ${total}`} aria-hidden>
-        <defs>
-          <linearGradient id={`cbgBag-${side}`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#5c1e1e" />
-            <stop offset="0.3" stopColor="#8a2f2f" />
-            <stop offset="0.55" stopColor="#963933" />
-            <stop offset="0.8" stopColor="#61201f" />
-            <stop offset="1" stopColor="#401414" />
-          </linearGradient>
-        </defs>
-        {[0, 1, 2].map((i) => (
-          <ellipse key={i} cx={38} cy={8 + i * 9} rx={3.2} ry={4.6} fill="none" stroke="#8b98ab" strokeWidth="2" opacity={0.85} />
-        ))}
-        <circle cx={38} cy={36} r={5} fill="none" stroke="#a8b4c4" strokeWidth="2.6" />
-        {[14, 28, 48, 62].map((x) => (
-          <path key={x} d={`M38 39 L${x} ${bagTop + 4}`} stroke="#2e1010" strokeWidth="4.5" strokeLinecap="round" />
-        ))}
-        <rect x={10} y={bagTop} width={56} height={9} rx={4.5} fill="#331111" />
-        <path
-          d={`M12 ${bagTop + 7}
-              C 10 ${bagTop + h * 0.45}, 9 ${bagTop + h * 0.75}, 13 ${bagTop + h - 12}
-              Q 15 ${bagTop + h}, 26 ${bagTop + h + 3}
-              Q 38 ${bagTop + h + 6}, 50 ${bagTop + h + 3}
-              Q 61 ${bagTop + h}, 63 ${bagTop + h - 12}
-              C 67 ${bagTop + h * 0.75}, 66 ${bagTop + h * 0.45}, 64 ${bagTop + 7}
-              Z`}
-          fill={`url(#cbgBag-${side})`}
-        />
-        {[24, 38, 52].map((x) => (
-          <path
-            key={x}
-            d={`M${x} ${bagTop + 9} C ${x - 1} ${bagTop + h * 0.5}, ${x - 1} ${bagTop + h * 0.75}, ${x} ${bagTop + h - 4}`}
-            stroke="rgba(0,0,0,0.35)"
-            strokeWidth="1.4"
-            fill="none"
-          />
-        ))}
-        <path d={`M12 ${bagTop + h * 0.42} Q 38 ${bagTop + h * 0.46} 64 ${bagTop + h * 0.42}`} stroke="rgba(0,0,0,0.3)" strokeWidth="5" fill="none" />
-        <path d={`M12 ${bagTop + h * 0.42} Q 38 ${bagTop + h * 0.46} 64 ${bagTop + h * 0.42}`} stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="3 3" fill="none" />
-        <path
-          d={`M20 ${bagTop + 10} C 17 ${bagTop + h * 0.4}, 17 ${bagTop + h * 0.7}, 21 ${bagTop + h - 14}`}
-          stroke="rgba(255,205,130,0.28)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          fill="none"
-          style={{ filter: 'blur(2px)' }}
-        />
-        <ellipse cx={44} cy={bagTop + h * 0.55} rx={7} ry={3.5} fill="rgba(0,0,0,0.18)" />
-        <ellipse cx={30} cy={bagTop + h * 0.68} rx={5} ry={2.6} fill="rgba(0,0,0,0.15)" />
-      </svg>
+    <div className="absolute left-2 top-[84px] select-none" style={{ width: 104, height: 150 }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/boxing/gym/speedbag-drum.webp" alt="" draggable={false} className="absolute left-0 top-0 w-[104px] drop-shadow-[0_6px_6px_rgba(0,0,0,.45)]" />
+      <button
+        type="button"
+        aria-label="Punch the speed bag"
+        onPointerDown={(e) => { hit(sideOf(e) * 650); setPop((n) => n + 1); }}
+        className="absolute pointer-events-auto cursor-pointer touch-none"
+        style={{ left: 29, top: 56, width: 46, height: 83, transformOrigin: '50% 0%', transform: `rotate(${angle}deg)` }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/boxing/gym/speedbag-bag.webp" alt="" draggable={false} className="w-[46px] h-[83px] drop-shadow-[0_8px_8px_rgba(0,0,0,.5)]" />
+        {pop > 0 && (
+          <span key={pop} className="absolute -right-4 top-6 text-[11px] font-black uppercase tracking-wider text-[#f1e6cf]" style={{ textShadow: '0 1px 0 #000', animation: 'cbgPop .5s ease-out forwards' }}>
+            pop
+          </span>
+        )}
+      </button>
     </div>
+  );
+}
+
+function HeavyBag() {
+  const { angle, hit } = useSwing(32, 1.1);
+  return (
+    <button
+      type="button"
+      aria-label="Hit the heavy bag"
+      onPointerDown={(e) => hit(sideOf(e) * 70)}
+      className="absolute right-[2px] top-[40px] pointer-events-auto cursor-pointer touch-none"
+      style={{ width: 76, height: 285, transformOrigin: '50% 0%', transform: `rotate(${angle}deg)` }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/boxing/gym/heavybag.webp" alt="" draggable={false} className="w-[76px] h-[285px] drop-shadow-[0_18px_16px_rgba(0,0,0,.55)]" />
+    </button>
   );
 }
