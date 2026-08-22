@@ -75,7 +75,7 @@ export default function BoxProfilePage() {
           >
             Sign In
           </Link>
-          <Link href="/auth/signup" className="text-sm font-bold text-chess-blue tap-highlight py-2">
+          <Link href="/auth/signup" className="text-sm font-bold text-chess-blue tap-highlight py-3 min-h-[44px] inline-flex items-center">
             Create an account
           </Link>
         </div>

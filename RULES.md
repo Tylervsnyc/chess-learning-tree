@@ -350,8 +350,11 @@ const isAdmin = profile?.is_admin === true;
 ## 11. Streaks
 
 ### How It Works (CHE-369 + CHE-388):
-Finish ONE unit per day — lesson, /play game, opening lesson, or workout.
-Derived live from the 4 completion tables in the USER's local timezone;
+Finish ONE unit per day — lesson, /play game, opening lesson, workout,
+Chess Boxing bout, or a completed daily Rookie's Run.
+Derived live from the completion tables (lesson_progress, game_sessions,
+workout_sessions, opening_progress, bout_sessions, run_completions —
+lib/streak/compute.ts is the one list) in the USER's local timezone;
 missing a full local day breaks it. `profiles.current_streak` is WRITE-DEAD
 ghost data (CHE-368) — never read or write it.
 

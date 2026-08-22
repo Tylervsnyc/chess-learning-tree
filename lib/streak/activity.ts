@@ -53,7 +53,7 @@ async function fetchUserTimestamps(
  * missing bout_sessions degrades to "no bouts" instead of failing every cron.
  */
 async function fetchCompletionRows(supabase: SupabaseClient): Promise<TsRow[]> {
-  const [lessons, games, workouts, openings, bouts] = await Promise.all([
+  const [lessons, games, workouts, openings, bouts, runs] = await Promise.all([
     fetchUserTimestamps(supabase, 'lesson_progress', 'completed_at'),
     fetchUserTimestamps(supabase, 'game_sessions', 'ended_at', (q) => q.not('ended_at', 'is', null)),
     fetchUserTimestamps(supabase, 'workout_sessions', 'created_at'),
@@ -62,8 +62,9 @@ async function fetchCompletionRows(supabase: SupabaseClient): Promise<TsRow[]> {
       console.warn('bout_sessions unavailable for activity derivation:', (e as Error).message);
       return [] as TsRow[];
     }),
+    fetchUserTimestamps(supabase, 'run_completions', 'completed_at'),
   ]);
-  return [...lessons, ...games, ...workouts, ...openings, ...bouts];
+  return [...lessons, ...games, ...workouts, ...openings, ...bouts, ...runs];
 }
 
 export interface UserActivity {

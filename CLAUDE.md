@@ -43,6 +43,19 @@ The 14-day funnel (run `npx tsx scripts/daily-report.ts --days=14`) is the hones
 
 ---
 
+## Vercel "Security Checkpoint" page (2026-08-22 — permanent playbook)
+
+If chesspath.app (web OR the iOS app, which loads chesspath.app in a webview) shows **"Vercel Security Checkpoint / We're verifying your browser"**, it is Vercel's **automatic DDoS mitigation** challenging every visitor — NOT our code, NOT a deploy. Diagnosed 2026-08-22: no custom firewall rules, Bot Protection off, Attack Challenge Mode off; `vercel firewall overview` showed only `System Mitigations: Active`. Confirm with `curl -sI https://chesspath.app/ | grep x-vercel-mitigated` (→ `challenge`).
+
+**Fix (do this, don't re-investigate):**
+1. Tyler runs (agents are blocked from doing it): `vercel firewall system-mitigations pause --non-interactive` — takes effect in ~30s, lasts 24h.
+2. **Permanent:** whitelist Tyler's devices/home IP so they never get challenged: `vercel firewall system-bypass add <IP> --notes "..." -y` (find IP with `curl -s ifconfig.me`). Also add the Gleason's/gym IP when testing Chess Boxing on-site. Bypass survives mitigation events.
+3. If it recurs within days, something is really spiking traffic — read the Vercel dashboard → Firewall tab (traffic by path/IP) before pausing again. Our own crons (`vercel.json`) and local crontab (daily report 09:03, nightly playtest 01:00 — runs locally, does not hit prod) are NOT the source as of 2026-08-22.
+
+Never "fix" this by adding retries, a loading screen, or a native fallback in the iOS app — the page is served before our code runs.
+
+---
+
 ## Working With Tyler
 
 - **Vibe coder** — explain simply, no jargon dumps. Short responses preferred.

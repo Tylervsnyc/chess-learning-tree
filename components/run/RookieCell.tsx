@@ -111,7 +111,10 @@ export function RookieCell({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transform: 'scale(0.88)',
+            // Slightly larger than the enemy sprites + a grounding shadow so
+            // Rookie reads instantly against any square color.
+            transform: 'scale(1.04)',
+            filter: 'drop-shadow(0 2px 3px rgba(15,23,42,0.45))',
             animation: showGlitch
               ? 'rookieGlitchBase 440ms steps(8)'
               : undefined,

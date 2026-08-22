@@ -27,7 +27,7 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
   // Close on route change
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  const isLearnActive = pathname === '/' || pathname?.startsWith('/path') || pathname?.startsWith('/openings') || pathname?.startsWith('/lesson/');
+  const isLearnActive = pathname === '/' || pathname?.startsWith('/path') || pathname?.startsWith('/openings') || pathname?.startsWith('/lesson/') || pathname?.startsWith('/run');
 
   return (
     <div ref={ref} className="relative">
@@ -71,6 +71,16 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
               <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>
             </svg>
             Openings
+          </Link>
+          <Link
+            href="/run"
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap bg-chess-blue/10 text-chess-blue hover:bg-chess-blue hover:text-white"
+            onClick={() => setOpen(false)}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 3h3v2h2V3h2v2h2V3h3v4l-1.5 1.5V17L19 19v2H5v-2l2.5-2V8.5L6 7V3z" />
+            </svg>
+            Daily Run
           </Link>
         </div>
       )}

@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Chess Boxing counts your punches during the workout using the camera. Video never leaves your phone.</string>
+	<string>Chess Boxing uses the camera for Quadrant Fight, an optional game that tracks your punches and dodges during boxing rounds. Video is processed on your phone and never leaves it.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

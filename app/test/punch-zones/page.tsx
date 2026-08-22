@@ -79,8 +79,10 @@ export default function PunchZonesPage() {
 
         <p className="text-slate-400 text-xs">
           Yellow dots = wrists · blue ring = head · each lit square has its own clock.
-          Amber −N = damage you dealt · red −N = damage you took. Tempo ramps over the round;
-          2 commands at once after halfway, 3 in the last fifth at level 5+. Boot timing is
+          The counter above the camera IS the score: landed / miss / dodged / hit.
+          Tempo ramps over the round plus a rubber-band &ldquo;heat&rdquo; on rolling accuracy —
+          stay above ~75% and it keeps climbing, start missing and it backs off;
+          2 commands at once after halfway, 3 only at high heat. Boot timing is
           logged as <code>[qf-boot]</code> and shown under the tiles; onFinish is logged as <code>[qf-finish]</code>.
           MoveNet Lightning from npm, weights self-hosted in /models/movenet-lightning.
         </p>

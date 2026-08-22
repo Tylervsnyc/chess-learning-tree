@@ -50,6 +50,7 @@ import {
   totalLevelsForRun,
 } from '@/lib/run/seed';
 import { getRunIdForDate, getTodayInTZ, isValidDate } from '@/lib/run/daily';
+import { claimStreakToday } from '@/lib/streak-client';
 import { buildShareString } from '@/lib/run/share';
 import { fromSquare, toSquare } from '@/lib/run/types';
 import type { BoardState, Coord, RunPuzzle } from '@/lib/run/types';
@@ -482,16 +483,30 @@ export default function RookiesRunPage() {
       // an STC run or a hand-picked non-daily run via ?run=.
       if (!isStc && meta.runId === getRunIdForDate(meta.iso)) {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-        fetch('/api/run/complete', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            runId: meta.runId,
-            runDate: meta.iso,
-            levelsCleared: totalLevels,
-            tz,
-          }),
-        }).catch(() => {});
+        // Order matters (same as /box/bout): the row must LAND before
+        // claimStreakToday() polls for it. Both are idempotent. Anonymous
+        // players get a silent "not recorded" and no claim.
+        (async () => {
+          try {
+            const res = await fetch('/api/run/complete', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                runId: meta.runId,
+                runDate: meta.iso,
+                levelsCleared: totalLevels,
+                tz,
+              }),
+            });
+            if (!res.ok) return;
+            const body = (await res.json()) as { recorded?: boolean };
+            // A finished daily run earns the day — this is a completion
+            // surface, the ONE sanctioned claim trigger (CHE-388).
+            if (body.recorded) await claimStreakToday();
+          } catch {
+            /* offline — the run still happened on screen */
+          }
+        })();
       }
     } else {
       setShowLevelCleared(true);

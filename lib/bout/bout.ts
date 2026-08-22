@@ -224,18 +224,18 @@ function clampCard(n: number): number {
   return Math.max(0, Math.min(100, Math.round(n)));
 }
 
+// Card = volume + accuracy (2026-08-21, HP/knockdowns removed): the round's
+// metric is counts — punches landed vs missed, dodges made vs hits taken.
+// ~100 needs both volume AND precision; neither alone gets you there.
+const CARD_VOLUME_WEIGHT = 0.5; // points per clean action
+const CARD_ACCURACY_WEIGHT = 60; // points at 100% accuracy
+
 /** Your card for one boxing round. */
 export function cardScore(stats: FightStats): number {
-  const raw =
-    stats.punchesLanded * 3 +
-    stats.powerLanded * 2 +
-    stats.doublesLanded * 2 +
-    stats.combosLanded * 3 +
-    stats.dodgesMade * 2 -
-    stats.punchesMissed * 1 -
-    stats.hitsTaken * 3 -
-    stats.knockdownsTaken * 10;
-  return clampCard(raw);
+  const hits = stats.punchesLanded + stats.dodgesMade; // volume of clean actions
+  const attempts = hits + stats.punchesMissed + stats.hitsTaken;
+  const acc = attempts > 0 ? hits / attempts : 0;
+  return clampCard(hits * CARD_VOLUME_WEIGHT + acc * CARD_ACCURACY_WEIGHT);
 }
 
 /**

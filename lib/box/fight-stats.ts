@@ -5,6 +5,7 @@
  */
 export interface FightStats {
   punchesLanded: number;
+  /** @deprecated always 0 since the HP/knockdown removal (2026-08-21) — random blocks are gone. */
   punchesBlocked: number;
   punchesMissed: number;
   dodgesMade: number;
@@ -12,11 +13,16 @@ export interface FightStats {
   powerLanded: number;
   doublesLanded: number;
   combosLanded: number;
+  /** @deprecated always 0 since the HP/knockdown removal (2026-08-21). */
   knockdownsScored: number;
+  /** @deprecated always 0 since the HP/knockdown removal (2026-08-21). */
   knockdownsTaken: number;
   bestStreak: number;
+  /** @deprecated always 0 since the HP/knockdown removal (2026-08-21). */
   damageDealt: number;
+  /** @deprecated always 0 since the HP/knockdown removal (2026-08-21). */
   damageTaken: number;
+  /** = punchesLanded + dodgesMade (total clean actions) — the counts ARE the score. */
   score: number;
   durationMs: number;
 }

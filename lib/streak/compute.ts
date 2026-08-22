@@ -6,7 +6,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * Extracted from /api/workout/streak so the streak endpoint and server-side
  * consumers (achievements engine) share a single implementation — never
  * re-derive the streak elsewhere. A day counts when the user FINISHED a unit:
- * lesson, Play/Daily-Rook game, opening lesson, Chess Boxing workout, or bout.
+ * lesson, Play/Daily-Rook game, opening lesson, Chess Boxing workout, bout,
+ * or a completed daily Rookie's Run.
  * Nothing is stored; profiles.current_streak is write-dead ghost data.
  */
 
@@ -25,7 +26,7 @@ export interface CompletionFetch {
 }
 
 /**
- * Read every completion timestamp across the 5 completion tables. Works with
+ * Read every completion timestamp across the 6 completion tables. Works with
  * either the user-context client (RLS-scoped) or the service client + userId.
  * bout_sessions is created by hand on the live DB, so a missing table degrades
  * to "no bouts" instead of failing the read.
@@ -35,7 +36,7 @@ export async function fetchCompletionTimestamps(
   userId: string,
   sinceISO: string,
 ): Promise<CompletionFetch> {
-  const [lessons, games, workouts, openings, bouts] = await Promise.all([
+  const [lessons, games, workouts, openings, bouts, runs] = await Promise.all([
     supabase.from('lesson_progress').select('completed_at').eq('user_id', userId).gte('completed_at', sinceISO),
     supabase
       .from('game_sessions')
@@ -46,6 +47,7 @@ export async function fetchCompletionTimestamps(
     supabase.from('workout_sessions').select('created_at').eq('user_id', userId).gte('created_at', sinceISO),
     supabase.from('opening_progress').select('completed_at').eq('user_id', userId).gte('completed_at', sinceISO),
     supabase.from('bout_sessions').select('ended_at').eq('user_id', userId).gte('ended_at', sinceISO),
+    supabase.from('run_completions').select('completed_at').eq('user_id', userId).gte('completed_at', sinceISO),
   ]);
 
   const boutRows = bouts.error || !bouts.data ? [] : (bouts.data as { ended_at: string }[]);
@@ -53,7 +55,7 @@ export async function fetchCompletionTimestamps(
     console.error('streak bout read failed', bouts.error);
   }
 
-  const coreError = lessons.error || games.error || workouts.error || openings.error || null;
+  const coreError = lessons.error || games.error || workouts.error || openings.error || runs.error || null;
 
   return {
     timestamps: [
@@ -62,6 +64,7 @@ export async function fetchCompletionTimestamps(
       ...((workouts.data ?? []) as { created_at: string }[]).map((r) => r.created_at),
       ...((openings.data ?? []) as { completed_at: string }[]).map((r) => r.completed_at),
       ...boutRows.map((r) => r.ended_at),
+      ...((runs.data ?? []) as { completed_at: string }[]).map((r) => r.completed_at),
     ],
     coreError,
   };
