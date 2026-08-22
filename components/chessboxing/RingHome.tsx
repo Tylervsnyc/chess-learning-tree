@@ -346,7 +346,7 @@ function BoardBody({ state, period, squad }: { state: BoardState; period: Period
   if (state.status === 'signedout') {
     return (
       <EmptyNote>
-        <Link href="/leaderboard" className="underline underline-offset-2 font-black text-white/80">Sign in</Link> and pick a
+        <Link href="/auth/login?redirect=/box" className="underline underline-offset-2 font-black text-white/80">Sign in</Link> and pick a
         fighter name to enter the rankings.
       </EmptyNote>
     );

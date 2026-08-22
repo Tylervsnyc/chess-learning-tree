@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
@@ -118,7 +120,7 @@ export function OnboardFlow() {
                 key={i}
                 onClick={() => setStep(i)}
                 aria-label={`Go to step ${i + 1}`}
-                className="p-2 -m-1 tap-highlight"
+                className="p-2 -m-1 min-h-[44px] min-w-[44px] flex items-center justify-center tap-highlight"
               >
                 <span
                   className={`block rounded-full transition-all ${
@@ -247,9 +249,22 @@ function StepUsername({
       )}
 
       {username === 'anon' && (
-        <div className="w-full max-w-sm bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 text-sm text-chess-text-muted">
-          Your fighter name comes with an account. Fight first — you can claim a
-          name from the leaderboard whenever you sign up.
+        <div className="w-full max-w-sm bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+          <p className="text-sm text-chess-text-muted">
+            Your fighter name comes with a free account — it takes about 30 seconds.
+          </p>
+          <Link
+            href="/auth/signup?redirect=/box/onboarding"
+            className="rounded-xl bg-chess-green text-white font-bold py-3 min-h-[44px] text-center"
+          >
+            Create account
+          </Link>
+          <Link
+            href="/auth/login?redirect=/box/onboarding"
+            className="text-sm font-bold text-chess-text-muted underline underline-offset-2"
+          >
+            Already have one? Sign in
+          </Link>
         </div>
       )}
 
@@ -328,9 +343,8 @@ function StepCrew({ onSkip }: { onSkip: () => void }) {
         Got a crew code?
       </h1>
       <p className="text-sm text-chess-text-muted max-w-sm">
-        Crews get their own board — your gym against itself. Training at
-        Gleason&apos;s? Use code{' '}
-        <span className="font-bold text-chess-text">NYC</span>.
+        Crews get their own board — your club against itself. Chessboxing NYC?
+        Use code <span className="font-bold text-chess-text">NYC</span>.
       </p>
 
       {joined ? (

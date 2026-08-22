@@ -47,6 +47,7 @@ export default function LeaderboardPage() {
 
   // Handle (username) gate.
   const [username, setUsername] = useState<string | null | undefined>(undefined); // undefined=unknown
+  const [signedOut, setSignedOut] = useState(false);
   const [handleInput, setHandleInput] = useState('');
   const [handleErr, setHandleErr] = useState<string | null>(null);
   const [savingHandle, setSavingHandle] = useState(false);
@@ -70,7 +71,10 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     fetch('/api/profile/username')
-      .then((r) => (r.ok ? r.json() : { username: null }))
+      .then((r) => {
+        if (r.status === 401) setSignedOut(true);
+        return r.ok ? r.json() : { username: null };
+      })
       .then((d) => setUsername(d.username ?? null))
       .catch(() => setUsername(null));
   }, []);
@@ -125,7 +129,7 @@ export default function LeaderboardPage() {
     }
   };
 
-  const needsHandle = username === null;
+  const needsHandle = username === null && !signedOut;
   const meOutsideTop = data?.me && !data.rows.some((r) => r.isSelf);
 
   const shareRank = async () => {
@@ -198,6 +202,30 @@ export default function LeaderboardPage() {
           </p>
         )}
 
+        {/* Signed out: account first — handle + crew endpoints 401 without one */}
+        {signedOut && (
+          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+            <div>
+              <h2 className="font-black text-chess-text">Sign in to get on the board</h2>
+              <p className="text-sm text-chess-text-muted mt-1">
+                A free account holds your fighter name, your crew, and your scores.
+              </p>
+            </div>
+            <Link
+              href="/auth/signup?redirect=/leaderboard"
+              className="rounded-xl bg-chess-green text-white font-bold py-3 min-h-[44px] text-center"
+            >
+              Create account
+            </Link>
+            <Link
+              href="/auth/login?redirect=/leaderboard"
+              className="text-sm font-bold text-chess-text-muted underline underline-offset-2 text-center"
+            >
+              Already have one? Sign in
+            </Link>
+          </div>
+        )}
+
         {/* Handle gate */}
         {needsHandle && (
           <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
@@ -226,14 +254,13 @@ export default function LeaderboardPage() {
         )}
 
         {/* Join crew (crew scope, not a member) */}
-        {scope === 'crew' && data?.notInCrew && (
+        {scope === 'crew' && data?.notInCrew && !signedOut && (
           <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
             <div>
               <h2 className="font-black text-chess-text">Join a crew</h2>
               <p className="text-sm text-chess-text-muted mt-1">
-                Enter your crew&apos;s code to see its board. Gleason&apos;s? Use code{' '}
-                <span className="font-bold text-chess-text">GLEASONS.NYC</span>. Church Street?{' '}
-                <span className="font-bold text-chess-text">CHURCH.NYC</span>.
+                Enter your crew&apos;s code to see its board. Chessboxing NYC? Use code{' '}
+                <span className="font-bold text-chess-text">NYC</span>.
               </p>
             </div>
             <input
