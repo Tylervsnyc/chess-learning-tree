@@ -30,14 +30,16 @@ export const PERFECT_SESSION_BONUS = 50;
 // 1 point and never grow the combo. So tanking the difficulty target by
 // failing on purpose earns nothing: the easy puzzles that follow are farm.
 //
-// Two more v2 mechanics (enforced by the workout page, constants live here):
-// - 3 STRIKES: the 3rd wrong answer inside one chess segment ends that
-//   segment immediately, so mass-failing to tank difficulty costs the round.
+// A wrong answer NEVER ends a segment — you keep swinging until the bell,
+// however many you miss. The cost is scoring only: 0 points, the combo breaks
+// back to x1, and the target ELO eases down, which pushes the next puzzles
+// toward farm tier under the high-water anchor. That pay factor (not a strike
+// limit) is what makes tanking the difficulty worthless.
+//
+// One more v2 mechanic (enforced by the workout page, constant lives here):
 // - FIRED UP: throw FIRED_UP_PUNCH_TARGET+ punches during one exercise
 //   segment (punch cam on) and the NEXT chess segment pays +25%.
 
-/** Wrong answers allowed in one chess segment; the 3rd ends the segment. */
-export const MAX_STRIKES_PER_SEGMENT = 3;
 /** Point multiplier on a Fired Up chess segment. */
 export const FIRED_UP_MULTIPLIER = 1.25;
 /** Punches within ONE exercise segment needed to fire up the next chess segment. */

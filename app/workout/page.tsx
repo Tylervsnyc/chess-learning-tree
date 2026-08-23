@@ -25,7 +25,6 @@ import {
   pointsForCorrectV2,
   payFactor,
   comboMultiplier,
-  MAX_STRIKES_PER_SEGMENT,
   FIRED_UP_PUNCH_TARGET,
   whiteMaterialLead,
   fightMaterialPoints,
@@ -397,7 +396,6 @@ function WorkoutPageInner() {
   // Achievement facts, tracked over the whole session for the finish payload.
   const bestComboRef = useRef(0); // longest combo this session (Combo Meal)
   const firedUpEverRef = useRef(false); // hit the 80-punch trigger at least once
-  const struckOutFirstRef = useRef(false); // 3 strikes in the FIRST chess segment
 
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
   const [puzzlePos, setPuzzlePos] = useState(0);
@@ -415,13 +413,6 @@ function WorkoutPageInner() {
   useEffect(() => {
     void getRookieLevel();
   }, []);
-
-  // 3 strikes: wrong answers in the CURRENT chess segment; the 3rd ends it.
-  const strikesRef = useRef(0);
-  // Render mirror of strikesRef — the three X slots in the running header.
-  const [strikes, setStrikes] = useState(0);
-  // Rookie's one-liner shown briefly when strikes end a chess segment.
-  const [strikeNotice, setStrikeNotice] = useState<string | null>(null);
 
   // Fired Up: earned by punching hard in the previous exercise segment;
   // makes the NEXT chess segment pay +25%.
@@ -898,15 +889,10 @@ function WorkoutPageInner() {
 
   // Each new exercise segment is a fresh tracker mount → reset the per-mount
   // base and mark the session total so this segment's punches are measurable.
-  // Each new chess segment resets the 3-strike count.
   useEffect(() => {
     if (current?.kind === 'workout') {
       segPunchBaseRef.current = 0;
       segStartPunchesRef.current = punchesRef.current;
-    }
-    if (current?.kind === 'chess') {
-      strikesRef.current = 0;
-      setStrikes(0);
     }
   }, [segIndex, current?.kind]);
 
@@ -977,7 +963,6 @@ function WorkoutPageInner() {
       // Achievement facts (cosmetic medals only — server clamps everything).
       bestCombo: bestComboRef.current,
       firedUp: firedUpEverRef.current,
-      struckOutFirstSegment: struckOutFirstRef.current,
       tz: getTz(),
     };
     try {
@@ -1044,8 +1029,8 @@ function WorkoutPageInner() {
   }, [score, right, wrong, minutes, isFight, freezeFight, bankFightSegment]);
 
   // ── Advance to the next segment (or finish) ───────────────────────────────
-  // Runs on timer-out, Skip, and the 3rd strike — all three end a segment the
-  // same way.
+  // Runs on timer-out and Skip — both end a segment the same way. A wrong
+  // answer never ends a segment; you keep swinging until the bell.
   const advanceSegment = useCallback(() => {
     // Boxing bell rings at the end of every stage.
     playBoxingBell();
@@ -1097,9 +1082,6 @@ function WorkoutPageInner() {
     setPuzzlePos(0);
     setTargetElo(START_ELO);
     setHighWaterElo(START_ELO);
-    strikesRef.current = 0;
-    setStrikes(0);
-    setStrikeNotice(null);
     setFiredUp(false);
     roundPointsRef.current = [];
     missedRef.current = [];
@@ -1173,9 +1155,6 @@ function WorkoutPageInner() {
     setPuzzlePos(snap.puzzlePos);
     setTargetElo(snap.targetElo ?? START_ELO);
     setHighWaterElo(Math.max(snap.highWaterElo ?? START_ELO, snap.targetElo ?? START_ELO));
-    strikesRef.current = 0; // strikes are per-segment; a resume starts the segment fresh
-    setStrikes(0);
-    setStrikeNotice(null);
     setFiredUp(false); // Fired Up isn't snapshotted — earn it again
     roundPointsRef.current = snap.roundPoints ?? [];
     missedRef.current = snap.missed ?? [];
@@ -1506,23 +1485,9 @@ function WorkoutPageInner() {
     // Ease off: drop the target so the next puzzle is easier, not harder.
     setTargetElo((e) => Math.max(MIN_ELO, e - ELO_DOWN_ON_WRONG));
     setPuzzlePos((p) => p + 1);
-    // 3 strikes: the 3rd wrong answer in one chess segment ends it now —
-    // mass-failing to tank difficulty costs the rest of the round.
-    strikesRef.current += 1;
-    setStrikes(strikesRef.current);
-    if (strikesRef.current >= MAX_STRIKES_PER_SEGMENT) {
-      if (segIndexRef.current === 0) struckOutFirstRef.current = true;
-      setStrikeNotice("Three down — round's over. Shake it off.");
-      advanceSegment();
-    }
-  }, [currentPuzzle, advanceSegment]);
-
-  // The strike notice is a brief toast — clear itself after a few seconds.
-  useEffect(() => {
-    if (!strikeNotice) return;
-    const t = setTimeout(() => setStrikeNotice(null), 4000);
-    return () => clearTimeout(t);
-  }, [strikeNotice]);
+    // No strike-out: a wrong answer costs the combo and eases the difficulty
+    // target, but the round runs to the bell no matter how many you miss.
+  }, [currentPuzzle]);
 
   const liveScore = Math.max(0, score);
   const multiplier = comboMultiplier(combo);
@@ -2136,21 +2101,6 @@ function WorkoutPageInner() {
               Round {roundIndex + 1}{' '}
               <span className="text-chess-text-muted">of {roundCount}</span>
             </span>
-            {/* 3 strikes — misses this puzzle segment; the 3rd ends the round. */}
-            {isChess && !isFight && (
-              <span className="flex items-center gap-1" aria-label={`${strikes} of 3 misses this round`}>
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className={`text-[15px] font-black leading-none transition-colors duration-300 ${
-                      i < strikes ? 'text-chess-red' : 'text-chess-text/20'
-                    }`}
-                  >
-                    ✗
-                  </span>
-                ))}
-              </span>
-            )}
           </div>
           <CircuitTimeline
             segments={roundSegments}
@@ -2354,13 +2304,6 @@ function WorkoutPageInner() {
           </button>
         </div>
       </div>
-
-      {/* Three-strikes toast — Rookie calls the round when the 3rd wrong lands */}
-      {strikeNotice && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] w-[calc(100%-2rem)] max-w-xs rounded-2xl bg-chess-surface border border-slate-200 shadow-lg px-4 py-3 text-center text-sm font-bold text-chess-text">
-          {strikeNotice}
-        </div>
-      )}
 
       {/* End-early confirm: save / discard / keep going */}
       {endConfirmOpen && (

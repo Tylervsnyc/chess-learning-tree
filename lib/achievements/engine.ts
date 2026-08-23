@@ -50,7 +50,6 @@ export type AchievementEvent =
       bestRoundPoints: number;
       bestCombo: number;
       firedUp: boolean;
-      struckOutFirstSegment: boolean;
       isPersonalBest: boolean;
     };
 
@@ -221,7 +220,9 @@ export function evaluate(event: AchievementEvent, ctx: AchievementContext): Eval
     count('training-new-belt-day', event.isPersonalBest ? 1 : 0);
     grant('training-round-of-your-life', event.bestRoundPoints >= 500);
     grant('training-double-shift', ctx.workoutsToday >= 2);
-    grant('shame-three-strikes', event.struckOutFirstSegment);
+    // 'shame-three-strikes' is RETIRED: the 3-wrong round-ending rule is gone,
+    // so nothing can set it any more. Existing holders keep the medal; the
+    // catalog entry stays so their profile still renders it.
   }
 
   // Dedication — fires on any finished unit.

@@ -504,6 +504,8 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     secret: true,
   },
   {
+    // RETIRED (the 3-wrong round-ending rule was removed). No longer grantable;
+    // the entry stays so existing holders still see it on their profile.
     id: 'shame-three-strikes',
     category: 'shame',
     name: 'Three Strikes',

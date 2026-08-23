@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
     bestRoundPoints?: unknown;
     bestCombo?: unknown;
     firedUp?: unknown;
-    struckOutFirstSegment?: unknown;
     tz?: unknown;
   };
   try {
@@ -242,7 +241,6 @@ export async function POST(request: NextRequest) {
         bestRoundPoints,
         bestCombo: Math.min(Math.max(0, toInt(body.bestCombo)), 500),
         firedUp: body.firedUp === true,
-        struckOutFirstSegment: body.struckOutFirstSegment === true,
         isPersonalBest,
       },
       body.tz,
