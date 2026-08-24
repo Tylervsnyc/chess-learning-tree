@@ -52,10 +52,21 @@ type Track = { L: Arm; R: Arm; done: boolean };
 const newArm = (): Arm => ({ clear: 0, armed: false, hold: 0 });
 const newTrack = (): Track => ({ L: newArm(), R: newArm(), done: false });
 
+// Hand labels (2026-08-24): 1 = LEFT hand (jab), 2 = RIGHT hand (cross),
+// orthodox stance. A command may NAME a hand — only that wrist can score.
+// Hand identity comes straight from MoveNet's left/right wrist keypoints,
+// so this stays STATE-based (which wrist is in the zone), not event-based.
+// Sequences (1-1, 1-2) are deliberately NOT here — they need punch-event
+// detection, the thing that was unreliable.
+const HAND_LABEL: Record<Side, string> = { L: '1', R: '2' };
+const HAND_NAME: Record<Side, string> = { L: 'LEFT', R: 'RIGHT' };
+const HANDS_FROM = 0.15; // progress at which named-hand punches start
+const HANDS_RATE = 0.6; // share of punch/power commands that name a hand
+
 type Command =
-  | { kind: 'punch'; zone: number; deadline: number; winMs: number; t: Track }
-  | { kind: 'power'; zone: number; deadline: number; winMs: number; t: Track }
-  | { kind: 'double'; zoneA: number; zoneB: number; deadline: number; winMs: number; tA: Track; tB: Track }
+  | { kind: 'punch'; zone: number; deadline: number; winMs: number; t: Track; hand?: Side }
+  | { kind: 'power'; zone: number; deadline: number; winMs: number; t: Track; hand?: Side }
+  | { kind: 'double'; zoneA: number; zoneB: number; deadline: number; winMs: number; tA: Track; tB: Track; handA?: Side; handB?: Side }
   | { kind: 'dodge'; zone: number; deadline: number; winMs: number; inFrames: number }
   | { kind: 'halfdodge'; side: HalfSide; deadline: number; winMs: number; inFrames: number }
   | { kind: 'combo'; punchZone: number; dodgeZone: number; deadline: number; winMs: number; t: Track; punchDone: boolean; inFrames: number };
@@ -359,14 +370,28 @@ export default function QuadrantFight({
       const kind = mix[Math.floor(Math.random() * mix.length)];
       const zone = pick(free);
 
+      // Name a hand on some punches once the opener is done. Bias toward the
+      // natural hand for the column (left hand → left column) so most named
+      // punches feel like real jab/cross work, with a third crossing over.
+      const natural: Side = zone % 2 === 0 ? 'L' : 'R';
+      const other: Side = natural === 'L' ? 'R' : 'L';
+      const hand: Side | undefined =
+        p >= HANDS_FROM && Math.random() < HANDS_RATE ? (Math.random() < 0.67 ? natural : other) : undefined;
+      const handTag = hand ? `${HAND_LABEL[hand]} (${HAND_NAME[hand]}) ` : '';
+
       if (kind === 'power') {
         const pw = Math.round(powerWindowMs(p, g.level, g.heat) * stag);
-        g.commands.push({ kind: 'power', zone, deadline: now + pw, winMs: pw, t: newTrack() });
-        setBanner(`POWER PUNCH ${ZONE_LABELS[zone]} — NOW!`);
+        g.commands.push({ kind: 'power', zone, deadline: now + pw, winMs: pw, t: newTrack(), hand });
+        setBanner(`POWER ${handTag}${ZONE_LABELS[zone]} — NOW!`);
       } else if (kind === 'double') {
         const zoneB = pick(free.filter((z) => z !== zone));
-        g.commands.push({ kind: 'double', zoneA: zone, zoneB, deadline, winMs: win, tA: newTrack(), tB: newTrack() });
-        setBanner(`DOUBLE — BOTH HANDS: ${ZONE_LABELS[zone]} + ${ZONE_LABELS[zoneB]}`);
+        // Doubles always name hands: each hand takes its own column; if both
+        // zones share a column, left hand gets the upper one.
+        let handA: Side, handB: Side;
+        if (zone % 2 !== zoneB % 2) { handA = zone % 2 === 0 ? 'L' : 'R'; handB = handA === 'L' ? 'R' : 'L'; }
+        else { handA = zone < zoneB ? 'L' : 'R'; handB = handA === 'L' ? 'R' : 'L'; }
+        g.commands.push({ kind: 'double', zoneA: zone, zoneB, deadline, winMs: win, tA: newTrack(), tB: newTrack(), handA, handB });
+        setBanner(`DOUBLE — ${HAND_LABEL[handA]} ${ZONE_LABELS[zone]} + ${HAND_LABEL[handB]} ${ZONE_LABELS[zoneB]}`);
       } else if (kind === 'halfdodge') {
         const side = freeSides[Math.floor(Math.random() * freeSides.length)];
         g.commands.push({ kind: 'halfdodge', side, deadline: now + dwin, winMs: dwin, inFrames: 0 });
@@ -379,8 +404,8 @@ export default function QuadrantFight({
         g.commands.push({ kind: 'dodge', zone, deadline: now + dwin, winMs: dwin, inFrames: 0 });
         setBanner(`DODGE — head out of ${ZONE_LABELS[zone]}`);
       } else {
-        g.commands.push({ kind: 'punch', zone, deadline, winMs: win, t: newTrack() });
-        setBanner(`PUNCH ${ZONE_LABELS[zone]}`);
+        g.commands.push({ kind: 'punch', zone, deadline, winMs: win, t: newTrack(), hand });
+        setBanner(`PUNCH ${handTag}${ZONE_LABELS[zone]}`);
       }
       return true;
     }
@@ -537,9 +562,12 @@ export default function QuadrantFight({
       // tracking is not "hand clear" — that was the early-count bug), then
       // lands by entering. Either hand can score, so a guard hand resting in a
       // bottom quadrant no longer blocks the other hand's punch.
-      const trackPunch = (t: Track, zone: number): boolean => {
+      // `hand` (optional) restricts scoring to ONE named wrist; the other
+      // hand entering the zone is ignored (not a miss — the clock decides).
+      const trackPunch = (t: Track, zone: number, hand?: Side): boolean => {
         if (t.done) return false;
         for (const p of wrists) {
+          if (hand && p.side !== hand) continue;
           const a = t[p.side];
           const isIn = inZone(p.x, p.y, zone, w, h);
           if (!a.armed) {
@@ -616,7 +644,7 @@ export default function QuadrantFight({
           }
 
           if (cmd.kind === 'punch' || cmd.kind === 'power') {
-            if (trackPunch(cmd.t, cmd.zone)) resolveCmd(cmd, true, [cmd.zone]);
+            if (trackPunch(cmd.t, cmd.zone, cmd.hand)) resolveCmd(cmd, true, [cmd.zone]);
           } else if (cmd.kind === 'combo' && !cmd.punchDone) {
             if (trackPunch(cmd.t, cmd.punchZone)) {
               // Punch landed — but the dodge keeps running to the deadline.
@@ -624,8 +652,8 @@ export default function QuadrantFight({
               g.flashes.push({ zone: cmd.punchZone, ok: true, until: now + 450 });
             }
           } else if (cmd.kind === 'double') {
-            if (trackPunch(cmd.tA, cmd.zoneA)) g.flashes.push({ zone: cmd.zoneA, ok: true, until: now + 450 });
-            if (trackPunch(cmd.tB, cmd.zoneB)) g.flashes.push({ zone: cmd.zoneB, ok: true, until: now + 450 });
+            if (trackPunch(cmd.tA, cmd.zoneA, cmd.handA)) g.flashes.push({ zone: cmd.zoneA, ok: true, until: now + 450 });
+            if (trackPunch(cmd.tB, cmd.zoneB, cmd.handB)) g.flashes.push({ zone: cmd.zoneB, ok: true, until: now + 450 });
             // Both landed: checkmarks on BOTH quads.
             if (cmd.tA.done && cmd.tB.done) resolveCmd(cmd, true, [cmd.zoneA, cmd.zoneB]);
           }
@@ -667,13 +695,32 @@ export default function QuadrantFight({
             ctx.fillStyle = remainingCmd < 500 ? '#f87171' : '#fff';
             ctx.fillText(secs, r.x + r.w / 2, r.y + r.h * 0.28);
           };
-          if (cmd.kind === 'punch') paint(cmd.zone, '34,197,94');
-          if (cmd.kind === 'power') paint(cmd.zone, '249,115,22');
+          // Named hand: a big "1" / "2" badge in the zone's center.
+          const paintHand = (zone: number, hand?: Side) => {
+            if (!hand) return;
+            const r = zoneRect(zone, w, h);
+            const cx = r.x + r.w / 2, cy = r.y + r.h * 0.62, rad = Math.min(r.w, r.h) * 0.16;
+            ctx.beginPath();
+            ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(250,204,21,0.95)';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#fff';
+            ctx.stroke();
+            ctx.font = `bold ${Math.round(rad * 1.4)}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(HAND_LABEL[hand], cx, cy + 1);
+            ctx.textBaseline = 'alphabetic';
+          };
+          if (cmd.kind === 'punch') { paint(cmd.zone, '34,197,94'); paintHand(cmd.zone, cmd.hand); }
+          if (cmd.kind === 'power') { paint(cmd.zone, '249,115,22'); paintHand(cmd.zone, cmd.hand); }
           if (cmd.kind === 'dodge') paint(cmd.zone, '239,68,68');
           if (cmd.kind === 'halfdodge') for (const z of HALF_ZONES[cmd.side]) paint(z, '239,68,68');
           if (cmd.kind === 'double') {
-            if (!cmd.tA.done) paint(cmd.zoneA, '34,197,94');
-            if (!cmd.tB.done) paint(cmd.zoneB, '34,197,94');
+            if (!cmd.tA.done) { paint(cmd.zoneA, '34,197,94'); paintHand(cmd.zoneA, cmd.handA); }
+            if (!cmd.tB.done) { paint(cmd.zoneB, '34,197,94'); paintHand(cmd.zoneB, cmd.handB); }
           }
           if (cmd.kind === 'combo') {
             if (!cmd.punchDone) paint(cmd.punchZone, '34,197,94');
@@ -739,6 +786,13 @@ export default function QuadrantFight({
         ctx.fill();
         ctx.strokeStyle = '#fff';
         ctx.stroke();
+        // Every wrist dot wears its number so "punch 2" is never a guess.
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#0f172a';
+        ctx.fillText(HAND_LABEL[p.side], p.x, p.y + 1);
+        ctx.textBaseline = 'alphabetic';
       }
       if (head[0]) {
         ctx.beginPath();

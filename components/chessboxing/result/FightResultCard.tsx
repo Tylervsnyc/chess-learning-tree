@@ -17,6 +17,7 @@ import { useEffect, type ReactNode } from 'react';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 import { playBoxingBell, playButtonClick } from '@/lib/sounds';
 import { CardRaysHero, HERO_DONE_MS } from './CardRaysHero';
+import type { NextMedal } from '@/lib/achievements/types';
 
 const PUZZLE_ICON = '/boxing/locker/corner-puzzle.webp';
 const PLAY_ICON = '/boxing/locker/corner-play.webp';
@@ -78,6 +79,8 @@ interface Props {
   onSignIn: () => void;
   onLeaderboard: () => void;
   onDone: () => void;
+  /** "Next: Thousand Fists — 412/1000" — closest in-progress medal (server-computed). */
+  nextMedal?: NextMedal | null;
 }
 
 export function FightResultCard(p: Props) {
@@ -117,6 +120,12 @@ export function FightResultCard(p: Props) {
           <Ribbon delay={d} color={ribbonColor}>{ribbon}</Ribbon>
           {data.kind === 'workout' ? <WorkoutBody d={data} delay={d} /> : <BoutBody d={data} delay={d} />}
           <Rookie line={data.rookieLine} delay={d + 0.55} meltdown={data.kind === 'bout' && data.meltdown} />
+          {p.nextMedal && (
+            <Land delay={d + 0.58} className="mt-2 px-1 flex items-center justify-between gap-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#1b2340]/60">
+              <span className="truncate">Next medal: <span className="text-[#1b2340]">{p.nextMedal.icon.startsWith('/') ? <img src={p.nextMedal.icon} alt="" className="inline-block h-3.5 w-3.5 align-[-2px]" /> : p.nextMedal.icon} {p.nextMedal.name}</span></span>
+              <span className="tabular-nums shrink-0 text-[#1b2340]">{p.nextMedal.progress.toLocaleString()}/{p.nextMedal.target.toLocaleString()}</span>
+            </Land>
+          )}
 
           <Land delay={d + 0.6} className="mt-3 pt-2 border-t border-dashed border-[#1b2340]/25">
             <StreakComplete />

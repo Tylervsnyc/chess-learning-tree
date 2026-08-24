@@ -263,7 +263,7 @@ export async function POST(request: NextRequest) {
   // chess.js — the replay IS the validation, so a fabricated list that
   // doesn't play out legally yields no facts and no medals.
   const facts = deriveBoutFacts(body.moveSans);
-  const newAchievements = await processAchievementEvent(
+  const achievementOutcome = await processAchievementEvent(
     svc,
     user.id,
     {
@@ -290,6 +290,7 @@ export async function POST(request: NextRequest) {
     points,
     result,
     ranked,
-    newAchievements,
+    newAchievements: achievementOutcome.unlocks,
+    nextMedal: achievementOutcome.nextMedal,
   });
 }

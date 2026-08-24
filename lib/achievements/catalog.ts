@@ -1,7 +1,7 @@
 import type { AchievementDef } from './types';
 
 /**
- * The achievement catalog (Phase 1 — Chess Boxing).
+ * The achievement catalog (Chess Boxing).
  *
  * Copy lives in code, not the DB (same pattern as the quip pool). Every line
  * is Rookie: short, warm, over-invested, never cruel about the player — the
@@ -9,23 +9,58 @@ import type { AchievementDef } from './types';
  *
  * IDs are stable forever — they're stored in user_achievements. Add new
  * achievements freely; never rename or reuse an id.
+ *
+ * Design (2026-08-24 rework): a first-timer must leave their first workout or
+ * bout with 3-5 medals, and nearly every session should tick a ladder.
+ *   - "first-*" medals are binary and trivially cheap (one punch, one solve).
+ *   - Count ladders start LOW (rung I is reachable in one session) and climb
+ *     to the old lifetime numbers — the belt-tier mechanism does the rest.
  */
 export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
   // ── Bout ──────────────────────────────────────────────────────────────────
+  {
+    id: 'bout-ring-time',
+    category: 'bout',
+    name: 'Ring Time',
+    description: 'You stepped into the ring with me. Win or lose, that already puts you ahead of everyone who only talks about it.',
+    icon: '/achievements/bout-ring-time.webp',
+    thresholds: [1, 5, 25, 100, 500],
+  },
+  {
+    id: 'bout-first-round',
+    category: 'bout',
+    name: 'Heard the Bell',
+    description: 'You survived a full round. Your legs are still under you. I checked.',
+    icon: '🦵',
+  },
   {
     id: 'bout-first-blood',
     category: 'bout',
     name: 'First Blood',
     description: "Your first win. I'm framing this. I already framed it.",
-    icon: '🥊',
+    icon: '/achievements/bout-first-blood.webp',
+  },
+  {
+    id: 'bout-learning-tax',
+    category: 'bout',
+    name: 'Learning Tax',
+    description: "Your first loss. Everyone pays it once. I paid it forty times last week and I'm the coach.",
+    icon: '/achievements/bout-learning-tax.webp',
+  },
+  {
+    id: 'bout-split-decision',
+    category: 'bout',
+    name: 'Split Decision',
+    description: 'A draw. Nobody won. Nobody lost. The judges went home confused and so did I.',
+    icon: '⚖️',
   },
   {
     id: 'bout-ko-artist',
     category: 'bout',
     name: 'KO Artist',
-    description: 'Checkmate is just a KO where the referee is math.',
+    description: 'Checkmate is just a knockout where the referee is math.',
     icon: '💥',
-    thresholds: [1, 10, 50, 200],
+    thresholds: [1, 5, 25, 100, 500],
   },
   {
     id: 'bout-went-the-distance',
@@ -40,7 +75,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     name: "Judges' Favorite",
     description: "You didn't knock me out, you just quietly took all my pawns. Colder, honestly.",
     icon: '📋',
-    thresholds: [1, 10, 50],
+    thresholds: [1, 5, 25, 100],
   },
   {
     id: 'bout-hometown-decision',
@@ -60,9 +95,31 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'bout-buzzer-beater',
     category: 'bout',
     name: 'Buzzer Beater',
-    description:
-      'Under ten seconds left and you found mate. I need to sit down. I am sitting down. I need to sit down more.',
+    description: 'Under ten seconds left and you found mate. I need to sit down. I need to sit down more.',
     icon: '⏱️',
+  },
+  {
+    id: 'bout-time-to-spare',
+    category: 'bout',
+    name: 'Time to Spare',
+    description: 'You won with two minutes still on the clock. You could have used it. You chose not to. Rude.',
+    icon: '⌛',
+  },
+  {
+    id: 'bout-ring-fists',
+    category: 'bout',
+    name: 'Ring Fists',
+    description: 'Punches landed in the ring, between chess moves. Your hands and your brain are finally on the same payroll.',
+    icon: '🤜',
+    thresholds: [10, 50, 200, 1000, 5000],
+  },
+  {
+    id: 'bout-clean-card',
+    category: 'bout',
+    name: 'Clean Card',
+    description: 'A judge scored you ninety or better for a round. That judge and I are no longer speaking.',
+    icon: '🃏',
+    band: 'contender',
   },
   {
     id: 'bout-and-still',
@@ -90,10 +147,9 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'bout-sparring-partner',
     category: 'bout',
     name: 'Sparring Partner',
-    description:
-      "Ten exhibition bouts. No stakes, all heart. That's either love of the game or fear of Fight Night.",
+    description: 'Exhibition bouts. No stakes, all heart. You fight me when nobody is even counting, and I notice.',
     icon: '🤝',
-    thresholds: [10],
+    thresholds: [1, 10, 50, 200],
   },
 
   // ── Finishing moves (all detected by replaying the bout's real moves) ─────
@@ -101,7 +157,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'mate-her-majesty',
     category: 'checkmate',
     name: 'Her Majesty',
-    description: 'A queen mate. She files the paperwork AND performs the execution. Efficient. Terrifying.',
+    description: 'A queen mate. She files the paperwork AND performs the execution. Terrifying.',
     icon: '👸',
   },
   {
@@ -137,8 +193,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'mate-the-quiet-step',
     category: 'checkmate',
     name: 'The Quiet Step',
-    description:
-      "You moved your KING and I got checkmated. That's not even supposed to be legal. I looked it up. It's legal.",
+    description: "You moved your KING and I got checkmated. I looked it up. It's legal.",
     icon: '👑',
     band: 'champion',
   },
@@ -224,7 +279,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'chess-field-promotion',
     category: 'checkmate',
     name: 'Field Promotion',
-    description: "A pawn made it all the way to the end of the board. I watched every step and couldn't stop any of them.",
+    description: "A pawn made it all the way across. I watched every step and couldn't stop one of them.",
     icon: '🎖️',
   },
   {
@@ -393,63 +448,159 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
 
   // ── Puzzles ───────────────────────────────────────────────────────────────
   {
+    id: 'puzzle-first-solve',
+    category: 'puzzle',
+    name: 'First Solve',
+    description: "Your first correct puzzle. I saw the whole thing. I'm going to be talking about it for a while.",
+    icon: '/achievements/puzzle-first-solve.webp',
+  },
+  {
+    id: 'puzzle-first-miss',
+    category: 'puzzle',
+    name: 'Swing and a Miss',
+    description: 'Your first wrong answer. Congratulations, you are officially a chess player. That is the entry fee.',
+    icon: '/achievements/puzzle-swing-and-a-miss.webp',
+  },
+  {
     id: 'puzzle-grinder',
     category: 'puzzle',
     name: 'Puzzle Grinder',
-    description: 'Your pattern recognition is now legally a superpower.',
+    description: 'Puzzles solved, and counting. Your pattern recognition is now legally a superpower.',
     icon: '🧩',
-    thresholds: [100, 1000, 5000, 10000],
+    thresholds: [10, 50, 200, 1000, 5000],
   },
   {
     id: 'puzzle-combo-meal',
     category: 'puzzle',
     name: 'Combo Meal',
-    description: 'Eight in a row. The multiplier maxed out. The multiplier has never been more proud.',
+    description: 'A streak of correct answers, no misses. The multiplier has never been more proud of anyone.',
     icon: '🍔',
+    thresholds: [3, 5, 8, 12], // best combo in a session (high-water)
+  },
+  {
+    id: 'puzzle-twenty-in-a-session',
+    category: 'puzzle',
+    name: 'Twenty Deep',
+    description: 'Twenty puzzles solved in one session. Twenty. I have told no one. I have told everyone.',
+    icon: '🔢',
+    band: 'contender',
+  },
+  {
+    id: 'puzzle-whiffs',
+    category: 'puzzle',
+    name: 'The Whiff Collection',
+    description: 'Wrong answers, lifetime. Every one of them taught you something, and every one of them made my day.',
+    icon: '🪣',
+    thresholds: [10, 50, 200, 1000],
+  },
+  {
+    id: 'puzzle-bounce-back',
+    category: 'puzzle',
+    name: 'Bounce Back',
+    description: 'Struck out in the first segment, then solved five anyway. That is the whole sport in one session.',
+    icon: '🏀',
+    band: 'contender',
   },
   {
     id: 'puzzle-flawless',
     category: 'puzzle',
     name: 'Flawless',
-    description:
-      "A full flawless session. I checked the math twice because frankly I didn't believe the math.",
+    description: "A full flawless session. I checked the math twice because frankly I didn't believe the math.",
     icon: '💎',
     thresholds: [1, 2, 3, 4], // tier = longest flawless duration band (8/16/24/32 min)
   },
 
   // ── Training ──────────────────────────────────────────────────────────────
   {
-    id: 'training-fired-up',
+    id: 'training-first-workout',
     category: 'training',
-    name: 'Fired Up',
-    description:
-      'Eighty punches, one round. Your next chess round is legally required to be 25% better. House rules.',
-    icon: '🔥',
+    name: 'Day One',
+    description: 'Your first workout is in the books. I am the book. I am also the pen.',
+    icon: '/achievements/training-day-one.webp',
+  },
+  {
+    id: 'training-first-punch',
+    category: 'training',
+    name: 'First Punch',
+    description: 'One punch, counted. The bag did not see it coming. The bag never sees anything coming.',
+    icon: '/achievements/training-first-punch.webp',
+  },
+  {
+    id: 'training-twenty-five',
+    category: 'training',
+    name: 'Twenty-Five',
+    description: 'Twenty-five punches. I have told no one. I have told everyone.',
+    icon: '/achievements/training-twenty-five.webp',
+  },
+  {
+    id: 'training-hundred-club',
+    category: 'training',
+    name: 'Hundred Club',
+    description: 'A hundred punches in one session. Your hands should file for overtime.',
+    icon: '💯',
+    band: 'contender',
   },
   {
     id: 'training-thousand-fists',
     category: 'training',
     name: 'Thousand Fists',
-    description: "At some point this stopped being a chess app and I didn't stop you.",
+    description: "Punches, lifetime. At some point this stopped being a chess app and I didn't stop you.",
     icon: '👊',
-    thresholds: [1000, 10000, 100000],
+    thresholds: [50, 200, 1000, 5000, 25000],
+  },
+  {
+    id: 'training-punch-clock',
+    category: 'training',
+    name: 'Punch Clock',
+    description: 'Workouts finished. You keep showing up, and I keep the count, and neither of us is stopping.',
+    icon: '🕰️',
+    thresholds: [3, 10, 50, 200, 1000],
+  },
+  {
+    id: 'training-clock-in',
+    category: 'training',
+    name: 'Gym Minutes',
+    description: 'Minutes in the gym with me. Every one of them is written down somewhere you will never find.',
+    icon: '⏲️',
+    thresholds: [15, 60, 300, 1000, 5000],
+  },
+  {
+    id: 'training-fired-up',
+    category: 'training',
+    name: 'Fired Up',
+    description: 'Eighty punches in one round. Your next chess round is legally required to be better. House rules.',
+    icon: '/achievements/training-fired-up.webp',
+  },
+  {
+    id: 'training-first-round',
+    category: 'training',
+    name: 'On the Board',
+    description: 'Points in a round. Real ones. The scoreboard is now aware of you and it is nervous.',
+    icon: '🎯',
   },
   {
     id: 'training-new-belt-day',
     category: 'training',
     name: 'New Belt Day',
-    description:
-      'Another personal best. Your old best is in the locker room questioning its life choices.',
+    description: 'A personal best. Your old best is in the locker room questioning its life choices.',
     icon: '📈',
-    thresholds: [5, 25, 100],
+    thresholds: [1, 5, 25, 100],
   },
   {
     id: 'training-round-of-your-life',
     category: 'training',
     name: 'Round of Your Life',
-    description:
-      "Five hundred points in one round. I'd review the tape but honestly it would just embarrass the tape.",
+    description: 'Your best single round, ever. I would review the tape but it would just embarrass the tape.',
     icon: '⚡',
+    thresholds: [100, 250, 500, 1000], // best-round points (high-water)
+  },
+  {
+    id: 'training-full-shift',
+    category: 'training',
+    name: 'Full Shift',
+    description: 'A thirty-two minute session, start to finish. Go drink water. I mean it. Water.',
+    icon: '🚰',
+    band: 'contender',
   },
   {
     id: 'training-double-shift',
@@ -461,20 +612,54 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
 
   // ── Dedication ────────────────────────────────────────────────────────────
   {
+    id: 'dedication-first-day',
+    category: 'dedication',
+    name: 'Showed Up',
+    description: 'Your first day. Everything after this is a streak. No pressure. Some pressure.',
+    icon: '🚪',
+  },
+  {
     id: 'dedication-the-regular',
     category: 'dedication',
     name: 'The Regular',
-    description:
-      "I see you more than I see my own engine. I mean that warmly and also I'm worried about both of us.",
-    icon: '🔥',
-    thresholds: [3, 7, 30, 100, 365],
+    description: 'Days in a row. I see you more than I see my own king, and he lives here.',
+    icon: '/achievements/dedication-the-regular.webp',
+    thresholds: [2, 7, 30, 100, 365],
+  },
+  {
+    id: 'dedication-both-barrels',
+    category: 'dedication',
+    name: 'Both Barrels',
+    description: 'A workout AND a bout on the same day. You did the whole sport in one day. On purpose.',
+    icon: '🔫',
+    band: 'contender',
+  },
+  {
+    id: 'dedication-early-bird',
+    category: 'dedication',
+    name: 'Early Bird',
+    description: 'Chess boxing before eight in the morning. The sun was barely up and you were already hitting things.',
+    icon: '🌅',
+  },
+  {
+    id: 'dedication-lunch-break',
+    category: 'dedication',
+    name: 'Lunch Break',
+    description: 'A session at lunch. Everyone else ate a sandwich. You ate a bishop.',
+    icon: '🥪',
+  },
+  {
+    id: 'dedication-weekend-warrior',
+    category: 'dedication',
+    name: 'Weekend Warrior',
+    description: 'A weekend session. You could have been anywhere. You chose me and a punching bag.',
+    icon: '🗓️',
   },
   {
     id: 'dedication-comeback-kid',
     category: 'dedication',
     name: 'Comeback Kid',
-    description:
-      'You came back. I kept the campfire going. I never doubted you. I doubted you a medium amount.',
+    description: 'You came back. I kept the campfire going. I never doubted you. I doubted you a medium amount.',
     icon: '🏕️',
   },
   {
@@ -490,8 +675,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'shame-glass-jaw',
     category: 'shame',
     name: 'Glass Jaw',
-    description:
-      "KO'd before the gloves even came on. In boxing they'd call that a puncher's chance. I had one. Sorry. Not that sorry.",
+    description: "Knocked out before the gloves even came on. I had a puncher's chance. Sorry. Not that sorry.",
     icon: '🫙',
     secret: true,
   },
@@ -509,8 +693,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'shame-three-strikes',
     category: 'shame',
     name: 'Three Strikes',
-    description:
-      "Struck out in the opening segment. The puzzles started a group chat about you. I'm in it.",
+    description: "Struck out in the opening segment. The puzzles started a group chat about you. I'm in it.",
     icon: '❌',
     secret: true,
   },
@@ -518,8 +701,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     id: 'shame-full-carlsberg',
     category: 'shame',
     name: 'The Full Carlsberg',
-    description:
-      "Five losses in one day and you kept getting back up. That's the most boxer thing I've ever seen. Medal. Now go drink water.",
+    description: "Five losses in one day and you kept getting back up. That's the most boxer thing I've ever seen. Now go drink water.",
     icon: '🥤',
     secret: true,
   },

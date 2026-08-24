@@ -1,5 +1,6 @@
 import React from 'react';
 import { Composition } from 'remotion';
+import { ChessBoxingMeetupReel, CB_MEETUP_DURATION, CB_MEETUP_FPS, CB_MEETUP_W, CB_MEETUP_H } from './ChessBoxingMeetupReel';
 import { DailyPuzzleVideo, type DailyPuzzleVideoProps } from './DailyPuzzleVideo';
 import { DuolingoAdReel, DuolingoAdReelShort, DuolingoAdReelLong } from './DuolingoAdReel';
 import { StrategyReel } from './StrategyReel';
@@ -85,6 +86,14 @@ const numSolutionMoves = defaultProps.rawMoves.length - 1;
 export const Root: React.FC = () => {
   return (
     <>
+      <Composition
+        id="ChessBoxingMeetupReel"
+        component={ChessBoxingMeetupReel}
+        durationInFrames={CB_MEETUP_DURATION}
+        fps={CB_MEETUP_FPS}
+        width={CB_MEETUP_W}
+        height={CB_MEETUP_H}
+      />
       <Composition
         id="DailyPuzzleVideo"
         // Remotion 4 Composition types require Record<string, unknown>; cast needed for typed props

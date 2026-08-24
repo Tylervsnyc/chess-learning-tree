@@ -20,6 +20,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
  *   m — "new belt": centered card over a dark backdrop, auto-dismisses.
  *   l — "title fight": full ceremony, stays until tapped.
  *
+ * Shows a "2 of 5" counter whenever more than one item is queued.
  * Plays at most `maxPlayed` items (the biggest ones, ordered small → big);
  * the rest are reported in an overflow note so nobody is trapped in a
  * celebration chain (momentum over perfection). Everything is tappable
@@ -154,8 +155,11 @@ export default function AchievementPop({
 
   if (!current) return null;
 
-  const isLast = index === orderedRef.current.length - 1;
+  const total = orderedRef.current.length;
+  const isLast = index === total - 1;
   const overflowNote = overflowRef.current > 0 && isLast ? overflowLabel(overflowRef.current) : null;
+  /** "2 of 5" — only when there's a stack to tap through. */
+  const counter = total > 1 ? `${index + 1} of ${total}` : null;
   const c = current.accent;
   const roast = current.mood === 'roast';
   const eyebrow =
@@ -196,6 +200,7 @@ export default function AchievementPop({
               <div className="text-[9px] font-black uppercase" style={{ letterSpacing: '.25em', color: roast ? '#94A3B8' : GOLD }}>
                 {eyebrow}
                 {current.tierLabel ? ` · ${current.tierLabel}` : ''}
+                {counter ? <span className="float-right text-white/40">{counter}</span> : null}
               </div>
               <div className="text-sm font-black truncate">{current.name}</div>
               <div className="text-[11px] font-medium text-white/70 leading-snug line-clamp-2">{current.line}</div>
@@ -242,6 +247,7 @@ export default function AchievementPop({
               {current.ladder && <div className="mt-2"><Ladder {...current.ladder} /></div>}
               <div className="mt-2 text-xs font-medium text-white/75 leading-snug">{current.line}</div>
               <div className="mt-2 text-[10px] font-bold text-white/35">
+                {counter ? `${counter} · ` : ''}
                 {current.footer ? `${current.footer} · ` : ''}
                 {overflowNote ? `${overflowNote} · ` : ''}
                 Tap to skip
@@ -308,6 +314,7 @@ export default function AchievementPop({
             “{current.line}”
           </div>
           <div className="text-[10px] font-bold text-white/40">
+            {counter ? `${counter} · ` : ''}
             {current.footer ? `${current.footer} · ` : ''}
             {overflowNote ? `${overflowNote} · ` : ''}
             Tap to continue
@@ -402,7 +409,14 @@ export function PopTile({
             }}
           />
         )}
-        <span className={`relative flex items-center justify-center ${locked ? 'grayscale opacity-40' : ''}`}>{icon}</span>
+        <span className={`relative flex items-center justify-center ${locked ? 'grayscale opacity-40' : ''}`}>
+          {typeof icon === 'string' && icon.startsWith('/') ? (
+            // Painted medal art (vintage gym-sign style, public/achievements/*.webp)
+            <img src={icon} alt="" draggable={false} style={{ width: size * 0.78, height: size * 0.78, objectFit: 'contain' }} />
+          ) : (
+            icon
+          )}
+        </span>
       </div>
     </div>
   );

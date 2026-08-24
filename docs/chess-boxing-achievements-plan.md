@@ -251,6 +251,16 @@ Everything behind `FEATURE_FLAGS.ACHIEVEMENTS` (house-style doc comment), defaul
 
 ---
 
+## 8b. Status (2026-08-24 — the gym-Saturday rework)
+
+**Live:** 64 → 88 medals. Five first-timers at a real gym earned one medal total, so the catalog was reworked for a Clash-of-Clans finish: a first workout now EARNS 5-7 cheap medals (only 2 play per finish — see below) (Day One, First Punch, Twenty-Five, First Solve, Swing and a Miss, Combo Meal I, On the Board, New Belt Day I, Showed Up), a first bout 3-5 (Ring Time I, Heard the Bell, First Blood or Learning Tax, Ring Fists I, Showed Up).
+
+- **Ladders start low.** Every count medal now begins at a rung reachable in one session and climbs to the old lifetime numbers (Puzzle Grinder 10→5000, Thousand Fists 50→25000, Punch Clock 3→1000, Gym Minutes 15→5000, KO Artist 1→500…). Same `thresholds` + belt-tier mechanism; `engine.ts` gained `best()` (a high-water feeder for combo / best round / streak) beside `count()`.
+- **Unseen backlog replays.** `processAchievementEvent` returns fresh unlocks + any `seen=false` rows; **the overlay plays at most 2 per finish** (Tyler's cap, 2026-08-24) with a "1 of 2" counter and marks only played ones seen; the rest drip out 2 per session. Nothing is missed forever, and a big first session becomes several reasons to come back.
+- **Next-medal teaser.** `nextMedalTeaser()` picks the in-progress ladder closest to its next rung; `FightResultCard` shows "Next medal: Thousand Fists 412/1000" on both kinds.
+- **New facts:** `wrong` on the workout event; `localWeekday`, `boutsToday` (both events) in the context. No schema changes.
+- Review every line at `/test/achievements` (full catalog, tap to play).
+
 ## 9. Build Phases
 
 **Phase 1 — Foundation + Bout/Training/Dedication/Shame (no new game data needed).**

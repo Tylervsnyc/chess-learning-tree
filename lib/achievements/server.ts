@@ -3,8 +3,23 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
 import { fetchCompletionTimestamps, computeStreak, shiftDate } from '@/lib/streak/compute';
 import { periodStartISO } from '@/lib/leaderboard/period';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { evaluate, type AchievementEvent, type AchievementContext } from './engine';
-import type { AchievementRow, AchievementUnlock } from './types';
+import {
+  evaluate,
+  nextMedalTeaser,
+  rowToUnlock,
+  type AchievementEvent,
+  type AchievementContext,
+} from './engine';
+import type { AchievementRow, AchievementUnlock, NextMedal } from './types';
+
+export interface AchievementOutcome {
+  /** Fresh unlocks/upgrades from this event, followed by the unseen backlog. */
+  unlocks: AchievementUnlock[];
+  /** Closest in-progress ladder medal, for the result card's teaser line. */
+  nextMedal: NextMedal | null;
+}
+
+const NONE: AchievementOutcome = { unlocks: [], nextMedal: null };
 
 /**
  * Server side of the achievements engine. Called from the finish routes
@@ -21,8 +36,8 @@ export async function processAchievementEvent(
   userId: string,
   event: AchievementEvent,
   tzRaw?: unknown,
-): Promise<AchievementUnlock[]> {
-  if (!FEATURE_FLAGS.ACHIEVEMENTS) return [];
+): Promise<AchievementOutcome> {
+  if (!FEATURE_FLAGS.ACHIEVEMENTS) return NONE;
   try {
     const tz = typeof tzRaw === 'string' && tzRaw.length <= 64 ? tzRaw : 'UTC';
     const today = safeToday(tz);
@@ -36,7 +51,7 @@ export async function processAchievementEvent(
       if (!/user_achievements/.test(rowError.message ?? '')) {
         console.error('achievements read failed', rowError);
       }
-      return [];
+      return NONE;
     }
     const rows = new Map<string, AchievementRow>(
       ((rowData ?? []) as AchievementRow[]).map((r) => [r.achievement_id, r]),
@@ -44,7 +59,18 @@ export async function processAchievementEvent(
 
     const ctx = await buildContext(svc, userId, event, tz, today, rows);
     const { writes, unlocks } = evaluate(event, ctx);
-    if (writes.length === 0) return [];
+
+    // Unseen backlog: medals earned earlier but never played (overflow, a
+    // closed tab). Replayed after the fresh ones; the overlay marks them seen.
+    const freshIds = new Set(unlocks.map((u) => u.id));
+    const backlog: AchievementUnlock[] = [];
+    for (const row of rows.values()) {
+      if (row.seen || freshIds.has(row.achievement_id)) continue;
+      const u = rowToUnlock(row);
+      if (u) backlog.push(u);
+    }
+
+    if (writes.length === 0) return { unlocks: backlog, nextMedal: nextMedalTeaser(rows) };
 
     const now = new Date().toISOString();
     const upserts = writes.map((w) => {
@@ -66,13 +92,26 @@ export async function processAchievementEvent(
       .upsert(upserts, { onConflict: 'user_id,achievement_id' });
     if (writeError) {
       console.error('achievements write failed', writeError);
-      return [];
+      return NONE;
     }
 
-    return unlocks;
+    // Post-write rows for the teaser (no re-read: fold the upserts in).
+    const after = new Map(rows);
+    for (const u of upserts) {
+      after.set(u.achievement_id, {
+        achievement_id: u.achievement_id,
+        tier: u.tier,
+        progress: u.progress,
+        unlocked_at: u.unlocked_at,
+        upgraded_at: u.upgraded_at,
+        seen: u.seen,
+      });
+    }
+
+    return { unlocks: [...unlocks, ...backlog], nextMedal: nextMedalTeaser(after) };
   } catch (e) {
     console.error('achievements processing failed', e);
-    return [];
+    return NONE;
   }
 }
 
@@ -96,18 +135,21 @@ async function buildContext(
   const gapDaysBeforeToday = prevDay ? diffDays(prevDay, today) - 1 : null;
 
   const localHour = hourInTz(tz);
+  const localWeekday = weekdayInTz(tz);
 
   let boutLossesToday = 0;
-  let workoutsToday = 0;
   let rankedWinDayStreak = 0;
 
+  // Both counts on every event — "Both Barrels" needs the pair.
+  const dayStart = periodStartISO('daily');
+  const [{ data: todayBouts }, { data: todayWorkouts }] = await Promise.all([
+    svc.from('bout_sessions').select('result').eq('user_id', userId).gte('created_at', dayStart),
+    svc.from('workout_sessions').select('id').eq('user_id', userId).gte('created_at', dayStart),
+  ]);
+  const boutsToday = (todayBouts ?? []).length;
+  const workoutsToday = (todayWorkouts ?? []).length;
+
   if (event.kind === 'bout_finished') {
-    const dayStart = periodStartISO('daily');
-    const { data: todayBouts } = await svc
-      .from('bout_sessions')
-      .select('result')
-      .eq('user_id', userId)
-      .gte('created_at', dayStart);
     boutLossesToday = ((todayBouts ?? []) as { result: string }[]).filter(
       (b) => b.result === 'loss',
     ).length;
@@ -134,13 +176,6 @@ async function buildContext(
         cursor = shiftDate(cursor, -1);
       }
     }
-  } else {
-    const { data: todayWorkouts } = await svc
-      .from('workout_sessions')
-      .select('id')
-      .eq('user_id', userId)
-      .gte('created_at', periodStartISO('daily'));
-    workoutsToday = (todayWorkouts ?? []).length;
   }
 
   return {
@@ -148,6 +183,8 @@ async function buildContext(
     streakCurrent: streak.current,
     gapDaysBeforeToday,
     localHour,
+    localWeekday,
+    boutsToday,
     boutLossesToday,
     workoutsToday,
     rankedWinDayStreak,
@@ -168,6 +205,16 @@ function hourInTz(tz: string): number {
     return Number.isFinite(n) ? n % 24 : 12;
   } catch {
     return 12; // unknown tz — never fires Night Shift by accident
+  }
+}
+
+function weekdayInTz(tz: string): number | null {
+  try {
+    const w = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short' }).format(new Date());
+    const idx = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(w);
+    return idx >= 0 ? idx : null;
+  } catch {
+    return null;
   }
 }
 

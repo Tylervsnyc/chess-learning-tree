@@ -41,7 +41,7 @@ export interface AchievementDef {
   name: string;
   /** Rookie's line. May contain {tier} / {threshold} placeholders. */
   description: string;
-  /** Emoji tile icon (no binary assets in Phase 1). */
+  /** Tile icon: an emoji, or a path (starts with '/') to painted art in public/achievements/ (256px WebP). */
   icon: string;
   /**
    * Count ladder — progress thresholds for tiers I/II/III/IV. Absent for
@@ -88,6 +88,18 @@ export interface AchievementUnlock {
   kind: 'unlocked' | 'upgraded';
   size: CelebrationSize;
   secret: boolean;
+}
+
+/**
+ * The "next medal" teaser for the result card: the in-progress ladder medal
+ * closest to its next rung. Computed server-side (engine.nextMedalTeaser).
+ */
+export interface NextMedal {
+  id: string;
+  name: string;
+  icon: string;
+  progress: number;
+  target: number;
 }
 
 /** Rookie level (1-10) → belt band. Count ladders map rung 1..n the same way. */

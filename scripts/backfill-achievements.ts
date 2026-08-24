@@ -107,6 +107,8 @@ async function main() {
       ).current,
       gapDaysBeforeToday: null, // not reconstructable per-event cheaply; skip Comeback Kid
       localHour: 12, // unknown historical tz — never backfill Night Shift
+      localWeekday: null, // nor Weekend Warrior / Early Bird / Lunch Break
+      boutsToday: 0,
       boutLossesToday: 0,
       workoutsToday: 0,
       rankedWinDayStreak: 0,
@@ -149,6 +151,7 @@ async function main() {
           ev: {
             kind: 'workout_finished',
             correct: (w.correct_count as number) ?? 0,
+            wrong: (w.wrong_count as number) ?? 0,
             punches: (w.punches as number) ?? 0,
             perfect: w.perfect === true,
             durationMinutes: (w.duration_minutes as number) ?? null,
