@@ -26,7 +26,7 @@ export const FEATURE_FLAGS = {
    * theme (lib/skill-profile.ts). Needs migration 2026-08-24-user-skill.sql.
    * Weekly report + targeted round (layers 2/3) read from it.
    */
-  SKILL_PROFILE: false,
+  SKILL_PROFILE: true,
   /**
    * CHE-390 — webview-safe auth. Inside social in-app browsers (Instagram,
    * Facebook, TikTok), Google blocks OAuth outright (`disallowed_useragent`) —
