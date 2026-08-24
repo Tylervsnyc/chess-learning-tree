@@ -92,6 +92,51 @@ export const RANKED_FORMAT: BoutFormat = 'standard';
  */
 export const DAILY_RANKED_BOUT_LIMIT = 1;
 
+/**
+ * Custom round card (Chess Boxing Pro, CHESSBOXING_PRO). Same locked structure
+ * (chess · break · boxing · break · … · chess) — Pro users pick how many chess
+ * rounds and how long each discipline's bell is. Never ranked: a board where
+ * people fought different cards isn't a ranking. OFFICIAL_CARD is the sport's
+ * 11-round format (6 chess + 5 boxing, 3:00 each) offered as a one-tap preset.
+ */
+export interface BoutCard {
+  chessRounds: number;
+  chessSeconds: number;
+  boxingSeconds: number;
+}
+
+export const OFFICIAL_CARD: BoutCard = { chessRounds: 6, chessSeconds: 180, boxingSeconds: 180 };
+export const CUSTOM_CHESS_ROUNDS = [2, 3, 4, 5, 6] as const;
+export const CUSTOM_ROUND_SECONDS = [60, 120, 180, 240] as const;
+
+export function cardForFormat(format: BoutFormat): BoutCard {
+  return {
+    chessRounds: BOUT_FORMATS[format].chessRounds,
+    chessSeconds: CHESS_ROUND_SECONDS,
+    boxingSeconds: BOXING_ROUND_SECONDS,
+  };
+}
+
+/** Clamp anything client-side into a card the segment builder accepts. */
+export function sanitizeCard(card: BoutCard): BoutCard {
+  const pick = <T extends readonly number[]>(list: T, v: number) =>
+    list.includes(v) ? v : list[Math.min(list.length - 1, Math.max(0, list.findIndex((x) => x >= v)))] ?? list[0];
+  return {
+    chessRounds: pick(CUSTOM_CHESS_ROUNDS, Math.round(card.chessRounds)),
+    chessSeconds: pick(CUSTOM_ROUND_SECONDS, Math.round(card.chessSeconds)),
+    boxingSeconds: pick(CUSTOM_ROUND_SECONDS, Math.round(card.boxingSeconds)),
+  };
+}
+
+/**
+ * The stock format a custom card is REPORTED as to /api/bout/finish. The
+ * server caps clock/cards by format, so pick the unranked format whose caps
+ * cover the card: 2 chess rounds → sparring, anything longer → championship.
+ */
+export function reportFormatForCard(card: BoutCard): BoutFormat {
+  return card.chessRounds <= 2 ? 'sparring' : 'championship';
+}
+
 export function isBoutFormat(v: unknown): v is BoutFormat {
   return v === 'sparring' || v === 'standard' || v === 'championship';
 }
@@ -115,8 +160,8 @@ export function boxingRoundCount(format: BoutFormat): number {
 }
 
 /** The user's chess bank for a format, in seconds. */
-export function bankSeconds(format: BoutFormat): number {
-  return chessRoundCount(format) * BANK_SECONDS_PER_CHESS_ROUND;
+export function bankSeconds(format: BoutFormat, card?: BoutCard | null): number {
+  return (card?.chessRounds ?? chessRoundCount(format)) * BANK_SECONDS_PER_CHESS_ROUND;
 }
 
 /**
@@ -124,14 +169,15 @@ export function bankSeconds(format: BoutFormat): number {
  * after every round except the last. Built, never hand-listed — the structure
  * is a rule, not a table someone can edit out of shape.
  */
-export function buildSegments(format: BoutFormat): BoutSegment[] {
-  const chess = chessRoundCount(format);
+export function buildSegments(format: BoutFormat, card?: BoutCard | null): BoutSegment[] {
+  const c = card ?? cardForFormat(format);
+  const chess = c.chessRounds;
   const segments: BoutSegment[] = [];
   for (let i = 1; i <= chess; i++) {
-    segments.push({ kind: 'chess', seconds: CHESS_ROUND_SECONDS, round: i });
+    segments.push({ kind: 'chess', seconds: c.chessSeconds, round: i });
     if (i < chess) {
       segments.push({ kind: 'break', seconds: BREAK_SECONDS, round: i });
-      segments.push({ kind: 'boxing', seconds: BOXING_ROUND_SECONDS, round: i });
+      segments.push({ kind: 'boxing', seconds: c.boxingSeconds, round: i });
       segments.push({ kind: 'break', seconds: BREAK_SECONDS, round: i });
     }
   }
@@ -139,8 +185,8 @@ export function buildSegments(format: BoutFormat): BoutSegment[] {
 }
 
 /** Total wall-clock length of a card, in seconds (for the format picker). */
-export function boutDurationSeconds(format: BoutFormat): number {
-  return buildSegments(format).reduce((sum, s) => sum + s.seconds, 0);
+export function boutDurationSeconds(format: BoutFormat, card?: BoutCard | null): number {
+  return buildSegments(format, card).reduce((sum, s) => sum + s.seconds, 0);
 }
 
 // ─── The decision ────────────────────────────────────────────────────────────

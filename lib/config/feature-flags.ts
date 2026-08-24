@@ -170,6 +170,18 @@ export const FEATURE_FLAGS = {
    * share/review/done actions underneath. OFF = the old popups.
    */
   FIGHT_RESULT_CARD: true,
+  /**
+   * Chess Boxing Pro (2026-08-24, docs/chess-boxing-monetization-and-exit-plan.md).
+   * ONE paid SKU: $5.99/mo · $39.99/yr, 7-day trial. "Pro" IS the existing
+   * premium entitlement (`profiles.subscription_status`, lib/subscription.ts)
+   * — Stripe on web, RevenueCat/StoreKit in the iOS shell (lib/iap/revenuecat.ts
+   * + /api/iap/revenuecat-webhook). When ON and the user is NOT premium:
+   * 1 bout + 1 workout per local day (enforced at the launch points via
+   * hooks/useProGate + /api/pro/limits), custom bout round configs, bout
+   * history, punch-log history, and a gold name on leaderboards/profile are Pro.
+   * OFF = the app behaves exactly as before: no limits, no paywall, no IAP UI.
+   */
+  CHESSBOXING_PRO: false,
 } as const;
 
 /**

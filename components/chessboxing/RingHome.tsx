@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useProGate } from '@/hooks/useProGate';
 import { ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
@@ -129,6 +131,11 @@ export function RingHome() {
 
   const current = boards[period] ?? LOADING;
 
+  // CHESSBOXING_PRO: free users get 1 workout + 1 bout per day. The gate is a
+  // no-op (plain navigation) while the flag is off.
+  const router = useRouter();
+  const { gate, paywall } = useProGate();
+
   return (
     <div className="h-full text-white relative overflow-hidden bg-[#131a2e]">
       <div className="absolute inset-0 mx-auto max-w-lg md:max-w-xl flex flex-col overflow-hidden">
@@ -144,6 +151,7 @@ export function RingHome() {
           <div className="grid grid-cols-2 gap-4">
             <CornerButton
               href="/workout?from=box"
+              onNavigate={(href) => gate('workout', () => router.push(href))}
               corner="red"
               title="Puzzle"
               sub="Boxing"
@@ -163,6 +171,7 @@ export function RingHome() {
             />
             <CornerButton
               href={FEATURE_FLAGS.BOUT_MODE ? '/box/bout' : '/play'}
+              onNavigate={FEATURE_FLAGS.BOUT_MODE ? (href) => gate('bout', () => router.push(href)) : undefined}
               corner="blue"
               title="Play"
               sub="Boxing"
@@ -245,6 +254,7 @@ export function RingHome() {
           <GearIcon />
         </Link>
       )}
+      {paywall}
     </div>
   );
 }
@@ -252,14 +262,18 @@ export function RingHome() {
 /* ---------- corner buttons ---------- */
 
 function CornerButton({
-  href, corner, title, sub, tag, tagIcon, icon,
+  href, onNavigate, corner, title, sub, tag, tagIcon, icon,
 }: {
-  href: string; corner: 'red' | 'blue'; title: string; sub: string; tag: string; tagIcon?: React.ReactNode; icon: React.ReactNode;
+  href: string;
+  /** When set, the tap is routed through here (Pro daily-limit gate) instead of a plain link. */
+  onNavigate?: (href: string) => void;
+  corner: 'red' | 'blue'; title: string; sub: string; tag: string; tagIcon?: React.ReactNode; icon: React.ReactNode;
 }) {
   const red = corner === 'red';
   return (
     <Link
       href={href}
+      onClick={onNavigate ? (e) => { e.preventDefault(); onNavigate(href); } : undefined}
       className={`block rounded-2xl px-3 pt-4 pb-3.5 text-center text-white border-2 transition-transform active:translate-y-[5px] active:shadow-none tap-highlight ${
         red
           ? 'bg-chess-red border-[#e86060] shadow-[0_5px_0_0_#CC3939,0_12px_24px_rgba(255,75,75,0.22)]'

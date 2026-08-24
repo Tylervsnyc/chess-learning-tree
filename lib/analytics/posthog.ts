@@ -95,6 +95,20 @@ export const EloEvents = {
     trackEvent('elo_keep_playing', { mode }),
 };
 
+// Chess Boxing Pro (CHESSBOXING_PRO flag) — buyer metrics for daily-report.ts
+export type ProLimitKind = 'bout' | 'workout';
+export type ProPlan = 'monthly' | 'yearly';
+export type ProPlatform = 'ios' | 'web';
+export const ProEvents = {
+  limitHit: (kind: ProLimitKind) => trackEvent('pro_limit_hit', { kind }),
+  paywallShown: (trigger: string) => trackEvent('pro_paywall_shown', { trigger }),
+  purchaseStarted: (plan: ProPlan, platform: ProPlatform, trigger?: string) =>
+    trackEvent('pro_purchase_started', { plan, platform, trigger }),
+  purchaseCompleted: (plan: ProPlan, platform: ProPlatform) =>
+    trackEvent('pro_purchase_completed', { plan, platform }),
+  restoreTapped: (platform: ProPlatform) => trackEvent('pro_restore_tapped', { platform }),
+};
+
 // Subscription funnel
 export const SubscriptionEvents = {
   paywallViewed: (trigger: string) => trackEvent('paywall_viewed', { trigger }),

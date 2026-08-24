@@ -50,9 +50,10 @@ import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { BoutEvents } from '@/lib/analytics/posthog';
+import { useProGate } from '@/hooks/useProGate';
 import { claimStreakToday, getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
-import type { AchievementUnlock } from '@/lib/achievements/types';
+import type { AchievementUnlock, NextMedal } from '@/lib/achievements/types';
 import type { FightStats } from '@/lib/box/fight-stats';
 import {
   warmupAudio,
@@ -78,6 +79,11 @@ import {
   CHESS_ROUND_SECONDS,
   BOXING_ROUND_SECONDS,
   BREAK_SECONDS,
+  OFFICIAL_CARD,
+  CUSTOM_CHESS_ROUNDS,
+  CUSTOM_ROUND_SECONDS,
+  reportFormatForCard,
+  type BoutCard,
   boutPointsBreakdown,
   decideAtBell,
   cardsDecided,
@@ -172,14 +178,23 @@ export default function BoutPage() {
   // Format picks the LENGTH; the structure is built, never chosen. Only
   // RANKED_FORMAT pays points (and only once a day) — see /api/bout/finish.
   const [format, setFormat] = useState<BoutFormat>(RANKED_FORMAT);
-  const segments = useMemo(() => buildSegments(format), [format]);
+  // CHESSBOXING_PRO: a custom card (round count + bell lengths) or the official
+  // 11-round preset. null = the stock format above. Always unranked.
+  const [customCard, setCustomCard] = useState<BoutCard | null>(null);
+  const [showCustom, setShowCustom] = useState(false);
+  const pro = useProGate();
+  const segments = useMemo(() => buildSegments(format, customCard), [format, customCard]);
   // Callbacks read the card off a ref so a mid-bout re-render can't rebuild
   // them, exactly like the clock refs below.
   const segmentsRef = useRef(segments);
   segmentsRef.current = segments;
-  const bank = bankSeconds(format);
-  const chessRounds = chessRoundCount(format);
-  const boxingRounds = boxingRoundCount(format);
+  const bank = bankSeconds(format, customCard);
+  const chessRounds = customCard?.chessRounds ?? chessRoundCount(format);
+  const boxingRounds = Math.max(0, chessRounds - 1);
+  const chessSeconds = customCard?.chessSeconds ?? CHESS_ROUND_SECONDS;
+  const boxingSecondsCard = customCard?.boxingSeconds ?? BOXING_ROUND_SECONDS;
+  // What /api/bout/finish is told: custom cards report as an unranked stock format.
+  const reportFormat: BoutFormat = customCard ? reportFormatForCard(customCard) : format;
   // Whether TODAY's ranked bout is still available (server is the authority;
   // this is only so the pre-fight screen can be honest before you fight).
   const [rankedLeft, setRankedLeft] = useState<number | null>(null);
@@ -208,6 +223,7 @@ export default function BoutPage() {
   // Fresh achievement unlocks from /api/bout/finish — played as an overlay
   // ABOVE the result card (never rows inside it: the card must fit an SE).
   const [unlocks, setUnlocks] = useState<AchievementUnlock[]>([]);
+  const [nextMedal, setNextMedal] = useState<NextMedal | null>(null);
   // One replay attempt per page load (StrictMode double-mounts effects).
   const replayTriedRef = useRef(false);
   const [sharing, setSharing] = useState(false);
@@ -781,7 +797,7 @@ export default function BoutPage() {
         roundsSurvived: result.roundsSurvived,
         moves: result.moves,
         level: levelRef.current,
-        format,
+        format: reportFormat,
         clockLeftSeconds: result.clockLeft,
         finalFen: result.finalFen,
         clientSessionId: result.boutKey,
@@ -813,6 +829,7 @@ export default function BoutPage() {
           points?: number;
           ranked?: boolean;
           newAchievements?: AchievementUnlock[];
+          nextMedal?: NextMedal | null;
         };
         if (cancelled) return;
         if (typeof body.points === 'number') setSavedPoints(body.points);
@@ -822,6 +839,7 @@ export default function BoutPage() {
         if (Array.isArray(body.newAchievements) && body.newAchievements.length > 0) {
           setUnlocks(body.newAchievements);
         }
+        if (body.nextMedal && typeof body.nextMedal.name === 'string') setNextMedal(body.nextMedal);
         // The bout is a finished unit — it can earn the day.
         await claimStreakToday();
       } catch {
@@ -832,7 +850,7 @@ export default function BoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [phase, result, format]);
+  }, [phase, result, reportFormat]);
 
   // Kick off review analysis as soon as the result card shows, so the review
   // is warm (or done) by the time the fighter taps Review — same rhythm as
@@ -920,7 +938,7 @@ export default function BoutPage() {
     setRookieClock(bank);
     boxingRoundsRef.current = boxingRounds;
     // Preview only; /api/bout/finish has the final say on whether this pays.
-    rankedRef.current = format === RANKED_FORMAT && (rankedLeft ?? 1) > 0;
+    rankedRef.current = format === RANKED_FORMAT && !customCard && (rankedLeft ?? 1) > 0;
     setWasRanked(null);
     boutKeyRef.current =
       typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -957,7 +975,7 @@ export default function BoutPage() {
     setRookieLine(null);
     setPhase('chess');
     BoutEvents.started(lvl);
-  }, [bank, boxingRounds, format, rankedLeft, clearPremove, resetGameReview]);
+  }, [bank, boxingRounds, format, customCard, rankedLeft, clearPremove, resetGameReview]);
 
   // Is today's ranked bout still on the table? Read once on the pre-fight
   // screen and after every finish, so the picker never promises points it
@@ -1058,8 +1076,9 @@ export default function BoutPage() {
                     onClick={() => {
                       playButtonClick();
                       setFormat(id);
+                      setCustomCard(null);
                     }}
-                    aria-pressed={active}
+                    aria-pressed={active && !customCard}
                     className={`flex-1 rounded-xl px-2 py-2 min-h-[48px] border-2 transition tap-highlight ${
                       active
                         ? 'border-[#e5484d] bg-[#e5484d]/15'
@@ -1068,7 +1087,7 @@ export default function BoutPage() {
                   >
                     <span
                       className={`block text-[13px] font-black leading-tight ${
-                        active ? 'text-[#ff8a8e]' : 'text-white'
+                        active && !customCard ? 'text-[#ff8a8e]' : 'text-white'
                       }`}
                     >
                       {spec.label}
@@ -1081,10 +1100,77 @@ export default function BoutPage() {
                 );
               })}
             </div>
+            {FEATURE_FLAGS.CHESSBOXING_PRO && (
+              <div className="flex gap-1.5 mt-1.5" role="group" aria-label="Pro round cards">
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    pro.requirePro('custom_rounds', () => {
+                      setCustomCard(OFFICIAL_CARD);
+                      setShowCustom(false);
+                    });
+                  }}
+                  aria-pressed={!!customCard && customCard === OFFICIAL_CARD}
+                  className={`flex-1 rounded-xl px-2 min-h-[40px] border-2 transition tap-highlight ${
+                    customCard === OFFICIAL_CARD ? 'border-[#f6c445] bg-[#f6c445]/15' : 'border-white/15 bg-white/[0.07]'
+                  }`}
+                >
+                  <span className="block text-[11px] font-black leading-tight text-white">
+                    Official 11-round
+                    {!pro.isPro && <ProPill />}
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    playButtonClick();
+                    pro.requirePro('custom_rounds', () => {
+                      setCustomCard((c) => (c && c !== OFFICIAL_CARD ? c : { chessRounds: 3, chessSeconds: 120, boxingSeconds: 120 }));
+                      setShowCustom((v) => !v);
+                    });
+                  }}
+                  aria-pressed={!!customCard && customCard !== OFFICIAL_CARD}
+                  className={`flex-1 rounded-xl px-2 min-h-[40px] border-2 transition tap-highlight ${
+                    customCard && customCard !== OFFICIAL_CARD ? 'border-[#f6c445] bg-[#f6c445]/15' : 'border-white/15 bg-white/[0.07]'
+                  }`}
+                >
+                  <span className="block text-[11px] font-black leading-tight text-white">
+                    Custom rounds
+                    {!pro.isPro && <ProPill />}
+                  </span>
+                </button>
+              </div>
+            )}
+            {FEATURE_FLAGS.CHESSBOXING_PRO && showCustom && customCard && customCard !== OFFICIAL_CARD && (
+              <div className="mt-1.5 rounded-xl bg-white/[0.06] border border-white/10 p-2 flex flex-col gap-1.5">
+                <Dial
+                  label="Chess rounds"
+                  options={CUSTOM_CHESS_ROUNDS}
+                  value={customCard.chessRounds}
+                  fmt={(v) => String(v)}
+                  onPick={(v) => setCustomCard({ ...customCard, chessRounds: v })}
+                />
+                <Dial
+                  label="Chess bell"
+                  options={CUSTOM_ROUND_SECONDS}
+                  value={customCard.chessSeconds}
+                  fmt={fmtClock}
+                  onPick={(v) => setCustomCard({ ...customCard, chessSeconds: v })}
+                />
+                <Dial
+                  label="Boxing bell"
+                  options={CUSTOM_ROUND_SECONDS}
+                  value={customCard.boxingSeconds}
+                  fmt={fmtClock}
+                  onPick={(v) => setCustomCard({ ...customCard, boxingSeconds: v })}
+                />
+              </div>
+            )}
             <p className="text-center text-[11px] font-semibold text-white/60 mt-1 leading-snug">
-              {format === RANKED_FORMAT && rankedLeft === 0
-                ? "Today's ranked bout is spent — this one's an exhibition. Still counts for your streak."
-                : BOUT_FORMATS[format].blurb}
+              {customCard
+                ? `${Math.round(boutDurationSeconds(format, customCard) / 60)} min. Your card — not ranked, still counts for your streak.`
+                : format === RANKED_FORMAT && rankedLeft === 0
+                  ? "Today's ranked bout is spent — this one's an exhibition. Still counts for your streak."
+                  : BOUT_FORMATS[format].blurb}
             </p>
           </div>
 
@@ -1119,8 +1205,8 @@ export default function BoutPage() {
               ))}
             </div>
             <p className="text-[11px] font-bold text-white/60 text-center mt-1.5 leading-snug">
-              {chessRounds} × chess {fmtClock(CHESS_ROUND_SECONDS)}
-              {boxingRounds > 0 && <> · {boxingRounds} × boxing {fmtClock(BOXING_ROUND_SECONDS)}</>}
+              {chessRounds} × chess {fmtClock(chessSeconds)}
+              {boxingRounds > 0 && <> · {boxingRounds} × boxing {fmtClock(boxingSecondsCard)}</>}
               <br />
               {fmtClock(BREAK_SECONDS)} break between every round
             </p>
@@ -1136,7 +1222,7 @@ export default function BoutPage() {
               <li>Your clock: {fmtClock(bank)} for all chess rounds. Flag = loss.</li>
               <li>Rookie thinks 2-4s a move. She never flags. Rude, honestly.</li>
               <li>
-                Boxing rounds: {Math.round(BOXING_ROUND_SECONDS / 60)} min of work,{' '}
+                Boxing rounds: {Math.round(boxingSecondsCard / 60)} min of work,{' '}
                 {BREAK_SECONDS}s rest between every round.
               </li>
               <li>No mate by the final bell — material decides. Level goes to you.</li>
@@ -1148,12 +1234,13 @@ export default function BoutPage() {
           </p>
 
           <button
-            onClick={begin}
+            onClick={() => pro.gate('bout', begin)}
             className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-lg py-3 min-h-[48px] shadow-[0_4px_0_#b53437] tap-highlight shrink-0"
           >
             Fight
           </button>
         </div>
+        {pro.paywall}
       </div>
     );
   }
@@ -1300,6 +1387,7 @@ export default function BoutPage() {
             onSignIn={() => router.push('/auth/login?redirect=/box/bout')}
             onLeaderboard={() => router.push('/leaderboard')}
             onDone={() => router.push('/box')}
+            nextMedal={nextMedal}
           />
           {unlocks.length > 0 && (
             <AchievementUnlockOverlay unlocks={unlocks} onDone={() => setUnlocks([])} />
@@ -1879,6 +1967,51 @@ export default function BoutPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ── Chess Boxing Pro round-card helpers (CHESSBOXING_PRO) ─────────────── */
+
+function ProPill() {
+  return (
+    <span className="ml-1 align-middle rounded-full bg-[#f6c445] px-1.5 py-px text-[8px] font-black uppercase tracking-widest text-[#2A3C45]">
+      Pro
+    </span>
+  );
+}
+
+function Dial<T extends number>({
+  label,
+  options,
+  value,
+  fmt,
+  onPick,
+}: {
+  label: string;
+  options: readonly T[];
+  value: number;
+  fmt: (v: T) => string;
+  onPick: (v: T) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-20 shrink-0 text-[10px] font-black uppercase tracking-wide text-white/60">{label}</span>
+      <div className="flex-1 flex gap-1" role="radiogroup" aria-label={label}>
+        {options.map((o) => (
+          <button
+            key={o}
+            role="radio"
+            aria-checked={o === value}
+            onClick={() => onPick(o)}
+            className={`flex-1 rounded-lg min-h-[32px] text-[11px] font-black tabular-nums border transition tap-highlight ${
+              o === value ? 'border-[#f6c445] bg-[#f6c445]/20 text-[#ffe08a]' : 'border-white/15 bg-white/[0.05] text-white/80'
+            }`}
+          >
+            {fmt(o)}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

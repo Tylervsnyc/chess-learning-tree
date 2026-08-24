@@ -9,6 +9,7 @@ import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { getStreak, type StreakData } from '@/lib/streak-client';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { useProGate } from '@/hooks/useProGate';
 
 /**
  * BoxToday — the Chess Boxing app's home ("Today") screen.
@@ -43,6 +44,8 @@ function LockerToday() {
   const [needsUsername, setNeedsUsername] = useState(false);
   // Settings gear only shows inside the app shell.
   const inShell = useBoxShell();
+  // CHESSBOXING_PRO daily-limit gate (no-op while the flag is off).
+  const { gate, paywall } = useProGate();
 
   useEffect(() => {
     getStreak().then(setStreak);
@@ -115,11 +118,17 @@ function LockerToday() {
             lastScoreWhen={last ? relativeDay(last.createdAt) : null}
             rank={rank === undefined ? undefined : (rank ?? null)}
             rankedLeft={rankedLeft}
-            onFight={() => router.push(FEATURE_FLAGS.BOUT_MODE ? '/box/bout' : '/workout')}
-            onTrain={() => router.push('/workout')}
+            onFight={() =>
+              FEATURE_FLAGS.BOUT_MODE
+                ? gate('bout', () => router.push('/box/bout'))
+                : gate('workout', () => router.push('/workout'))
+            }
+            onTrain={() => gate('workout', () => router.push('/workout'))}
           />
         </div>
       </div>
+
+      {paywall}
 
       {/* Fighter-name nudge — signed in, no handle, invisible on the boards. */}
       {needsUsername && (

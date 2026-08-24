@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isPremiumSubscription, type SubscriptionStatus } from '@/lib/subscription';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { periodStartISO, isPeriod, type LeaderboardPeriod } from '@/lib/leaderboard/period';
@@ -210,22 +211,29 @@ export async function GET(request: NextRequest) {
 
   // Handles + opt-in for the candidate users.
   const uids = [...totals.keys()];
-  const handleById = new Map<string, { username: string | null; optIn: boolean }>();
+  const handleById = new Map<string, { username: string | null; optIn: boolean; isPro: boolean }>();
   if (uids.length) {
     const { data: profs } = await svc
       .from('profiles')
-      .select('id, username, leaderboard_opt_in')
+      .select('id, username, leaderboard_opt_in, subscription_status, subscription_expires_at, is_patron')
       .in('id', uids);
     for (const p of profs ?? []) {
       handleById.set(p.id as string, {
         username: (p.username as string) ?? null,
         optIn: (p.leaderboard_opt_in as boolean) ?? true,
+        // CHESSBOXING_PRO gold name: premium (Stripe or RevenueCat) OR patron.
+        isPro:
+          p.is_patron === true ||
+          isPremiumSubscription(
+            (p.subscription_status as SubscriptionStatus | null) ?? 'free',
+            (p.subscription_expires_at as string | null) ?? null,
+          ),
       });
     }
   }
 
   // ── Build the ranked list ──────────────────────────────────────────────────
-  type Entry = { userId: string; username: string; points: number; punches: number };
+  type Entry = { userId: string; username: string; points: number; punches: number; isPro: boolean };
   const eligible: Entry[] = [];
   for (const uid of totals.keys()) {
     const h = handleById.get(uid);
@@ -236,6 +244,7 @@ export async function GET(request: NextRequest) {
       username: h.username,
       points: scoreFor(uid),
       punches: punchTotals.get(uid) ?? 0,
+      isPro: h.isPro,
     });
   }
   eligible.sort((a, b) => b.points - a.points || a.username.localeCompare(b.username));
@@ -246,6 +255,7 @@ export async function GET(request: NextRequest) {
     points: e.points,
     punches: e.punches,
     isSelf: e.userId === user.id,
+    isPro: e.isPro,
   }));
 
   const meRow = ranked.find((r) => r.isSelf) ?? null;
@@ -279,6 +289,7 @@ export async function GET(request: NextRequest) {
         handleById.set(p.id as string, {
           username: (p.username as string) ?? null,
           optIn: true,
+          isPro: false,
         });
       }
     }

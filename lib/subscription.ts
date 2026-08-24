@@ -33,6 +33,21 @@ export function isPremiumSubscription(
 }
 
 /**
+ * Chess Boxing Pro == premium. ONE entitlement, two storefronts (Stripe on
+ * web, RevenueCat/StoreKit in the iOS shell) — both land on the same
+ * `profiles.subscription_status` / `subscription_expires_at`. Never add a
+ * second "pro" column or concept; this alias exists so Chess Boxing code
+ * reads naturally while staying on the single source of truth.
+ */
+export const isProSubscription = isPremiumSubscription;
+
+/** Free-tier Chess Boxing limits (only enforced when CHESSBOXING_PRO is on). */
+export const PRO_FREE_LIMITS = {
+  BOUTS_PER_DAY: 1,
+  WORKOUTS_PER_DAY: 1,
+} as const;
+
+/**
  * Get the count of puzzles attempted today for a user
  */
 export async function getDailyPuzzleCount(

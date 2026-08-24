@@ -799,6 +799,119 @@ async function getInstagramPosts(windowDays = 5, limit = 20): Promise<{ availabl
   } catch { return { available: false, posts: [] }; }
 }
 
+
+// ---------------------------------------------------------------------------
+// CHESS BOXING PRO — buyer metrics (docs/chess-boxing-monetization-and-exit-plan.md)
+// DB truth for the subscriber base (profiles.subscription_status is the ONE
+// entitlement — Stripe and RevenueCat both write it), Stripe for trial/churn
+// events in the window when a key is present, PostHog for the paywall funnel.
+// ---------------------------------------------------------------------------
+async function getProMetrics(filter: string, dateStr: string, days: number) {
+  const out = {
+    dbAvailable: false,
+    activePremium: 0,
+    activePatron: 0,
+    expiringSoon: 0, // premium with expiry inside 7 days (a cancel that hasn't lapsed yet)
+    stripeAvailable: false,
+    trialsStarted: 0,
+    trialToPaid: 0,
+    trialing: 0,
+    newPaid: 0,
+    churned: 0,
+    limitHitBout: 0,
+    limitHitWorkout: 0,
+    limitHitPeople: 0,
+    paywallShown: 0,
+    paywallPeople: 0,
+    purchaseStarted: 0,
+    purchaseStartedIos: 0,
+    purchaseStartedWeb: 0,
+    purchaseCompleted: 0,
+  };
+
+  const sb = makeServiceClient();
+  if (sb) {
+    const { data, error } = await sb
+      .from('profiles')
+      .select('subscription_status, subscription_expires_at, is_patron');
+    if (!error && data) {
+      out.dbAvailable = true;
+      const now = Date.now();
+      for (const p of data) {
+        const st = p.subscription_status as string | null;
+        const exp = p.subscription_expires_at ? Date.parse(p.subscription_expires_at as string) : null;
+        const active = (st === 'premium' || st === 'trial') && (exp === null || exp > now);
+        if (active) out.activePremium++;
+        if (active && exp !== null && exp - now < 7 * 86400000) out.expiringSoon++;
+        if (p.is_patron === true) out.activePatron++;
+      }
+    }
+  }
+
+  // Stripe: trial starts, trial→paid conversions, new paid, churn — in window.
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (stripeKey) {
+    try {
+      const winEnd = Math.floor(Date.parse(`${dateStr}T00:00:00Z`) / 1000) + 86400;
+      const winStart = winEnd - days * 86400;
+      const q = async (path: string) => {
+        const res = await fetch(`https://api.stripe.com/v1/${path}`, {
+          headers: { Authorization: `Bearer ${stripeKey}` },
+        });
+        if (!res.ok) throw new Error(`stripe ${path} ${res.status}`);
+        return (await res.json()) as { data: Array<Record<string, unknown>> };
+      };
+      const created = await q(`subscriptions?status=all&limit=100&created[gte]=${winStart}&created[lt]=${winEnd}`);
+      for (const sub of created.data) {
+        if (sub.trial_start) out.trialsStarted++;
+        else if (sub.status === 'active') out.newPaid++;
+      }
+      const trialing = await q('subscriptions?status=trialing&limit=100');
+      out.trialing = trialing.data.length;
+      // Trial→paid: active subs whose trial ended inside the window.
+      const active = await q('subscriptions?status=active&limit=100');
+      for (const sub of active.data) {
+        const te = sub.trial_end as number | null;
+        if (te && te >= winStart && te < winEnd) out.trialToPaid++;
+      }
+      const canceled = await q(`subscriptions?status=canceled&limit=100`);
+      for (const sub of canceled.data) {
+        const ca = sub.canceled_at as number | null;
+        if (ca && ca >= winStart && ca < winEnd) out.churned++;
+      }
+      out.stripeAvailable = true;
+    } catch (e) {
+      console.error('  (stripe pro metrics skipped:', (e as Error).message, ')');
+    }
+  }
+
+  // PostHog: the paywall funnel (ProEvents in lib/analytics/posthog.ts).
+  const r = await hogql(`
+    SELECT
+      countIf(event = 'pro_limit_hit' AND properties.kind = 'bout') as lh_bout,
+      countIf(event = 'pro_limit_hit' AND properties.kind = 'workout') as lh_workout,
+      uniqIf(person_id, event = 'pro_limit_hit') as lh_people,
+      countIf(event = 'pro_paywall_shown') as pw,
+      uniqIf(person_id, event = 'pro_paywall_shown') as pw_people,
+      countIf(event = 'pro_purchase_started') as ps,
+      countIf(event = 'pro_purchase_started' AND properties.platform = 'ios') as ps_ios,
+      countIf(event = 'pro_purchase_started' AND properties.platform = 'web') as ps_web,
+      countIf(event = 'pro_purchase_completed') as pc
+    FROM events WHERE ${filter}
+  `, 'pro-funnel');
+  const row = r.results[0] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  out.limitHitBout = num(row[0]);
+  out.limitHitWorkout = num(row[1]);
+  out.limitHitPeople = num(row[2]);
+  out.paywallShown = num(row[3]);
+  out.paywallPeople = num(row[4]);
+  out.purchaseStarted = num(row[5]);
+  out.purchaseStartedIos = num(row[6]);
+  out.purchaseStartedWeb = num(row[7]);
+  out.purchaseCompleted = num(row[8]);
+  return out;
+}
+
 async function main() {
   if (!PH_API_KEY) {
     console.error('  Missing POSTHOG_PERSONAL_API_KEY in .env.local');
@@ -857,6 +970,9 @@ async function main() {
   // LOST INTENT watchdog — sessions where signup intent fired but failed.
   const lost = await getLostIntent(f);
 
+  // Chess Boxing Pro — buyer metrics (CHESSBOXING_PRO flag).
+  const proM = await getProMetrics(f, targetDate, rangeDays);
+
   // ---------------------------------------------------------------------------
   // Print report
   // ---------------------------------------------------------------------------
@@ -869,6 +985,27 @@ async function main() {
   console.log(`  Total events:     ${overview.events}`);
   console.log(`  Mobile/Desktop:   ${devices.mobile}/${devices.desktop}  (${pct(devices.mobile, devices.total)} mobile)`);
   console.log(`  Returning users:  ${returning}  (${pct(returning, overview.users)} of total)`);
+
+  console.log(section('CHESS BOXING PRO (CHESSBOXING_PRO — buyer metrics)'));
+  if (!proM.dbAvailable) {
+    console.log('  (DB unavailable — no SUPABASE_SERVICE_ROLE_KEY)');
+  } else {
+    console.log(`  Active premium (Stripe + RevenueCat, DB truth): ${proM.activePremium}   patrons: ${proM.activePatron}   lapsing <7d: ${proM.expiringSoon}`);
+  }
+  if (proM.stripeAvailable) {
+    console.log(`  Stripe this period:  trials started ${proM.trialsStarted} · trial->paid ${proM.trialToPaid} · new paid ${proM.newPaid} · churned ${proM.churned} · trialing now ${proM.trialing}`);
+    console.log('  (iOS/RevenueCat trials + churn: RevenueCat dashboard until an export lands here)');
+  } else {
+    console.log('  Stripe: no STRIPE_SECRET_KEY — trial/churn skipped');
+  }
+  if (proM.paywallShown === 0 && proM.limitHitBout + proM.limitHitWorkout === 0) {
+    console.log('  Paywall funnel: no pro_* events in window (flag off, or nobody hit a limit).');
+  } else {
+    console.log(`  Free users who hit the daily limit: ${proM.limitHitPeople} people  (bout ${proM.limitHitBout} · workout ${proM.limitHitWorkout})`);
+    console.log(`  Paywall shown:      ${proM.paywallShown}  (${proM.paywallPeople} people)`);
+    console.log(`  Purchase started:   ${proM.purchaseStarted}  (ios ${proM.purchaseStartedIos} · web ${proM.purchaseStartedWeb})  ${pct(proM.purchaseStarted, proM.paywallShown)} of paywalls`);
+    console.log(`  Purchase completed: ${proM.purchaseCompleted}  (client-side; DB active count above is truth)`);
+  }
 
   console.log(section('SOCIAL — INSTAGRAM (@chesspath.app, last 5 days)'));
   if (!igPosts.available) {
