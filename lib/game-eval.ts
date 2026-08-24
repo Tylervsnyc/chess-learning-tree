@@ -12,6 +12,8 @@
  * - Classification: modules/tree/src/main/Advice.scala
  */
 
+import { Chess } from 'chess.js';
+
 // ════════════════════════════════
 // TYPES
 // ════════════════════════════════
@@ -358,6 +360,113 @@ export function extractKeyMoments(
 }
 
 // ════════════════════════════════
+// BRILLIANT MOVE DETECTION (chess.com-style)
+// ════════════════════════════════
+
+const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+const BRILLIANT_MAX_WP_BEFORE = 90;  // already crushing → not brilliant
+const BRILLIANT_MIN_WP_AFTER = 40;   // must still be roughly fine after
+const SACRIFICE_MIN_LOSS = 2;        // net material given up (> a pawn)
+
+export interface BrilliantInput {
+  fenBefore: string;
+  fenAfter: string;
+  san: string;
+  /** Win% drop for the mover (positive = lost ground). */
+  winPercentDelta: number;
+  /** Win% from the mover's perspective before / after the move. */
+  winPercentBefore: number;
+  winPercentAfter: number;
+  /** Eval before the move (white perspective) — used to skip mate-in-N positions. */
+  evalBefore?: { mate: number | null };
+  /** SAN of the opponent's previous move (to detect plain recaptures). */
+  prevSan?: string | null;
+}
+
+/** Destination square of a SAN move (null for castling). */
+function sanToSquare(san: string): string | null {
+  const m = san.match(/([a-h][1-8])(?:=?[QRBN])?[+#]?$/);
+  return m ? m[1] : null;
+}
+
+/**
+ * Is the mover materially down after the opponent's best 1-ply capture?
+ *
+ * For every legal opponent capture of a mover's NON-pawn piece: material for
+ * the mover = (what the move itself captured) − (victim) + (attacker, if the
+ * mover can recapture on that square). Sacrifice = the worst case for the
+ * mover is at least SACRIFICE_MIN_LOSS below where he stood before the move.
+ * A plain equal trade (they take, you take back the same value) is not a sac.
+ */
+export function isSacrifice(fenBefore: string, fenAfter: string): boolean {
+  let before: Chess, after: Chess;
+  try {
+    before = new Chess(fenBefore);
+    after = new Chess(fenAfter);
+  } catch {
+    return false;
+  }
+  const mover = before.turn();
+  const count = (c: Chess, color: 'w' | 'b') =>
+    c.board().flat().reduce((sum, sq) => sum + (sq && sq.color === color ? PIECE_VALUE[sq.type] : 0), 0);
+
+  const opp = mover === 'w' ? 'b' : 'w';
+  // Material BALANCE (mover − opponent) so the move's own capture is credited.
+  const materialBefore = count(before, mover) - count(before, opp);
+  const materialAfterMove = count(after, mover) - count(after, opp);
+
+  let worst = Infinity;
+  for (const cap of after.moves({ verbose: true })) {
+    if (!cap.captured || cap.captured === 'p') continue; // pawns don't count as a sac
+    const victim = PIECE_VALUE[cap.captured];
+    const attacker = PIECE_VALUE[cap.piece];
+    const sim = new Chess(fenAfter);
+    sim.move(cap.san);
+    const canRecapture = sim.moves({ verbose: true }).some(r => r.to === cap.to && r.captured);
+    const net = materialAfterMove - victim + (canRecapture ? attacker : 0);
+    worst = Math.min(worst, net);
+  }
+  if (worst === Infinity) return false;
+  return materialBefore - worst >= SACRIFICE_MIN_LOSS;
+}
+
+/**
+ * chess.com-style "brilliant": a best-or-near-best move that sacrifices
+ * material, played from a position that wasn't already won, that still
+ * leaves the mover okay, and that wasn't forced. Pure — no engine calls.
+ */
+export function isBrilliant(input: BrilliantInput): boolean {
+  const { fenBefore, fenAfter, san, winPercentDelta, winPercentBefore, winPercentAfter, evalBefore, prevSan } = input;
+
+  // 1. Best or near-best
+  if (winPercentDelta > GREAT_MOVE_THRESHOLD) return false;
+
+  // 3. Not already crushing
+  if (winPercentBefore >= BRILLIANT_MAX_WP_BEFORE) return false;
+  if (evalBefore?.mate != null) {
+    let moverIsWhite = true;
+    try { moverIsWhite = new Chess(fenBefore).turn() === 'w'; } catch { /* keep default */ }
+    if ((evalBefore.mate > 0) === moverIsWhite) return false; // mate for the mover
+  }
+
+  // 4. Not losing badly after
+  if (winPercentAfter < BRILLIANT_MIN_WP_AFTER) return false;
+
+  // 5. Not forced
+  let chess: Chess;
+  try { chess = new Chess(fenBefore); } catch { return false; }
+  const legal = chess.moves();
+  if (legal.length <= 1) return false;
+  if (prevSan && prevSan.includes('x') && san.includes('x') && sanToSquare(prevSan) === sanToSquare(san)) {
+    return false; // plain recapture
+  }
+
+  // 2. It's a sacrifice
+  return isSacrifice(fenBefore, fenAfter);
+}
+
+// ════════════════════════════════
 // FULL GAME ANALYSIS
 // ════════════════════════════════
 
@@ -365,13 +474,16 @@ export function extractKeyMoments(
  * Analyze an array of position evals into classified, scored moves.
  *
  * @param positionEvals - eval for every position (N+1 for N moves: start + after each move)
- * @param moves - move info (san, movedBy) for each move
+ * @param moves - move info (san, movedBy) for each move; pass fenAfter to
+ *   enable brilliant-move detection (fenBefore = previous fenAfter / startFen)
  * @param playerColor - which color the player was
+ * @param startFen - starting position (default: standard start)
  */
 export function analyzeGameMoves(
   positionEvals: PositionEval[],
-  moves: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number }[],
+  moves: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number; fenAfter?: string; fenBefore?: string }[],
   playerColor: 'white' | 'black',
+  startFen: string = START_FEN,
 ): GameAnalysis {
   const evaluatedMoves: MoveEvaluation[] = [];
 
@@ -400,8 +512,24 @@ export function analyzeGameMoves(
       move.san !== null; // We can't easily compare SAN to UCI here — use delta instead
     const effectivelyBest = delta <= GREAT_MOVE_THRESHOLD;
 
-    const classification = classifyMove(delta, effectivelyBest);
+    let classification = classifyMove(delta, effectivelyBest);
     const accuracy = moveAccuracy(wpBefore, wpAfter);
+
+    // Brilliant: needs board state. Only when the caller supplied FENs.
+    const fenBefore = move.fenBefore ?? (i > 0 ? moves[i - 1].fenAfter : startFen);
+    if (move.fenAfter && fenBefore && classification !== 'forced') {
+      const brilliant = isBrilliant({
+        fenBefore,
+        fenAfter: move.fenAfter,
+        san: move.san,
+        winPercentDelta: delta,
+        winPercentBefore: wpBefore,
+        winPercentAfter: wpAfter,
+        evalBefore: { mate: evalBefore.mate },
+        prevSan: i > 0 ? moves[i - 1].san : null,
+      });
+      if (brilliant) classification = 'brilliant';
+    }
 
     evaluatedMoves.push({
       moveNumber: move.moveNumber,

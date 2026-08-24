@@ -126,6 +126,7 @@ export function useGameReview(): GameReviewData & {
           san: m.san,
           movedBy: m.movedBy,
           moveNumber: m.moveNumber,
+          fenAfter: m.fenAfter,
         }));
         const analysis = analyzeGameMoves(evals, moveInfos, args.playerColor);
         // Same filter as /play: only blunder/mistake moments drive the review.

@@ -1050,7 +1050,7 @@ export default function PlayRookiePage() {
 
     // Analyze game for review — always works, even without login
     const moves = moveLogRef.current;
-    const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber }));
+    const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter }));
     const analysis = moves.length > 0
       ? analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor)
       : null;
@@ -1059,6 +1059,10 @@ export default function PlayRookiePage() {
       // Extract eval-based key moments (replaces old heuristic review)
       const moveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
       setKeyMoments(extractKeyMoments(analysis, moveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
+
+      // Per-game brilliant/great counts → game_sessions + profile totals (instant analysis;
+      // deep analysis may reclassify but we don't re-write — good enough for now).
+      sessionRef.current?.setMoveQuality(analysis.brilliantMoves, analysis.greatMoves);
 
       // Show instant analysis immediately, then kick off deep analysis (depth 18)
       postGame.setInstantAnalysis(analysis);

@@ -11,6 +11,8 @@ export interface LifetimeStats {
   gamesPlayed: number;
   levelsUnlocked: number;
   workoutPoints: number;
+  brilliantMoves: number;
+  greatMoves: number;
 }
 
 /**
@@ -22,7 +24,7 @@ export async function getLifetimeStats(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<LifetimeStats> {
-  const [profile, lessons, puzzles, games] = await Promise.all([
+  const [profile, lessons, puzzles, games, quality] = await Promise.all([
     supabase
       .from('profiles')
       .select('unlocked_levels, workout_points')
@@ -42,6 +44,13 @@ export async function getLifetimeStats(
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .not('ended_at', 'is', null),
+    // Separate read: these columns may not exist until the migration runs;
+    // a failure here must not take down the whole stats block.
+    supabase
+      .from('profiles')
+      .select('total_brilliant_moves, total_great_moves')
+      .eq('id', userId)
+      .single(),
   ]);
 
   if (profile.error) {
@@ -62,5 +71,7 @@ export async function getLifetimeStats(
     levelsUnlocked: Array.isArray(unlocked) ? unlocked.length : 0,
     workoutPoints:
       typeof profile.data?.workout_points === 'number' ? profile.data.workout_points : 0,
+    brilliantMoves: quality.error ? 0 : (quality.data?.total_brilliant_moves ?? 0),
+    greatMoves: quality.error ? 0 : (quality.data?.total_great_moves ?? 0),
   };
 }

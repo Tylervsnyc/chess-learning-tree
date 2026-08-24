@@ -91,6 +91,10 @@ export class GameSession {
   private currentStreak = 0;
   private bestStreak = 0;
 
+  // Move quality from post-game analysis (set before end())
+  private brilliantMoves = 0;
+  private greatMoves = 0;
+
   // Computed at end
   private piecesHung = 0;
   private capturesMissed = 0;
@@ -107,6 +111,12 @@ export class GameSession {
   setGameInfo(info: { playerColor: string; rookieDifficulty: number }) {
     this.playerColor = info.playerColor;
     this.rookieDifficulty = info.rookieDifficulty;
+  }
+
+  /** Brilliant/great counts from analysis — persisted with the session row */
+  setMoveQuality(brilliant: number, great: number) {
+    this.brilliantMoves = brilliant;
+    this.greatMoves = great;
   }
 
   /** Record a move during a Play Rookie game */
@@ -164,9 +174,7 @@ export class GameSession {
     const supabase = createClient();
 
     // 1. Insert session row
-    const { data: session, error: sessionError } = await supabase
-      .from('game_sessions')
-      .insert({
+    const baseRow = {
         user_id: this.userId,
         session_type: this.sessionType,
         started_at: new Date(this.startedAt).toISOString(),
@@ -186,13 +194,37 @@ export class GameSession {
         themes_seen: Array.from(this.themesSeen),
         themes_correct: Array.from(this.themesCorrect),
         themes_missed: Array.from(this.themesMissed),
-      })
+    };
+    const qualityRow = { brilliant_moves: this.brilliantMoves, great_moves: this.greatMoves };
+
+    let { data: session, error: sessionError } = await supabase
+      .from('game_sessions')
+      .insert({ ...baseRow, ...qualityRow })
       .select('id')
       .single();
+
+    // Columns may not exist yet (migration pending) — never lose the game save.
+    if (sessionError && /brilliant_moves|great_moves|column/i.test(sessionError.message ?? '')) {
+      console.warn('game_sessions move-quality columns missing, saving without them:', sessionError.message);
+      ({ data: session, error: sessionError } = await supabase
+        .from('game_sessions')
+        .insert(baseRow)
+        .select('id')
+        .single());
+    }
 
     if (sessionError || !session) {
       console.error('Failed to save game session:', sessionError);
       return null;
+    }
+
+    // 1b. Lifetime totals on the profile (service-role write, fire-and-forget)
+    if (this.brilliantMoves > 0 || this.greatMoves > 0) {
+      fetch('/api/profile/move-quality', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brilliant: this.brilliantMoves, great: this.greatMoves }),
+      }).catch(err => console.warn('move-quality totals failed:', err));
     }
 
     // 2. Insert all moves in batch

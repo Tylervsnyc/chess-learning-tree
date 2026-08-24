@@ -32,6 +32,8 @@ interface LifetimeStats {
   gamesPlayed: number;
   levelsUnlocked: number;
   workoutPoints: number;
+  brilliantMoves?: number;
+  greatMoves?: number;
 }
 
 /** Fight record from /api/bout/record (Bout v2). */
@@ -115,6 +117,12 @@ const STAT_ICONS = {
   ),
   points: (
     <path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.3 5.9 20.4l1.4-6.8L2.2 9l6.9-.7L12 2Z" />
+  ),
+  brilliant: (
+    <path d="M12 3v4M12 17v4M3 12h4M17 12h4M12 8l1.5 2.5L16 12l-2.5 1.5L12 16l-1.5-2.5L8 12l2.5-1.5L12 8Z" />
+  ),
+  great: (
+    <path d="M20 6 9 17l-5-5" />
   ),
 } as const;
 
@@ -652,6 +660,8 @@ export default function ProfilePage() {
             <StatTile kind="games" label="Games played" value={stats?.gamesPlayed} loading={dataLoading} />
             <StatTile kind="levels" label="Levels unlocked" value={stats?.levelsUnlocked} loading={dataLoading} />
             <StatTile kind="points" label="Workout points" value={stats?.workoutPoints} loading={dataLoading} />
+            <StatTile kind="brilliant" label="Brilliant moves" value={stats?.brilliantMoves ?? 0} loading={dataLoading} />
+            <StatTile kind="great" label="Great moves" value={stats?.greatMoves ?? 0} loading={dataLoading} />
           </div>
         </div>
 
