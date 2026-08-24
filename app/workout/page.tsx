@@ -55,7 +55,7 @@ import { FightResultCard } from '@/components/chessboxing/result/FightResultCard
 import { buildPuzzleShareFrames } from '@/lib/share/fight-night-frames';
 import { getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
-import type { AchievementUnlock } from '@/lib/achievements/types';
+import type { AchievementUnlock, NextMedal } from '@/lib/achievements/types';
 import { PunchTracker } from '@/components/workout/PunchTracker';
 import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
@@ -364,6 +364,8 @@ interface FinishResult {
   needsSignIn: boolean;
   /** Fresh medals from /api/workout/finish — played over the results popup. */
   achievements: AchievementUnlock[];
+  /** Closest in-progress medal — one teaser line on the result card. */
+  nextMedal: NextMedal | null;
 }
 
 export default function WorkoutPage() {
@@ -432,6 +434,9 @@ function WorkoutPageInner() {
   // Every puzzle id shown this session (solved + missed). Sent on finish so
   // future workouts can exclude them and stay fresh.
   const seenIdsRef = useRef<string[]>([]);
+  // Per-puzzle results (theme + rating + time) for the skill profile.
+  const resultsRef = useRef<{ puzzleId?: string; themes?: string[]; rating?: number; correct: boolean; timeMs: number }[]>([]);
+  const puzzleShownAtRef = useRef<number>(0);
 
   // Stable id for THIS workout, re-sent on every /api/workout/finish retry so the
   // server awards points exactly once (set in begin(), restored on resume()).
@@ -948,6 +953,7 @@ function WorkoutPageInner() {
     let recentPoints: number[] = [sessionPoints];
     let needsSignIn = false;
     let achievements: AchievementUnlock[] = [];
+    let nextMedal: NextMedal | null = null;
     const rookieLine = pickWorkoutFinishLine();
     const finishPayload = {
       points: sessionPoints,
@@ -957,6 +963,7 @@ function WorkoutPageInner() {
       perfect,
       missedPuzzles: missedRef.current,
       seenPuzzleIds: seenIdsRef.current,
+      puzzleResults: resultsRef.current,
       clientSessionId: clientSessionIdRef.current,
       punches: punchesRef.current,
       bestRoundPoints,
@@ -986,6 +993,7 @@ function WorkoutPageInner() {
           recentPoints = data.recentPoints;
         }
         if (Array.isArray(data?.newAchievements)) achievements = data.newAchievements;
+        if (data?.nextMedal && typeof data.nextMedal.name === 'string') nextMedal = data.nextMedal;
       }
     } catch {
       // Network/auth failure — still show the session summary.
@@ -1024,6 +1032,7 @@ function WorkoutPageInner() {
       ),
       needsSignIn,
       achievements,
+      nextMedal,
     });
     setPhase('done');
   }, [score, right, wrong, minutes, isFight, freezeFight, bankFightSegment]);
@@ -1088,6 +1097,8 @@ function WorkoutPageInner() {
     solvedRef.current = [];
     shareGifRef.current = null;
     seenIdsRef.current = [];
+    resultsRef.current = [];
+    puzzleShownAtRef.current = Date.now();
     punchesRef.current = 0;
     segPunchBaseRef.current = 0;
     segStartPunchesRef.current = 0;
@@ -1237,6 +1248,7 @@ function WorkoutPageInner() {
         toughestSolved: null,
         needsSignIn: false,
         achievements: [],
+        nextMedal: { id: 'training-thousand-fists', name: 'Thousand Fists', icon: '👊', progress: 412, target: 1000 },
       });
       setPhase('done');
       return;
@@ -1432,9 +1444,26 @@ function WorkoutPageInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue, targetElo, puzzlePos]);
 
+  useEffect(() => {
+    puzzleShownAtRef.current = Date.now();
+  }, [currentPuzzle]);
+
+  const recordResult = useCallback((correct: boolean) => {
+    if (!currentPuzzle) return;
+    resultsRef.current.push({
+      puzzleId: currentPuzzle.puzzleId || currentPuzzle.id,
+      themes: currentPuzzle.themes,
+      rating: currentPuzzle.rating,
+      correct,
+      timeMs: puzzleShownAtRef.current ? Date.now() - puzzleShownAtRef.current : 0,
+    });
+    puzzleShownAtRef.current = Date.now();
+  }, [currentPuzzle]);
+
   const handleCorrect = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
+    recordResult(true);
     const rating = currentPuzzle?.rating ?? 1000;
     // Scoring v2: pay is anchored to the session's high-water ELO. Farm-tier
     // puzzles (300+ below your peak) pay 1 flat and don't grow the combo —
@@ -1463,11 +1492,12 @@ function WorkoutPageInner() {
     }
     setTargetElo((e) => Math.min(MAX_ELO, e + ELO_UP_ON_CORRECT));
     setPuzzlePos((p) => p + 1);
-  }, [currentPuzzle, highWaterElo, firedUp, segIndex]);
+  }, [currentPuzzle, highWaterElo, firedUp, segIndex, recordResult]);
 
   const handleWrong = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
+    recordResult(false);
     // Wrong = 0 points; the cost is losing the combo back to ×1.
     comboRef.current = 0;
     setCombo(0);
@@ -1487,7 +1517,7 @@ function WorkoutPageInner() {
     setPuzzlePos((p) => p + 1);
     // No strike-out: a wrong answer costs the combo and eases the difficulty
     // target, but the round runs to the bell no matter how many you miss.
-  }, [currentPuzzle]);
+  }, [currentPuzzle, recordResult]);
 
   const liveScore = Math.max(0, score);
   const multiplier = comboMultiplier(combo);
@@ -1830,6 +1860,7 @@ function WorkoutPageInner() {
             onDone={() => router.push('/profile')}
             sharing={sharing}
             onShare={finishResult.toughestSolved ? shareToughest : undefined}
+            nextMedal={finishResult.nextMedal}
           />
         ) : (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 workout-result-overlay">

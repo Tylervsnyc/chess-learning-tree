@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { processAchievementEvent } from '@/lib/achievements/server';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { parsePuzzleResults, recordSkillResults } from '@/lib/skill-profile';
 
 // Cap stored missed puzzles to bound the row size.
 const MAX_MISSED = 30;
@@ -50,6 +52,7 @@ export async function POST(request: NextRequest) {
     wrong?: unknown;
     perfect?: unknown;
     missedPuzzles?: unknown;
+    puzzleResults?: unknown;
     seenPuzzleIds?: unknown;
     clientSessionId?: unknown;
     punches?: unknown;
@@ -221,20 +224,35 @@ export async function POST(request: NextRequest) {
         );
       if (seenError) console.error('workout seen-puzzle upsert failed', seenError);
     }
+
+    // Skill profile: fold every puzzle result into user_skill by theme.
+    // Non-fatal, service-role (no user write policy on the table).
+    if (FEATURE_FLAGS.SKILL_PROFILE) {
+      const results = parsePuzzleResults(body.puzzleResults);
+      if (results.length > 0) {
+        await recordSkillResults(createServiceClient(), user.id, results).catch((e) =>
+          console.error('skill profile write failed', e),
+        );
+      }
+    }
   }
 
   // Achievements — best-effort, only on a fresh session (a replay must never
   // re-celebrate), after the row landed so streak-derived detectors count it.
   // These extra fields are client-claimed but only feed cosmetic medals, and
   // each is clamped to what one session can honestly contain.
-  let newAchievements: Awaited<ReturnType<typeof processAchievementEvent>> = [];
+  let achievementOutcome: Awaited<ReturnType<typeof processAchievementEvent>> = {
+    unlocks: [],
+    nextMedal: null,
+  };
   if (!replayed) {
-    newAchievements = await processAchievementEvent(
+    achievementOutcome = await processAchievementEvent(
       createServiceClient(),
       user.id,
       {
         kind: 'workout_finished',
         correct: Math.min(Math.max(0, correct), 500),
+        wrong: Math.min(Math.max(0, wrong), 500),
         punches,
         perfect,
         durationMinutes,
@@ -254,6 +272,7 @@ export async function POST(request: NextRequest) {
     previousBest,
     recentPoints,
     replayed,
-    newAchievements,
+    newAchievements: achievementOutcome.unlocks,
+    nextMedal: achievementOutcome.nextMedal,
   });
 }

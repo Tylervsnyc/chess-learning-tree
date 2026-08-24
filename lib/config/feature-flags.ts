@@ -21,6 +21,13 @@ export const FEATURE_FLAGS = {
    */
   CHESS_PATH_ELO: true,
   /**
+   * Skill profile (Chess Boxing learn-from-mistakes, layer 1). When ON,
+   * /api/workout/finish folds every puzzle result into `user_skill` by Lichess
+   * theme (lib/skill-profile.ts). Needs migration 2026-08-24-user-skill.sql.
+   * Weekly report + targeted round (layers 2/3) read from it.
+   */
+  SKILL_PROFILE: false,
+  /**
    * CHE-390 — webview-safe auth. Inside social in-app browsers (Instagram,
    * Facebook, TikTok), Google blocks OAuth outright (`disallowed_useragent`) —
    * during the 2026-06 paid IG probe every webview OAuth tap died. When ON,
