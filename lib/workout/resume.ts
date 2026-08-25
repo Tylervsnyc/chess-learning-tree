@@ -22,7 +22,7 @@ export interface FightResumeState {
   fen: string;
   /** SAN move list so far (feeds Rookie's opening book after a resume). */
   moveSans: string[];
-  /** Rookie's level for this session (capped at FIGHT_MAX_LEVEL). */
+  /** Rookie's level for this session (the matched /play level, 1-10). */
   level: number;
   /** White's material lead at the current scoring segment's start. */
   segStartMaterial: number;

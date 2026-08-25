@@ -112,21 +112,32 @@ export const FIGHT_MATE_ROUND_BONUS = 100;
 export const FIGHT_WIN_SESSION_BONUS = 300;
 /** Session bonus for a draw/stalemate (unscaled, NOT in bestRoundPoints). */
 export const FIGHT_DRAW_SESSION_BONUS = 100;
-/** Fight rounds cap Rookie at this /play level (L5+ engines are heavyweight). */
-export const FIGHT_MAX_LEVEL = 4;
 
 /** Pawn-equivalent piece values for the cheap material eval. */
 export const FIGHT_PIECE_VALUES: Record<string, number> = {
   p: 1, n: 3, b: 3, r: 5, q: 9, k: 0,
 };
 
-/** How much a fight round pays relative to Rookie's level (anti farm-the-baby). */
+/**
+ * How much a fight round pays relative to Rookie's level (anti farm-the-baby).
+ *
+ * Covers the full 1-10 /play ladder — fight rounds are no longer capped, so a
+ * player who has climbed to L8 must be paid for the Rookie they actually
+ * fought. Rises ~0.15/level above L4, matching levelMultiplier's slope in
+ * lib/bout/bout.ts so the ring and the workout value a level the same way.
+ */
 export function fightLevelFactor(level: number): number {
-  switch (Math.max(1, Math.min(FIGHT_MAX_LEVEL, Math.round(level)))) {
+  switch (Math.max(1, Math.min(10, Math.round(level)))) {
     case 1: return 0.5;
     case 2: return 0.7;
     case 3: return 0.85;
-    default: return 1;
+    case 4: return 1;
+    case 5: return 1.15;
+    case 6: return 1.3;
+    case 7: return 1.45;
+    case 8: return 1.6;
+    case 9: return 1.75;
+    default: return 1.9;
   }
 }
 

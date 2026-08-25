@@ -14,6 +14,8 @@ import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
 import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
+import { maxLevel } from '@/lib/rookie/matchmaking';
+import { maia } from '@/lib/maia/maia-adapter';
 import {
   buildSchedule,
   labelFor,
@@ -32,7 +34,6 @@ import {
   FIGHT_ROUND_MATERIAL_CAP,
   FIGHT_MATE_ROUND_BONUS,
   FIGHT_DRAW_SESSION_BONUS,
-  FIGHT_MAX_LEVEL,
   type Segment,
   type SegmentKind,
 } from '@/lib/workout/schedule';
@@ -168,8 +169,8 @@ function pick<T>(arr: T[], seed: number): T {
 // One continuous game vs Rookie across the chess segments. The game freezes
 // during exercise/break segments and resumes the next chess segment — real
 // chess boxing. Player is always white; Rookie plays at the user's unlocked
-// /play level, hard-capped at FIGHT_MAX_LEVEL (L5+ engines are heavyweight
-// downloads that must never load here).
+// /play level, UNCAPPED — the same Rookie as chesspath.app. L5/L6 are Maia
+// (~45MB), so it is warmed on the setup screen, never inside a timed segment.
 
 type Discipline = 'puzzles' | 'fight';
 
@@ -413,7 +414,13 @@ function WorkoutPageInner() {
   // Warm the matched Rookie level so a Fight Round starting mid-session uses
   // the same Rookie /play matched to you, not a stale cache.
   useEffect(() => {
-    void getRookieLevel();
+    void maia.init();
+    void getRookieLevel().then((state) => {
+      // L5/L6 are Maia (~45MB). Warm it on the setup screen so it is never
+      // downloaded inside a timed segment; pickRookieMove falls back to
+      // Stockfish until it reports ready, so a slow load costs style, not time.
+      if (state.level === 5 || state.level === 6) void maia.ensureReady();
+    });
   }, []);
 
   // Fired Up: earned by punching hard in the previous exercise segment;
@@ -1108,9 +1115,8 @@ function WorkoutPageInner() {
     finishingRef.current = false;
     confettiFiredRef.current = false;
 
-    // Fight rounds: fresh game, Rookie at the user's unlocked /play level
-    // hard-capped at FIGHT_MAX_LEVEL (no picking easier — anti-farming; no
-    // higher — L5+ engines are heavyweight downloads).
+    // Fight rounds: fresh game, Rookie at the user's unlocked /play level.
+    // Not pickable (anti-farming) and not capped — one ladder with /play.
     const fight = fightEnabled && discipline === 'fight';
     fightFenRef.current = FIGHT_START_FEN;
     setFightFen(FIGHT_START_FEN);
@@ -1127,9 +1133,7 @@ function WorkoutPageInner() {
     fightLossesRef.current = 0;
     fightDrawsRef.current = 0;
     if (fight) {
-      // Matched level, capped — L5+ engines are heavyweight downloads that
-      // must never load inside a timed segment.
-      const lvl = Math.min(FIGHT_MAX_LEVEL, peekRookieLevel().level);
+      const lvl = peekRookieLevel().level;
       setFightLevel(lvl);
       fightLevelRef.current = lvl;
     }
@@ -1195,7 +1199,7 @@ function WorkoutPageInner() {
       fightFenRef.current = fightSnap.fen;
       setFightFen(fightSnap.fen);
       fightMovesRef.current = [...(fightSnap.moveSans ?? [])];
-      const lvl = Math.max(1, Math.min(FIGHT_MAX_LEVEL, fightSnap.level ?? 1));
+      const lvl = Math.max(1, Math.min(maxLevel(), fightSnap.level ?? 1));
       setFightLevel(lvl);
       fightLevelRef.current = lvl;
       segStartMaterialRef.current = fightSnap.segStartMaterial ?? 0;

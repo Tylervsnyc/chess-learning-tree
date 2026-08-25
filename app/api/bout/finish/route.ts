@@ -9,7 +9,6 @@ import {
   BOUT_GAME_WEIGHT,
 } from '@/lib/rookie/rating';
 import { matchLevel, floorRatingForLevel, maxLevel } from '@/lib/rookie/matchmaking';
-import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import {
   boutPoints,
   boutResult,
@@ -154,7 +153,7 @@ export async function POST(request: NextRequest) {
   // `level: 10` would have bought a 1.6x multiplier on every ranked bout. The
   // server derives it from the user's Rookie rating instead.
   const { rating } = await getRookieRating(svc, user.id);
-  const level = matchLevel(rating, FIGHT_MAX_LEVEL).level;
+  const level = matchLevel(rating).level;
 
   // Idempotency: if this bout already landed (double-tap, retry, flaky
   // network), return the existing row instead of writing a second one.
@@ -237,13 +236,11 @@ export async function POST(request: NextRequest) {
   // replayed, and only on a fresh row (the duplicate path returns above).
   const updated = await applyGameResult(svc, user.id, level, RATING_SCORE[result], BOUT_GAME_WEIGHT);
 
-  // Promotion rule: a CHECKMATE win in the ring at your true level guarantees
-  // the next rung — the rating is lifted to the next level's floor, so the
-  // next /play game (and the next bout, cap permitting) is against a stronger
-  // Rookie. Skipped when the bout was capped below your real level
-  // (FIGHT_MAX_LEVEL): beating a capped-down Rookie proves nothing new.
-  const trueLevel = matchLevel(rating).level;
-  if (outcome === 'ko_win' && level === trueLevel && level < maxLevel()) {
+  // Promotion rule: a CHECKMATE win in the ring guarantees the next rung — the
+  // rating is lifted to the next level's floor, so the next /play game AND the
+  // next bout are against a stronger Rookie. The ring is no longer capped, so
+  // `level` is always the true matched level and there is nothing to skip.
+  if (outcome === 'ko_win' && level < maxLevel()) {
     await raiseRatingToFloor(svc, user.id, updated, floorRatingForLevel(level + 1));
   }
 

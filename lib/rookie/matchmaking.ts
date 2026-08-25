@@ -76,8 +76,8 @@ export interface MatchedLevel {
 /**
  * Pick Rookie's level for a player at `rookieRating`.
  *
- * `cap` clamps the result — the workout's Fight Rounds cap at FIGHT_MAX_LEVEL
- * because the deeper engines are too heavy for a timed segment.
+ * `cap` clamps the result. Nothing caps it today — Chess Boxing (bouts and
+ * Fight Rounds) uses the same uncapped ladder as /play, one Rookie everywhere.
  */
 export function matchLevel(rookieRating: number, cap = maxLevel()): MatchedLevel {
   const target = rookieRating - HANDICAP_ELO;

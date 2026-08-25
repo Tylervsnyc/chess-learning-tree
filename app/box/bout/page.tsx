@@ -35,6 +35,7 @@ import { usePremove } from '@/hooks/usePremove';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
+import { maia } from '@/lib/maia/maia-adapter';
 import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
 import { getLevelElo } from '@/lib/rookie-levels';
 import { useName } from '@/hooks/useName';
@@ -44,7 +45,6 @@ import { GameReview } from '@/components/shared/GameReview';
 import { FightResultCard } from '@/components/chessboxing/result/FightResultCard';
 import type { ReviewMove } from '@/lib/review/review-core';
 import { buildBoutShareFrames } from '@/lib/share/fight-night-frames';
-import { FIGHT_MAX_LEVEL } from '@/lib/workout/schedule';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -954,8 +954,10 @@ export default function BoutPage() {
     setNeedsSignIn(false);
     setResult(null);
 
-    // Matched level, capped — the deeper engines are too heavy for a bout.
-    const lvl = Math.min(FIGHT_MAX_LEVEL, peekRookieLevel().level);
+    // Matched level, uncapped — the ring uses the SAME Rookie as /play, so a
+    // player who has climbed to L8 there meets L8 here. The pre-fight effect
+    // below has already refreshed the level and warmed the engine for it.
+    const lvl = peekRookieLevel().level;
     setLevel(lvl);
     levelRef.current = lvl;
 
@@ -982,9 +984,17 @@ export default function BoutPage() {
   // can't pay. Failure is silent — never block a fight over a stat line.
   // Refresh the matched level while we're on the pre-fight screen, so the bout
   // uses the same Rookie /play just matched to you.
+  // Cheap: reads the Maia cache, downloads nothing (ensureReady does that).
+  useEffect(() => { void maia.init(); }, []);
+
   useEffect(() => {
     if (phase !== 'prefight') return;
-    void getRookieLevel({ fresh: true });
+    void getRookieLevel({ fresh: true }).then((state) => {
+      // L5/L6 are Maia (~45MB). Download it HERE, on the pre-fight screen,
+      // never inside a timed round — pickRookieMove falls back to Stockfish
+      // unless Maia reports ready, so a slow connection costs style, not time.
+      if (state.level === 5 || state.level === 6) void maia.ensureReady();
+    });
   }, [phase]);
 
   // Replay a stashed logged-out bout on the next authed load. The endpoint is
