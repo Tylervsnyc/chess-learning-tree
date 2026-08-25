@@ -48,7 +48,7 @@ export default function BoxProfilePage() {
   return (
     <CornerRoom
       name={name}
-      days={loading ? null : streak?.current ?? 0}
+      streak={streak}
       record={
         loading
           ? null

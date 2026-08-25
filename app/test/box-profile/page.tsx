@@ -1,6 +1,8 @@
 'use client';
 
 import { CornerRoom } from '@/components/chessboxing/CornerRoom';
+import { StreakHero } from '@/components/shared/StreakHero';
+import type { StreakData } from '@/lib/streak-client';
 import type { WeekData } from '@/components/shared/WeekChart';
 import type { EloSeriesPoint } from '@/lib/elo/rookie-rating';
 
@@ -34,22 +36,29 @@ const WEEK: WeekData = {
   ],
 };
 
+const HERO_CASES: { label: string; tone: 'web' | 'compact'; streak: StreakData }[] = [
+  { label: 'web lit', tone: 'web', streak: { current: 5, longest: 12, completedToday: true, activeDays: [] } },
+  { label: 'web cold', tone: 'web', streak: { current: 128, longest: 128, completedToday: false, activeDays: [] } },
+  { label: 'compact lit', tone: 'compact', streak: { current: 5, longest: 12, completedToday: true, activeDays: [] } },
+  { label: 'compact cold', tone: 'compact', streak: { current: 128, longest: 128, completedToday: false, activeDays: [] } },
+];
+
 const CASES: { title: string; props: React.ComponentProps<typeof CornerRoom> }[] = [
   {
     title: 'Regular',
-    props: { name: 'brooklyn_bishop', days: 5, record: { wins: 8, losses: 3, kos: 2, total: 12 }, elo: { current: 1240, events: 86, series: SERIES }, loading: false, week: WEEK },
+    props: { name: 'brooklyn_bishop', streak: { current: 5, longest: 12, completedToday: true, activeDays: [] }, record: { wins: 8, losses: 3, kos: 2, total: 12 }, elo: { current: 1240, events: 86, series: SERIES }, loading: false, week: WEEK },
   },
   {
     title: 'Brand new (no rating, no fights)',
-    props: { name: 'newguy', days: 0, record: { wins: 0, losses: 0, kos: 0, total: 0 }, elo: { current: 600, events: 0, series: [] }, loading: false, week: { days: WEEK.days.map((d) => ({ ...d, points: 0 })), weekTotal: 0 } },
+    props: { name: 'newguy', streak: { current: 0, longest: 0, completedToday: false, activeDays: [] }, record: { wins: 0, losses: 0, kos: 0, total: 0 }, elo: { current: 600, events: 0, series: [] }, loading: false, week: { days: WEEK.days.map((d) => ({ ...d, points: 0 })), weekTotal: 0 } },
   },
   {
     title: 'Loading',
-    props: { name: 'brooklyn_bishop', days: null, record: null, elo: null, loading: true, week: null },
+    props: { name: 'brooklyn_bishop', streak: null, record: null, elo: null, loading: true, week: null },
   },
   {
     title: 'Long handle (20 chars)',
-    props: { name: 'a_very_long_handle_x', days: 128, record: { wins: 210, losses: 130, kos: 44, total: 340 }, elo: { current: 2015, events: 940, series: SERIES }, loading: false, week: WEEK },
+    props: { name: 'a_very_long_handle_x', streak: { current: 128, longest: 128, completedToday: false, activeDays: [] }, record: { wins: 210, losses: 130, kos: 44, total: 340 }, elo: { current: 2015, events: 940, series: SERIES }, loading: false, week: WEEK },
   },
 ];
 
@@ -59,6 +68,23 @@ export default function TestBoxProfile() {
       <h1 className="text-lg font-black text-slate-700 mb-4">
         /box/profile — the corner room
       </h1>
+
+      {/* Same component, both tones — this is the parity check. If the fire,
+          the copy or the blaze ever differ between web and app, it shows up
+          here. */}
+      <div className="mb-8">
+        <div className="text-xs font-bold text-slate-500 mb-2">
+          StreakHero — one component, two tones (web = /profile, compact = Chess Boxing)
+        </div>
+        <div className="flex flex-wrap gap-4">
+          {HERO_CASES.map(({ label, tone, streak }) => (
+            <div key={label} className="w-[330px]">
+              <div className="text-[11px] font-semibold text-slate-400 mb-1">{label}</div>
+              <StreakHero streak={streak} tone={tone} />
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="flex flex-wrap gap-8">
         {CASES.map(({ title, props }) => (
           <div key={title}>

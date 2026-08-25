@@ -10,7 +10,7 @@ import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { useIsNativeApp } from '@/lib/native-app';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
-import RookieCampfire from '@/components/shared/RookieCampfire';
+import { StreakHero } from '@/components/shared/StreakHero';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
 import { TrophyCase } from '@/components/achievements/TrophyCase';
 
@@ -51,28 +51,6 @@ function fmtSessionDate(iso: string): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-// ─── Streak copy ────────────────────────────────────────────────────────────
-// Lines shown when the streak is kept today. Picked daily-stable (same line all
-// day, changes tomorrow) so it stays fresh without flickering on re-render.
-const STREAK_KEPT_LINES = [
-  'You kept the fire going today.',
-  "Fire's still going. Nice work.",
-  'Another log on the fire.',
-  "Today's done — the fire stays lit.",
-  'You showed up. The fire\'s happy.',
-  'Still burning bright. See you tomorrow.',
-  'One more day, one more flame.',
-  'The fire lives another day.',
-  "Streak's alive and the fire's roaring.",
-  'You fed the fire today. Good.',
-];
-
-function pickDailyKeptLine(): string {
-  const d = new Date();
-  const dayKey = d.getFullYear() * 1000 + d.getMonth() * 31 + d.getDate();
-  return STREAK_KEPT_LINES[dayKey % STREAK_KEPT_LINES.length];
 }
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
@@ -400,8 +378,6 @@ export default function ProfilePage() {
   useEffect(() => {
     if (nativeApp) pageRouter.replace('/box/profile');
   }, [nativeApp, pageRouter]);
-  // Daily-stable streak line (computed once, won't flicker on re-render).
-  const [keptLine] = useState(pickDailyKeptLine);
   // ?preview=gold — see the gold profile without a premium/patron account.
   const [previewGold, setPreviewGold] = useState(false);
   // ONE profile read (hooks/useProfileData) — the same hook /box/profile uses,
@@ -557,49 +533,8 @@ export default function ProfilePage() {
           </button>
         )}
 
-        {/* ── Streak hero — Rookie catches fire when your streak is alive ── */}
-        <div
-          className={`relative overflow-hidden rounded-3xl p-5 shadow-sm border transition-colors text-white ${
-            done
-              ? 'border-chess-orange/40 bg-gradient-to-b from-[#2A3C45] via-[#33373f] to-[#3a2e26]'
-              : 'border-slate-600/40 bg-gradient-to-b from-slate-700 to-slate-800'
-          }`}
-        >
-          <div className="flex items-center gap-4">
-            <div className="shrink-0 flex items-end justify-center" style={{ width: 88 }}>
-              <RookieCampfire blockSize={14} active={streakReady && done} blaze={Math.max(0.3, Math.min(1, current / 60))} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-black text-white tabular-nums leading-none">
-                  {streakReady ? current : '–'}
-                </span>
-                <span className="text-base font-bold text-white/55">
-                  day{current === 1 ? '' : 's'}
-                </span>
-              </div>
-              <p className="text-sm font-semibold text-white/70 mt-1.5 leading-snug">
-                {!streakReady
-                  ? 'Loading your streak…'
-                  : done
-                    ? keptLine
-                    : current > 0
-                      ? "Don't let the fire go out — do anything today."
-                      : 'Do anything today to spark your streak.'}
-              </p>
-            </div>
-          </div>
-
-          {/* Footer row — the rule + longest */}
-          <div className="mt-4 pt-3.5 border-t border-white/10 flex items-center justify-between text-xs">
-            <span className="font-semibold text-white/45">
-              A lesson, a game, or a puzzle — anything counts.
-            </span>
-            <span className="font-bold text-amber-300 whitespace-nowrap ml-2">
-              Best {streakReady ? longest : '–'}
-            </span>
-          </div>
-        </div>
+        {/* ── Streak hero — ONE implementation, shared with Chess Boxing ── */}
+        <StreakHero streak={streak} />
 
         {/* ── Estimated rating: Rookie's voice + detailed chart, one card ── */}
         <RookieRatingCard data={elo} loading={eloLoading} />

@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import type { StreakData } from '@/lib/streak-client';
+import { StreakHero } from '@/components/shared/StreakHero';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
 import { rookieRating, type EloSeriesPoint } from '@/lib/elo/rookie-rating';
 
@@ -83,8 +85,8 @@ export interface CornerRoomRecord {
 
 export interface CornerRoomProps {
   name: string;
-  /** null while loading. */
-  days: number | null;
+  /** Passed straight through to the shared StreakHero. null = still loading. */
+  streak: StreakData | null;
   record: CornerRoomRecord | null;
   /** null while loading; null-with-loaded means "not rated yet". */
   elo: CornerRoomElo | null;
@@ -92,7 +94,7 @@ export interface CornerRoomProps {
   week: WeekData | null;
 }
 
-export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoomProps) {
+export function CornerRoom({ name, streak, record, elo, loading, week }: CornerRoomProps) {
   return (
     <div className="h-full overflow-hidden bg-[#754c26] relative">
       <RoomBackdrop />
@@ -103,19 +105,23 @@ export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoo
           <GoldPlate name={name} />
         </div>
 
-        {/* Leftover height is SPLIT between wall above and floor below, so the
-            content sits in the room rather than piling at one end. Anchoring
-            it all at the top left ~275px of blank floor; flexing the week card
-            to fill left a giant white box with a small chart in it. */}
-        <div className="flex-1 min-h-[12px]" />
+        {/* THE STREAK. Same fire, same rules, same copy as chesspath.app —
+            it IS that component (components/shared/StreakHero), not a
+            reimplementation. Sits in what used to be dead wall. */}
+        <div className="flex-1 min-h-0 flex items-center py-2.5">
+          <Framed className="w-full" thickness={4}>
+            <div className="p-1.5">
+              <StreakHero streak={streak} tone="compact" />
+            </div>
+          </Framed>
+        </div>
 
         <RatingCard elo={elo} loading={loading} />
 
         {/* Streak / record / KOs. None of these repeat the chart below — an
             earlier pass had a "this week" tile sitting directly on top of a
             chart already headed "This week, 1,840 pts". */}
-        <div className="shrink-0 mt-2.5 grid grid-cols-3 gap-2.5">
-          <Stat label="Day streak" value={days === null ? null : String(days)} />
+        <div className="shrink-0 mt-2.5 grid grid-cols-2 gap-2.5">
           <Stat
             label="Record"
             value={record === null ? null : `${record.wins}\u2013${record.losses}`}
