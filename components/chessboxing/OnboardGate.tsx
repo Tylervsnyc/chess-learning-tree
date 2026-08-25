@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ONBOARDED_KEY } from '@/components/chessboxing/OnboardFlow';
-import { isNativeApp } from '@/lib/native-app';
+import { isNativeAppOrDebug } from '@/lib/native-app';
 
 /**
  * OnboardGate — first-launch gate for the Chess Boxing app, mounted by
@@ -27,8 +27,6 @@ import { isNativeApp } from '@/lib/native-app';
  * routes like /box/bout, so a fight in progress is never interrupted.
  */
 
-const DEBUG_KEY = 'cp:boxapp';
-
 export function OnboardGate() {
   const pathname = usePathname();
   const router = useRouter();
@@ -38,19 +36,7 @@ export function OnboardGate() {
 
     let cancelled = false;
 
-    const inApp = () => {
-      if (isNativeApp()) return true;
-      try {
-        if (new URLSearchParams(window.location.search).has('boxapp')) {
-          sessionStorage.setItem(DEBUG_KEY, '1');
-        }
-        return sessionStorage.getItem(DEBUG_KEY) === '1';
-      } catch {
-        return false; /* private mode — native detection still works */
-      }
-    };
-
-    if (!inApp()) return;
+    if (!isNativeAppOrDebug()) return;
 
     let onboarded = false;
     try {

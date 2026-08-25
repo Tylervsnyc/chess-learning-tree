@@ -23,19 +23,34 @@ declare global {
 }
 
 const DEBUG_KEY = 'cp:boxapp';
+/** ?boxapp=frame — preview this document only, write nothing to the tab. */
+export const EPHEMERAL = 'frame';
 
 export function isNativeApp(): boolean {
   return typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.() === true;
 }
 
-/** Native shell OR the ?boxapp=1 web-preview debug key (persisted per session). */
+/**
+ * Native shell OR the ?boxapp web-preview debug key.
+ *
+ * Two preview modes, and the difference matters:
+ *   ?boxapp=1     — sticky. Persists in sessionStorage so you can browse the
+ *                   whole shell on web without re-adding the param.
+ *   ?boxapp=frame — EPHEMERAL. This document only; nothing is written. Use it
+ *                   for iframes on /test pages.
+ *
+ * sessionStorage is shared by every page in a tab, same-origin iframes
+ * included. A /test page that iframed `?boxapp=1` therefore left the whole
+ * tab stuck in shell mode — plain /play rendered the boxing gym until the tab
+ * was closed. That is what `frame` exists to prevent.
+ */
 export function isNativeAppOrDebug(): boolean {
   if (typeof window === 'undefined') return false;
   if (isNativeApp()) return true;
   try {
-    if (new URLSearchParams(window.location.search).has('boxapp')) {
-      sessionStorage.setItem(DEBUG_KEY, '1');
-    }
+    const param = new URLSearchParams(window.location.search).get('boxapp');
+    if (param === EPHEMERAL) return true; // never persisted
+    if (param !== null) sessionStorage.setItem(DEBUG_KEY, '1');
     return sessionStorage.getItem(DEBUG_KEY) === '1';
   } catch {
     return false; /* private mode — native detection still works */
