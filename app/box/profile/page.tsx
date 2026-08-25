@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import { useProfileData } from '@/hooks/useProfileData';
-import { CornerRoom, RoomBackdrop } from '@/components/chessboxing/CornerRoom';
+import { CornerRoom, Framed, RoomBackdrop } from '@/components/chessboxing/CornerRoom';
 
 /**
  * /box/profile — the Chess Boxing app's Profile tab. "Your corner".
@@ -72,7 +72,8 @@ function SignedOut() {
       <RoomBackdrop />
       {/* On a card — dark copy sitting straight on the wood was unreadable. */}
       <div className="relative max-w-lg mx-auto w-full h-full px-6 flex flex-col items-center justify-center">
-        <div className="w-full max-w-xs rounded-3xl bg-white/95 border border-white shadow-[0_10px_28px_-10px_rgba(60,36,10,0.6)] px-5 py-6 flex flex-col items-center gap-3 text-center">
+        <Framed className="w-full max-w-xs" thickness={5} outer="rounded-3xl" inner="rounded-[19px]">
+          <div className="px-5 py-6 flex flex-col items-center gap-3 text-center">
           <h1 className="text-2xl font-black text-chess-text">Your corner</h1>
           <p className="text-sm font-semibold text-chess-text-muted">
             Sign in to keep a streak, climb the standings, and build a fight record.
@@ -89,7 +90,8 @@ function SignedOut() {
           >
             Create an account
           </Link>
-        </div>
+          </div>
+        </Framed>
       </div>
     </div>
   );

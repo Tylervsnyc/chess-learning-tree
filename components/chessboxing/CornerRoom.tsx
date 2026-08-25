@@ -18,16 +18,55 @@ import { rookieRating, type EloSeriesPoint } from '@/lib/elo/rookie-rating';
  * content: estimated rating first (the number people care about), then the
  * three day-to-day counts, then the week.
  *
- * THE ROOM (Tyler: "wooden backgrounds like a finished basement"): vertical
- * knotty-pine paneling on the wall, stained baseboard, horizontal boards on
- * the floor, and a bare bulb over the corner. Everything readable sits on a
- * white card — dark copy straight on the wood is unreadable, which is how the
- * signed-out state and the Settings link both broke on the first wood pass.
+ * THE ROOM (Tyler: "wooden backgrounds like a finished basement", then
+ * "darker"): dark stained vertical paneling on the wall, stained baseboard,
+ * deeper boards on the floor, and a bare bulb over the corner. Entirely flat
+ * CSS gradients — no image, nothing to load, scales to any size. The floor
+ * stays a shade deeper than the wall so the two read as different surfaces
+ * rather than one big brown field.
  *
- * Entirely flat CSS gradients: no image, nothing to load, scales to any size.
- * The floor is a shade deeper than the wall so the two read as different
- * surfaces rather than one big brown field.
+ * EVERY window is gold-framed (see Framed) and every window is cream inside.
+ * On a dark ground that isn't decoration: dark copy laid straight on the wood
+ * is unreadable, which is exactly how the Settings link and the signed-out
+ * state each broke the first time this went brown. If you add a surface here,
+ * frame it.
  */
+
+/**
+ * One gold. Every frame on this screen uses it, so they read as the same metal
+ * — a slightly different gold on each card looks like a mistake.
+ */
+const GOLD =
+  'linear-gradient(145deg, #f7e9b0 0%, #d9b544 22%, #9d7519 48%, #eeda94 72%, #c19b1f 100%)';
+
+/**
+ * A gold-framed window. The frame is a gradient BOX behind an inset panel, not
+ * a flat border colour, so the metal catches light down one edge and darkens
+ * on the other. Inner radius is deliberately a few px tighter than the outer,
+ * which is what stops the corners looking like a sticker.
+ */
+export function Framed({
+  children,
+  className = '',
+  thickness = 3,
+  outer = 'rounded-2xl',
+  inner = 'rounded-[13px]',
+}: {
+  children: React.ReactNode;
+  className?: string;
+  thickness?: number;
+  outer?: string;
+  inner?: string;
+}) {
+  return (
+    <div
+      className={`${outer} shadow-[0_8px_20px_-8px_rgba(40,22,4,0.75)] ${className}`}
+      style={{ background: GOLD, padding: thickness }}
+    >
+      <div className={`${inner} bg-[#fffdf7] h-full`}>{children}</div>
+    </div>
+  );
+}
 
 export interface CornerRoomElo {
   current: number;
@@ -55,7 +94,7 @@ export interface CornerRoomProps {
 
 export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoomProps) {
   return (
-    <div className="h-full overflow-hidden bg-[#c8975c] relative">
+    <div className="h-full overflow-hidden bg-[#754c26] relative">
       <RoomBackdrop />
 
       <div className="relative h-full max-w-lg md:max-w-xl mx-auto w-full px-5 pt-[max(0.85rem,env(safe-area-inset-top))] pb-3 flex flex-col">
@@ -87,15 +126,17 @@ export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoo
         {/* WeekChart draws its own "This week" header — don't add a second.
             Natural height: letting this flex to fill turned it into a giant
             white box with a small chart floating in the middle of it. */}
-        <div className="shrink-0 mt-2.5 rounded-2xl bg-white/95 border border-white shadow-[0_8px_20px_-8px_rgba(76,60,40,0.45)] p-3">
-          <WeekChart data={week} loading={loading} />
-        </div>
+        <Framed className="shrink-0 mt-2.5" thickness={4}>
+          <div className="p-3">
+            <WeekChart data={week} loading={loading} />
+          </div>
+        </Framed>
 
         <div className="flex-1 min-h-0" />
 
         <Link
           href="/box/settings"
-          className="shrink-0 mt-1 mx-auto text-xs font-black text-[#43301a] px-4 min-h-[44px] inline-flex items-center gap-1.5 rounded-full bg-[#e6c395]/85 border border-[#f0d6ac]/70 shadow-[0_2px_6px_-1px_rgba(60,36,10,0.4)] tap-highlight"
+          className="shrink-0 mt-1 mx-auto text-xs font-black text-[#43301a] px-4 min-h-[44px] inline-flex items-center gap-1.5 rounded-full bg-[#e3c193]/90 border border-[#f2dcb4]/80 shadow-[0_2px_6px_-1px_rgba(60,36,10,0.4)] tap-highlight"
         >
           <GearIcon />
           Settings
@@ -113,18 +154,15 @@ export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoo
 function GoldPlate({ name }: { name: string }) {
   return (
     <div
-      className="rounded-full p-[2px] shadow-[0_3px_8px_-2px_rgba(120,90,20,0.4)] max-w-full"
-      style={{
-        background:
-          'linear-gradient(145deg, #f6e6a8 0%, #d4af37 28%, #a8801f 52%, #e8cf85 76%, #c9a227 100%)',
-      }}
+      className="rounded-full p-[6px] shadow-[0_5px_14px_-3px_rgba(40,22,4,0.8)] max-w-full"
+      style={{ background: GOLD }}
     >
-      <div className="rounded-full bg-[#fffdf6] px-4 py-1.5 flex items-center gap-2 max-w-full">
-        <span className="text-[8.5px] font-black uppercase tracking-[0.22em] text-[#a8801f] shrink-0">
+      <div className="rounded-full bg-[#fffdf7] px-5 py-2 flex items-center gap-2.5 max-w-full ring-1 ring-[#8a6a12]/25">
+        <span className="text-[8.5px] font-black uppercase tracking-[0.22em] text-[#9d7519] shrink-0">
           Corner
         </span>
-        <span className="w-px h-3 bg-[#e4d3a0] shrink-0" />
-        <span className="text-[13px] font-black text-[#4a3c1f] leading-none truncate">
+        <span className="w-px h-3.5 bg-[#e0cb92] shrink-0" />
+        <span className="text-[14px] font-black text-[#40340f] leading-none truncate">
           {name}
         </span>
       </div>
@@ -146,7 +184,8 @@ function RatingCard({ elo, loading }: { elo: CornerRoomElo | null; loading: bool
   const voice = rated ? rookieRating(elo!.current, elo!.series) : null;
 
   return (
-    <div className="shrink-0 rounded-2xl bg-white/95 border border-white shadow-[0_8px_20px_-8px_rgba(76,60,40,0.45)] px-4 py-3">
+    <Framed className="shrink-0" thickness={4}>
+      <div className="px-4 py-3">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[10px] font-black uppercase tracking-[0.18em] text-chess-text-muted">
           Estimated rating
@@ -174,7 +213,8 @@ function RatingCard({ elo, loading }: { elo: CornerRoomElo | null; loading: bool
           <Sparkline series={elo!.series} />
         )}
       </div>
-    </div>
+      </div>
+    </Framed>
   );
 }
 
@@ -218,13 +258,13 @@ export function RoomBackdrop() {
   return (
     <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* ── WALL: vertical knotty-pine paneling ───────────────────────────── */}
-      <div className="absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-[#d8ab72] to-[#c8975c]" />
+      <div className="absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-[#8c5f33] to-[#754c26]" />
       {/* grain — irregular widths so it doesn't read as a barcode */}
       <div
         className="absolute inset-x-0 top-0 h-[26%] opacity-[0.35]"
         style={{
           background:
-            'repeating-linear-gradient(90deg, rgba(120,80,38,0.10) 0 2px, rgba(255,225,180,0.10) 2px 5px, rgba(120,80,38,0) 5px 13px, rgba(120,80,38,0.07) 13px 15px, rgba(120,80,38,0) 15px 23px)',
+            'repeating-linear-gradient(90deg, rgba(30,16,4,0.16) 0 2px, rgba(226,182,124,0.12) 2px 5px, rgba(30,16,4,0) 5px 13px, rgba(30,16,4,0.11) 13px 15px, rgba(30,16,4,0) 15px 23px)',
         }}
       />
       {/* the panel grooves: a dark cut with a lit bevel on its right edge */}
@@ -232,27 +272,27 @@ export function RoomBackdrop() {
         className="absolute inset-x-0 top-0 h-[26%]"
         style={{
           background:
-            'repeating-linear-gradient(90deg, rgba(94,60,26,0.55) 0 2px, rgba(255,232,190,0.45) 2px 4px, rgba(0,0,0,0) 4px 46px)',
+            'repeating-linear-gradient(90deg, rgba(38,22,8,0.75) 0 2px, rgba(214,168,106,0.45) 2px 4px, rgba(0,0,0,0) 4px 46px)',
         }}
       />
 
       {/* ── BASEBOARD: stained trim, and the shadow it throws on the floor ── */}
-      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-3 bg-[#8a5a2b]" />
-      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-[2px] bg-[#a97742]" />
-      <div className="absolute inset-x-0 top-[26%] h-[2px] bg-[#5e3c1a]" />
+      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-3 bg-[#4c2f14]" />
+      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-[2px] bg-[#6d4520]" />
+      <div className="absolute inset-x-0 top-[26%] h-[2px] bg-[#2a1808]" />
       <div
         className="absolute inset-x-0 top-[26%] h-9"
         style={{ background: 'linear-gradient(to bottom, rgba(72,44,16,0.38), rgba(72,44,16,0))' }}
       />
 
       {/* ── FLOOR: horizontal boards, a shade deeper than the walls ───────── */}
-      <div className="absolute inset-x-0 top-[26%] bottom-0 bg-gradient-to-b from-[#c6935a] to-[#b07f4a]" />
+      <div className="absolute inset-x-0 top-[26%] bottom-0 bg-gradient-to-b from-[#6f4620] to-[#573517]" />
       {/* board seams */}
       <div
         className="absolute inset-x-0 top-[26%] bottom-0"
         style={{
           background:
-            'repeating-linear-gradient(0deg, rgba(78,48,18,0.42) 0 2px, rgba(255,214,158,0.16) 2px 3px, rgba(0,0,0,0) 3px 52px)',
+            'repeating-linear-gradient(0deg, rgba(24,12,4,0.6) 0 2px, rgba(206,158,98,0.14) 2px 3px, rgba(0,0,0,0) 3px 52px)',
         }}
       />
       {/* staggered board ends */}
@@ -260,7 +300,7 @@ export function RoomBackdrop() {
         className="absolute inset-x-0 top-[26%] bottom-0 opacity-40"
         style={{
           background:
-            'repeating-linear-gradient(90deg, rgba(78,48,18,0.5) 0 2px, rgba(0,0,0,0) 2px 118px)',
+            'repeating-linear-gradient(90deg, rgba(24,12,4,0.6) 0 2px, rgba(0,0,0,0) 2px 118px)',
         }}
       />
       {/* grain along the boards */}
@@ -277,14 +317,14 @@ export function RoomBackdrop() {
         className="absolute inset-x-0 top-0 h-[45%]"
         style={{
           background:
-            'radial-gradient(ellipse 55% 100% at 50% -12%, rgba(255,240,205,0.85) 0%, rgba(255,240,205,0) 70%)',
+            'radial-gradient(ellipse 55% 100% at 50% -12%, rgba(255,232,180,0.55) 0%, rgba(255,240,205,0) 70%)',
         }}
       />
       <div
         className="absolute inset-x-0 top-[22%] bottom-0"
         style={{
           background:
-            'radial-gradient(ellipse 52% 46% at 50% 22%, rgba(255,240,208,0.55) 0%, rgba(255,240,208,0) 72%)',
+            'radial-gradient(ellipse 52% 46% at 50% 22%, rgba(255,232,180,0.34) 0%, rgba(255,240,208,0) 72%)',
         }}
       />
       {/* corners fall off, the way a basement does */}
@@ -292,7 +332,7 @@ export function RoomBackdrop() {
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 88% 74% at 50% 38%, rgba(48,28,8,0) 62%, rgba(48,28,8,0.13) 100%)',
+            'radial-gradient(ellipse 88% 74% at 50% 38%, rgba(20,10,2,0) 58%, rgba(20,10,2,0.34) 100%)',
         }}
       />
     </div>
@@ -301,7 +341,8 @@ export function RoomBackdrop() {
 
 function Stat({ label, value }: { label: string; value: string | null }) {
   return (
-    <div className="rounded-2xl bg-white/95 border border-white shadow-[0_6px_16px_-6px_rgba(76,60,40,0.4)] px-2 py-2.5 text-center">
+    <Framed thickness={3}>
+      <div className="px-2 py-2.5 text-center">
       {value === null ? (
         <div className="h-6 w-9 mx-auto rounded bg-slate-100 animate-pulse" />
       ) : (
@@ -310,7 +351,8 @@ function Stat({ label, value }: { label: string; value: string | null }) {
       <div className="mt-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-chess-text-muted leading-none">
         {label}
       </div>
-    </div>
+      </div>
+    </Framed>
   );
 }
 
