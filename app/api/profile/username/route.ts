@@ -1,22 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
+import { validateUsername } from '@/lib/username/validate';
 
 /**
  * Public handle for the leaderboards.
  *
  * GET  -> { username: string | null }
- * POST { username } -> sets it (3–20 chars, letters/numbers/underscore),
- *   case-insensitively unique (profiles.username is citext unique).
+ * POST { username } -> sets it. Format, reserved names and the slur filter all
+ *   live in lib/username/validate.ts (ONE source of truth, shared with the
+ *   client so the two can never disagree); case-insensitive uniqueness is
+ *   enforced by the citext UNIQUE constraint on write.
  */
-
-const RE = /^[a-zA-Z0-9_]{3,20}$/;
-// Reserved / would-be-confusing handles. Mirrored in the profiles
-// username_format CHECK constraint (2026-07-31-leaderboards.sql) — keep in sync.
-const RESERVED = new Set([
-  'admin', 'rookie', 'chesspath', 'chessboxing', 'you', 'me',
-  'mod', 'moderator', 'staff', 'support', 'official', 'gleasons',
-]);
 
 export async function GET() {
   const supabase = await createClient();
@@ -44,16 +39,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'invalid body' }, { status: 400 });
   }
 
-  const raw = typeof body.username === 'string' ? body.username.trim() : '';
-  if (!RE.test(raw)) {
+  const check = validateUsername(body.username);
+  if (!check.ok) {
+    // Reserved reads as "taken" (409); a bad format or a blocked name is a 400.
     return NextResponse.json(
-      { error: '3–20 characters, letters, numbers or underscore.' },
-      { status: 400 },
+      { error: check.message },
+      { status: check.problem === 'reserved' ? 409 : 400 },
     );
   }
-  if (RESERVED.has(raw.toLowerCase())) {
-    return NextResponse.json({ error: 'That handle is taken.' }, { status: 409 });
-  }
+  const raw = check.value;
 
   // Service client: set the handle and rely on the citext UNIQUE constraint to
   // reject case-insensitive collisions atomically (no read-then-write race).

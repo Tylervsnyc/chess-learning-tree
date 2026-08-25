@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
+import { signUpWithEmail } from '@/lib/auth/signup';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
 import { isInAppWebview, isNativeShell } from '@/lib/auth/webview';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
@@ -113,42 +114,17 @@ function SignupContent() {
     setError(null);
     setIsDuplicateEmail(false);
     setLoading(true);
-    trackEvent('signup_started', { version: 'v2' });
 
-    const supabase = createClient();
+    // ONE signup implementation (lib/auth/signup.ts) — shared with the Chess
+    // Boxing onboarding's inline account step.
+    const result = await signUpWithEmail(email, password);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      trackEvent('signup_failed', { error: error.message, version: 'v2' });
-      setError(humanizeError(error.message));
+    if (!result.ok) {
+      setError(result.error);
+      setIsDuplicateEmail(result.duplicateEmail);
       setLoading(false);
       return;
     }
-
-    // Supabase returns a fake success with empty identities when the email already exists
-    if (data.user && data.user.identities?.length === 0) {
-      trackEvent('signup_failed', { error: 'duplicate_email', version: 'v2' });
-      setError('An account with this email already exists.');
-      setIsDuplicateEmail(true);
-      setLoading(false);
-      return;
-    }
-
-    if (data.user) {
-      identifyUser(data.user.id, { email });
-    }
-    trackEvent('signup_completed', { method: 'email', version: 'v2' });
-
-    // Send welcome email (fire-and-forget)
-    fetch('/api/email/welcome', { method: 'POST' }).catch(() => {});
-
-    // CHE-387: stamp first-touch attribution onto the new profile (fire-and-forget).
-    // Email signups never hit /auth/callback, so this is their stamping path.
-    fetch('/api/attribution/stamp', { method: 'POST' }).catch(() => {});
 
     // Go straight into the app. Routing through '/' bounces a fresh signup to
     // /welcome (onboarding) because middleware re-checks auth on the server
