@@ -55,6 +55,10 @@ export interface ActivityCompleteProps {
       shareConfig PNG stays behind it as the link-preview/fallback asset. */
   shareGif?: PendingShareGif | null
 
+  /** Chess Boxing: no Rookie banter on the finish screen — the gym is quiet.
+      Hides the speech bubble and stops the rook firing tap quips. */
+  hideBanter?: boolean
+
   // Actions
   onContinue: () => void
   onDismiss?: () => void
@@ -101,6 +105,7 @@ export function ActivityComplete({
   accentColor,
   shareConfig,
   shareGif,
+  hideBanter,
   onContinue,
   onDismiss,
   onRetry,
@@ -275,6 +280,7 @@ export function ActivityComplete({
 
   // ─── Tap interaction ───
   const handleInteraction = useCallback(() => {
+    if (hideBanter) return
     if (quipsUsedRef.current >= 3) return
     if (quipLockRef.current) return
 
@@ -288,7 +294,7 @@ export function ActivityComplete({
     tapTimerRef.current = setTimeout(() => setTapQuip(null), 4000)
 
     quipLockRef.current = setTimeout(() => { quipLockRef.current = null }, 4000)
-  }, [interactiveMode])
+  }, [interactiveMode, hideBanter])
 
   // Auto-shuffle mode after 20s idle
   useEffect(() => {
@@ -528,7 +534,8 @@ export function ActivityComplete({
           </div>
         )}
 
-        {/* ─── Speech bubble ─── */}
+        {/* ─── Speech bubble (silent in Chess Boxing) ─── */}
+        {!hideBanter && (
         <div className="relative w-full mt-2 mb-4">
           <div
             className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 rounded-[2px]"
@@ -546,6 +553,7 @@ export function ActivityComplete({
             </p>
           </div>
         </div>
+        )}
 
         {/* ─── Chess Path ELO — the rising "days of effort" line (CHE-370) ─── */}
         {chartIntent && chartLoading && (

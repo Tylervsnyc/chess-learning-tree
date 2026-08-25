@@ -2594,6 +2594,7 @@ export default function PlayRookiePage() {
               : 'draw'
           }
           playerName={playerName || undefined}
+          hideBanter={inBoxShell}
           shareGif={shareGif}
           shareConfig={dailyStreak !== null ? {
             shareUrl: 'https://chesspath.app/play',
