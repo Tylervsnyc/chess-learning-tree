@@ -637,3 +637,66 @@ export async function playAchievementSfx(kind: AchievementSfxKind, file?: string
   source.connect(ctx.destination);
   source.start(0);
 }
+
+// ════════════════════════════════
+// BOXING BAG SFX (gym backdrop)
+// ════════════════════════════════
+
+/** Which bag was punched on the /play gym backdrop. */
+export type BagSfxKind = 'speedbag' | 'heavybag';
+
+/**
+ * Sound files for the hittable gym bags. Drop the files at these paths and
+ * they play automatically — until then the punch is silent (no error noise).
+ * Multiple entries per bag = round-robin variation so repeat punches don't
+ * sound like a loop.
+ */
+export const BAG_SFX_FILES: Record<BagSfxKind, string[]> = {
+  speedbag: ['speedbag-1.mp3'],
+  heavybag: ['heavybag-1.mp3', 'heavybag-2.mp3'],
+};
+
+const bagSfxCache = new Map<string, AudioBuffer | null>();
+const bagSfxTurn: Record<BagSfxKind, number> = { speedbag: 0, heavybag: 0 };
+
+/**
+ * Punch sound for a gym bag. Cheap, fire-and-forget, pitch-varied so rapid
+ * hits feel live. Missing files are cached as a miss and never re-fetched,
+ * so an un-filled sound slot costs one 404 and then nothing.
+ */
+export async function playBagSfx(kind: BagSfxKind, power = 1): Promise<void> {
+  if (!isSoundEnabled()) return;
+  const files = BAG_SFX_FILES[kind];
+  if (!files.length) return;
+  const file = files[bagSfxTurn[kind]++ % files.length];
+  const url = `/sounds/boxing/${file}`;
+
+  let buffer = bagSfxCache.get(url);
+  if (buffer === null) return; // known-missing
+  const ctx = await ensureAudioReady();
+  if (!ctx) return;
+  if (!buffer) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        bagSfxCache.set(url, null);
+        return;
+      }
+      buffer = await ctx.decodeAudioData(await res.arrayBuffer());
+      bagSfxCache.set(url, buffer);
+    } catch {
+      bagSfxCache.set(url, null);
+      return;
+    }
+  }
+
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  // Slight pitch + volume variation per punch, scaled by how hard it landed.
+  source.playbackRate.value = 0.94 + Math.random() * 0.12;
+  const gain = ctx.createGain();
+  gain.gain.value = Math.min(1, 0.55 + power * 0.45);
+  source.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(0);
+}
