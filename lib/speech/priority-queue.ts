@@ -157,7 +157,7 @@ export function createQueueState(): QueueState {
 /** Check if we've hit the rolling window limit for a given move number */
 export function isAtLimit(state: QueueState, moveNumber?: number, talkativenessLevel?: number): boolean {
   if (moveNumber === undefined) return false;
-  const { size, max } = windowForTalkativeness(talkativenessLevel ?? 3);
+  const { size, max } = windowForTalkativeness(talkativenessLevel ?? 1);
   const windowStart = moveNumber - size;
   const quipsInWindow = state.quipMoves.filter((m) => m > windowStart).length;
   return quipsInWindow >= max;

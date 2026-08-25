@@ -85,7 +85,7 @@ export interface UseRookieSpeechOptions {
   initialUsedRecently?: string[];
   /** Rookie personality gauge (1-5). Controls tone filtering on quip selection. Defaults to 3 (baseline). */
   attitudeLevel?: number;
-  /** Rookie talkativeness gauge (1-5). Controls cooldown + rolling window. Defaults to 3 (baseline). */
+  /** Rookie talkativeness gauge (1-5). Controls cooldown + rolling window. Defaults to 1 (quiet — the shipped baseline). */
   talkativenessLevel?: number;
 }
 
@@ -125,9 +125,9 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   useEffect(() => {
     toneRef.current = toneForLevel(attitudeLevel ?? 3);
   }, [attitudeLevel]);
-  const talkRef = useRef(talkativenessLevel ?? 3);
+  const talkRef = useRef(talkativenessLevel ?? 1);
   useEffect(() => {
-    talkRef.current = talkativenessLevel ?? 3;
+    talkRef.current = talkativenessLevel ?? 1;
   }, [talkativenessLevel]);
 
   // Playback queue (handles timing, speech bubble, TTS)
@@ -328,9 +328,13 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
           tone: toneRef.current,
       talkativenessLevel: talkRef.current,
         };
-        // Bypass cooldown — this is a big moment
-        if (selectAndQueue(seqContext)) {
-          lastQuipMoveRef.current = input.moveNumber;
+        // Respects the cooldown like every other event. A capture run is a big
+        // moment, but stacking it on top of a quip from two moves ago is exactly
+        // what made her feel like she never shuts up.
+        if (input.moveNumber - lastQuipMoveRef.current >= cooldownForTalkativeness(talkRef.current)) {
+          if (selectAndQueue(seqContext)) {
+            lastQuipMoveRef.current = input.moveNumber;
+          }
         }
         captureSeqRef.current = { count: 0, playerSwing: 0 };
       } else {
@@ -528,9 +532,10 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
   /** Call when alarm variant is active (Rookie is getting crushed, 5+ pawns behind). Fires sore loser quips. */
   const onAlarm = useCallback(
     (moveNumber: number, rookiePawns: number) => {
-      // No per-call cooldown: alarm-eligible lines are rare (event:'alarm' + desperate mood),
-      // and selectLine's rolling window (isAtLimit) already throttles overall quip rate.
-      // The shared cooldown was causing onMove (which always runs first) to starve onAlarm.
+      // Half cooldown: alarm-eligible lines are rare (event:'alarm' + desperate mood)
+      // and the full shared cooldown let onMove (which always runs first) starve them —
+      // but zero cooldown let an alarm land on top of a quip from the previous move.
+      if (moveNumber - lastQuipMoveRef.current < Math.ceil(cooldownForTalkativeness(talkRef.current) / 2)) return;
 
       const freshEvalMood = getEvalMood(rookiePawns);
 

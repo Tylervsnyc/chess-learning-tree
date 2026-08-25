@@ -32,7 +32,7 @@ interface Profile {
 }
 
 const DEFAULT_ATTITUDE_LEVEL = 3;
-const DEFAULT_TALKATIVENESS_LEVEL = 3;
+const DEFAULT_TALKATIVENESS_LEVEL = 1;
 const clampAttitude = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 const clampTalkativeness = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 

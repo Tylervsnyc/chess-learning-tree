@@ -395,9 +395,12 @@ export default function PlayRookiePage() {
   const [showCoaching, setShowCoaching] = useState(false);
 
   // Quip state — persisted in localStorage
+  // Rookie's spoken voice is OFF by default — reading every quip aloud was the
+  // single biggest reason she read as annoying. Her lines still show as text;
+  // the "Rookie's voice" toggle in settings turns speech back on and sticks.
   const [audioOn, setAudioOn] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    try { const s = JSON.parse(localStorage.getItem('play-settings') || '{}'); return s.speechOn !== false; } catch { return true; }
+    if (typeof window === 'undefined') return false;
+    try { const s = JSON.parse(localStorage.getItem('play-settings') || '{}'); return s.speechOn === true; } catch { return false; }
   });
   const [soundsOn, setSoundsOn] = useState(() => {
     if (typeof window === 'undefined') return true;
