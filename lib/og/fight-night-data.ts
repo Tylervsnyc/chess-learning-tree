@@ -12,7 +12,21 @@ export type FightNightFrame = {
   last?: string;
   /** Show the CHECKMATE stamp over the board. */
   stamp?: boolean;
+  /** Draw from Black's side (the /play share when you played black). */
+  flip?: boolean;
 };
+
+/** Board row/col -> square name, honoring the card's orientation. */
+export function squareAt(r: number, c: number, flip?: boolean): string {
+  const file = flip ? 7 - c : c;
+  const rank = flip ? r + 1 : 8 - r;
+  return String.fromCharCode(97 + file) + rank;
+}
+
+/** parseBoard() rows/cols reordered for the viewer's side. */
+export function orientBoard(board: (string | null)[][], flip?: boolean): (string | null)[][] {
+  return flip ? board.map((row) => [...row].reverse()).reverse() : board;
+}
 
 export type FightNightBout = {
   outcome: string;
@@ -27,7 +41,43 @@ export type FightNightBout = {
   stats?: [string, string][];
   /** Stamp word over the final frame (default CHECKMATE). */
   stampText?: string;
+  /** Wordmark block (default "Chess Boxing" / "FIGHT NIGHT"). */
+  brand?: { title: string; sub: string };
+  /** Blue-corner name (default "Rookie"; the puzzle share uses "1650 PUZZLE"). */
+  opponent?: string;
+  /** Gold CTA bar (default "BOX + SOLVE AT CHESSPATH.APP"). */
+  cta?: string;
 };
+
+/** Everything the card's chrome needs, defaults resolved once so the satori
+    card and the canvas GIF can never drift. Both renderers call this. */
+export type FightNightChrome = {
+  brandTitle: string;
+  brandSub: string;
+  username: string;
+  opponent: string;
+  headline: { big: string; rest: string; win: boolean };
+  stats: [string, string][];
+  stampText: string;
+  cta: string;
+};
+
+export function fightNightChrome(bout: FightNightBout): FightNightChrome {
+  return {
+    brandTitle: bout.brand?.title ?? 'Chess Boxing',
+    brandSub: bout.brand?.sub ?? 'FIGHT NIGHT',
+    username: bout.username || 'You',
+    opponent: bout.opponent || 'Rookie',
+    headline: bout.headline ?? HEADLINES[bout.outcome] ?? { big: 'BOUT', rest: 'complete', win: false },
+    stats: bout.stats ?? [
+      [String(bout.moves), 'MOVES'],
+      [bout.rounds > 0 ? `R${bout.rounds}` : '—', 'ROUND'],
+      [bout.clock, 'CLOCK LEFT'],
+    ],
+    stampText: bout.stampText ?? 'CHECKMATE',
+    cta: bout.cta ?? 'BOX + SOLVE AT CHESSPATH.APP',
+  };
+}
 
 /** FEN letter -> piece code (uppercase = white). */
 export function pieceCode(ch: string): string {

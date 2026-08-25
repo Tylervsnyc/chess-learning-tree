@@ -22,6 +22,7 @@ import { toneForLevel } from '@/lib/quips/tone'
 import { DailyWorkoutCelebration } from '@/components/shared/DailyWorkoutCelebration'
 import { FirstRatingReveal } from '@/components/shared/FirstRatingReveal'
 import { shareWorkoutStreak } from '@/lib/daily-workout/share'
+import type { PendingShareGif } from '@/lib/share/share-gif'
 import { EloEvents } from '@/lib/analytics/posthog'
 import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
 import { chessPathEloSeries, chessPathToday, chessPathSessionSeries, chessPathSession, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
@@ -50,6 +51,9 @@ export interface ActivityCompleteProps {
 
   // Share
   shareConfig?: ShareOGConfig
+  /** Pre-rendered Fight Night GIF. When present it IS the share — the
+      shareConfig PNG stays behind it as the link-preview/fallback asset. */
+  shareGif?: PendingShareGif | null
 
   // Actions
   onContinue: () => void
@@ -96,6 +100,7 @@ export function ActivityComplete({
   playerName,
   accentColor,
   shareConfig,
+  shareGif,
   onContinue,
   onDismiss,
   onRetry,
@@ -122,7 +127,7 @@ export function ActivityComplete({
   const isWin = source === 'play' && (outcome === 'win')
   const isLoss = source === 'play' && (outcome === 'loss' || outcome === 'resign')
   const shouldCelebrate = source === 'play' ? isWin : !didFail
-  const canShare = !!shareConfig
+  const canShare = !!shareConfig || !!shareGif
 
   // ─── Daily workout ───
   const workoutActivity = toWorkoutActivity(source)
@@ -231,7 +236,30 @@ export function ActivityComplete({
   }, [source, playerName, tone])
 
   // ─── Share hook ───
-  const { share, feedbackState } = useShareOG(canShare ? shareConfig : undefined)
+  const { share: shareOG, feedbackState: ogFeedback } = useShareOG(shareConfig)
+
+  // A pre-rendered Fight Night GIF wins over the static OG card when the
+  // screen handed us one (the /play win). Same button, better asset.
+  const [gifState, setGifState] = useState<'idle' | 'sharing' | 'success'>('idle')
+  const shareTheGif = useCallback(async () => {
+    if (!shareGif) return
+    setGifState('sharing')
+    try {
+      const { shareOrSaveBlob } = await import('@/lib/share/share-gif')
+      await shareOrSaveBlob(await shareGif.promise, shareGif.filename, {
+        title: shareGif.title,
+        text: shareGif.text,
+      })
+      setGifState('success')
+      setTimeout(() => setGifState('idle'), 1500)
+    } catch {
+      // AbortError (closed the sheet) or a render failure — nothing to show
+      setGifState('idle')
+    }
+  }, [shareGif])
+
+  const share = shareGif ? shareTheGif : shareOG
+  const feedbackState = shareGif ? gifState : ogFeedback
 
   // ─── Day 9 (IG_SHARE_LOOP): post-win share nudge for the cold IG cohort ───
   // The corner share icon is almost never tapped. For a cold IG celebratory

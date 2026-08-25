@@ -58,6 +58,8 @@ import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 import { useName } from '@/hooks/useName';
 import { ActivityComplete } from '@/components/shared/ActivityComplete';
+import { buildGameShareFrames } from '@/lib/share/fight-night-frames';
+import type { PendingShareGif } from '@/lib/share/share-gif';
 import {
   buildRookieMemoryContext,
   EMPTY_ROOKIE_MEMORY,
@@ -460,6 +462,11 @@ export default function PlayRookiePage() {
   const moveStartRef = useRef<number>(Date.now());
   // Local move log — always tracks moves for review, even without login
   const moveLogRef = useRef<MoveRecord[]>([]);
+  // Wall clock for the game, for the share card's TIME tile.
+  const gameStartRef = useRef<number>(Date.now());
+  // Fight Night share GIF, rendered on-device the moment the game ends so
+  // tapping Share is instant — same rhythm as the bout and the workout.
+  const [shareGif, setShareGif] = useState<PendingShareGif | null>(null);
 
   // Honcho memory integration
   const honchoGameIdRef = useRef<string | null>(null);
@@ -1769,6 +1776,8 @@ export default function PlayRookiePage() {
       sessionRef.current = session;
     }
     moveStartRef.current = Date.now();
+    gameStartRef.current = Date.now();
+    setShareGif(null);
 
     speech.onGameStart(playerColor, playerName || 'friend');
     narrative.resetForNewGame();
@@ -1885,6 +1894,59 @@ export default function PlayRookiePage() {
     setShowActivityComplete(true);
     setResignArmed(false);
   }, [fen, game, endSession, speech, playerName, playerColor]);
+
+  // ─── Fight Night share card (the same card the bout and Puzzle Boxing use) ─
+  // Renders the last moves of the game as a GIF on-device the moment the game
+  // ends, so tapping Share hands over a finished asset. Chess Path chrome:
+  // no boxing rounds, no clock — moves, the Rookie level, and the game length.
+  useEffect(() => {
+    if (phase !== 'gameover' || !gameResult) return;
+    const plies = moveLogRef.current;
+    const mate = gameResult === 'You win!' || gameResult === 'Rookie wins!';
+    const frames = buildGameShareFrames(plies, mate, playerColor === 'black');
+    if (frames.length === 0) return;
+
+    const headline =
+      gameResult === 'You win!'
+        ? { big: 'WIN', rest: 'by checkmate', win: true }
+        : gameResult === 'Rookie wins!'
+          ? { big: 'LOSS', rest: 'Rookie mates me', win: false }
+          : gameResult === 'You resigned'
+            ? { big: 'LOSS', rest: 'I resigned', win: false }
+            : gameResult === 'Stalemate!'
+              ? { big: 'DRAW', rest: 'by stalemate', win: false }
+              : { big: 'DRAW', rest: 'with Rookie', win: false };
+
+    const secs = Math.max(0, Math.round((Date.now() - gameStartRef.current) / 1000));
+    const bout = {
+      outcome: gameResult === 'You win!' ? 'play_win' : 'play_loss',
+      username: playerName || '',
+      opponent: 'Rookie',
+      moves: plies.length,
+      rounds: 0,
+      clock: '',
+      brand: { title: 'Chess Path', sub: 'Play Rookie' },
+      cta: 'Play Rookie at chesspath.app',
+      headline,
+      stampText: 'CHECKMATE',
+      stats: [
+        [String(Math.ceil(plies.length / 2)), 'MOVES'],
+        [`L${rookieLevel}`, 'ROOKIE LEVEL'],
+        [`${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`, 'TIME'],
+      ] as [string, string][],
+    };
+    setShareGif({
+      promise: import('@/lib/share/fight-night-gif').then(({ renderFightNightGif }) =>
+        renderFightNightGif(frames, bout),
+      ),
+      filename: 'chess-path-play.gif',
+      title: 'Chess Path',
+      text:
+        gameResult === 'You win!'
+          ? 'I beat Rookie on Chess Path!'
+          : 'I just played Rookie on Chess Path!',
+    });
+  }, [phase, gameResult, playerColor, playerName, rookieLevel]);
 
   // Auto-show signup prompt for guests after first game ends
   useEffect(() => {
@@ -2532,6 +2594,7 @@ export default function PlayRookiePage() {
               : 'draw'
           }
           playerName={playerName || undefined}
+          shareGif={shareGif}
           shareConfig={dailyStreak !== null ? {
             shareUrl: 'https://chesspath.app/play',
             ogEndpoint: '/api/og/workout',

@@ -19,15 +19,18 @@ import {
   CROWD_ROWS,
   END_TICKS,
   END_TICK_MS,
-  HEADLINES,
   MOVE_TICKS,
   MOVE_TICK_MS,
   crowdJitter,
   lastSquares,
   parseBoard,
   pieceCode,
+  fightNightChrome,
+  orientBoard,
+  squareAt,
   tickFlashes,
   type FightNightBout,
+  type FightNightChrome,
   type FightNightFrame,
 } from '@/lib/og/fight-night-data';
 
@@ -132,7 +135,7 @@ function drawFlashes(ctx: Ctx, seed: number, lit: boolean) {
   ctx.restore();
 }
 
-function drawBrand(ctx: Ctx) {
+function drawBrand(ctx: Ctx, chrome: FightNightChrome) {
   const bs = 7 * S;
   const gap = bs * 1.16;
   const logoW = 4 * gap + bs;
@@ -152,10 +155,10 @@ function drawBrand(ctx: Ctx) {
   ctx.fillStyle = '#FFFFFF';
   ctx.font = `900 ${17 * S}px ${FONT}`;
   ctx.textBaseline = 'alphabetic';
-  ctx.fillText('Chess Boxing', tx, 16 * S + 16 * S);
+  ctx.fillText(chrome.brandTitle, tx, 16 * S + 16 * S);
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.font = `700 ${8.5 * S}px ${FONT}`;
-  drawTracked(ctx, 'FIGHT NIGHT', tx, 16 * S + 27 * S, 0.18 * 8.5 * S);
+  drawTracked(ctx, chrome.brandSub.toUpperCase(), tx, 16 * S + 27 * S, 0.18 * 8.5 * S);
 }
 
 /** Letter-spaced text (canvas has no letter-spacing in all engines). */
@@ -176,14 +179,14 @@ function drawTrackedCentered(ctx: Ctx, text: string, cxr: number, y: number, tra
   ctx.textAlign = prev;
 }
 
-function drawTape(ctx: Ctx, username: string) {
+function drawTape(ctx: Ctx, chrome: FightNightChrome) {
   const y = 62 * S;
   const h = 34 * S;
   const gapX = 8 * S;
   const w = (300 * S - 32 * S - gapX) / 2;
   const corners: { x: number; name: string; tag: string; bg: string; border: string; shadow: string; tagColor: string }[] = [
-    { x: 16 * S, name: username || 'You', tag: 'RED CORNER', bg: '#FF4B4B', border: '#e86060', shadow: '#CC3939', tagColor: '#ffd7a1' },
-    { x: 16 * S + w + gapX, name: 'Rookie', tag: 'BLUE CORNER', bg: '#1CB0F6', border: '#54c2f8', shadow: '#0d7ec4', tagColor: '#d8f1ff' },
+    { x: 16 * S, name: chrome.username, tag: 'RED CORNER', bg: '#FF4B4B', border: '#e86060', shadow: '#CC3939', tagColor: '#ffd7a1' },
+    { x: 16 * S + w + gapX, name: chrome.opponent, tag: 'BLUE CORNER', bg: '#1CB0F6', border: '#54c2f8', shadow: '#0d7ec4', tagColor: '#d8f1ff' },
   ];
   for (const c of corners) {
     ctx.fillStyle = c.shadow;
@@ -253,7 +256,7 @@ function drawBoard(
   ctx.save();
   rr(ctx, BOARD_X, BOARD_Y, BOARD_W, BOARD_W, 12 * S);
   ctx.clip();
-  const board = parseBoard(frame.fen);
+  const board = orientBoard(parseBoard(frame.fen), frame.flip);
   const hl = lastSquares(frame.last);
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
@@ -261,7 +264,7 @@ function drawBoard(
       const y = BOARD_Y + r * SQ;
       ctx.fillStyle = (r + c) % 2 ? BOARD_COLORS.dark : BOARD_COLORS.light;
       ctx.fillRect(x, y, SQ, SQ);
-      const sqName = String.fromCharCode(97 + c) + (8 - r);
+      const sqName = squareAt(r, c, frame.flip);
       if (hl.has(sqName)) {
         ctx.fillStyle = 'rgba(246,196,69,0.55)';
         ctx.fillRect(x, y, SQ, SQ);
@@ -296,8 +299,8 @@ function drawBoard(
   }
 }
 
-function drawResultAndStats(ctx: Ctx, bout: FightNightBout) {
-  const head = bout.headline ?? HEADLINES[bout.outcome] ?? { big: 'BOUT', rest: 'complete', win: false };
+function drawResultAndStats(ctx: Ctx, chrome: FightNightChrome) {
+  const head = chrome.headline;
   const by = BOARD_Y + BOARD_W + 2 * S;
 
   // headline (rotated -2deg around its center)
@@ -325,12 +328,7 @@ function drawResultAndStats(ctx: Ctx, bout: FightNightBout) {
   const statY = ctaY - 8 * S - statH;
   const gap = 6 * S;
   const w = (300 * S - 32 * S - gap * 2) / 3;
-  const stats: [string, string][] = bout.stats ?? [
-    [String(bout.moves), 'MOVES'],
-    [bout.rounds > 0 ? `R${bout.rounds}` : '—', 'ROUND'],
-    [bout.clock, 'CLOCK LEFT'],
-  ];
-  stats.forEach(([v, l], i) => {
+  chrome.stats.forEach(([v, l], i) => {
     const x = 16 * S + i * (w + gap);
     ctx.fillStyle = 'rgba(255,255,255,0.07)';
     rr(ctx, x, statY, w, statH, 8 * S);
@@ -357,7 +355,7 @@ function drawResultAndStats(ctx: Ctx, bout: FightNightBout) {
   ctx.fillStyle = '#3d2e00';
   ctx.font = `900 ${11 * S}px ${FONT}`;
   ctx.textAlign = 'center';
-  ctx.fillText('BOX + SOLVE AT CHESSPATH.APP', 150 * S, ctaY + 19 * S);
+  ctx.fillText(chrome.cta.toUpperCase(), 150 * S, ctaY + 19 * S);
 }
 
 /* ── the GIF ── */
@@ -366,6 +364,7 @@ export async function renderFightNightGif(
   frames: FightNightFrame[],
   bout: FightNightBout,
 ): Promise<Blob> {
+  const chrome = fightNightChrome(bout);
   const pieces = await loadPieces();
   try {
     // Make sure the brand font is in before we rasterize text.
@@ -392,10 +391,10 @@ export async function renderFightNightGif(
     ctx.fillStyle = '#131a2e';
     ctx.fillRect(0, 0, W, H);
     drawCrowdBand(ctx);
-    drawBrand(ctx);
-    drawTape(ctx, bout.username);
-    drawBoard(ctx, pieces, frames[i], bout.stampText);
-    drawResultAndStats(ctx, bout);
+    drawBrand(ctx, chrome);
+    drawTape(ctx, chrome);
+    drawBoard(ctx, pieces, frames[i], chrome.stampText);
+    drawResultAndStats(ctx, chrome);
     const base = ctx.getImageData(0, 0, W, H);
 
     for (let t = 0; t < nTicks; t++) {

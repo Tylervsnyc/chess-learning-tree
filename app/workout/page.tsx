@@ -10,6 +10,7 @@ import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/A
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { usePremove } from '@/hooks/usePremove';
 import { useBoxShell } from '@/hooks/useBoxShell';
+import { useName } from '@/hooks/useName';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
@@ -470,6 +471,7 @@ function WorkoutPageInner() {
   // Chess Boxing APP only — never offered on the chesspath.app website.
   const [quadFightOn, setQuadFightOn] = useState(false);
   const inBoxShell = useBoxShell();
+  const { name: playerName } = useName();
   const quadFightActive = quadFightOn && inBoxShell;
   // Quadrant Fight's card for the exercise round just fought — surfaced as a
   // one-liner in the segment. Display only: workout points are UNCHANGED by it.
@@ -1340,7 +1342,10 @@ function WorkoutPageInner() {
     if (frames.length === 0) return;
     const bout = {
       outcome: 'puzzle_win',
-      username: '',
+      username: playerName || '',
+      // The tape is a fight, so give the solve a real opponent: the puzzle
+      // you beat, not Rookie (who had nothing to do with it).
+      opponent: `${rating} PUZZLE`,
       moves: 0,
       rounds: 0,
       clock: '',
@@ -1357,7 +1362,7 @@ function WorkoutPageInner() {
         renderFightNightGif(frames, bout),
       ),
     };
-  }, [phase, finishResult]);
+  }, [phase, finishResult, playerName]);
 
   const shareToughest = async () => {
     if (!finishResult?.toughestSolved || !shareGifRef.current) return;

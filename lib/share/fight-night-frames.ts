@@ -8,22 +8,32 @@ import type { FightNightFrame } from '@/lib/og/fight-night-data';
 
 const START_FEN = new Chess().fen();
 
-/** The last moves of a bout: the position before the window, then each ply,
-    stamped on the final one if it was a KO. */
-export function buildBoutShareFrames(plies: ReviewMove[], outcome: string): FightNightFrame[] {
+/** The last moves of any game: the position before the window, then each ply,
+    stamped on the final one when the game ended in mate. `flip` draws the
+    board from Black's side. */
+export function buildGameShareFrames(
+  plies: Pick<ReviewMove, 'from' | 'to' | 'fenAfter'>[],
+  stampFinal: boolean,
+  flip = false,
+): FightNightFrame[] {
   const tail = plies.slice(-3);
   if (tail.length === 0) return [];
   const baseFen =
     plies.length > tail.length ? plies[plies.length - tail.length - 1].fenAfter : START_FEN;
-  const isKO = outcome === 'ko_win' || outcome === 'ko_loss';
   return [
-    { fen: baseFen },
+    { fen: baseFen, flip },
     ...tail.map((m, j) => ({
       fen: m.fenAfter,
       last: `${m.from}${m.to}`,
-      stamp: j === tail.length - 1 && isKO,
+      stamp: j === tail.length - 1 && stampFinal,
+      flip,
     })),
   ];
+}
+
+/** The last moves of a bout — stamped when it ended by knockout. */
+export function buildBoutShareFrames(plies: ReviewMove[], outcome: string): FightNightFrame[] {
+  return buildGameShareFrames(plies, outcome === 'ko_win' || outcome === 'ko_loss');
 }
 
 /** A solved puzzle: start position, the opponent's setup move (moves[0], per

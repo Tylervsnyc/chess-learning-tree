@@ -3,12 +3,15 @@ import { ROOK_BLOCKS } from '@/lib/daily-rook-blocks';
 import { BOARD_COLORS } from '@/lib/puzzle-utils';
 import {
   CROWD_ROWS,
-  HEADLINES,
   crowdJitter,
+  fightNightChrome,
+  orientBoard,
+  squareAt,
   lastSquares,
   parseBoard,
   pieceCode,
   tickFlashes,
+  type FightNightBout,
   type FightNightFrame,
 } from '@/lib/og/fight-night-data';
 
@@ -42,6 +45,10 @@ export type FightNightProps = {
   /** Pre-rendered crowd band (data URI) — the GIF route bakes the heads
       once and reuses it, so per-frame renders only redraw the flashes. */
   crowdImg?: string;
+  /** Per-kind chrome overrides (brand / opponent / headline / stats / stamp /
+      CTA) — same shape the canvas GIF renderer takes, resolved by the shared
+      fightNightChrome() so the two renderers can never drift. */
+  chrome?: Pick<FightNightBout, 'headline' | 'stats' | 'stampText' | 'brand' | 'opponent' | 'cta'>;
 };
 
 export { parseBoard } from '@/lib/og/fight-night-data';
@@ -252,11 +259,12 @@ function Corner({ s, red, name, tag }: { s: number; red: boolean; name: string; 
   );
 }
 
-export function FightNightCard({ frame, outcome, username, moves, rounds, clock, s, flashSeed = 0, crowdImg }: FightNightProps) {
+export function FightNightCard({ frame, outcome, username, moves, rounds, clock, s, flashSeed = 0, crowdImg, chrome }: FightNightProps) {
   const W = 300 * s;
   const H = 533 * s;
-  const head = HEADLINES[outcome] || { big: 'BOUT', rest: 'complete', win: false };
-  const board = parseBoard(frame.fen);
+  const c = fightNightChrome({ outcome, username, moves, rounds, clock, ...chrome });
+  const head = c.headline;
+  const board = orientBoard(parseBoard(frame.fen), frame.flip);
   const hl = lastSquares(frame.last);
   // Integer square size — fractional squares leave sub-pixel seam lines
   // between ranks/files in satori's rasterizer.
@@ -292,7 +300,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
           <RookieLogo bs={7 * s} />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', fontSize: 17 * s, fontWeight: 900, color: '#FFFFFF' }}>
-              Chess Boxing
+              {c.brandTitle}
             </div>
             <div
               style={{
@@ -305,7 +313,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
                 marginTop: 1 * s,
               }}
             >
-              Fight Night
+              {c.brandSub}
             </div>
           </div>
         </div>
@@ -320,8 +328,8 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
             alignItems: 'center',
           }}
         >
-          <Corner s={s} red name={username || 'You'} tag="Red corner" />
-          <Corner s={s} red={false} name="Rookie" tag="Blue corner" />
+          <Corner s={s} red name={c.username} tag="Red corner" />
+          <Corner s={s} red={false} name={c.opponent} tag="Blue corner" />
           <div
             style={{
               display: 'flex',
@@ -361,7 +369,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
           {board.map((row, r) => (
             <div key={r} style={{ display: 'flex' }}>
               {row.map((piece, c) => {
-                const sq = String.fromCharCode(97 + c) + (8 - r);
+                const sq = squareAt(r, c, frame.flip);
                 return (
                   <div
                     key={c}
@@ -425,7 +433,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
                   color: '#FF4B4B',
                 }}
               >
-                Checkmate
+                {c.stampText}
               </div>
             </div>
           )}
@@ -468,11 +476,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
 
         {/* stats */}
         <div style={{ display: 'flex', gap: 6 * s, marginTop: 'auto' }}>
-          {[
-            [String(moves), 'Moves'],
-            [rounds > 0 ? `R${rounds}` : '—', 'Round'],
-            [clock, 'Clock left'],
-          ].map(([v, l]) => (
+          {c.stats.map(([v, l]) => (
             <div
               key={l}
               style={{
@@ -522,7 +526,7 @@ export function FightNightCard({ frame, outcome, username, moves, rounds, clock,
             color: '#3d2e00',
           }}
         >
-          Box + solve at chesspath.app
+          {c.cta}
         </div>
       </div>
     </div>
