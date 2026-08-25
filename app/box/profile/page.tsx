@@ -49,10 +49,19 @@ export default function BoxProfilePage() {
     <CornerRoom
       name={name}
       days={loading ? null : streak?.current ?? 0}
-      fights={loading ? null : record?.total ?? 0}
-      rating={loading ? null : elo?.current == null ? '\u2014' : String(elo.current)}
+      record={
+        loading
+          ? null
+          : {
+              wins: record?.wins ?? 0,
+              losses: record?.losses ?? 0,
+              kos: record?.kos ?? 0,
+              total: record?.total ?? 0,
+            }
+      }
+      elo={elo}
+      loading={loading}
       week={week}
-      weekLoading={loading}
     />
   );
 }

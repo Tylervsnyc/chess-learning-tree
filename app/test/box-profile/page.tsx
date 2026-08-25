@@ -2,6 +2,13 @@
 
 import { CornerRoom } from '@/components/chessboxing/CornerRoom';
 import type { WeekData } from '@/components/shared/WeekChart';
+import type { EloSeriesPoint } from '@/lib/elo/rookie-rating';
+
+/** A believable climb with a couple of dips, so the sparkline has a shape. */
+const SERIES: EloSeriesPoint[] = [
+  1090, 1105, 1098, 1120, 1142, 1138, 1160, 1175, 1168, 1190,
+  1205, 1198, 1216, 1230, 1224, 1240,
+].map((elo, i) => ({ date: `2026-08-${String(10 + i).padStart(2, '0')}`, elo }));
 
 /**
  * /test/box-profile — the Chess Boxing profile room with mock numbers.
@@ -30,19 +37,19 @@ const WEEK: WeekData = {
 const CASES: { title: string; props: React.ComponentProps<typeof CornerRoom> }[] = [
   {
     title: 'Regular',
-    props: { name: 'brooklyn_bishop', days: 5, fights: 12, rating: '1240', week: WEEK, weekLoading: false },
+    props: { name: 'brooklyn_bishop', days: 5, record: { wins: 8, losses: 3, kos: 2, total: 12 }, elo: { current: 1240, events: 86, series: SERIES }, loading: false, week: WEEK },
   },
   {
     title: 'Brand new (no rating, no fights)',
-    props: { name: 'newguy', days: 0, fights: 0, rating: '—', week: { days: WEEK.days.map((d) => ({ ...d, points: 0 })), weekTotal: 0 }, weekLoading: false },
+    props: { name: 'newguy', days: 0, record: { wins: 0, losses: 0, kos: 0, total: 0 }, elo: { current: 600, events: 0, series: [] }, loading: false, week: { days: WEEK.days.map((d) => ({ ...d, points: 0 })), weekTotal: 0 } },
   },
   {
     title: 'Loading',
-    props: { name: 'brooklyn_bishop', days: null, fights: null, rating: null, week: null, weekLoading: true },
+    props: { name: 'brooklyn_bishop', days: null, record: null, elo: null, loading: true, week: null },
   },
   {
     title: 'Long handle (20 chars)',
-    props: { name: 'a_very_long_handle_x', days: 128, fights: 340, rating: '2015', week: WEEK, weekLoading: false },
+    props: { name: 'a_very_long_handle_x', days: 128, record: { wins: 210, losses: 130, kos: 44, total: 340 }, elo: { current: 2015, events: 940, series: SERIES }, loading: false, week: WEEK },
   },
 ];
 
