@@ -19,7 +19,6 @@ import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { TutorialEvents } from '@/lib/analytics/posthog';
 import { ChessProgressBar, progressBarStyles } from '@/components/puzzle/ChessProgressBar';
-import { RookieNameAsk, getPlayerName } from '@/components/onboarding/RookieNameAsk';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
 
@@ -444,7 +443,7 @@ function TutorialHeader({ current, total, onBack }: { current: number; total: nu
 // DONE SCREEN
 // ══════════════════════════════════════════════════
 
-function BasicsDoneScreen({ onContinue, playerName }: { onContinue: () => void; playerName?: string | null }) {
+function BasicsDoneScreen({ onContinue }: { onContinue: () => void }) {
   const [entered, setEntered] = useState(false);
 
   React.useEffect(() => {
@@ -490,10 +489,9 @@ function BasicsDoneScreen({ onContinue, playerName }: { onContinue: () => void; 
         >
           <RookieSpeechBubble rookieSize={0.75}>
             <p className="font-bold text-chess-text leading-snug text-[15px]">
-              {playerName
-                ? `${playerName}. You know all the pieces. You just delivered checkmate. I'm experiencing something I can't explain and I don't want to talk about it. Ready for your first real lesson?`
-                : "You know all the pieces. You just delivered checkmate. I'm experiencing something I can't explain and I don't want to talk about it. Ready for your first real lesson?"
-              }
+              You know all the pieces. You just delivered checkmate. I&apos;m
+              experiencing something I can&apos;t explain and I don&apos;t want to
+              talk about it. Ready for your first real lesson?
             </p>
           </RookieSpeechBubble>
         </div>
@@ -593,9 +591,6 @@ export function BasicsTutorial() {
   const [pieceCompleteId, setPieceCompleteId] = useState<string | null>(null);
 
   // Name ask — triggers after completing the rook (piece #2)
-  const [showNameAsk, setShowNameAsk] = useState(false);
-  const [playerName, setPlayerNameState] = useState<string | null>(() => getPlayerName());
-  const nameAskedRef = useRef(false);
 
   const currentStep = STEPS[stepIndex];
   const currentExercise = exerciseIndex >= 0 ? currentStep.exercises[exerciseIndex] : null;
@@ -620,9 +615,9 @@ export function BasicsTutorial() {
   // Skip speaking on exerciseComplete — the sound effect handles the celebration
   useEffect(() => {
     if (!audioUnlocked || !introComplete || !currentExercise) return;
-    if (pieceCompleteId || showNameAsk || exerciseComplete) return;
+    if (pieceCompleteId || exerciseComplete) return;
     rookieSpeak(currentExercise.instruction);
-  }, [stepIndex, exerciseIndex, audioUnlocked, introComplete, currentExercise, pieceCompleteId, showNameAsk, exerciseComplete, rookieSpeak]);
+  }, [stepIndex, exerciseIndex, audioUnlocked, introComplete, currentExercise, pieceCompleteId, exerciseComplete, rookieSpeak]);
 
   // Speak piece complete quip (matches the popup text)
   useEffect(() => {
@@ -913,14 +908,6 @@ export function BasicsTutorial() {
     const step = STEPS[stepIndex];
     TutorialEvents.tutorialStepCompleted('basics', step.id, stepIndex, { source: 'onboarding' });
 
-    // After rook (piece #2), show name ask before advancing
-    if (step.id === 'rook' && !nameAskedRef.current) {
-      nameAskedRef.current = true;
-      setPieceCompleteId(null);
-      setShowNameAsk(true);
-      return;
-    }
-
     if (stepIndex < STEPS.length - 1) {
       const nextStep = STEPS[stepIndex + 1];
       setStepIndex(stepIndex + 1);
@@ -935,24 +922,6 @@ export function BasicsTutorial() {
       setTutorialDone(true);
     }
     setPieceCompleteId(null);
-  }, [stepIndex]);
-
-  // ── Continue after name ask ──
-  const handleNameSubmit = useCallback((name: string) => {
-    setPlayerNameState(name);
-    setShowNameAsk(false);
-
-    // Advance to next piece (bishop)
-    if (stepIndex < STEPS.length - 1) {
-      const nextStep = STEPS[stepIndex + 1];
-      setStepIndex(stepIndex + 1);
-      setExerciseIndex(0);
-      setCurrentFen(nextStep.exercises[0].fen);
-      setSelectedSquare(null);
-      setExerciseComplete(false);
-      setBoardKey(k => k + 1);
-      setAnimationDuration(0);
-    }
   }, [stepIndex]);
 
   // ── Advance free exercise (uninterrupted — carry FEN forward, no delay) ──
@@ -1283,7 +1252,7 @@ export function BasicsTutorial() {
         router.push('/lesson/1.1.1?from=onboarding');
       }} />;
     }
-    return <BasicsDoneScreen playerName={playerName} onContinue={() => {
+    return <BasicsDoneScreen onContinue={() => {
       setShowSignupPrompt(true);
     }} />;
   }
@@ -1292,7 +1261,7 @@ export function BasicsTutorial() {
   // RENDER: EXERCISE VIEW
   // ══════════════════════════════════════════════════
 
-  const boardInteractive = !exerciseComplete && !pieceCompleteId && !showNameAsk;
+  const boardInteractive = !exerciseComplete && !pieceCompleteId;
   const progressCurrent = INTRO_DIALOGUE.length + stepIndex;
 
   return (
@@ -1325,9 +1294,7 @@ export function BasicsTutorial() {
             />
 
             {/* Popup directly under board */}
-            {showNameAsk ? (
-              <RookieNameAsk source="basics" onSubmit={handleNameSubmit} onSpeak={speakQuip} isTalking={isTalking} />
-            ) : pieceCompleteId ? (
+            {pieceCompleteId ? (
               <div
                 key={`complete-${pieceCompleteId}`}
                 className="w-full bg-chess-correct-bg py-2 px-3"
