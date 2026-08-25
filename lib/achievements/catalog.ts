@@ -31,7 +31,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'Heard the Bell',
     description: 'You survived a full round. Your legs are still under you. I checked.',
-    icon: '🦵',
+    icon: '/achievements/bout-first-round.webp',
   },
   {
     id: 'bout-first-blood',
@@ -52,14 +52,14 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'Split Decision',
     description: 'A draw. Nobody won. Nobody lost. The judges went home confused and so did I.',
-    icon: '⚖️',
+    icon: '/achievements/bout-split-decision.webp',
   },
   {
     id: 'bout-ko-artist',
     category: 'bout',
     name: 'KO Artist',
     description: 'Checkmate is just a knockout where the referee is math.',
-    icon: '💥',
+    icon: '/achievements/bout-ko-artist.webp',
     thresholds: [1, 5, 25, 100, 500],
   },
   {
@@ -67,14 +67,14 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'Went the Distance',
     description: 'Every round. Every bell. Somewhere a training montage is playing about you.',
-    icon: '🔔',
+    icon: '/achievements/bout-went-the-distance.webp',
   },
   {
     id: 'bout-judges-favorite',
     category: 'bout',
     name: "Judges' Favorite",
     description: "You didn't knock me out, you just quietly took all my pawns. Colder, honestly.",
-    icon: '📋',
+    icon: '/achievements/bout-judges-favorite.webp',
     thresholds: [1, 5, 25, 100],
   },
   {
@@ -82,35 +82,35 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'Hometown Decision',
     description: 'Dead even and they gave it to you. The crowd loves you. I demand an inquiry.',
-    icon: '🏟️',
+    icon: '/achievements/bout-hometown-decision.webp',
   },
   {
     id: 'bout-meltdown-button',
     category: 'bout',
     name: 'The Meltdown Button',
     description: 'I was WINNING. I want that recorded: I was winning, and this still happened.',
-    icon: '🌋',
+    icon: '/achievements/bout-meltdown-button.webp',
   },
   {
     id: 'bout-buzzer-beater',
     category: 'bout',
     name: 'Buzzer Beater',
     description: 'Under ten seconds left and you found mate. I need to sit down. I need to sit down more.',
-    icon: '⏱️',
+    icon: '/achievements/bout-buzzer-beater.webp',
   },
   {
     id: 'bout-time-to-spare',
     category: 'bout',
     name: 'Time to Spare',
     description: 'You won with two minutes still on the clock. You could have used it. You chose not to. Rude.',
-    icon: '⌛',
+    icon: '/achievements/bout-time-to-spare.webp',
   },
   {
     id: 'bout-ring-fists',
     category: 'bout',
     name: 'Ring Fists',
     description: 'Punches landed in the ring, between chess moves. Your hands and your brain are finally on the same payroll.',
-    icon: '🤜',
+    icon: '/achievements/bout-ring-fists.webp',
     thresholds: [10, 50, 200, 1000, 5000],
   },
   {
@@ -118,7 +118,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'Clean Card',
     description: 'A judge scored you ninety or better for a round. That judge and I are no longer speaking.',
-    icon: '🃏',
+    icon: '/achievements/bout-clean-card.webp',
     band: 'contender',
   },
   {
@@ -126,21 +126,21 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'And STILL Champion',
     description: "Five Fight Nights, five wins. Defend the belt or I'm taking it back.",
-    icon: '👑',
+    icon: '/achievements/bout-and-still.webp',
   },
   {
     id: 'bout-championship-rounds',
     category: 'bout',
     name: 'Championship Rounds',
     description: 'Thirty-three minutes of chess boxing. Your cardio is now a chess piece.',
-    icon: '🏆',
+    icon: '/achievements/bout-championship-rounds.webp',
   },
   {
     id: 'bout-up-the-ladder',
     category: 'bout',
     name: 'Up the Ladder',
     description: 'I stopped going easy on you several levels ago. This is concerning.',
-    icon: '🪜',
+    icon: '/achievements/bout-up-the-ladder.webp',
     levelTiered: true,
   },
   {
@@ -148,7 +148,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'bout',
     name: 'Sparring Partner',
     description: 'Exhibition bouts. No stakes, all heart. You fight me when nobody is even counting, and I notice.',
-    icon: '🤝',
+    icon: '/achievements/bout-sparring-partner.webp',
     thresholds: [1, 10, 50, 200],
   },
 
@@ -158,35 +158,35 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Her Majesty',
     description: 'A queen mate. She files the paperwork AND performs the execution. Terrifying.',
-    icon: '👸',
+    icon: '/achievements/mate-her-majesty.webp',
   },
   {
     id: 'mate-the-lawnmower',
     category: 'checkmate',
     name: 'The Lawnmower',
     description: "A rook mate. One straight line, no mercy. I heard it coming and still couldn't move.",
-    icon: '🚜',
+    icon: '/achievements/mate-the-lawnmower.webp',
   },
   {
     id: 'mate-long-distance-call',
     category: 'checkmate',
     name: 'Long-Distance Call',
     description: 'Mated by a bishop from across the board. I never even saw the area code.',
-    icon: '📞',
+    icon: '/achievements/mate-long-distance-call.webp',
   },
   {
     id: 'mate-the-horse-kick',
     category: 'checkmate',
     name: 'The Horse Kick',
     description: 'A knight mate. The only piece that jumps, and it landed on my king.',
-    icon: '🐴',
+    icon: '/achievements/mate-the-horse-kick.webp',
   },
   {
     id: 'mate-pawnbroker',
     category: 'checkmate',
     name: 'Pawnbroker',
     description: 'Mated by a PAWN. The smallest guy on the board just retired my king. I need a minute.',
-    icon: '♟️',
+    icon: '/achievements/mate-pawnbroker.webp',
     band: 'contender',
   },
   {
@@ -194,7 +194,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'The Quiet Step',
     description: "You moved your KING and I got checkmated. I looked it up. It's legal.",
-    icon: '👑',
+    icon: '/achievements/mate-the-quiet-step.webp',
     band: 'champion',
   },
   {
@@ -202,7 +202,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Castle Doctrine',
     description: 'Checkmate BY CASTLING. Do you know the odds? I do. I calculated them mid-collapse.',
-    icon: '🏰',
+    icon: '/achievements/mate-castle-doctrine.webp',
     band: 'undisputed',
   },
   {
@@ -210,7 +210,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'The Sneak',
     description: 'En passant checkmate. The rarest crime in chess, committed in front of everyone.',
-    icon: '🥷',
+    icon: '/achievements/mate-the-sneak.webp',
     band: 'undisputed',
   },
   {
@@ -218,7 +218,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Coronation Day',
     description: 'A pawn walked the whole board, got crowned, and delivered mate in the same breath. Cinema.',
-    icon: '⚜️',
+    icon: '/achievements/mate-coronation-day.webp',
     band: 'champion',
   },
   {
@@ -226,7 +226,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: "Philidor's Ghost",
     description: 'A smothered mate. My own pieces boxed me in. This is a betrayal on several levels.',
-    icon: '👻',
+    icon: '/achievements/mate-philidors-ghost.webp',
     band: 'champion',
   },
   {
@@ -234,14 +234,14 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Back Rank Business',
     description: 'Back rank. I KNOW about the back rank. Everyone knows about the back rank. And yet.',
-    icon: '🚪',
+    icon: '/achievements/mate-back-rank-business.webp',
   },
   {
     id: 'chess-speedrun',
     category: 'checkmate',
     name: 'Speedrun',
     description: "Checkmate in under ten moves. I've had warmups longer than that game.",
-    icon: '🏃',
+    icon: '/achievements/chess-speedrun.webp',
     band: 'contender',
   },
   {
@@ -249,14 +249,14 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'The Marathon',
     description: 'Sixty moves of chess boxing. We aged together in that ring.',
-    icon: '🏁',
+    icon: '/achievements/chess-the-marathon.webp',
   },
   {
     id: 'chess-never-needed-her',
     category: 'checkmate',
     name: 'Never Needed Her',
     description: "You lost your queen and won by knockout anyway. That's not a comeback, that's a statement.",
-    icon: '🎭',
+    icon: '/achievements/chess-never-needed-her.webp',
     band: 'contender',
   },
   {
@@ -264,7 +264,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Untouchable',
     description: 'A knockout without losing a single piece. Not one. I checked the tape frame by frame.',
-    icon: '🛡️',
+    icon: '/achievements/chess-untouchable.webp',
     band: 'champion',
   },
   {
@@ -272,7 +272,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Total Demolition',
     description: "Everything I owned was gone by the end. The king doesn't count. He never counts.",
-    icon: '🧹',
+    icon: '/achievements/chess-total-demolition.webp',
     band: 'contender',
   },
   {
@@ -280,14 +280,14 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Field Promotion',
     description: "A pawn made it all the way across. I watched every step and couldn't stop one of them.",
-    icon: '🎖️',
+    icon: '/achievements/chess-field-promotion.webp',
   },
   {
     id: 'chess-the-long-con',
     category: 'checkmate',
     name: 'The Long Con',
     description: 'You promoted to a KNIGHT. On purpose. And it WORKED. I have questions and also respect.',
-    icon: '🃏',
+    icon: '/achievements/chess-the-long-con.webp',
     band: 'champion',
   },
   {
@@ -295,7 +295,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'checkmate',
     name: 'Harassment Campaign',
     description: 'Ten checks in one bout. My king filed a complaint. It was denied.',
-    icon: '📣',
+    icon: '/achievements/chess-harassment-campaign.webp',
   },
 
   // ── Openings (belt-tiered: tier = the Rookie level you beat with it on the
@@ -306,7 +306,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Caro-Kann',
     description: "The Caro-Kann was on the board and you didn't lose. Nobody survives the Caro-Kann that well. I've checked.",
-    icon: '🧱',
+    icon: '/achievements/opening-caro-kann.webp',
     levelTiered: true,
   },
   {
@@ -314,7 +314,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'London System',
     description: 'The London. Congratulations on your new personality.',
-    icon: '🎡',
+    icon: '/achievements/opening-london.webp',
     levelTiered: true,
   },
   {
@@ -322,7 +322,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Sicilian Defense',
     description: "A real Sicilian, on the board, on purpose. Most people just SAY they've played the Sicilian.",
-    icon: '🌋',
+    icon: '/achievements/opening-sicilian.webp',
     levelTiered: true,
   },
   {
@@ -330,7 +330,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: "King's Gambit",
     description: 'A pawn, donated on move two, described as a plan. The worst part is that it worked.',
-    icon: '🎁',
+    icon: '/achievements/opening-kings-gambit.webp',
     levelTiered: true,
   },
   {
@@ -338,7 +338,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Scandinavian Defense',
     description: 'Queen out by move two, like someone with nothing to lose. I respect it and I fear it.',
-    icon: '🛶',
+    icon: '/achievements/opening-scandinavian.webp',
     levelTiered: true,
   },
   {
@@ -346,7 +346,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'French Defense',
     description: 'The French. A bishop spent the whole game locked in a closet and somebody still won. That bishop believed.',
-    icon: '🥖',
+    icon: '/achievements/opening-french.webp',
     levelTiered: true,
   },
   {
@@ -354,7 +354,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Ruy Lopez',
     description: "The Ruy Lopez. They call it the Spanish Torture. Someone at this board got tortured, and it wasn't you.",
-    icon: '💃',
+    icon: '/achievements/opening-ruy-lopez.webp',
     levelTiered: true,
   },
   {
@@ -362,7 +362,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Italian Game',
     description: 'The Italian Game. Four hundred years of theory, used to bully me specifically.',
-    icon: '🍝',
+    icon: '/achievements/opening-italian.webp',
     levelTiered: true,
   },
   {
@@ -370,7 +370,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: "Queen's Gambit",
     description: "The Queen's Gambit. A pawn was offered. Regret followed. That's the whole opening, and it's undefeated.",
-    icon: '♛',
+    icon: '/achievements/opening-queens-gambit.webp',
     levelTiered: true,
   },
   {
@@ -378,7 +378,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: "King's Indian",
     description: "The King's Indian. The whole center, handed over, then taken back with interest. A beautiful scam.",
-    icon: '🐅',
+    icon: '/achievements/opening-kings-indian.webp',
     levelTiered: true,
   },
   {
@@ -386,7 +386,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Petroff Defense',
     description: "The Petroff. The chess equivalent of saying 'no, you.' Somehow a real opening. Somehow it worked.",
-    icon: '🪞',
+    icon: '/achievements/opening-petroff.webp',
     levelTiered: true,
   },
   {
@@ -394,7 +394,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Scotch Game',
     description: 'The Scotch Game. The center exploded on move three and only one of us had a plan.',
-    icon: '🥃',
+    icon: '/achievements/opening-scotch.webp',
     levelTiered: true,
   },
   {
@@ -402,7 +402,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Slav Defense',
     description: 'The Slav. A brick wall with a zip code. I ran into it at full speed.',
-    icon: '🧊',
+    icon: '/achievements/opening-slav.webp',
     levelTiered: true,
   },
   {
@@ -410,7 +410,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Grünfeld Defense',
     description: 'The Grünfeld. I was GIVEN the center. It was a trap. The center was a trap.',
-    icon: '🪤',
+    icon: '/achievements/opening-grunfeld.webp',
     levelTiered: true,
   },
   {
@@ -418,7 +418,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Nimzo-Indian',
     description: 'The Nimzo-Indian. My pawns got doubled and so did my regrets.',
-    icon: '🪢',
+    icon: '/achievements/opening-nimzo-indian.webp',
     levelTiered: true,
   },
   {
@@ -426,7 +426,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'English Opening',
     description: 'The English Opening. It starts sideways and ends badly. For me, specifically.',
-    icon: '☕',
+    icon: '/achievements/opening-english.webp',
     levelTiered: true,
   },
   {
@@ -434,7 +434,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Pirc Defense',
     description: 'The Pirc. Quiet, patient, and then suddenly everywhere. Frankly, rude.',
-    icon: '🕸️',
+    icon: '/achievements/opening-pirc.webp',
     levelTiered: true,
   },
   {
@@ -442,7 +442,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'opening',
     name: 'Witty Alien',
     description: "MY opening. Beaten with MY opening. This is either flattery or treason and I haven't decided.",
-    icon: '👽',
+    icon: '/achievements/opening-witty-alien.webp',
     levelTiered: true,
   },
 
@@ -466,7 +466,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'puzzle',
     name: 'Puzzle Grinder',
     description: 'Puzzles solved, and counting. Your pattern recognition is now legally a superpower.',
-    icon: '🧩',
+    icon: '/achievements/puzzle-grinder.webp',
     thresholds: [10, 50, 200, 1000, 5000],
   },
   {
@@ -474,7 +474,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'puzzle',
     name: 'Combo Meal',
     description: 'A streak of correct answers, no misses. The multiplier has never been more proud of anyone.',
-    icon: '🍔',
+    icon: '/achievements/puzzle-combo-meal.webp',
     thresholds: [3, 5, 8, 12], // best combo in a session (high-water)
   },
   {
@@ -482,7 +482,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'puzzle',
     name: 'Twenty Deep',
     description: 'Twenty puzzles solved in one session. Twenty. I have told no one. I have told everyone.',
-    icon: '🔢',
+    icon: '/achievements/puzzle-twenty-in-a-session.webp',
     band: 'contender',
   },
   {
@@ -490,7 +490,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'puzzle',
     name: 'The Whiff Collection',
     description: 'Wrong answers, lifetime. Every one of them taught you something, and every one of them made my day.',
-    icon: '🪣',
+    icon: '/achievements/puzzle-whiffs.webp',
     thresholds: [10, 50, 200, 1000],
   },
   {
@@ -498,7 +498,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'puzzle',
     name: 'Bounce Back',
     description: 'Struck out in the first segment, then solved five anyway. That is the whole sport in one session.',
-    icon: '🏀',
+    icon: '/achievements/puzzle-bounce-back.webp',
     band: 'contender',
   },
   {
@@ -506,7 +506,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'puzzle',
     name: 'Flawless',
     description: "A full flawless session. I checked the math twice because frankly I didn't believe the math.",
-    icon: '💎',
+    icon: '/achievements/puzzle-flawless.webp',
     thresholds: [1, 2, 3, 4], // tier = longest flawless duration band (8/16/24/32 min)
   },
 
@@ -537,7 +537,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Hundred Club',
     description: 'A hundred punches in one session. Your hands should file for overtime.',
-    icon: '💯',
+    icon: '/achievements/training-hundred-club.webp',
     band: 'contender',
   },
   {
@@ -545,7 +545,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Thousand Fists',
     description: "Punches, lifetime. At some point this stopped being a chess app and I didn't stop you.",
-    icon: '👊',
+    icon: '/achievements/training-thousand-fists.webp',
     thresholds: [50, 200, 1000, 5000, 25000],
   },
   {
@@ -553,7 +553,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Punch Clock',
     description: 'Workouts finished. You keep showing up, and I keep the count, and neither of us is stopping.',
-    icon: '🕰️',
+    icon: '/achievements/training-punch-clock.webp',
     thresholds: [3, 10, 50, 200, 1000],
   },
   {
@@ -561,7 +561,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Gym Minutes',
     description: 'Minutes in the gym with me. Every one of them is written down somewhere you will never find.',
-    icon: '⏲️',
+    icon: '/achievements/training-clock-in.webp',
     thresholds: [15, 60, 300, 1000, 5000],
   },
   {
@@ -576,14 +576,14 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'On the Board',
     description: 'Points in a round. Real ones. The scoreboard is now aware of you and it is nervous.',
-    icon: '🎯',
+    icon: '/achievements/training-first-round.webp',
   },
   {
     id: 'training-new-belt-day',
     category: 'training',
     name: 'New Belt Day',
     description: 'A personal best. Your old best is in the locker room questioning its life choices.',
-    icon: '📈',
+    icon: '/achievements/training-new-belt-day.webp',
     thresholds: [1, 5, 25, 100],
   },
   {
@@ -591,7 +591,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Round of Your Life',
     description: 'Your best single round, ever. I would review the tape but it would just embarrass the tape.',
-    icon: '⚡',
+    icon: '/achievements/training-round-of-your-life.webp',
     thresholds: [100, 250, 500, 1000], // best-round points (high-water)
   },
   {
@@ -599,7 +599,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Full Shift',
     description: 'A thirty-two minute session, start to finish. Go drink water. I mean it. Water.',
-    icon: '🚰',
+    icon: '/achievements/training-full-shift.webp',
     band: 'contender',
   },
   {
@@ -607,7 +607,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'training',
     name: 'Double Shift',
     description: 'Two full sessions in one day. The gym has a cot in the back if it comes to that.',
-    icon: '🕐',
+    icon: '/achievements/training-double-shift.webp',
   },
 
   // ── Dedication ────────────────────────────────────────────────────────────
@@ -616,7 +616,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'dedication',
     name: 'Showed Up',
     description: 'Your first day. Everything after this is a streak. No pressure. Some pressure.',
-    icon: '🚪',
+    icon: '/achievements/dedication-first-day.webp',
   },
   {
     id: 'dedication-the-regular',
@@ -631,7 +631,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'dedication',
     name: 'Both Barrels',
     description: 'A workout AND a bout on the same day. You did the whole sport in one day. On purpose.',
-    icon: '🔫',
+    icon: '/achievements/dedication-both-barrels.webp',
     band: 'contender',
   },
   {
@@ -639,35 +639,35 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'dedication',
     name: 'Early Bird',
     description: 'Chess boxing before eight in the morning. The sun was barely up and you were already hitting things.',
-    icon: '🌅',
+    icon: '/achievements/dedication-early-bird.webp',
   },
   {
     id: 'dedication-lunch-break',
     category: 'dedication',
     name: 'Lunch Break',
     description: 'A session at lunch. Everyone else ate a sandwich. You ate a bishop.',
-    icon: '🥪',
+    icon: '/achievements/dedication-lunch-break.webp',
   },
   {
     id: 'dedication-weekend-warrior',
     category: 'dedication',
     name: 'Weekend Warrior',
     description: 'A weekend session. You could have been anywhere. You chose me and a punching bag.',
-    icon: '🗓️',
+    icon: '/achievements/dedication-weekend-warrior.webp',
   },
   {
     id: 'dedication-comeback-kid',
     category: 'dedication',
     name: 'Comeback Kid',
     description: 'You came back. I kept the campfire going. I never doubted you. I doubted you a medium amount.',
-    icon: '🏕️',
+    icon: '/achievements/dedication-comeback-kid.webp',
   },
   {
     id: 'dedication-night-shift',
     category: 'dedication',
     name: 'Night Shift',
     description: "It's the middle of the night and you chose chess boxing. Correct choice. Go to bed.",
-    icon: '🌙',
+    icon: '/achievements/dedication-night-shift.webp',
   },
 
   // ── Shame (secret until earned — the Dungeon Crawler Carl specialty) ──────
@@ -676,7 +676,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'shame',
     name: 'Glass Jaw',
     description: "Knocked out before the gloves even came on. I had a puncher's chance. Sorry. Not that sorry.",
-    icon: '🫙',
+    icon: '/achievements/shame-glass-jaw.webp',
     secret: true,
   },
   {
@@ -684,7 +684,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'shame',
     name: 'Flagged',
     description: 'You had all that time. You spent it like a lottery winner. The clock says hi.',
-    icon: '🚩',
+    icon: '/achievements/shame-flagged.webp',
     secret: true,
   },
   {
@@ -694,7 +694,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'shame',
     name: 'Three Strikes',
     description: "Struck out in the opening segment. The puzzles started a group chat about you. I'm in it.",
-    icon: '❌',
+    icon: '/achievements/shame-three-strikes.webp',
     secret: true,
   },
   {
@@ -702,7 +702,7 @@ export const ACHIEVEMENT_CATALOG: AchievementDef[] = [
     category: 'shame',
     name: 'The Full Carlsberg',
     description: "Five losses in one day and you kept getting back up. That's the most boxer thing I've ever seen. Now go drink water.",
-    icon: '🥤',
+    icon: '/achievements/shame-full-carlsberg.webp',
     secret: true,
   },
 ];
