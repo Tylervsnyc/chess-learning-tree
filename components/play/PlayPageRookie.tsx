@@ -33,9 +33,13 @@ interface PlayPageRookieProps {
   /** Override pool (e.g. boxing quips in the Chess Boxing shell). When set,
       taps draw ONLY from this bag — no mood pools, no workout nudges. */
   quipPool?: readonly string[];
+  /** Extra classes on the tap target (the /play setup screen re-enables
+      pointer events here — its content layer is pass-through so the gym
+      bags behind it stay punchable). */
+  className?: string;
 }
 
-export function PlayPageRookie({ onQuip, quipPool }: PlayPageRookieProps) {
+export function PlayPageRookie({ onQuip, quipPool, className = '' }: PlayPageRookieProps) {
   const modeBagRef = useRef(createModeBag());
   const quipBagsRef = useRef(createQuipBags());
   const nudgeBagRef = useRef<ShuffleBag<string> | null>(null);
@@ -115,7 +119,7 @@ export function PlayPageRookie({ onQuip, quipPool }: PlayPageRookieProps) {
   return (
     <div
       onPointerDown={handleInteraction}
-      className="my-1"
+      className={`my-1 ${className}`}
     >
       {mode && <InteractiveRook mode={mode} blockSize={24} blocks={isKnicksTime() ? KNICKS_ROOK_BLOCKS : undefined} />}
     </div>

@@ -2035,8 +2035,8 @@ export default function PlayRookiePage() {
       >
         {inBoxShell && <GymBackdrop />}
         {/* Top: Level progress bar */}
-        <div className="relative z-10 px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto">
-          <div className="relative">
+        <div className="relative z-10 px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto pointer-events-none">
+          <div className="relative pointer-events-auto">
             <LevelProgressBar
               dark={inBoxShell}
               currentLevel={levelBarAnim ? levelBarAnim.level : matchedLevel}
@@ -2056,7 +2056,7 @@ export default function PlayRookiePage() {
         </div>
 
         {/* Main content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 md:px-6 pb-4">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 md:px-6 pb-4 pointer-events-none">
           <div className="w-full max-w-sm md:max-w-md mx-auto space-y-5">
             {/* Level badge + Rookie */}
             <div className="flex flex-col items-center gap-2">
@@ -2075,6 +2075,7 @@ export default function PlayRookiePage() {
               </div>
 
               <PlayPageRookie
+                className="pointer-events-auto"
                 onQuip={handleTapQuip}
                 quipPool={inBoxShell ? BOXING_PLAY_TAP_QUIPS : undefined}
               />
@@ -2094,12 +2095,12 @@ export default function PlayRookiePage() {
             </div>
 
             {/* How Rookie's difficulty is set */}
-            <div className="flex justify-center">
+            <div className="flex justify-center pointer-events-auto">
               <MatchNote level={matchedLevel} provisional={levelProvisional} dark={inBoxShell} />
             </div>
 
             {/* Color picker */}
-            <div>
+            <div className="pointer-events-auto">
               <label className={`text-[11px] font-semibold uppercase tracking-wide mb-1.5 block ${inBoxShell ? 'text-white/60' : 'text-chess-text-muted'}`}>
                 Your color
               </label>
@@ -2128,7 +2129,7 @@ export default function PlayRookiePage() {
             <button
               onClick={startGame}
               onPointerDown={(e) => { setupGreetingSpokenRef.current = true; e.stopPropagation(); }}
-              className="w-full py-4 bg-chess-green text-white font-bold rounded-xl text-lg shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
+              className="w-full pointer-events-auto py-4 bg-chess-green text-white font-bold rounded-xl text-lg shadow-[0_4px_0_var(--color-chess-green-dark)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-dark)] transition-all"
             >
               Let&apos;s Play
             </button>
