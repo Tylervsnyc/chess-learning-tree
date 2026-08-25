@@ -108,7 +108,7 @@ export function CornerRoom({ name, streak, record, elo, loading, week }: CornerR
         {/* THE STREAK. Same fire, same rules, same copy as chesspath.app —
             it IS that component (components/shared/StreakHero), not a
             reimplementation. Sits in what used to be dead wall. */}
-        <div className="flex-1 min-h-0 flex items-center py-2.5">
+        <div className="shrink-0 mt-2.5">
           <Framed className="w-full" thickness={4}>
             <div className="p-1.5">
               <StreakHero streak={streak} tone="compact" />
@@ -116,7 +116,9 @@ export function CornerRoom({ name, streak, record, elo, loading, week }: CornerR
           </Framed>
         </div>
 
-        <RatingCard elo={elo} loading={loading} />
+        <div className="shrink-0 mt-2.5">
+          <RatingCard elo={elo} loading={loading} />
+        </div>
 
         {/* Streak / record / KOs. None of these repeat the chart below — an
             earlier pass had a "this week" tile sitting directly on top of a
