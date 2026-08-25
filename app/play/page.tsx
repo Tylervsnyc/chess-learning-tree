@@ -56,7 +56,6 @@ import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/use
 import { usePremove } from '@/hooks/usePremove';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
-import { RookieNameAsk } from '@/components/onboarding/RookieNameAsk';
 import { useName } from '@/hooks/useName';
 import { ActivityComplete } from '@/components/shared/ActivityComplete';
 import {
@@ -326,10 +325,8 @@ export default function PlayRookiePage() {
   const [rookieLevel, setRookieLevel] = useState(1);
   const [subProgress, setSubProgress] = useState(0);
   const [levelProvisional, setLevelProvisional] = useState(true);
-  const { name: playerNameValue, setName: setPlayerNameValue } = useName();
+  const { name: playerNameValue } = useName();
   const playerName = playerNameValue || '';
-  const [showNameAsk, setShowNameAsk] = useState(false);
-  const nameAskedRef = useRef(false);
 
   // Win/loss/landing quip dedup is now handled by the unified QueueState inside useRookieSpeech.
   const pendingPostGameRef = useRef<'win' | 'loss' | null>(null);
@@ -1389,20 +1386,12 @@ export default function PlayRookiePage() {
         else playMoveSound();
       }
 
-      // After the player has made a few moves, ask their name if we don't
-      // have one yet. Don't stack on top of other overlays.
-      if (
-        !nameAskedRef.current
-        && !playerNameValue
-        && playerMoveCountRef.current >= 4
-        && !gameResult
-        && !showSignupPrompt
-        && !showCoaching
-        && !isTalkingRef.current
-      ) {
-        nameAskedRef.current = true;
-        setShowNameAsk(true);
-      }
+      // NOTE (2026-08-25, Tyler): Rookie used to interrupt here after the 4th
+      // move to ask the player's name. Removed — by the time anyone reaches a
+      // game we already know what to call them (useName falls back to the
+      // fighter handle), so it was asking for something already given, and it
+      // stopped the game to do it. The name ask now lives only in the Basics
+      // tutorial, where Rookie introducing herself is the point.
 
       log({
         moveNum: moveNumRef.current,
@@ -1689,8 +1678,6 @@ export default function PlayRookiePage() {
     speech.reset();
     moveNumRef.current = 0;
     playerMoveCountRef.current = 0;
-    nameAskedRef.current = false;
-    setShowNameAsk(false);
     moveLogRef.current = [];
     coachCommentaryRef.current = {};
     coachSummaryRef.current = null;
@@ -1746,8 +1733,6 @@ export default function PlayRookiePage() {
     if (rookieTimerRef.current) clearTimeout(rookieTimerRef.current);
     moveNumRef.current = 0;
     playerMoveCountRef.current = 0;
-    nameAskedRef.current = false;
-    setShowNameAsk(false);
     moveLogRef.current = [];
     coachCommentaryRef.current = {};
     coachSummaryRef.current = null;
@@ -2674,21 +2659,6 @@ export default function PlayRookiePage() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Rookie asks for the player's name mid-game */}
-      {showNameAsk && (
-        <div className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[env(safe-area-inset-bottom,0)]">
-          <RookieNameAsk
-            source="play"
-            onSubmit={(n) => {
-              setPlayerNameValue(n);
-              setShowNameAsk(false);
-            }}
-            onSpeak={speakQuip}
-            isTalking={isTalking}
-          />
         </div>
       )}
 

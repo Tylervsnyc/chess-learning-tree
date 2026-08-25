@@ -120,8 +120,10 @@ export default function BoxProfilePage() {
     );
   }
 
+  // `username` is on the Profile type now — no cast needed.
   const name =
-    (profile as { username?: string | null } | null)?.username ||
+    profile?.username?.trim() ||
+    profile?.display_name?.trim() ||
     user?.email?.split('@')[0] ||
     'Fighter';
 

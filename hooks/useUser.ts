@@ -9,6 +9,13 @@ interface Profile {
   id: string;
   email: string;
   display_name: string | null;
+  /**
+   * Public fighter handle (leaderboards, Chess Boxing onboarding). Already
+   * returned by the `select('*')` below — it was just missing from this type.
+   * `useName()` falls back to it so we never ask a user for a name they have
+   * already given us. See lib/username/validate.ts for the rules.
+   */
+  username?: string | null;
   subscription_status: 'free' | 'premium' | 'trial';
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;

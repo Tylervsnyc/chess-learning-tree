@@ -523,7 +523,11 @@ export default function ProfilePage() {
     );
   }
 
-  const displayName = profile?.display_name?.trim() || 'Chess Player';
+  // Fighter handle counts as a name: a Chess Boxing user who set one during
+  // onboarding never fills in display_name, and greeting them as the generic
+  // 'Chess Player' when we know their handle reads as a bug (2026-08-25).
+  const displayName =
+    profile?.display_name?.trim() || profile?.username?.trim() || 'Chess Player';
   const subStatus = profile?.subscription_status ?? 'free';
   const isPatron = profile?.is_patron === true;
   // Profile turns gold for supporters AND premium members (or ?preview=gold).
