@@ -22,6 +22,14 @@ import { useEffect, useState } from 'react';
  * The two group shots crop from the top: sharp's `attention` strategy picks
  * the chess boards and cuts everyone's heads off.
  *
+ * FILENAMES ARE VERSIONED (`-v2`) FOR A REASON. These are static assets served
+ * straight off the CDN and cached by URL, by browsers and by Vercel. The first
+ * fix for the sideways photo re-exported over the SAME filename, so everyone
+ * who had already loaded it — Tyler included — kept being served the broken
+ * one, and a deploy would have shipped the same staleness to every installed
+ * app. If you re-export any frame here, BUMP THE FILENAME. Never overwrite in
+ * place.
+ *
  * Cost (perf conventions in CLAUDE.md): 640×480 WebP, ~45KB each, 174KB total.
  */
 
@@ -35,22 +43,22 @@ interface Frame {
 
 const FRAMES: Frame[] = [
   {
-    src: '/boxing/welcome/gloves-up.webp',
+    src: '/boxing/welcome/gloves-up-v2.webp',
     alt: 'Chess boxers with gloves up behind a row of chess boards at Gleason’s Gym',
     drift: 'in',
   },
   {
-    src: '/boxing/welcome/boards.webp',
+    src: '/boxing/welcome/boards-v2.webp',
     alt: 'Players in hand wraps at a line of boards with a clock, heavy bags behind them',
     drift: 'out',
   },
   {
-    src: '/boxing/welcome/phones.webp',
+    src: '/boxing/welcome/phones-v2.webp',
     alt: 'Boxers in hand wraps training on their phones beside the ring',
     drift: 'in',
   },
   {
-    src: '/boxing/welcome/crew.webp',
+    src: '/boxing/welcome/crew-v2.webp',
     alt: 'The Chessboxing NYC meetup lined up in front of the ring',
     drift: 'out',
   },
@@ -99,7 +107,7 @@ export function WelcomeHero() {
             {/* All four load eagerly. They are stacked and cross-fading, so a
                 lazily-loaded frame is simply blank when its turn comes — the
                 browser has no reason to prioritise an element sitting at
-                opacity 0. ~350KB total for the set, which is the price of the
+                opacity 0. ~174KB total for the set, which is the price of the
                 screen actually working. */}
             <Image
               src={f.src}
