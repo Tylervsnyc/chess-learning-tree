@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
-import { getStoredUserId, getStreak, getTz, peekStreak, type StreakData } from '@/lib/streak-client';
+import { useProfileData } from '@/hooks/useProfileData';
+import type { WorkoutSessionSummary as WorkoutSession } from '@/lib/workout/sessions';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { useIsNativeApp } from '@/lib/native-app';
@@ -22,19 +23,9 @@ import { TrophyCase } from '@/components/achievements/TrophyCase';
  *
  * Data comes from two calls (CHE-379):
  *   - profile/name/sub          → useUser()
- *   - streak                    → getStreak() (shared client cache)
+ *   - everything                → useProfileData() (shared with /box/profile)
  *   - stats/week/sessions/elo   → GET /api/profile/dashboard?tz= (one round-trip)
  */
-
-interface LifetimeStats {
-  lessonsCompleted: number;
-  puzzlesSolved: number;
-  gamesPlayed: number;
-  levelsUnlocked: number;
-  workoutPoints: number;
-  brilliantMoves?: number;
-  greatMoves?: number;
-}
 
 /** Fight record from /api/bout/record (Bout v2). */
 interface BoutRecord {
@@ -46,26 +37,10 @@ interface BoutRecord {
   points: number;
 }
 
-interface WorkoutSession {
-  id: string;
-  createdAt: string;
-  points: number;
-  correct: number;
-  wrong: number;
-  perfect: boolean;
-  durationMinutes: number | null;
-  missedCount: number;
-}
 
 interface EloSeriesPoint {
   date: string; // YYYY-MM-DD
   elo: number;
-}
-
-interface EloData {
-  current: number;
-  events: number;
-  series: EloSeriesPoint[];
 }
 
 function fmtSessionDate(iso: string): string {
@@ -407,71 +382,47 @@ function DeleteAccount() {
 
 export default function ProfilePage() {
   const { user, profile, loading: userLoading, refetchProfile } = useUser();
+  const pageRouter = useRouter();
 
   const [patronOpen, setPatronOpen] = useState(false);
   // Inside the Chess Boxing iOS shell: no Patron purchase CTA (Apple 3.1.1).
   const nativeApp = useIsNativeApp();
+
+  // ONE profile per context (2026-08-25). The app has its own profile at
+  // /box/profile — a no-scroll room that fits under the tab bar — but plenty
+  // of shared surfaces still route here by name: the workout finish screen's
+  // Done button, the review page, the web nav. Rather than hunt every caller
+  // and keep hunting as new ones appear, /profile hands off to /box/profile
+  // whenever we're inside the shell. Web is untouched.
+  //
+  // Client-side because Capacitor is only detectable in the browser; the
+  // shell can't be sniffed from a request header.
+  useEffect(() => {
+    if (nativeApp) pageRouter.replace('/box/profile');
+  }, [nativeApp, pageRouter]);
   // Daily-stable streak line (computed once, won't flicker on re-render).
   const [keptLine] = useState(pickDailyKeptLine);
   // ?preview=gold — see the gold profile without a premium/patron account.
   const [previewGold, setPreviewGold] = useState(false);
-  // Synchronous instant-paint: peek the snapshot before auth resolves.
-  const [streak, setStreak] = useState<StreakData | null>(() => {
-    if (typeof window === 'undefined') return null;
-    const uid = getStoredUserId();
-    return uid ? peekStreak(uid) : null;
-  });
-  const [stats, setStats] = useState<LifetimeStats | null>(null);
-  const [dataLoading, setDataLoading] = useState(false);
-
-  const [elo, setElo] = useState<EloData | null>(null);
-  const [eloLoading, setEloLoading] = useState(false);
-
-  const [week, setWeek] = useState<WeekData | null>(null);
-  const [weekLoading, setWeekLoading] = useState(false);
-  const [sessions, setSessions] = useState<WorkoutSession[] | null>(null);
-  const [boutRecord, setBoutRecord] = useState<BoutRecord | null>(null);
-  const [sessionsLoading, setSessionsLoading] = useState(false);
-
-  // Fire data fetches on mount — the API route authenticates from the cookie
-  // itself, so we don't wait for useUser()'s auth round-trip first. This
-  // removes a full round-trip from the critical path; the dashboard data loads
-  // in parallel with the auth check instead of after it. (Logged-out users get
-  // a 401 handled gracefully below, and the logged-out gate renders regardless.)
-  // CHE-379: stats/week/sessions/elo come back in ONE /api/profile/dashboard
-  // call (was 4 separate authenticated requests); streak stays on the shared
-  // getStreak() client cache.
-  useEffect(() => {
-    let cancelled = false;
-    setDataLoading(true);
-    setWeekLoading(true);
-    setSessionsLoading(true);
-    setEloLoading(true);
-    Promise.all([
-      getStreak().catch(() => null),
-      fetch(`/api/profile/dashboard?tz=${encodeURIComponent(getTz())}`, { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null),
-      fetch('/api/bout/record', { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null),
-    ]).then(([s, d, b]) => {
-      if (cancelled) return;
-      setBoutRecord((b?.record as BoutRecord) ?? null);
-      if (s) setStreak(s);
-      if (d?.stats) setStats(d.stats as LifetimeStats);
-      if (d?.week) setWeek(d.week as WeekData);
-      setSessions(Array.isArray(d?.sessions) ? (d.sessions as WorkoutSession[]) : []);
-      if (d?.elo) setElo(d.elo as EloData);
-      setDataLoading(false);
-      setWeekLoading(false);
-      setSessionsLoading(false);
-      setEloLoading(false);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // ONE profile read (hooks/useProfileData) — the same hook /box/profile uses,
+  // so the two screens can never disagree about the same person. It fires on
+  // mount without waiting for useUser(): these routes authenticate off the
+  // cookie themselves, so the data loads in parallel with the auth check
+  // rather than behind it. The streak is seeded synchronously from the local
+  // snapshot inside the hook (CHE-379 — stops the hero jumping on load).
+  const {
+    streak,
+    stats,
+    week,
+    sessions,
+    elo,
+    record: boutRecord,
+    loading: dataLoading,
+  } = useProfileData();
+  // One request, one settle — every surface shares the same loading flag.
+  const eloLoading = dataLoading;
+  const weekLoading = dataLoading;
+  const sessionsLoading = dataLoading;
 
   // ?preview=gold — local-only visual preview of the gold (premium/patron) state.
   useEffect(() => {
