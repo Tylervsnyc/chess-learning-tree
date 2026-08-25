@@ -18,10 +18,15 @@ import { rookieRating, type EloSeriesPoint } from '@/lib/elo/rookie-rating';
  * content: estimated rating first (the number people care about), then the
  * three day-to-day counts, then the week.
  *
- * THE ROOM: a room only reads if the floor is a different MATERIAL from the
- * wall, not a slightly different tint — warm wood with plank lines against a
- * cool wall, a baseboard, and the shadow it casts. That contrast is the whole
- * illusion; keep it if you retint. Flat CSS, no image, nothing to load.
+ * THE ROOM (Tyler: "wooden backgrounds like a finished basement"): vertical
+ * knotty-pine paneling on the wall, stained baseboard, horizontal boards on
+ * the floor, and a bare bulb over the corner. Everything readable sits on a
+ * white card — dark copy straight on the wood is unreadable, which is how the
+ * signed-out state and the Settings link both broke on the first wood pass.
+ *
+ * Entirely flat CSS gradients: no image, nothing to load, scales to any size.
+ * The floor is a shade deeper than the wall so the two read as different
+ * surfaces rather than one big brown field.
  */
 
 export interface CornerRoomElo {
@@ -50,7 +55,7 @@ export interface CornerRoomProps {
 
 export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoomProps) {
   return (
-    <div className="h-full overflow-hidden bg-[#eef3fa] relative">
+    <div className="h-full overflow-hidden bg-[#c8975c] relative">
       <RoomBackdrop />
 
       <div className="relative h-full max-w-lg md:max-w-xl mx-auto w-full px-5 pt-[max(0.85rem,env(safe-area-inset-top))] pb-3 flex flex-col">
@@ -90,7 +95,7 @@ export function CornerRoom({ name, days, record, elo, loading, week }: CornerRoo
 
         <Link
           href="/box/settings"
-          className="shrink-0 mt-1 mx-auto text-xs font-bold text-[#7d6f5c] py-2 min-h-[44px] inline-flex items-center gap-1.5 tap-highlight"
+          className="shrink-0 mt-1 mx-auto text-xs font-black text-[#43301a] px-4 min-h-[44px] inline-flex items-center gap-1.5 rounded-full bg-[#e6c395]/85 border border-[#f0d6ac]/70 shadow-[0_2px_6px_-1px_rgba(60,36,10,0.4)] tap-highlight"
         >
           <GearIcon />
           Settings
@@ -212,51 +217,82 @@ function Sparkline({ series }: { series: EloSeriesPoint[] }) {
 export function RoomBackdrop() {
   return (
     <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* wall */}
-      <div className="absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-[#f4f7fc] via-[#e9eff8] to-[#dde6f2]" />
-
-      {/* light thrown from above onto the wall */}
+      {/* ── WALL: vertical knotty-pine paneling ───────────────────────────── */}
+      <div className="absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-[#d8ab72] to-[#c8975c]" />
+      {/* grain — irregular widths so it doesn't read as a barcode */}
       <div
-        className="absolute inset-x-0 top-0 h-[22%]"
+        className="absolute inset-x-0 top-0 h-[26%] opacity-[0.35]"
         style={{
           background:
-            'radial-gradient(ellipse 60% 100% at 50% -10%, rgba(255,252,242,0.95) 0%, rgba(255,252,242,0) 72%)',
+            'repeating-linear-gradient(90deg, rgba(120,80,38,0.10) 0 2px, rgba(255,225,180,0.10) 2px 5px, rgba(120,80,38,0) 5px 13px, rgba(120,80,38,0.07) 13px 15px, rgba(120,80,38,0) 15px 23px)',
+        }}
+      />
+      {/* the panel grooves: a dark cut with a lit bevel on its right edge */}
+      <div
+        className="absolute inset-x-0 top-0 h-[26%]"
+        style={{
+          background:
+            'repeating-linear-gradient(90deg, rgba(94,60,26,0.55) 0 2px, rgba(255,232,190,0.45) 2px 4px, rgba(0,0,0,0) 4px 46px)',
         }}
       />
 
-      {/* baseboard + the shadow it casts down onto the boards */}
-      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-2.5 bg-[#cdd7e6]" />
-      <div className="absolute inset-x-0 top-[26%] h-[3px] bg-[#a08c6f]" />
+      {/* ── BASEBOARD: stained trim, and the shadow it throws on the floor ── */}
+      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-3 bg-[#8a5a2b]" />
+      <div className="absolute inset-x-0 top-[26%] -translate-y-full h-[2px] bg-[#a97742]" />
+      <div className="absolute inset-x-0 top-[26%] h-[2px] bg-[#5e3c1a]" />
       <div
-        className="absolute inset-x-0 top-[26%] h-8"
-        style={{ background: 'linear-gradient(to bottom, rgba(90,68,40,0.30), rgba(90,68,40,0))' }}
+        className="absolute inset-x-0 top-[26%] h-9"
+        style={{ background: 'linear-gradient(to bottom, rgba(72,44,16,0.38), rgba(72,44,16,0))' }}
       />
 
-      {/* wood floor */}
-      <div className="absolute inset-x-0 top-[26%] bottom-0 bg-gradient-to-b from-[#e2d5c0] to-[#d2c1a6]" />
-
-      {/* planks */}
+      {/* ── FLOOR: horizontal boards, a shade deeper than the walls ───────── */}
+      <div className="absolute inset-x-0 top-[26%] bottom-0 bg-gradient-to-b from-[#c6935a] to-[#b07f4a]" />
+      {/* board seams */}
       <div
-        className="absolute inset-x-0 top-[26%] bottom-0 opacity-50"
+        className="absolute inset-x-0 top-[26%] bottom-0"
         style={{
           background:
-            'repeating-linear-gradient(90deg, rgba(120,92,58,0.20) 0 1px, rgba(120,92,58,0) 1px 74px)',
+            'repeating-linear-gradient(0deg, rgba(78,48,18,0.42) 0 2px, rgba(255,214,158,0.16) 2px 3px, rgba(0,0,0,0) 3px 52px)',
         }}
       />
+      {/* staggered board ends */}
       <div
         className="absolute inset-x-0 top-[26%] bottom-0 opacity-40"
         style={{
           background:
-            'repeating-linear-gradient(0deg, rgba(120,92,58,0.16) 0 1px, rgba(120,92,58,0) 1px 46px)',
+            'repeating-linear-gradient(90deg, rgba(78,48,18,0.5) 0 2px, rgba(0,0,0,0) 2px 118px)',
+        }}
+      />
+      {/* grain along the boards */}
+      <div
+        className="absolute inset-x-0 top-[26%] bottom-0 opacity-25"
+        style={{
+          background:
+            'repeating-linear-gradient(0deg, rgba(90,58,24,0.10) 0 1px, rgba(0,0,0,0) 1px 7px)',
         }}
       />
 
-      {/* pooled light on the floor */}
+      {/* ── the bare bulb over the corner ─────────────────────────────────── */}
       <div
-        className="absolute inset-x-0 top-[20%] bottom-0"
+        className="absolute inset-x-0 top-0 h-[45%]"
         style={{
           background:
-            'radial-gradient(ellipse 55% 60% at 50% 30%, rgba(255,250,238,0.72) 0%, rgba(255,250,238,0) 70%)',
+            'radial-gradient(ellipse 55% 100% at 50% -12%, rgba(255,240,205,0.85) 0%, rgba(255,240,205,0) 70%)',
+        }}
+      />
+      <div
+        className="absolute inset-x-0 top-[22%] bottom-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 52% 46% at 50% 22%, rgba(255,240,208,0.55) 0%, rgba(255,240,208,0) 72%)',
+        }}
+      />
+      {/* corners fall off, the way a basement does */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 88% 74% at 50% 38%, rgba(48,28,8,0) 62%, rgba(48,28,8,0.13) 100%)',
         }}
       />
     </div>

@@ -68,25 +68,28 @@ export default function BoxProfilePage() {
 
 function SignedOut() {
   return (
-    <div className="h-full overflow-hidden bg-[#eef3fa] relative">
+    <div className="h-full overflow-hidden bg-[#c8975c] relative">
       <RoomBackdrop />
-      <div className="relative max-w-lg mx-auto w-full h-full px-6 flex flex-col items-center justify-center gap-3 text-center">
-        <h1 className="text-2xl font-black text-chess-text">Your corner</h1>
-        <p className="text-sm font-semibold text-chess-text-muted">
-          Sign in to keep a streak, climb the standings, and build a fight record.
-        </p>
-        <Link
-          href="/auth/login"
-          className="mt-2 w-full max-w-xs rounded-2xl bg-chess-green text-white text-center font-black py-3.5 shadow-[0_4px_0_0_var(--color-chess-green-shadow)] active:translate-y-[3px] active:shadow-none transition-transform tap-highlight"
-        >
-          Sign In
-        </Link>
-        <Link
-          href="/auth/signup"
-          className="text-sm font-bold text-chess-blue tap-highlight py-3 min-h-[44px] inline-flex items-center"
-        >
-          Create an account
-        </Link>
+      {/* On a card — dark copy sitting straight on the wood was unreadable. */}
+      <div className="relative max-w-lg mx-auto w-full h-full px-6 flex flex-col items-center justify-center">
+        <div className="w-full max-w-xs rounded-3xl bg-white/95 border border-white shadow-[0_10px_28px_-10px_rgba(60,36,10,0.6)] px-5 py-6 flex flex-col items-center gap-3 text-center">
+          <h1 className="text-2xl font-black text-chess-text">Your corner</h1>
+          <p className="text-sm font-semibold text-chess-text-muted">
+            Sign in to keep a streak, climb the standings, and build a fight record.
+          </p>
+          <Link
+            href="/auth/login"
+            className="mt-1 w-full rounded-2xl bg-chess-green text-white text-center font-black py-3.5 shadow-[0_4px_0_0_var(--color-chess-green-shadow)] active:translate-y-[3px] active:shadow-none transition-transform tap-highlight"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/auth/signup"
+            className="text-sm font-bold text-chess-blue tap-highlight py-2 min-h-[44px] inline-flex items-center"
+          >
+            Create an account
+          </Link>
+        </div>
       </div>
     </div>
   );
