@@ -60,15 +60,12 @@ import { PunchTracker } from '@/components/workout/PunchTracker';
 import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import type { FightStats } from '@/lib/box/fight-stats';
+import { QUAD_FIGHT_KEY, type FightStats } from '@/lib/box/fight-stats';
 
 // Quadrant Fight (beta) — opt-in camera game for boxing segments. Lazy so the
 // TF.js/game code is code-split and never loads unless the user turns it on.
 // Pure visual layer: no points, no DB, no streak, no analytics.
 const QuadrantFight = nextDynamic(() => import('@/components/box/QuadrantFight'), { ssr: false });
-
-/** localStorage key for the Quadrant Fight opt-in (shared with the Bout flow). */
-const QUAD_FIGHT_KEY = 'cp_quadrant_fight_optin';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ───────
 
@@ -1738,7 +1735,7 @@ function WorkoutPageInner() {
                   <span className="text-chess-green">✓</span> Harder puzzle = more points · streaks combo to ×2
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-chess-red">✗</span> 3 wrong in a round = round over
+                  <span className="text-chess-red">✗</span> Miss one and the combo resets — the round runs the full 3:00
                 </li>
                 {FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT && (
                   <li className="flex items-center gap-2">
@@ -1785,7 +1782,7 @@ function WorkoutPageInner() {
                 <span className="text-chess-green">✓</span> Correct answer = ELO +60
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-chess-red">✗</span> 3 wrong in a round = round over
+                <span className="text-chess-red">✗</span> Miss one and the combo resets — the round runs the full 3:00
               </li>
               <li className="flex items-center gap-2">
                 <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />

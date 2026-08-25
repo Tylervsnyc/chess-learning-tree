@@ -330,6 +330,14 @@ export default function PlayRookiePage() {
   const playerName = playerNameValue || '';
   const [showNameAsk, setShowNameAsk] = useState(false);
   const nameAskedRef = useRef(false);
+  // ONE name per fighter. Inside the Chess Boxing app the fighter name is
+  // already collected in onboarding (profiles.username), so Rookie must not
+  // ask for a second, separate name mid-game. Callback-safe mirror: the shell
+  // flag flips after mount and doPlayerMove is a useCallback.
+  const inBoxShellRef = useRef(false);
+  useEffect(() => {
+    inBoxShellRef.current = inBoxShell;
+  }, [inBoxShell]);
 
   // Win/loss/landing quip dedup is now handled by the unified QueueState inside useRookieSpeech.
   const pendingPostGameRef = useRef<'win' | 'loss' | null>(null);
@@ -1393,6 +1401,7 @@ export default function PlayRookiePage() {
       // have one yet. Don't stack on top of other overlays.
       if (
         !nameAskedRef.current
+        && !inBoxShellRef.current
         && !playerNameValue
         && playerMoveCountRef.current >= 4
         && !gameResult

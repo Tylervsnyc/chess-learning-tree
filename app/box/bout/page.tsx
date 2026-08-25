@@ -54,7 +54,7 @@ import { useProGate } from '@/hooks/useProGate';
 import { claimStreakToday, getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
 import type { AchievementUnlock, NextMedal } from '@/lib/achievements/types';
-import type { FightStats } from '@/lib/box/fight-stats';
+import { QUAD_FIGHT_KEY, type FightStats } from '@/lib/box/fight-stats';
 import {
   warmupAudio,
   playButtonClick,
@@ -106,9 +106,6 @@ const ANIM_MS = 300;
 // FightStats per round via onFinish; with BOUT_BOXING_CARDS on, that becomes
 // the judges' cards + boxing bonus (stored by /api/bout/finish).
 const QuadrantFight = nextDynamic(() => import('@/components/box/QuadrantFight'), { ssr: false });
-
-/** localStorage key for the Quadrant Fight opt-in (shared with the workout). */
-const QUAD_FIGHT_KEY = 'cp_quadrant_fight_optin';
 
 /**
  * A finished bout that hit a 401 (logged-out fighter) waits here, and the next

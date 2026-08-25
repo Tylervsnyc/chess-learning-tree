@@ -3,6 +3,14 @@
  * Shared contract between components/box/QuadrantFight.tsx (producer) and the
  * bout / workout pages + lib/bout/bout.ts scoring (consumers).
  */
+/**
+ * THE Quadrant Fight opt-in key. The camera game is gated only by this
+ * localStorage flag (default off) — never by a feature flag — so both launch
+ * points (the workout's exercise segments and the bout's boxing rounds) MUST
+ * read and write this one constant. Do not re-declare the string literal.
+ */
+export const QUAD_FIGHT_KEY = 'cp_quadrant_fight_optin';
+
 export interface FightStats {
   punchesLanded: number;
   /** @deprecated always 0 since the HP/knockdown removal (2026-08-21) — random blocks are gone. */

@@ -29,6 +29,20 @@ import { useProGate } from '@/hooks/useProGate';
  */
 
 const CAMERA_KEY = 'cp:punch-camera';
+
+/**
+ * What sign-out wipes: everything scoped to the person who was signed in, so
+ * the next fighter on this phone never inherits it. Deliberately NOT cleared:
+ * 'cp:box-onboarded' (first-launch onboarding is per DEVICE — clearing it made
+ * sign-out replay the intro), 'cp_quadrant_fight_optin' and 'cp:punch-camera'
+ * (device camera preferences), and any stashed unsent fight.
+ */
+const SIGN_OUT_CLEARED_KEYS = [
+  'cp:workout-streak:v2', // lib/streak-client snapshot
+  'cp:uid',               // lib/streak-client owner check
+  'chess_player_name',    // legacy alias, harmless if absent
+  'chess_path_name',      // components/onboarding/RookieNameAsk
+];
 const ACCENT = '#e5484d';
 
 interface Crew {
@@ -201,7 +215,14 @@ export function BoxSettings() {
                   title="Sign out"
                   value=""
                   onClick={() => {
-                    try { localStorage.clear(); } catch {}
+                    // Clear the SIGNED-IN user's cached data so the next
+                    // fighter never inherits it — but keep device/app state.
+                    // A blanket localStorage.clear() also wiped
+                    // 'cp:box-onboarded' (sign out re-ran first-launch
+                    // onboarding) and any stashed unsent fight.
+                    try {
+                      for (const k of SIGN_OUT_CLEARED_KEYS) localStorage.removeItem(k);
+                    } catch { /* private mode — nothing cached anyway */ }
                     window.location.href = '/api/auth/logout?next=/box';
                   }}
                 />
