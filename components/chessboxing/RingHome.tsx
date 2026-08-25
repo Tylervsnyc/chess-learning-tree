@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProGate } from '@/hooks/useProGate';
 import { ArenaScene, GymSign } from '@/components/chessboxing/Arena';
-import { FirstBoutCoach } from '@/components/chessboxing/FirstBoutCoach';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import type { LeaderboardPeriod } from '@/lib/leaderboard/period';
@@ -256,8 +255,6 @@ export function RingHome() {
           <GearIcon />
         </Link>
       )}
-      {/* One-time "here's how to start" card, right after onboarding. */}
-      <FirstBoutCoach />
       {paywall}
     </div>
   );

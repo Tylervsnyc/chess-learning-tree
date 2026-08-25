@@ -34,6 +34,11 @@
  *     re-opening the Scunthorpe problem: `bassist` is one token and stays fine.
  *     Glued-together compounds with no separator (`fatass`, `bullshit`) are
  *     covered by BLOCKED_COMPOUNDS instead.
+ *   - Each word is ALSO checked for starting or ending with a mild profanity
+ *     (`assguy`, Tyler's v3 test), which no fixed compound list can enumerate.
+ *     SAFE_WORDS carries the real words that collide — class, Hitchcock,
+ *     assassin, asset — and the pass runs on words only, never on the glued
+ *     fold, so `asset_king` survives.
  */
 
 export const USERNAME_MIN = 3;
@@ -86,6 +91,49 @@ const BLOCKED_COMPOUNDS = [
   'dickhead', 'dickface', 'cocksucker', 'motherfuck', 'fuckface', 'fuckhead',
   'fuckboy', 'clusterfuck', 'twatwaffle', 'douchebag', 'jerkoff',
 ];
+
+/**
+ * Matched when the name STARTS or ENDS with one of these. This is the
+ * `assguy` case (Tyler, v3): a mild word glued to an arbitrary other word, so
+ * no fixed compound list can ever enumerate it. Boundary matching generalises
+ * — but it needs SAFE_WORDS below, or it eats `class` and `Hitchcock`.
+ *
+ * `tit` is deliberately NOT here: `title` is far too plausible a chess handle
+ * (title shot, titleist). It stays whole-string only.
+ */
+const BOUNDARY_WORDS = [
+  'ass', 'shit', 'fuck', 'cunt', 'dick', 'piss',
+  'twat', 'wank', 'bitch', 'slut', 'whore', 'cock',
+];
+
+/**
+ * Ordinary words and names that start or end with a BOUNDARY_WORD. Without
+ * this list, boundary matching rejects real people and real words.
+ *
+ * If you add to BOUNDARY_WORDS, you MUST sweep for collisions and extend this
+ * — and add both to scripts/username-filter-check.ts, which asserts the
+ * allowed direction too.
+ */
+const SAFE_WORDS = new Set([
+  // ass- prefix
+  'assassin', 'assassins', 'assist', 'assists', 'assistant', 'assign',
+  'asset', 'assets', 'associate', 'association', 'assume', 'assure',
+  'assembly', 'assemble', 'assault', 'assess', 'assorted', 'assortment',
+  // -ass suffix
+  'class', 'classic', 'glass', 'brass', 'grass', 'pass', 'bypass', 'compass',
+  'harass', 'mass', 'bass', 'lass', 'morass', 'surpass', 'crass', 'amass',
+  'embarrass', 'overpass', 'underpass', 'impasse', 'kansas',
+  // cock- / -cock
+  'cockpit', 'cocktail', 'cockney', 'cockroach', 'cockatoo',
+  'peacock', 'hancock', 'woodcock', 'shuttlecock', 'babcock', 'hitchcock',
+  'cockburn',
+  // dick-
+  'dickens', 'dickinson', 'dickie', 'dicky',
+  // shit- (shiitake, and the common misspelling)
+  'shitake', 'shiitake',
+  // piss-
+  'pissarro',
+]);
 
 /**
  * Words that CONTAIN a blocked substring but are themselves innocent. Checked
@@ -223,9 +271,27 @@ export function validateUsername(raw: unknown): UsernameOk | UsernameBad {
   // is composed of (`fat_ass` and `FatAss99` both tokenize to [fat, ass]).
   const folds = [normalized, collapseRuns(normalized)];
   const tokens = tokenize(value).flatMap((t) => [t, collapseRuns(t)]);
+  const all = [...folds, ...tokens];
+
   const safeContainer = folds.some((f) => SAFE_CONTAINERS.has(f));
+
+  // Boundary pass: does any WORD start or end with a mild profanity without
+  // being a real word? Catches `assguy` / `guyass` and anything of that shape,
+  // which no fixed compound list could enumerate.
+  //
+  // Deliberately runs on TOKENS ONLY, never on the glued-together fold: the
+  // fold of `asset_king` is `assetking`, which starts with "ass" but is not a
+  // word anybody wrote. Checking it would reject every handle whose first word
+  // happens to be assist/asset/assassin.
+  const boundaryHit = tokens.some(
+    (f) =>
+      !SAFE_WORDS.has(f)
+      && BOUNDARY_WORDS.some((w) => f.startsWith(w) || f.endsWith(w)),
+  );
+
   if (
-    [...folds, ...tokens].some((f) => NORMALIZED_EXACT.has(f))
+    all.some((f) => NORMALIZED_EXACT.has(f))
+    || boundaryHit
     || (!safeContainer && folds.some((f) => NORMALIZED_SUBSTRINGS.some((bad) => f.includes(bad))))
   ) {
     return {

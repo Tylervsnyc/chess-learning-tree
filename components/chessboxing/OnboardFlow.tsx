@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BoxingLogoLoader } from '@/components/chessboxing/BoxingLogoLoader';
 import { WelcomeHero } from '@/components/chessboxing/WelcomeHero';
 import { BoxOnboardEvents } from '@/lib/analytics/posthog';
 import { signUpWithEmail } from '@/lib/auth/signup';
@@ -41,9 +42,6 @@ import { validateUsername, USERNAME_MAX } from '@/lib/username/validate';
  */
 
 export const ONBOARDED_KEY = 'cp:box-onboarded';
-
-/** Where finishing onboarding lands you: home, with the first-bout coach mark. */
-export const FIRST_BOUT_PARAM = 'firstbout';
 
 type StepKey = 'welcome' | 'name' | 'account' | 'crew';
 
@@ -118,7 +116,10 @@ export function OnboardFlow() {
     } catch {
       /* private mode — the gate re-checks the account server-side anyway */
     }
-    router.replace(`/box?${FIRST_BOUT_PARAM}=1`);
+    // Straight into the app (Tyler, v3). The first-bout explainer card that
+    // used to greet people here was one beat too many after crew → "no crew"
+    // → "gloves on"; the home screen can introduce itself.
+    router.replace('/box');
   }, [router]);
 
   /** Signup succeeded: write the held name, then move on. */
@@ -144,15 +145,7 @@ export function OnboardFlow() {
       <div className="max-w-lg md:max-w-xl mx-auto w-full h-full px-4 md:px-6 pt-3 pb-5 flex flex-col">
         <ProgressRail steps={steps} current={stepIdx} />
 
-        {/* The welcome step is a full-bleed photo stage, so it cancels the
-            page gutter; every other step is a centered card inside it. */}
-        <div
-          className={
-            stepKey === 'welcome'
-              ? 'flex-1 min-h-0 -mx-4 md:-mx-6 mt-2'
-              : 'flex-1 min-h-0 flex flex-col justify-center py-2'
-          }
-        >
+        <div className="flex-1 min-h-0 flex flex-col justify-center py-2">
           {stepKey === 'welcome' && <StepWelcome />}
           {stepKey === 'name' && (
             <StepName
@@ -203,34 +196,36 @@ export function OnboardFlow() {
 function ProgressRail({ steps, current }: { steps: StepKey[]; current: number }) {
   return (
     <div
-      className="flex items-center gap-1.5 min-h-[44px]"
+      className="pt-1 pb-2"
       role="progressbar"
       aria-valuemin={1}
       aria-valuemax={steps.length}
       aria-valuenow={current + 1}
       aria-label={`Step ${current + 1} of ${steps.length}: ${STEP_LABEL[steps[current]]}`}
     >
-      {steps.map((key, i) => {
-        const done = i < current;
-        const active = i === current;
-        return (
-          <div key={key} className={`flex flex-col gap-1 ${active ? 'flex-[1.6]' : 'flex-1'} transition-all`}>
+      {/* One continuous hairline track that fills left to right, rather than
+          separate bars per step — a single line reads as one journey and
+          doesn't shout. Equal widths keep it even; the label below names the
+          step you're on, so the segments don't need to. */}
+      <div className="flex items-center gap-1" aria-hidden>
+        {steps.map((key, i) => (
+          <span key={key} className="flex-1 h-[3px] rounded-full bg-slate-200/90 overflow-hidden">
             <span
-              className={`block h-1.5 rounded-full transition-colors ${
-                done ? 'bg-chess-green' : active ? 'bg-[#e5484d]' : 'bg-slate-200'
-              }`}
+              className="block h-full rounded-full bg-chess-text transition-transform duration-500 ease-out origin-left"
+              style={{ transform: `scaleX(${i <= current ? 1 : 0})` }}
             />
-            <span
-              className={`text-[10px] font-black uppercase tracking-wide leading-none truncate ${
-                done ? 'text-chess-green' : active ? 'text-[#e5484d]' : 'text-slate-400'
-              }`}
-            >
-              {done ? '✓ ' : ''}
-              {STEP_LABEL[key]}
-            </span>
-          </div>
-        );
-      })}
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-2 flex items-baseline justify-between" aria-hidden>
+        <span className="text-[11px] font-bold text-chess-text tracking-tight">
+          {STEP_LABEL[steps[current]]}
+        </span>
+        <span className="text-[10px] font-semibold text-chess-text-muted tabular-nums tracking-wide">
+          {current + 1} of {steps.length}
+        </span>
+      </div>
     </div>
   );
 }
@@ -245,18 +240,22 @@ function ProgressRail({ steps, current }: { steps: StepKey[]; current: number })
  */
 function StepWelcome() {
   return (
-    <div className="relative h-full w-full overflow-hidden">
-      <WelcomeHero />
+    <div className="h-full w-full flex flex-col items-center justify-center gap-3 text-center">
+      {/* The animated logo is the brand and stays the hero (Tyler, v3). */}
+      <BoxingLogoLoader size={84} />
 
-      {/* Copy sits in the scrimmed bottom of the photo. */}
-      <div className="absolute inset-x-0 bottom-0 px-5 pb-5 flex flex-col items-center text-center gap-2">
-        <h1 className="text-[26px] md:text-3xl font-black text-white leading-[1.1] drop-shadow-sm">
-          Welcome to Chess Boxing.
-        </h1>
-        <p className="text-[13.5px] leading-snug text-white/85 max-w-sm">
-          The only app where you can practice boxing and chess skills — in
-          community with people around the world.
-        </p>
+      <h1 className="text-2xl md:text-3xl font-black text-chess-text leading-tight">
+        Welcome to Chess Boxing.
+      </h1>
+      <p className="text-[13.5px] leading-snug text-chess-text-muted max-w-[19rem]">
+        The only app where you can practice boxing and chess skills — in
+        community with people around the world.
+      </p>
+
+      {/* Proof, at supporting size — capped so it can never dominate the logo
+          or push the screen past the no-scroll budget on a 375×667 window. */}
+      <div className="w-full max-w-[17rem] aspect-[4/3] rounded-2xl overflow-hidden shadow-md ring-1 ring-black/5">
+        <WelcomeHero />
       </div>
     </div>
   );

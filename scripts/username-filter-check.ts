@@ -25,6 +25,11 @@ const ALLOWED = [
   'squawk', 'homogeneous', 'negroni', 'luckys', 'grape_ape',
   'crisis', 'popcorn', 'thomas', 'drapes', 'scrape', 'trapeze', 'custard',
   'nightmare', 'Lynch', 'cocoon', 'spice_rack',
+  // start/end with a boundary word but are real words or names
+  'class', 'classic_rook', 'glass', 'brass', 'grass', 'bypass', 'compass',
+  'harass', 'assassin', 'assist', 'asset_king', 'assembly', 'kansas',
+  'cockpit', 'cocktail', 'peacock', 'woodcock', 'dickens', 'dickinson',
+  'bass_line', 'lass', 'shiitake',
 ];
 
 /** Must be rejected. */
@@ -47,6 +52,9 @@ const BLOCKED = [
   // ACCEPTED FALSE POSITIVE: the token pass reads this as van + dyke. A real
   // surname loses to a slur here — see the note in lib/username/validate.ts.
   'VanDyke',
+  // boundary compounds — Tyler's "assguy" test, v3 review
+  'assguy', 'guyass', 'assface_1', 'shitguy', 'fuckguy', 'dickguy',
+  'ass_guy', 'AssGuy', '4ssguy', 'cockguy', 'bitchboy', 'wankster',
 ];
 
 let failures = 0;
