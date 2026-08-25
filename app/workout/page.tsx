@@ -1834,229 +1834,33 @@ function WorkoutPageInner() {
             onDone={() => setFinishResult((r) => (r ? { ...r, achievements: [] } : r))}
           />
         )}
-        {FEATURE_FLAGS.FIGHT_RESULT_CARD ? (
-          <FightResultCard
-            data={{
-              kind: 'workout',
-              sessionPoints: finishResult.sessionPoints,
-              bestRoundPoints: finishResult.bestRoundPoints,
-              lifetime: finishResult.lifetime,
-              right: finishResult.right,
-              wrong: finishResult.wrong,
-              perfect: finishResult.perfect,
-              perfectBonus: PERFECT_SESSION_BONUS,
-              isPersonalBest: finishResult.isPersonalBest,
-              previousBest: finishResult.previousBest,
-              punches: punchTotal,
-              rookieLine: finishResult.rookieLine,
-              fightSummary: finishResult.fightSummary,
-              fightWon: finishResult.fightWon,
-            }}
-            needsSignIn={finishResult.needsSignIn}
-            showLeaderboard={FEATURE_FLAGS.LEADERBOARDS && inBoxShell}
-            leaderboardLabel="See the leaderboard"
-            onSignIn={() => router.push('/auth/login?redirect=/workout')}
-            onLeaderboard={() => router.push('/leaderboard')}
-            onDone={() => router.push('/profile')}
-            sharing={sharing}
-            onShare={finishResult.toughestSolved ? shareToughest : undefined}
-            nextMedal={finishResult.nextMedal}
-          />
-        ) : (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 workout-result-overlay">
-          <style>{`
-            @keyframes workoutResultIn { 0% { opacity:0; transform: scale(.7) translateY(16px);} 60%{opacity:1; transform: scale(1.04);} 100%{transform: scale(1);} }
-            .workout-result-overlay { animation: workoutResultIn .3s ease-out; }
-            .workout-result-card { animation: workoutResultIn .45s cubic-bezier(.2,.9,.3,1.2); }
-          `}</style>
-          <div className="workout-result-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-5 flex flex-col items-center gap-2.5 text-center">
-            <h1 className="text-lg font-black text-chess-text">Chess Boxing complete</h1>
-
-            {/* Fight sessions — the game result on the card */}
-            {finishResult.fightSummary && (
-              <div className="w-full rounded-xl bg-chess-blue/10 px-3 py-2 text-sm font-black text-chess-blue leading-snug">
-                {finishResult.fightSummary}
-              </div>
-            )}
-
-            {/* Rookie, breathing calmly, with her line right below */}
-            <BreathingRook size="sm" animate />
-            <div className="w-full rounded-xl bg-chess-page px-3 py-2 text-xs font-semibold text-chess-text leading-snug">
-              {finishResult.rookieLine}
-            </div>
-
-            {finishResult.isPersonalBest && (
-              <div
-                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide text-amber-900"
-                style={{ background: 'linear-gradient(135deg, #FFE9A8, #FFD24A)' }}
-              >
-                <Icon path={ICONS.bolt} className="w-3 h-3" />
-                New personal best
-              </div>
-            )}
-
-            <div>
-              <div
-                className={`text-4xl font-black tabular-nums leading-none ${
-                  finishResult.isPersonalBest ? 'text-chess-gold' : 'text-chess-green'
-                }`}
-              >
-                +{finishResult.sessionPoints}
-              </div>
-              <div className="text-xs font-semibold text-chess-text-muted mt-1">
-                points this session
-              </div>
-              {finishResult.bestRoundPoints > 0 && (
-                <div className="text-xs font-bold text-chess-text mt-1">
-                  Best round: {finishResult.bestRoundPoints}
-                </div>
-              )}
-            </div>
-
-            {finishResult.perfect && (
-              <div className="flex items-center justify-center gap-1 text-xs font-bold text-chess-gold">
-                <Icon path={ICONS.bolt} className="w-3.5 h-3.5" />
-                Flawless run · +{PERFECT_SESSION_BONUS} bonus
-              </div>
-            )}
-
-            {/* Where this session lands vs recent sessions */}
-            {finishResult.recentPoints.length > 1 && (
-              <div className="w-full">
-                {(() => {
-                  const pts = finishResult.recentPoints.slice(-8);
-                  const max = Math.max(1, ...pts);
-                  const lastIdx = pts.length - 1;
-                  return (
-                    <div className="flex items-end justify-center gap-1.5 h-12">
-                      {pts.map((p, i) => {
-                        const isLast = i === lastIdx;
-                        const h = Math.max(5, Math.round((p / max) * 44));
-                        return (
-                          <div
-                            key={i}
-                            className="flex-1 max-w-[22px] rounded-t"
-                            style={{
-                              height: h,
-                              background: isLast
-                                ? finishResult.isPersonalBest
-                                  ? '#F4B40A'
-                                  : '#58CC02'
-                                : '#D6E2EC',
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-                <div className="text-[11px] font-semibold text-chess-text-muted mt-1.5">
-                  {finishResult.isPersonalBest
-                    ? 'Your highest score yet'
-                    : finishResult.previousBest > 0
-                      ? `Best ${finishResult.previousBest}`
-                      : 'Your first session'}
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-center gap-6 w-full pt-2 border-t border-slate-100">
-              {/* Fight sessions have no puzzle counts — the result line covers it */}
-              {!finishResult.fightSummary && (
-                <>
-                  <div>
-                    <div className="text-xl font-black text-chess-green tabular-nums">
-                      {finishResult.right}
-                    </div>
-                    <div className="text-[11px] font-semibold text-chess-text-muted">solved</div>
-                  </div>
-                  <div>
-                    <div className="text-xl font-black text-chess-red tabular-nums">
-                      {finishResult.wrong}
-                    </div>
-                    <div className="text-[11px] font-semibold text-chess-text-muted">missed</div>
-                  </div>
-                </>
-              )}
-              {finishResult.lifetime !== null && (
-                <div>
-                  <div className="text-xl font-black text-chess-text tabular-nums">
-                    {finishResult.lifetime.toLocaleString()}
-                  </div>
-                  <div className="text-[11px] font-semibold text-chess-text-muted">lifetime</div>
-                </div>
-              )}
-              {punchTotal > 0 && (
-                <div>
-                  <div className="text-xl font-black text-chess-text tabular-nums">
-                    {punchTotal}
-                  </div>
-                  <div className="text-[11px] font-semibold text-chess-text-muted">punches</div>
-                </div>
-              )}
-            </div>
-
-            <div className="w-full pt-2 border-t border-slate-100">
-              <StreakComplete />
-            </div>
-
-            {/* Not signed in: the session is stashed, not saved — say so and
-                make signing in the loudest thing on the card. */}
-            {finishResult.needsSignIn && (
-              <p className="w-full rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] font-bold text-amber-900 leading-snug">
-                Not saved yet — sign in and this fight goes on your record and the leaderboard.
-              </p>
-            )}
-
-            {finishResult.needsSignIn ? (
-              <>
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    router.push('/auth/login?redirect=/workout');
-                  }}
-                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
-                >
-                  Sign in to save this fight
-                </button>
-                {FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
-                  <button
-                    onClick={() => {
-                      playButtonClick();
-                      router.push('/leaderboard');
-                    }}
-                    className="text-xs font-bold text-chess-text-muted underline underline-offset-2 py-1 min-h-[40px]"
-                  >
-                    See the leaderboard
-                  </button>
-                )}
-              </>
-            ) : (
-              FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    router.push('/leaderboard');
-                  }}
-                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
-                >
-                  See the leaderboard
-                </button>
-              )
-            )}
-
-            <button
-              onClick={() => {
-                playButtonClick();
-                router.push('/profile');
-              }}
-              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-base py-3 shadow-sm transition mt-1"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-        )}
+        <FightResultCard
+          data={{
+            kind: 'workout',
+            sessionPoints: finishResult.sessionPoints,
+            bestRoundPoints: finishResult.bestRoundPoints,
+            lifetime: finishResult.lifetime,
+            right: finishResult.right,
+            wrong: finishResult.wrong,
+            perfect: finishResult.perfect,
+            perfectBonus: PERFECT_SESSION_BONUS,
+            isPersonalBest: finishResult.isPersonalBest,
+            previousBest: finishResult.previousBest,
+            punches: punchTotal,
+            rookieLine: finishResult.rookieLine,
+            fightSummary: finishResult.fightSummary,
+            fightWon: finishResult.fightWon,
+          }}
+          needsSignIn={finishResult.needsSignIn}
+          showLeaderboard={FEATURE_FLAGS.LEADERBOARDS && inBoxShell}
+          leaderboardLabel="See the leaderboard"
+          onSignIn={() => router.push('/auth/login?redirect=/workout')}
+          onLeaderboard={() => router.push('/leaderboard')}
+          onDone={() => router.push('/profile')}
+          sharing={sharing}
+          onShare={finishResult.toughestSolved ? shareToughest : undefined}
+          nextMedal={finishResult.nextMedal}
+        />
       </div>
     );
   }

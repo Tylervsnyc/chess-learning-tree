@@ -129,14 +129,6 @@ export const FEATURE_FLAGS = {
    */
   BOUT_BOXING_CARDS: true,
   /**
-   * The "Living Ring" /box home (2026-08-07, Tyler-approved on
-   * /test/boxing-landing): fight-night ring scene — crowd + flashbulbs,
-   * chessboard canvas, Puzzle Boxing | Play Boxing corners, and live
-   * Global/Squad leaderboards with a daily/weekly/monthly toggle. OFF falls
-   * back to the locker-room scene (LockerHome).
-   */
-  BOX_RING_HOME: true,
-  /**
    * Chess Boxing achievements (2026-08-09, Tyler-approved plan:
    * docs/chess-boxing-achievements-plan.md). Dungeon-Crawler-Carl-style
    * achievements in Rookie's voice — bout/puzzle/training/dedication medals
@@ -162,14 +154,6 @@ export const FEATURE_FLAGS = {
    * as a wrong answer.
    */
   PREMOVE: true,
-  /**
-   * Chess Boxing finish window (2026-08-22) — the "Card & Rays" result card
-   * (components/chessboxing/result/FightResultCard) replaces the plain white
-   * results popups on /workout and /box/bout: vintage-gym hero strip (card
-   * rising on sunrays, coins, count-up) with the same stats, streak slot,
-   * share/review/done actions underneath. OFF = the old popups.
-   */
-  FIGHT_RESULT_CARD: true,
   /**
    * Chess Boxing Pro (2026-08-24, docs/chess-boxing-monetization-and-exit-plan.md).
    * ONE paid SKU: $5.99/mo · $39.99/yr, 7-day trial. "Pro" IS the existing

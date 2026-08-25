@@ -1,7 +1,9 @@
 'use client';
 
 /**
- * FightResultCard — the Chess Boxing finish window (flag FIGHT_RESULT_CARD).
+ * FightResultCard — THE Chess Boxing finish window for /workout and
+ * /box/bout. The old white popups and the FIGHT_RESULT_CARD flag were
+ * deleted 2026-08-25; this is the only result screen.
  * One shared modal for /workout (puzzle + fight-round sessions) and /box/bout.
  * Hero strip = CardRaysHero; body = the same facts the old white popups showed
  * (points, solved/missed, best round, punches, lifetime · bout: outcome,

@@ -1336,313 +1336,58 @@ export default function BoutPage() {
       }
     };
 
-    if (FEATURE_FLAGS.FIGHT_RESULT_CARD) {
-      const previewTotal = result.pointsSplit.chess + result.pointsSplit.boxing;
-      const scale = previewTotal > 0 ? earned / previewTotal : 0;
-      const chessPts = Math.round(result.pointsSplit.chess * scale);
-      const boxingPts = Math.max(0, earned - chessPts);
-      const exhibitionNote =
-        wasRanked === false
-          ? format === RANKED_FORMAT
-            ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
-            : `Exhibition — only the ${BOUT_FORMATS[RANKED_FORMAT].label} card is ranked. It still counts for your streak.`
-          : null;
-      return (
-        <div className="h-full overflow-hidden bg-chess-page">
-          <FightResultCard
-            data={{
-              kind: 'bout',
-              won,
-              draw: result.outcome === 'draw',
-              headline,
-              rookieLine: result.rookieLine,
-              meltdown: result.meltdown,
-              earned,
-              chessPts,
-              boxingPts,
-              moves: result.moves,
-              clockLeft: fmtClock(result.clockLeft),
-              roundsSurvived: result.roundsSurvived,
-              punches: result.punches,
-              materialLine:
-                result.material > 0
-                  ? `You up ${fmtMaterial(result.material)}`
-                  : result.material < 0
-                    ? `Rookie up ${fmtMaterial(-result.material)}`
-                    : 'Dead level',
-              userCards: result.userCards,
-              rookieCards: result.rookieCards,
-              cardsDecidedIt: result.cardsDecidedIt,
-              ranked: wasRanked === true,
-              exhibitionNote,
-            }}
-            needsSignIn={needsSignIn}
-            showLeaderboard={FEATURE_FLAGS.LEADERBOARDS && inBoxShell}
-            leaderboardLabel="See the standings"
-            sharing={sharing}
-            onShare={() => void shareBout()}
-            onReview={reviewMovesRef.current.length > 0 ? () => setShowReview(true) : undefined}
-            reviewLabel="Review"
-            onRematch={() => setPhase('prefight')}
-            onSignIn={() => router.push('/auth/login?redirect=/box/bout')}
-            onLeaderboard={() => router.push('/leaderboard')}
-            onDone={() => router.push('/box')}
-            nextMedal={nextMedal}
-          />
-          {unlocks.length > 0 && (
-            <AchievementUnlockOverlay unlocks={unlocks} onDone={() => setUnlocks([])} />
-          )}
-        </div>
-      );
-    }
-
+    const previewTotal = result.pointsSplit.chess + result.pointsSplit.boxing;
+    const scale = previewTotal > 0 ? earned / previewTotal : 0;
+    const chessPts = Math.round(result.pointsSplit.chess * scale);
+    const boxingPts = Math.max(0, earned - chessPts);
+    const exhibitionNote =
+      wasRanked === false
+        ? format === RANKED_FORMAT
+          ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
+          : `Exhibition — only the ${BOUT_FORMATS[RANKED_FORMAT].label} card is ranked. It still counts for your streak.`
+        : null;
     return (
       <div className="h-full overflow-hidden bg-chess-page">
-        {/* HARD RULE: no scroll — the card is compact enough to fit 375×667. */}
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <style>{`
-            @keyframes boutCardIn { 0% { opacity:0; transform: scale(.7) translateY(16px);} 60%{opacity:1; transform: scale(1.04);} 100%{transform: scale(1);} }
-            .bout-result-card { animation: boutCardIn .45s cubic-bezier(.2,.9,.3,1.2); }
-            @keyframes boutRowIn { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: none;} }
-            .bout-score-row { opacity:0; animation: boutRowIn .4s ease-out forwards; }
-          `}</style>
-          <div className="bout-result-card w-full max-w-xs bg-chess-surface rounded-3xl shadow-2xl p-4 flex flex-col items-center gap-2 text-center">
-            <h1
-              className={`text-xl font-black ${
-                won ? 'text-chess-green' : result.meltdown ? 'text-chess-text' : 'text-chess-text'
-              }`}
-            >
-              {headline}
-            </h1>
-
-            <BreathingRook size="sm" animate mood={result.meltdown ? 'panicking' : 'neutral'} />
-            <div
-              className={`w-full rounded-xl px-3 py-2 text-xs font-semibold leading-snug ${
-                result.meltdown
-                  ? 'bg-red-50 text-red-700'
-                  : 'bg-chess-page text-chess-text'
-              }`}
-            >
-              {result.rookieLine}
-            </div>
-
-            {/* The decision — material when the bell rang; if the board was
-                dead level, the judges' cards below settled it. */}
-            <div className="w-full rounded-2xl border border-slate-200 overflow-hidden">
-              <div className="bg-chess-page px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
-                On the board
-              </div>
-              <div className="px-3 py-2.5 flex flex-col gap-1">
-                <div className="text-sm font-black text-chess-text">
-                  {result.material > 0
-                    ? `You finished up ${fmtMaterial(result.material)}`
-                    : result.material < 0
-                      ? `Rookie finished up ${fmtMaterial(-result.material)}`
-                      : 'Dead level on material'}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted leading-snug">
-                  {result.roundsSurvived > 0
-                    ? `${result.roundsSurvived} boxing ${
-                        result.roundsSurvived === 1 ? 'round' : 'rounds'
-                      } survived`
-                    : 'Ended before the gloves came on'}
-                </div>
-              </div>
-              {result.userCards.length > 0 && (
-                <div className="border-t border-slate-200 px-3 py-2.5 flex flex-col gap-1.5">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
-                      Judges&apos; cards
-                    </span>
-                    <span className="text-[10px] font-semibold text-chess-text-muted">
-                      You · Rookie
-                    </span>
-                  </div>
-                  <ul className="flex flex-col gap-1">
-                    {result.userCards.map((u, i) => {
-                      const r = result.rookieCards[i] ?? 0;
-                      return (
-                        <li
-                          key={i}
-                          className="flex items-center justify-between gap-2 text-xs font-semibold text-chess-text"
-                        >
-                          <span className="text-chess-text-muted">Round {i + 1}</span>
-                          <span className="tabular-nums">
-                            <span className={u >= r ? 'font-black' : ''}>{u}</span>
-                            <span className="text-chess-text-muted"> · </span>
-                            <span className={r > u ? 'font-black' : ''}>{r}</span>
-                          </span>
-                        </li>
-                      );
-                    })}
-                    {result.userCards.length > 1 && (
-                      <li className="flex items-center justify-between gap-2 text-xs font-black text-chess-text border-t border-slate-100 pt-1">
-                        <span>Total</span>
-                        <span className="tabular-nums">
-                          {sumCards(result.userCards)}
-                          <span className="text-chess-text-muted font-semibold"> · </span>
-                          {sumCards(result.rookieCards)}
-                        </span>
-                      </li>
-                    )}
-                  </ul>
-                  <div className="text-[11px] font-semibold text-chess-text-muted leading-snug">
-                    {result.cardsDecidedIt
-                      ? 'Dead level on the board — the cards decided it.'
-                      : `${result.punches} ${result.punches === 1 ? 'punch' : 'punches'} landed`}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-center gap-4 w-full pt-2 border-t border-slate-100">
-              <div>
-                <div className="text-xl font-black text-chess-text tabular-nums">
-                  {result.moves}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">moves</div>
-              </div>
-              <div>
-                <div className="text-xl font-black text-chess-text tabular-nums">
-                  {fmtClock(result.clockLeft)}
-                </div>
-                <div className="text-[11px] font-semibold text-chess-text-muted">clock left</div>
-              </div>
-            </div>
-
-            {/* Points, split the way the bout is: chess side + boxing side = total.
-                `earned` is server-confirmed (may be 0: unranked / already spent
-                today); the split scales to it so the three numbers always add up. */}
-            {(() => {
-              const previewTotal = result.pointsSplit.chess + result.pointsSplit.boxing;
-              const scale = previewTotal > 0 ? earned / previewTotal : 0;
-              const chessPts = Math.round(result.pointsSplit.chess * scale);
-              const boxingPts = Math.max(0, earned - chessPts);
-              const tone = earned > 0 ? 'text-chess-green' : 'text-chess-text-muted';
-              return (
-                <div className="w-full rounded-2xl border border-slate-200 overflow-hidden">
-                  <div className="bg-chess-page px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-chess-text-muted">
-                    Points
-                  </div>
-                  <div className="grid grid-cols-3 divide-x divide-slate-200">
-                    <div className="px-2 py-2.5 text-center">
-                      <div className={`text-xl font-black tabular-nums ${tone}`}>{chessPts.toLocaleString()}</div>
-                      <div className="text-[11px] font-semibold text-chess-text-muted">chess</div>
-                    </div>
-                    <div className="px-2 py-2.5 text-center">
-                      <div className={`text-xl font-black tabular-nums ${tone}`}>{boxingPts.toLocaleString()}</div>
-                      <div className="text-[11px] font-semibold text-chess-text-muted">boxing</div>
-                    </div>
-                    <div className="px-2 py-2.5 text-center bg-chess-page/60">
-                      <div className={`text-xl font-black tabular-nums ${tone}`}>{earned.toLocaleString()}</div>
-                      <div className="text-[11px] font-semibold text-chess-text-muted">total</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Not signed in: the fight is stashed, not saved — say so plainly
-                and make signing in the loudest thing on the card. */}
-            {needsSignIn && (
-              <p className="w-full rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] font-bold text-amber-900 leading-snug">
-                Not saved yet — sign in and this fight goes on your record and the standings.
-              </p>
-            )}
-
-            {/* Why it paid nothing — said plainly, so a 0 never reads as a bug. */}
-            {!needsSignIn && wasRanked === false && (
-              <p className="text-[11px] font-bold text-chess-text-muted leading-snug">
-                {format === RANKED_FORMAT
-                  ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
-                  : `Exhibition — only the ${BOUT_FORMATS[RANKED_FORMAT].label} card is ranked. It still counts for your streak.`}
-              </p>
-            )}
-
-            <div className="flex gap-2 w-full mt-1">
-              <button
-                onClick={() => {
-                  playButtonClick();
-                  void shareBout();
-                }}
-                disabled={sharing}
-                className="flex-1 rounded-2xl border-2 border-slate-200 text-chess-text font-black text-sm py-2.5 transition tap-highlight disabled:opacity-60"
-              >
-                {sharing ? 'Sharing…' : 'Share'}
-              </button>
-              {reviewMovesRef.current.length > 0 && (
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    setShowReview(true);
-                  }}
-                  className="flex-1 rounded-2xl border-2 border-slate-200 text-chess-text font-black text-sm py-2.5 transition tap-highlight"
-                >
-                  Review
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  playButtonClick();
-                  setPhase('prefight');
-                }}
-                className="flex-1 rounded-2xl bg-[#e5484d] text-white font-black text-sm py-2.5 shadow-sm transition tap-highlight"
-              >
-                Rematch
-              </button>
-            </div>
-            {needsSignIn ? (
-              // Sign in takes the prime slot; the standings demote to a text
-              // link — an unsaved fight isn't on them yet.
-              <>
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    router.push('/auth/login?redirect=/box/bout');
-                  }}
-                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
-                >
-                  Sign in to save this fight
-                </button>
-                {FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
-                  <button
-                    onClick={() => {
-                      playButtonClick();
-                      router.push('/leaderboard');
-                    }}
-                    className="text-xs font-bold text-chess-text-muted underline underline-offset-2 py-1 min-h-[40px] tap-highlight"
-                  >
-                    See the standings
-                  </button>
-                )}
-              </>
-            ) : (
-              FEATURE_FLAGS.LEADERBOARDS && inBoxShell && (
-                <button
-                  onClick={() => {
-                    playButtonClick();
-                    router.push('/leaderboard');
-                  }}
-                  className="w-full rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
-                >
-                  See the standings
-                </button>
-              )
-            )}
-            <button
-              onClick={() => {
-                playButtonClick();
-                router.push('/box');
-              }}
-              className="w-full rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-base py-2.5 shadow-sm transition tap-highlight"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-
-        {/* Fresh medals play OVER the card (z-110), sized to the moment —
-            never extra rows inside the no-scroll result card. */}
+        <FightResultCard
+          data={{
+            kind: 'bout',
+            won,
+            draw: result.outcome === 'draw',
+            headline,
+            rookieLine: result.rookieLine,
+            meltdown: result.meltdown,
+            earned,
+            chessPts,
+            boxingPts,
+            moves: result.moves,
+            clockLeft: fmtClock(result.clockLeft),
+            roundsSurvived: result.roundsSurvived,
+            punches: result.punches,
+            materialLine:
+              result.material > 0
+                ? `You up ${fmtMaterial(result.material)}`
+                : result.material < 0
+                  ? `Rookie up ${fmtMaterial(-result.material)}`
+                  : 'Dead level',
+            userCards: result.userCards,
+            rookieCards: result.rookieCards,
+            cardsDecidedIt: result.cardsDecidedIt,
+            ranked: wasRanked === true,
+            exhibitionNote,
+          }}
+          needsSignIn={needsSignIn}
+          showLeaderboard={FEATURE_FLAGS.LEADERBOARDS && inBoxShell}
+          leaderboardLabel="See the standings"
+          sharing={sharing}
+          onShare={() => void shareBout()}
+          onReview={reviewMovesRef.current.length > 0 ? () => setShowReview(true) : undefined}
+          reviewLabel="Review"
+          onRematch={() => setPhase('prefight')}
+          onSignIn={() => router.push('/auth/login?redirect=/box/bout')}
+          onLeaderboard={() => router.push('/leaderboard')}
+          onDone={() => router.push('/box')}
+          nextMedal={nextMedal}
+        />
         {unlocks.length > 0 && (
           <AchievementUnlockOverlay unlocks={unlocks} onDone={() => setUnlocks([])} />
         )}

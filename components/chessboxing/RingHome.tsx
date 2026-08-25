@@ -11,8 +11,9 @@ import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import type { LeaderboardPeriod } from '@/lib/leaderboard/period';
 
 /**
- * RingHome — the "Living Ring" Chess Boxing home (BOX_RING_HOME flag).
- * Approved on /test/boxing-landing (2026-08-07).
+ * RingHome — the "Living Ring" Chess Boxing home, and the ONLY /box home.
+ * Approved on /test/boxing-landing (2026-08-07); the old locker-room scene
+ * and its BOX_RING_HOME flag were deleted 2026-08-25.
  *
  * Fight-night scene: terraced crowd + flashbulbs up top, the hanging sign,
  * two corner buttons (Puzzle Boxing = ranked → /workout; Play Boxing = bout
