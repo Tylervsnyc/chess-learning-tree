@@ -1892,7 +1892,7 @@ function WorkoutPageInner() {
     <div className="h-full overflow-auto bg-chess-page flex flex-col">
       {/* Header: progress + score + timer */}
       <div className="bg-chess-surface border-b border-slate-200">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-chess-text-muted">Now</span>
             <span className="text-sm font-bold text-chess-text flex items-center gap-1.5">
@@ -1941,7 +1941,7 @@ function WorkoutPageInner() {
           </div>
         </div>
         {/* Round progress bar — 4 parts, with the moving playhead */}
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 pb-3.5">
+        <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 pb-3.5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-black text-chess-text uppercase tracking-wide">
               Round {roundIndex + 1}{' '}
@@ -1959,7 +1959,7 @@ function WorkoutPageInner() {
       {/* Body */}
       <div className="flex-1 flex flex-col">
         {isChess && isFight ? (
-          <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-3">
+          <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-3">
             {/* Rookie's canned line (resume / game-result) or the matchup */}
             <p className="text-center text-sm font-semibold text-chess-text-muted leading-snug">
               {fightLine ?? `Fight Rookie · Level ${fightLevel}`}
@@ -1995,7 +1995,7 @@ function WorkoutPageInner() {
             </div>
           </div>
         ) : isChess ? (
-          <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
+          <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
             <p className="text-center text-sm font-semibold text-chess-text-muted">
               {promptFor('chess')}
             </p>
@@ -2128,7 +2128,7 @@ function WorkoutPageInner() {
 
       {/* Footer: skip + end */}
       <div className="bg-chess-surface border-t border-slate-200">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-3 flex items-center gap-3">
+        <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-3 flex items-center gap-3">
           <button
             onClick={() => {
               playButtonClick();

@@ -1430,7 +1430,7 @@ export default function BoutPage() {
     <div className="h-full overflow-hidden bg-chess-page flex flex-col">
       {/* Header: round + bell timer */}
       <div className="bg-chess-surface border-b border-slate-200 shrink-0">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2 flex items-center justify-between gap-3">
+        <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-2 flex items-center justify-between gap-3">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-chess-text-muted">
               {isBreak
@@ -1472,7 +1472,7 @@ export default function BoutPage() {
           // Exception (opt-in, default OFF): Quadrant Fight (beta) — a camera
           // GAME the user can turn on for the round. It reports FightStats at
           // the bell (judges' cards); the bell timer and bout flow are untouched.
-          <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 md:px-6 py-2 text-center gap-4 max-w-md md:max-w-lg mx-auto w-full">
+          <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 md:px-6 py-2 text-center gap-4 max-w-md md:max-w-[40rem] mx-auto w-full">
             <div className="text-[11px] font-black uppercase tracking-[0.2em] text-[#e5484d] shrink-0">
               Boxing round {seg?.round}
             </div>
@@ -1540,7 +1540,7 @@ export default function BoutPage() {
           </div>
         ) : (
           // ── Chess round (also shown, dimmed, under the bell overlay) ─────
-          <div className="flex-1 min-h-0 max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2 flex flex-col gap-1.5">
+          <div className="flex-1 min-h-0 max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-2 flex flex-col gap-1.5">
             {/* Rookie's clock — pacing/flavor only, she can never flag */}
             <div className="flex items-center justify-between shrink-0">
               <span className="text-sm font-black text-chess-text">
@@ -1625,7 +1625,7 @@ export default function BoutPage() {
       {/* Footer: quit — two taps, never one. First tap arms a confirm row that
           auto-reverts after 4s so a stray thumb can't end the bout. */}
       <div className="bg-chess-surface border-t border-slate-200 shrink-0">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-1 flex items-center justify-center gap-2">
+        <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-1 flex items-center justify-center gap-2">
           {towelConfirm ? (
             <>
               <span className="text-xs font-bold text-chess-text leading-snug text-left">
