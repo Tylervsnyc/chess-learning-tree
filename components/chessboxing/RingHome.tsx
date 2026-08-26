@@ -139,8 +139,13 @@ export function RingHome() {
 
   return (
     <div className="h-full text-white relative overflow-hidden bg-[#131a2e]">
+      {/* The arena is FULL-BLEED; only the content column is capped. Same
+          composition as /box/bout's pre-fight window. Nesting the scene inside
+          the capped column left the crowd and floor as a phone-width strip
+          with hard seams down both sides of an iPad. */}
+      <ArenaScene />
+
       <div className="absolute inset-0 mx-auto max-w-lg md:max-w-xl flex flex-col overflow-hidden">
-        <ArenaScene />
 
         {/* ---- sign ---- */}
         <div className="pt-[max(0.9rem,env(safe-area-inset-top))] flex justify-center relative z-10">

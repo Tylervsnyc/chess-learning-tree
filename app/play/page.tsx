@@ -72,6 +72,7 @@ import { LevelUpCelebration } from '@/components/play/LevelUpCelebration';
 import { PlayPageRookie } from '@/components/play/PlayPageRookie';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { GymBackdrop } from '@/components/chessboxing/GymBackdrop';
+import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
 import { BOXING_PLAY_TAP_QUIPS, BOXING_PLAY_DEFAULT_LINE } from '@/data/quips/boxing-play-quips';
 import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
@@ -2095,6 +2096,7 @@ export default function PlayRookiePage() {
         className={`h-full ${inBoxShell ? 'relative bg-[#10162a] text-white' : 'bg-chess-page text-chess-text'} flex flex-col overflow-auto`}
         onPointerDown={speakSetupGreeting}
       >
+        {inBoxShell && <FullBleedShell />}
         {inBoxShell && <GymBackdrop />}
         {/* Top: Level progress bar */}
         <div className="relative z-10 px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto pointer-events-none">

@@ -103,7 +103,15 @@ export default function RootLayout({
             <SilentErrorBoundary label="NavHeader">
               <NavHeader />
             </SilentErrorBoundary>
-            <main className="flex-1 min-h-0 flex flex-col max-w-3xl mx-auto w-full">
+            {/* The shell cap is a variable so a native-app section can opt out.
+                Chess Boxing (/box) screens are full-bleed-background + inner
+                cap; capping <main> at 768px let the light page background show
+                as bars beside the dark arena on every iPad wider than that.
+                See app/box/layout.tsx, which sets --shell-max to none. */}
+            <main
+              className="flex-1 min-h-0 flex flex-col mx-auto w-full"
+              style={{ maxWidth: 'var(--shell-max, 48rem)' }}
+            >
               <RookieErrorBoundary>
                 {children}
               </RookieErrorBoundary>

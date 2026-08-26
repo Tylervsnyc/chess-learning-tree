@@ -7,6 +7,7 @@ import { Chess, type Square } from 'chess.js';
 import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
+import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { usePremove } from '@/hooks/usePremove';
 import { useBoxShell } from '@/hooks/useBoxShell';
@@ -1547,6 +1548,7 @@ function WorkoutPageInner() {
   if (phase === 'setup') {
     return (
       <div className={`h-full ${fromBox ? 'relative overflow-hidden bg-[#131a2e] flex flex-col' : 'overflow-auto bg-chess-page'}`}>
+        {fromBox && <FullBleedShell />}
         {fromBox && <ArenaScene />}
         {fromBox && <ArenaBackButton />}
         {/* The hanging sign — same slot as RingHome so it never moves between windows. */}
