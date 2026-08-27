@@ -22,17 +22,22 @@ Chess Boxing by Chess Path
 
 ## Subtitle (30 char max)
 
-Pick one — first is my recommendation:
+LIVE in ASC through v1.0 was `Fight rounds. Chess rounds.` — Tyler killed it
+2026-08-27 as corny. Replacement (pending a metadata-only 1.0.1 submission):
 
 ```
-Fight rounds. Chess rounds.
+The chess boxing trainer
 ```
-27 characters. Explains the sport in four words, reads like a poster.
+24 characters. Pure category label: someone searching "chess boxing" sees exactly
+the thing they searched for. Lowest risk, lowest personality — deliberate.
 
-Alternates:
-- `Train chess while exhausted` (27)
-- `Speed chess between rounds` (26)
-- `The chess boxing trainer` (24)
+NOTE: the subtitle is NOT editable in place. Changing it requires creating a new
+App Store version in ASC (1.0.1) and resubmitting; the existing build 3 can be
+reused, so no Xcode build is needed. Promotional text is the only instantly
+editable field.
+
+Rejected alternates: `Train chess while exhausted` (27), `Chess is harder out of
+breath` (29), `Chess. Boxing. One session.` (27).
 
 ## Promotional text (170 char max, editable without review)
 
@@ -161,7 +166,7 @@ Upload in this order. Order is deliberate: the bout comes second because Guideli
 4.2 is the main rejection risk, and a reviewer skimming images needs to see a
 real-time game with running clocks before anything else.
 
-1. `01-home.png` — Fight rounds. Chess rounds.
+1. `01-home.png` — The chess boxing trainer.
 2. `02-bout-live.png` — live bout, dual clocks, "Chess 1 of 3", bell timer
 3. `03-bout-setup.png` — round card, three formats
 4. `04-puzzles.png` — tactics round on the bout clock

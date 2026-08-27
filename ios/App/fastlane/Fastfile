@@ -2,7 +2,11 @@ default_platform(:ios)
 
 APP_ID   = "com.learnthroughstories.chessboxing"
 TEAM_ID  = "4L856PWBZN"
-KC_PATH  = "/tmp/chessbox.keychain-db"
+# DURABLE keychain path. Do NOT move this back under /tmp: macOS periodically
+# cleans /tmp, which silently destroys the signing private key while Apple
+# still counts the certificate against the account cap. That is exactly how
+# all 3 distribution certs were lost and had to be revoked (2026-08-27).
+KC_PATH  = File.expand_path("~/Library/Keychains/chessbox-signing.keychain-db")
 KC_PASS  = "chessbox"
 
 platform :ios do
