@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
+import { fetchLevelTest } from '@/lib/puzzles/level-test-source';
 import { Chess, Square } from 'chess.js';
 import { useRouter, useParams } from 'next/navigation';
 import { LEVEL_TEST_CONFIG, getLevelTestConfig } from '@/data/level-unlock-tests';
@@ -92,12 +93,10 @@ export default function LevelTestPage() {
 
     async function fetchPuzzles() {
       try {
-        const res = await fetch(`/api/level-test?transition=${transition}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch test puzzles');
-        }
-
-        const data = await res.json();
+        // Server route on the web; built on-device from the bundled puzzle
+        // pack inside the offline app.
+        const data = await fetchLevelTest(transition);
+        if (!data) throw new Error('Failed to fetch test puzzles');
 
         // Pre-process all puzzles upfront
         const processed = data.puzzles.map(processPuzzle);

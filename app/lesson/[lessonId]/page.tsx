@@ -16,6 +16,7 @@ import {
   vibrateOnCorrect,
   vibrateOnError,
 } from '@/lib/sounds';
+import { fetchLessonPuzzles } from '@/lib/puzzles/lesson-source';
 import {
   getAllLessonIds,
   getLessonById,
@@ -356,11 +357,12 @@ export default function LessonPage() {
       }
 
       try {
-        const response = await fetch(`/api/puzzles/lesson?${queryParams}`);
-        const data = await response.json();
+        // Server route on the web; on-device selection against the bundled
+        // puzzle pack inside the offline app. Same shape either way.
+        const data = await fetchLessonPuzzles(queryParams);
 
-        if (!response.ok) {
-          setError(data.error || 'Failed to load puzzles');
+        if (data.error) {
+          setError(data.error);
           setLoading(false);
           return;
         }

@@ -18,6 +18,8 @@ export default [
       ".claude/worktrees/**",
       ".worktree-*/**",
       "public/mediapipe/**", // emscripten glue copied from node_modules, not our code
+      ".offline-build/**",   // scratch copy + build output of npm run build:offline
+      "capacitor-shell/**",  // the exported offline app bundle
     ],
   },
 

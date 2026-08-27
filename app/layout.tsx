@@ -6,6 +6,7 @@ import { PostHogProvider } from '@/components/providers/PostHogProvider';
 import { AbortErrorSuppressor } from '@/components/providers/ErrorBoundary';
 import { RookieErrorBoundary } from '@/components/ui/RookieErrorBoundary';
 import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
+import { OfflineBridge } from '@/components/providers/OfflineBridge';
 import { NativeSplash } from '@/components/chessboxing/NativeSplash';
 import { BoxTabBar } from '@/components/chessboxing/BoxTabBar';
 import { StatusBarSync } from '@/components/chessboxing/StatusBarSync';
@@ -88,6 +89,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <OfflineBridge />
         <NativeSplash />
         <script
           type="application/ld+json"

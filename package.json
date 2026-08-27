@@ -24,7 +24,9 @@
     "prebuild": "node scripts/copy-mediapipe-wasm.mjs && node scripts/copy-movenet.mjs",
     "ios:add": "cap add ios",
     "ios:sync": "cap sync ios",
-    "ios:open": "cap open ios"
+    "ios:open": "cap open ios",
+    "build:offline": "node scripts/copy-mediapipe-wasm.mjs && node scripts/copy-movenet.mjs && node scripts/build-offline.mjs",
+    "build:pack": "node scripts/build-puzzle-pack.mjs && npx tsx scripts/validate-puzzle-pack.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
