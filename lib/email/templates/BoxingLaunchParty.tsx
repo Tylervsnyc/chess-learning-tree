@@ -6,7 +6,6 @@ import {
   FightButton,
   GymPhoto,
   ModeRow,
-  PosterBanner,
   ScoreCard,
   CardRule,
   CB,
@@ -48,9 +47,9 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
       unsubscribeUrl={unsubscribeUrl}
       accent="red"
     >
-      {/* The billing. */}
-      <PosterBanner kicker="ONE NIGHT ONLY. ACTUALLY, EVERY NIGHT" headline="It's live" tone="red" />
-
+      {/* The billing — ONE announcement. An "IT'S LIVE" banner stacked above a
+          "CHESS BOXING" wordmark was the same news told twice, and the header
+          already carries the wordmark. */}
       <Section style={{ textAlign: 'center' as const, margin: '0 0 6px 0' }}>
         <Img
           src={`${CB_IMG}/icon.png`}
@@ -61,9 +60,9 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
         />
       </Section>
 
-      <Text style={billing}>Chess Boxing</Text>
+      <Text style={billing}>It&apos;s live</Text>
       <Text style={billingSub}>
-        On the App Store. Free. No ads, no trial, no card.
+        Chess Boxing is on the App Store. Free. No ads, no trial, no card.
       </Text>
 
       {/* The door is open before the pitch, not only after it. Most people who
@@ -92,12 +91,11 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
         caption="CHESSBOXING NYC AT GLEASON'S — THE PEOPLE THIS WAS BUILT FOR"
       />
 
-      <Text style={cbBody}>
-        Chess boxing is a real sport with a real world championship. Eleven
-        alternating rounds. The hard part is not the chess and it is not the
-        punching, it is playing chess right after the punching, while your hands
-        are still shaking. That is almost impossible to practise. So that is what
-        we made.
+      <Text style={{ ...cbBody, textAlign: 'center' as const, margin: '0 0 4px 0' }}>
+        The official format runs eleven alternating rounds. The hard part is not
+        the chess and it is not the punching &mdash; it is the chess right after
+        the punching, while your hands are still shaking. That is almost
+        impossible to practise anywhere else.
       </Text>
 
       <CardRule />

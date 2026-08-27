@@ -89,7 +89,7 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
 }
 
 // Lightweight gate — checks path BEFORE loading Supabase/useUser
-const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/test/landing', '/test/rookie-promise', '/test/basics-tutorial', '/test/tutorial', '/2026candidates', '/test-rook-animations'];
+const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/chessboxing', '/test/landing', '/test/rookie-promise', '/test/basics-tutorial', '/test/tutorial', '/2026candidates', '/test-rook-animations'];
 
 export function NavHeader() {
   const pathname = usePathname();
