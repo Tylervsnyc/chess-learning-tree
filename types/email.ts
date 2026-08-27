@@ -10,7 +10,12 @@ export type EmailType =
   | 'rating_reveal'
   | 'patron_thank_you'
   | 'streak_science'
-  | 'knicks_takeover';
+  | 'knicks_takeover'
+  | 'chess_boxing_launch'
+  | 'cb_welcome'
+  | 'cb_day3'
+  | 'cb_streak_risk'
+  | 'cb_winback';
 
 export interface EmailPreferences {
   user_id: string;
@@ -91,4 +96,45 @@ export interface WinbackProps {
   displayName?: string;
   appUrl: string;
   unsubscribeUrl: string;
+}
+
+// --- Chess Boxing lifecycle ---
+// All four are triggered on BOXING behavior (bout_sessions / workout_sessions),
+// not general Chess Path activity. See app/api/cron/drip/route.ts.
+
+export interface BoxingWelcomeProps {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  /** Outcome of their first ever bout, so Rookie can react to it. */
+  result?: 'win' | 'loss' | 'draw';
+  punches?: number;
+  imageBase?: string;
+}
+
+export interface BoxingDay3Props {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  wins?: number;
+  losses?: number;
+  draws?: number;
+  /** Best single round points across workouts + bouts. */
+  bestRound?: number;
+}
+
+export interface BoxingStreakRiskProps {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  currentStreak: number;
+}
+
+export interface BoxingWinbackProps {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  bestRound?: number;
+  punches?: number;
+  bouts?: number;
 }

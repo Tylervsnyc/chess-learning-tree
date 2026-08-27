@@ -4,9 +4,30 @@ import { verifyUnsubscribeToken } from '@/lib/email/send';
 import type { EmailType } from '@/types/email';
 
 // Map email types to preference columns
+/**
+ * Which preference column a given email type's unsubscribe link should flip.
+ *
+ * `null` means "unsubscribe from EVERYTHING", which is a big hammer — for a
+ * long time only drip_day3 was mapped, so unsubscribing from any other email
+ * (a launch announcement, a Chess Boxing nudge) silently killed off all mail
+ * including the transactional-adjacent ones. Every marketing type belongs
+ * here; only a genuinely unknown type should fall through to the global opt.
+ */
 function getPreferenceColumn(emailType: EmailType | undefined): string | null {
   switch (emailType) {
+    case 'drip_day1':
     case 'drip_day3':
+    case 'drip_day7':
+    case 'winback':
+    case 'update_april_2026':
+    case 'rating_reveal':
+    case 'streak_science':
+    case 'knicks_takeover':
+    case 'chess_boxing_launch':
+    case 'cb_welcome':
+    case 'cb_day3':
+    case 'cb_streak_risk':
+    case 'cb_winback':
       return 'marketing';
     default:
       return null; // Will unsubscribe from all
@@ -89,7 +110,20 @@ export async function GET(request: NextRequest) {
 
 function getEmailTypeName(type: EmailType | null): string {
   switch (type) {
+    case 'cb_welcome':
+    case 'cb_day3':
+    case 'cb_streak_risk':
+    case 'cb_winback':
+    case 'chess_boxing_launch':
+      return 'Chess Boxing';
+    case 'drip_day1':
     case 'drip_day3':
+    case 'drip_day7':
+    case 'winback':
+    case 'update_april_2026':
+    case 'rating_reveal':
+    case 'streak_science':
+    case 'knicks_takeover':
       return 'promotional';
     default:
       return 'these';

@@ -44,6 +44,11 @@ function shouldSendEmail(
     case 'update_april_2026':
     case 'rating_reveal':
     case 'streak_science':
+    case 'chess_boxing_launch':
+    case 'cb_welcome':
+    case 'cb_day3':
+    case 'cb_streak_risk':
+    case 'cb_winback':
       return preferences.marketing;
     default:
       return true;

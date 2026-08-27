@@ -113,6 +113,144 @@ export async function fetchFirstActivityByUser(
   return out;
 }
 
+/**
+ * Chess Boxing activity only — bouts and workouts, nothing else.
+ *
+ * The general activity map above counts lessons/openings/runs too, so it can't
+ * answer "have they boxed?". Bouts are the clean signal (they only exist under
+ * /box); workouts are included because they're the ranked mode inside the app.
+ * Both reads degrade to empty rather than failing the whole cron, same posture
+ * as the bout_sessions read in fetchCompletionRows.
+ */
+export interface BoxingActivity extends UserActivity {
+  /** Earliest bout timestamp, for the "first ever bout" window. */
+  firstBoutAt: string | null;
+  /** Outcome of that first bout, so the welcome email can react to it. */
+  firstBoutResult: 'win' | 'loss' | 'draw' | null;
+  bouts: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  /** Best single round across workouts and bouts. */
+  bestRound: number;
+  punches: number;
+}
+
+function emptyBoxing(): BoxingActivity {
+  return {
+    days: [],
+    lastDay: null,
+    firstBoutAt: null,
+    firstBoutResult: null,
+    bouts: 0,
+    wins: 0,
+    losses: 0,
+    draws: 0,
+    bestRound: 0,
+    punches: 0,
+  };
+}
+
+/** Paged select of arbitrary columns, for the tables we need more than a timestamp from. */
+async function fetchRows(
+  supabase: SupabaseClient,
+  table: string,
+  columns: string,
+): Promise<Record<string, unknown>[]> {
+  const out: Record<string, unknown>[] = [];
+  let from = 0;
+  for (;;) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .not('user_id', 'is', null)
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(`${table} read failed: ${error.message}`);
+    out.push(...((data ?? []) as unknown as Record<string, unknown>[]));
+    if (!data || data.length < PAGE) break;
+    from += PAGE;
+  }
+  return out;
+}
+
+export async function fetchBoxingActivityByUser(
+  supabase: SupabaseClient,
+): Promise<Map<string, BoxingActivity>> {
+  const safe = (p: Promise<Record<string, unknown>[]>, label: string) =>
+    p.catch((e) => {
+      console.warn(`${label} unavailable for boxing activity:`, (e as Error).message);
+      return [] as Record<string, unknown>[];
+    });
+
+  const [bouts, workouts] = await Promise.all([
+    safe(
+      fetchRows(supabase, 'bout_sessions', 'user_id, ended_at, result, points, punches'),
+      'bout_sessions',
+    ),
+    safe(
+      fetchRows(supabase, 'workout_sessions', 'user_id, created_at, best_round_points, punches'),
+      'workout_sessions',
+    ),
+  ]);
+
+  const out = new Map<string, BoxingActivity>();
+  const daySets = new Map<string, Set<string>>();
+
+  const rec = (userId: string): BoxingActivity => {
+    let r = out.get(userId);
+    if (!r) {
+      r = emptyBoxing();
+      out.set(userId, r);
+    }
+    if (!daySets.has(userId)) daySets.set(userId, new Set());
+    return r;
+  };
+
+  const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+
+  for (const row of bouts) {
+    const userId = row.user_id as string;
+    const ts = row.ended_at as string | null;
+    if (!userId || !ts) continue;
+    const r = rec(userId);
+    daySets.get(userId)!.add(ts.slice(0, 10));
+
+    r.bouts += 1;
+    const result = row.result as string | null;
+    if (result === 'win') r.wins += 1;
+    else if (result === 'loss') r.losses += 1;
+    else if (result === 'draw') r.draws += 1;
+
+    r.punches += num(row.punches);
+    r.bestRound = Math.max(r.bestRound, num(row.points));
+
+    if (!r.firstBoutAt || ts < r.firstBoutAt) {
+      r.firstBoutAt = ts;
+      r.firstBoutResult =
+        result === 'win' || result === 'loss' || result === 'draw' ? result : null;
+    }
+  }
+
+  for (const row of workouts) {
+    const userId = row.user_id as string;
+    const ts = row.created_at as string | null;
+    if (!userId || !ts) continue;
+    const r = rec(userId);
+    daySets.get(userId)!.add(ts.slice(0, 10));
+    r.punches += num(row.punches);
+    r.bestRound = Math.max(r.bestRound, num(row.best_round_points));
+  }
+
+  for (const [userId, set] of daySets) {
+    const days = [...set].sort();
+    const r = out.get(userId)!;
+    r.days = days;
+    r.lastDay = days[days.length - 1] ?? null;
+  }
+
+  return out;
+}
+
 /** Users who have solved at least one puzzle (the aha-moment marker). */
 export async function fetchSolverSet(supabase: SupabaseClient): Promise<Set<string>> {
   const rows = await fetchUserTimestamps(supabase, 'puzzle_attempts', 'attempted_at', (q) =>

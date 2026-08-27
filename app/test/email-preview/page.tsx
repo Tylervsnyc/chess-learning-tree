@@ -5,6 +5,11 @@ import { DripDay7 } from '@/lib/email/templates/DripDay7';
 import { Winback } from '@/lib/email/templates/Winback';
 import { PatronThankYou } from '@/lib/email/templates/PatronThankYou';
 import { StreakScience } from '@/lib/email/templates/StreakScience';
+import { ChessBoxingLaunch } from '@/lib/email/templates/ChessBoxingLaunch';
+import { BoxingWelcome } from '@/lib/email/templates/BoxingWelcome';
+import { BoxingDay3 } from '@/lib/email/templates/BoxingDay3';
+import { BoxingStreakRisk } from '@/lib/email/templates/BoxingStreakRisk';
+import { BoxingWinback } from '@/lib/email/templates/BoxingWinback';
 
 // Preview-only. NEVER queries real users — all data below is fake sample data.
 const SAMPLE = {
@@ -96,6 +101,71 @@ export default async function EmailPreviewPage() {
         }),
       ),
     },
+    {
+      label: 'chess_boxing_launch — the announcement, to the whole list',
+      angle: 'The App Store launch email. Rookie explains that chess boxing is a real sport she did not believe in, then three feature cards (Workout / Bout / Crews) and an undignified ask for a rating. Sent by hand via scripts/send-chess-boxing-launch.ts. Primary CTA -> App Store.',
+      html: await render(
+        ChessBoxingLaunch({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+        }),
+      ),
+    },
+    {
+      label: 'cb_welcome — the day after their FIRST ever bout',
+      angle: 'They fought one thing. This names the other rounds in the app\'s own language (PUZZLE BOXING / BOUT MODE) and plants the streak. Rookie reacts to how the first bout actually went. Primary CTA -> /box.',
+      html: await render(
+        BoxingWelcome({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          result: 'loss',
+          punches: 47,
+        }),
+      ),
+    },
+    {
+      label: 'cb_day3 — boxed, then quiet for 3 days',
+      angle: 'Leads with their own fight record, because the record is the thing that stops moving when they stop showing up. Rookie is holding pads she does not have arms for. Primary CTA -> /box/bout.',
+      html: await render(
+        BoxingDay3({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          wins: 2,
+          losses: 3,
+          draws: 1,
+          bestRound: 180,
+        }),
+      ),
+    },
+    {
+      label: 'cb_streak_risk — streak 3+, nothing today (REPEATS daily)',
+      angle: 'The shortest email in the set on purpose: one number, one deadline, one button. The only lifecycle type that can send more than once per user (dedupe: daily). Primary CTA -> /box.',
+      html: await render(
+        BoxingStreakRisk({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          currentStreak: 6,
+        }),
+      ),
+    },
+    {
+      label: 'cb_winback — 14+ days since any boxing',
+      angle: 'Leads with what they already did, not what they owe. Best round + punches thrown are theirs. Reassures that the daily leaderboard reset means a two week gap costs nothing. Primary CTA -> /workout.',
+      html: await render(
+        BoxingWinback({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          bestRound: 180,
+          punches: 612,
+          bouts: 9,
+        }),
+      ),
+    },
   ];
 
   return (
@@ -128,8 +198,10 @@ export default async function EmailPreviewPage() {
             margin: '0 0 24px',
           }}
         >
-          Fake sample data. No real users are queried. Sends are gated behind
-          EMAIL_LIFECYCLE_ENABLED (defaults OFF).
+          Fake sample data. No real users are queried. Chess Path lifecycle
+          sends are gated behind EMAIL_LIFECYCLE_ENABLED; the Chess Boxing set
+          (cb_*) is gated behind its own CB_EMAIL_LIFECYCLE_ENABLED, which
+          defaults OFF.
         </p>
 
         {previews.map((p) => (

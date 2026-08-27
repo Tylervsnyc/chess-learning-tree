@@ -5,14 +5,20 @@ import { DripDay3LeftOff } from '@/lib/email/templates/DripDay3LeftOff';
 import { DripDay1 } from '@/lib/email/templates/DripDay1';
 import { DripDay7 } from '@/lib/email/templates/DripDay7';
 import { Winback } from '@/lib/email/templates/Winback';
+import { BoxingWelcome } from '@/lib/email/templates/BoxingWelcome';
+import { BoxingDay3 } from '@/lib/email/templates/BoxingDay3';
+import { BoxingStreakRisk } from '@/lib/email/templates/BoxingStreakRisk';
+import { BoxingWinback } from '@/lib/email/templates/BoxingWinback';
 import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
 import {
   fetchActivityByUser,
   fetchFirstActivityByUser,
   fetchSolverSet,
+  fetchBoxingActivityByUser,
   currentStreakFromDays,
 } from '@/lib/streak/activity';
+import type { BoxingActivity } from '@/lib/streak/activity';
 import type { EmailType } from '@/types/email';
 
 interface DripDay {
@@ -29,6 +35,15 @@ const DRIP_DAYS: DripDay[] = [
 // is explicitly set to 'true'. Default is OFF -> dry-run only (console.log the
 // recipient + type, call sendEmail() for NONE of these new lifecycle types).
 const LIFECYCLE_ENABLED = process.env.EMAIL_LIFECYCLE_ENABLED === 'true';
+
+// The Chess Boxing lifecycle set gets its OWN flag. EMAIL_LIFECYCLE_ENABLED is
+// already 'true' in production, so reusing it would ship all four of these live
+// on the first deploy instead of letting us read a dry run first.
+const CB_LIFECYCLE_ENABLED = process.env.CB_EMAIL_LIFECYCLE_ENABLED === 'true';
+
+// Streak-at-risk is the one email in the set that REPEATS (every day the user
+// is about to break a streak). Everything else is once-per-user-forever.
+const CB_STREAK_RISK_MIN_DAYS = 3;
 
 // Window edges, in whole days back from "now", for created_at-based cohorts.
 const WINBACK_INACTIVE_DAYS = 14;
@@ -173,6 +188,9 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
     if (!LIFECYCLE_ENABLED) {
       console.log('[drip] EMAIL_LIFECYCLE_ENABLED is OFF — lifecycle emails run as DRY-RUN (no real sends).');
     }
+    if (!CB_LIFECYCLE_ENABLED) {
+      console.log('[drip] CB_EMAIL_LIFECYCLE_ENABLED is OFF — Chess Boxing emails run as DRY-RUN (no real sends).');
+    }
 
     // Compute window boundaries as ISO timestamps.
     const startOfWindow = (daysAgo: number): string => {
@@ -187,7 +205,19 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
       emailType: EmailType,
       users: LifecycleUser[],
       build: (user: LifecycleUser) => { subject: string; react: React.ReactElement; metadata: Record<string, unknown> },
+      opts?: {
+        /**
+         * 'once' (default) = never send this type to a user twice, ever.
+         * 'daily' = at most once per UTC day, for types that legitimately
+         * repeat (streak-at-risk).
+         */
+        dedupe?: 'once' | 'daily';
+        /** Which kill-switch gates this type. Defaults to EMAIL_LIFECYCLE_ENABLED. */
+        enabled?: boolean;
+      },
     ) {
+      const dedupe = opts?.dedupe ?? 'once';
+      const enabled = opts?.enabled ?? LIFECYCLE_ENABLED;
       const res = newLifecycleResult();
       results[key] = res;
 
@@ -203,13 +233,17 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
           continue;
         }
 
-        // Dedup: never send the same lifecycle email twice.
-        const { data: existing } = await supabase
+        // Dedup: never send the same lifecycle email twice (or, for repeating
+        // types, twice in one day).
+        let dedupeQuery = supabase
           .from('email_log')
           .select('id')
           .eq('user_id', user.id)
-          .eq('email_type', emailType)
-          .limit(1);
+          .eq('email_type', emailType);
+        if (dedupe === 'daily') {
+          dedupeQuery = dedupeQuery.gte('sent_at', `${todayUtc}T00:00:00.000Z`);
+        }
+        const { data: existing } = await dedupeQuery.limit(1);
 
         if (existing && existing.length > 0) {
           res.skipped++;
@@ -220,7 +254,7 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
 
         // HARD GUARDRAIL: when the flag is OFF, dry-run only. Log what we
         // WOULD send and call sendEmail() for NONE of the lifecycle types.
-        if (!LIFECYCLE_ENABLED) {
+        if (!enabled) {
           console.log(
             `[drip:dry-run] WOULD send ${emailType} to ${user.email} (userId=${user.id})`,
           );
@@ -337,9 +371,165 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
       }));
     }
 
+
+    // ----------------------------------------------------------------------
+    // Chess Boxing lifecycle (cb_welcome / cb_day3 / cb_streak_risk /
+    // cb_winback). Targeting runs on BOXING activity only — bout_sessions +
+    // workout_sessions — so a Chess Path user who has never opened /box is
+    // never in any of these audiences.
+    //
+    // Gated behind CB_EMAIL_LIFECYCLE_ENABLED (its own flag; see the top of
+    // this file for why it isn't EMAIL_LIFECYCLE_ENABLED).
+    // ----------------------------------------------------------------------
+    {
+      const boxingByUser = await fetchBoxingActivityByUser(supabase);
+      const cbOpts = { enabled: CB_LIFECYCLE_ENABLED } as const;
+      const boxersOnly = allProfiles.filter((u) => boxingByUser.has(u.id));
+      const box = (u: LifecycleUser): BoxingActivity => boxingByUser.get(u.id)!;
+
+      // At most ONE Chess Boxing email per person per run. The windows overlap
+      // by design (a brand-new boxer on a 4-day streak matches both cb_welcome
+      // and cb_streak_risk), and two emails from the same product on the same
+      // morning is how you get unsubscribed. Blocks run in priority order and
+      // claim their audience; later blocks only see who is left.
+      const cbClaimed = new Set<string>();
+      const claim = (users: LifecycleUser[]): LifecycleUser[] => {
+        const fresh = users.filter((u) => !cbClaimed.has(u.id));
+        for (const u of fresh) cbClaimed.add(u.id);
+        return fresh;
+      };
+
+      // --- cb_welcome: first EVER bout landed 20-48h ago ---
+      // Same window shape as day1 (28h wide against a daily cron), which the
+      // email_log dedup then narrows to at-most-once.
+      {
+        const windowStart = new Date(today.getTime() - 48 * 3600 * 1000).toISOString();
+        const windowEnd = new Date(today.getTime() - 20 * 3600 * 1000).toISOString();
+
+        const users = claim(
+          boxersOnly.filter((u) => {
+            const first = box(u).firstBoutAt;
+            return first !== null && first >= windowStart && first < windowEnd;
+          }),
+        );
+
+        await processLifecycle('cb_welcome', 'cb_welcome', users, (user) => {
+          const b = box(user);
+          return {
+            subject: 'You fought one',
+            react: BoxingWelcome({
+              displayName: user.display_name || undefined,
+              appUrl,
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_welcome'),
+              result: b.firstBoutResult ?? undefined,
+              punches: b.punches > 0 ? b.punches : undefined,
+            }),
+            metadata: {
+              lifecycle: 'cb_welcome',
+              first_bout_at: b.firstBoutAt,
+              first_bout_result: b.firstBoutResult,
+            },
+          };
+        }, cbOpts);
+      }
+
+      // --- cb_day3: last boxing day was exactly 3 days ago ---
+      {
+        const target = new Date(today);
+        target.setDate(target.getDate() - 3);
+        const targetStr = target.toISOString().split('T')[0];
+
+        const users = claim(boxersOnly.filter((u) => box(u).lastDay === targetStr));
+
+        await processLifecycle('cb_day3', 'cb_day3', users, (user) => {
+          const b = box(user);
+          return {
+            subject: 'Three days, same record',
+            react: BoxingDay3({
+              displayName: user.display_name || undefined,
+              appUrl,
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_day3'),
+              wins: b.wins,
+              losses: b.losses,
+              draws: b.draws,
+              bestRound: b.bestRound > 0 ? b.bestRound : undefined,
+            }),
+            metadata: {
+              lifecycle: 'cb_day3',
+              record: `${b.wins}-${b.losses}-${b.draws}`,
+              last_boxing_day: b.lastDay,
+            },
+          };
+        }, cbOpts);
+      }
+
+      // --- cb_streak_risk: streak of 3+ and nothing finished today ---
+      // The streak here is the REAL app streak (any finished unit counts, same
+      // as the nav badge), not a boxing-only streak — breaking it costs them
+      // the number they actually see. Audience is still boxers only.
+      // dedupe: 'daily' because this one legitimately repeats.
+      {
+        const users = claim(
+          boxersOnly.filter((u) => {
+            const days = activityByUser.get(u.id)?.days ?? [];
+            if (days.includes(todayUtc)) return false;
+            return currentStreakFromDays(days, todayUtc) >= CB_STREAK_RISK_MIN_DAYS;
+          }),
+        );
+
+        await processLifecycle('cb_streak_risk', 'cb_streak_risk', users, (user) => {
+          const streak = currentStreakFromDays(
+            activityByUser.get(user.id)?.days ?? [],
+            todayUtc,
+          );
+          return {
+            subject: `${streak} days. Ends at midnight.`,
+            react: BoxingStreakRisk({
+              displayName: user.display_name || undefined,
+              appUrl,
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_streak_risk'),
+              currentStreak: streak,
+            }),
+            metadata: { lifecycle: 'cb_streak_risk', current_streak: streak },
+          };
+        }, { ...cbOpts, dedupe: 'daily' });
+      }
+
+      // --- cb_winback: 14+ days since any boxing ---
+      {
+        const cutoff = new Date(today);
+        cutoff.setDate(cutoff.getDate() - WINBACK_INACTIVE_DAYS);
+        const cutoffStr = cutoff.toISOString().split('T')[0];
+
+        const users = claim(
+          boxersOnly.filter((u) => {
+            const lastDay = box(u).lastDay;
+            return lastDay !== null && lastDay <= cutoffStr && u.created_at < startOfWindow(8);
+          }),
+        );
+
+        await processLifecycle('cb_winback', 'cb_winback', users, (user) => {
+          const b = box(user);
+          return {
+            subject: 'Still your best round',
+            react: BoxingWinback({
+              displayName: user.display_name || undefined,
+              appUrl,
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_winback'),
+              bestRound: b.bestRound > 0 ? b.bestRound : undefined,
+              punches: b.punches > 0 ? b.punches : undefined,
+              bouts: b.bouts > 0 ? b.bouts : undefined,
+            }),
+            metadata: { lifecycle: 'cb_winback', last_boxing_day: b.lastDay },
+          };
+        }, cbOpts);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       lifecycleEnabled: LIFECYCLE_ENABLED,
+      cbLifecycleEnabled: CB_LIFECYCLE_ENABLED,
       results,
       timestamp: new Date().toISOString(),
     });
