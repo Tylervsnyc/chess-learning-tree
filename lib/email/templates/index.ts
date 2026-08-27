@@ -5,6 +5,7 @@ export { DripDay7 } from './DripDay7';
 export { Winback } from './Winback';
 export { RookiesRunLaunch } from './RookiesRunLaunch';
 export { ChessBoxingLaunch } from './ChessBoxingLaunch';
+export { BoxingLaunchParty } from './BoxingLaunchParty';
 export { BoxingWelcome } from './BoxingWelcome';
 export { BoxingDay3 } from './BoxingDay3';
 export { BoxingStreakRisk } from './BoxingStreakRisk';

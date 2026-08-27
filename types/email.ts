@@ -15,7 +15,8 @@ export type EmailType =
   | 'cb_welcome'
   | 'cb_day3'
   | 'cb_streak_risk'
-  | 'cb_winback';
+  | 'cb_winback'
+  | 'cb_launch_party';
 
 export interface EmailPreferences {
   user_id: string;
@@ -102,6 +103,12 @@ export interface WinbackProps {
 // All four are triggered on BOXING behavior (bout_sessions / workout_sessions),
 // not general Chess Path activity. See app/api/cron/drip/route.ts.
 
+export interface BoxingLaunchPartyProps {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+}
+
 export interface BoxingWelcomeProps {
   displayName?: string;
   appUrl: string;
@@ -109,7 +116,6 @@ export interface BoxingWelcomeProps {
   /** Outcome of their first ever bout, so Rookie can react to it. */
   result?: 'win' | 'loss' | 'draw';
   punches?: number;
-  imageBase?: string;
 }
 
 export interface BoxingDay3Props {

@@ -49,6 +49,7 @@ function shouldSendEmail(
     case 'cb_day3':
     case 'cb_streak_risk':
     case 'cb_winback':
+    case 'cb_launch_party':
       return preferences.marketing;
     default:
       return true;

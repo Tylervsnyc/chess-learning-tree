@@ -6,6 +6,7 @@ import { Winback } from '@/lib/email/templates/Winback';
 import { PatronThankYou } from '@/lib/email/templates/PatronThankYou';
 import { StreakScience } from '@/lib/email/templates/StreakScience';
 import { ChessBoxingLaunch } from '@/lib/email/templates/ChessBoxingLaunch';
+import { BoxingLaunchParty } from '@/lib/email/templates/BoxingLaunchParty';
 import { BoxingWelcome } from '@/lib/email/templates/BoxingWelcome';
 import { BoxingDay3 } from '@/lib/email/templates/BoxingDay3';
 import { BoxingStreakRisk } from '@/lib/email/templates/BoxingStreakRisk';
@@ -102,8 +103,19 @@ export default async function EmailPreviewPage() {
       ),
     },
     {
-      label: 'chess_boxing_launch — the announcement, to the whole list',
-      angle: 'The App Store launch email. Rookie explains that chess boxing is a real sport she did not believe in, then three feature cards (Workout / Bout / Crews) and an undignified ask for a rating. Sent by hand via scripts/send-chess-boxing-launch.ts. Primary CTA -> App Store.',
+      label: 'cb_launch_party — THE CELEBRATION (the app is live)',
+      angle: 'The showpiece. Read as a fight poster top to bottom: the billing, the venue photograph (Chessboxing NYC at Gleason\'s), the card, the door. Only email in the set with the red rule. Sibling of chess_boxing_launch -- send ONE of the two. Primary CTA -> App Store.',
+      html: await render(
+        BoxingLaunchParty({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+        }),
+      ),
+    },
+    {
+      label: 'chess_boxing_launch — the explainer version of the same moment',
+      angle: 'Rookie tells the story of finding out chess boxing is real, then three full-width photo blocks (Workout / Bout / Crews) and an undignified ask for a rating. Sent by hand via scripts/send-chess-boxing-launch.ts. Primary CTA -> App Store.',
       html: await render(
         ChessBoxingLaunch({
           displayName: SAMPLE.displayName,

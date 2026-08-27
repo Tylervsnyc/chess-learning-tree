@@ -7,6 +7,7 @@
  *   npx tsx scripts/send-chess-boxing-launch.ts                      # dry run: who would get it
  *   npx tsx scripts/send-chess-boxing-launch.ts --preview            # write an .html preview to open in a browser
  *   npx tsx scripts/send-chess-boxing-launch.ts --test you@place.com # one real email to one address
+ *   npx tsx scripts/send-chess-boxing-launch.ts --celebration        # the poster version instead
  *   npx tsx scripts/send-chess-boxing-launch.ts --send               # THE REAL THING
  *   npx tsx scripts/send-chess-boxing-launch.ts --send --limit 5     # the real thing, first 5 only
  *
@@ -20,11 +21,29 @@ import { createClient } from '@supabase/supabase-js';
 import { render } from '@react-email/render';
 import { writeFileSync } from 'fs';
 import { ChessBoxingLaunch } from '../lib/email/templates/ChessBoxingLaunch';
+import { BoxingLaunchParty } from '../lib/email/templates/BoxingLaunchParty';
 import { sendEmail, getUnsubscribeUrl, getAppUrl, generateUnsubscribeToken } from '../lib/email/send';
 import { getResendClient, EMAIL_FROM } from '../lib/email/resend';
 
-const EMAIL_TYPE = 'chess_boxing_launch' as const;
-const SUBJECT = 'Chess Boxing is out. I got hit in the face.';
+/**
+ * Two takes on the same moment. Pass --celebration for the poster version
+ * (cb_launch_party); the default is the explainer (chess_boxing_launch).
+ * SEND ONE OF THE TWO. Both are previewable at /test/email-preview.
+ */
+const VARIANTS = {
+  explainer: {
+    type: 'chess_boxing_launch' as const,
+    subject: 'Chess Boxing is out. I got hit in the face.',
+    render: ChessBoxingLaunch,
+    label: 'the explainer',
+  },
+  celebration: {
+    type: 'cb_launch_party' as const,
+    subject: "It's live. Chess Boxing is on the App Store.",
+    render: BoxingLaunchParty,
+    label: 'the celebration',
+  },
+};
 
 const argv = process.argv.slice(2);
 const has = (f: string) => argv.includes(f);
@@ -32,6 +51,11 @@ const val = (f: string) => {
   const i = argv.indexOf(f);
   return i >= 0 ? argv[i + 1] : undefined;
 };
+
+const VARIANT = has('--celebration') ? VARIANTS.celebration : VARIANTS.explainer;
+const EMAIL_TYPE = VARIANT.type;
+const SUBJECT = VARIANT.subject;
+const Template = VARIANT.render;
 
 const DO_SEND = has('--send');
 const TEST_TO = val('--test');
@@ -70,13 +94,13 @@ async function main() {
   // ---- preview -----------------------------------------------------------
   if (PREVIEW) {
     const html = await render(
-      ChessBoxingLaunch({
+      Template({
         displayName: 'Tyler',
         appUrl,
         unsubscribeUrl: `${appUrl}/api/email/unsubscribe?preview=1`,
       })
     );
-    const out = 'chess-boxing-launch-preview.html';
+    const out = `chess-boxing-${has('--celebration') ? 'celebration' : 'explainer'}-preview.html`;
     writeFileSync(out, html);
     console.log(`Preview written to ${out}`);
     console.log(`Subject: ${SUBJECT}`);
@@ -90,7 +114,7 @@ async function main() {
       from: EMAIL_FROM,
       to: TEST_TO,
       subject: `[TEST] ${SUBJECT}`,
-      react: ChessBoxingLaunch({
+      react: Template({
         displayName: 'Tyler',
         appUrl,
         unsubscribeUrl: `${appUrl}/api/email/unsubscribe?test=1`,
@@ -147,7 +171,7 @@ async function main() {
   const targets = LIMIT ? recipients.slice(0, LIMIT) : recipients;
 
   console.log('');
-  console.log(`  Chess Boxing launch — "${SUBJECT}"`);
+  console.log(`  Chess Boxing launch (${VARIANT.label}) — "${SUBJECT}"`);
   console.log(`  ${'-'.repeat(58)}`);
   console.log(`  profiles with an email : ${profiles!.length}`);
   console.log(`  opted out of marketing : ${optedOut.length}`);
@@ -181,7 +205,7 @@ async function main() {
       userId: r.id,
       type: EMAIL_TYPE,
       subject: SUBJECT,
-      react: ChessBoxingLaunch({
+      react: Template({
         displayName: firstName(r.display_name, r.email),
         appUrl,
         unsubscribeUrl,

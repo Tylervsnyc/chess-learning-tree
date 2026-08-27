@@ -1,24 +1,30 @@
-import { Section, Text } from '@react-email/components';
+import { Section, Text, Img } from '@react-email/components';
 import * as React from 'react';
-import { EmailLayout } from './components/EmailLayout';
 import {
-  BoxingButton,
-  RookQuote,
-  boxingBody,
-  boxingButtonContainer,
-  boxingHeading,
-  boxingSignoff,
-  boxingSubheading,
-} from './components/BoxingBits';
+  BoxingEmailLayout,
+  CornerLine,
+  FightButton,
+  CB,
+  CB_IMG,
+  cbBody,
+  cbButtonWrap,
+  cbSignoff,
+} from './components/BoxingEmailLayout';
 import type { BoxingStreakRiskProps } from '@/types/email';
 
-const UTM_BASE = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_streak_risk';
+const UTM = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_streak_risk';
 
 /**
- * cb_streak_risk — streak of 3+ with nothing finished today.
+ * cb_streak_risk — streak of 3+ and nothing finished today.
  *
- * The shortest email in the set on purpose. One number, one deadline, one
- * button. Anything else and they read instead of acting.
+ * The shortest email in the set, on purpose: one number, one deadline, one
+ * button. No modes, no photo, no scorecard — anything else and they read
+ * instead of acting.
+ *
+ * The gym's hanging sign carries it. "THERE IS NO TOMORROW" is already painted
+ * on the wall in the app (components/chessboxing/GymBackdrop), and it happens
+ * to be the literal argument this email is making, so it does the work a
+ * headline would otherwise have to.
  */
 export function BoxingStreakRisk({
   displayName,
@@ -27,39 +33,70 @@ export function BoxingStreakRisk({
   currentStreak,
 }: BoxingStreakRiskProps) {
   const greeting = displayName ? `${displayName}. ` : '';
-  const boxHref = `${appUrl}/box?${UTM_BASE}&utm_content=home`;
+  const home = `${appUrl}/box?${UTM}&utm_content=home`;
 
   return (
-    <EmailLayout
-      preview={`Day ${currentStreak} ends at midnight and nothing has happened yet.`}
+    <BoxingEmailLayout
+      preview={`Day ${currentStreak} ends at midnight and today is still blank.`}
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Text style={boxingHeading}>{currentStreak} Days</Text>
-      <Text style={boxingSubheading}>Ends at midnight unless you do something.</Text>
-
-      <RookQuote>
-        &ldquo;{greeting}You are {currentStreak} days deep and today is still
-        blank. One round fixes it. Any round.&rdquo;
-      </RookQuote>
-
-      <Text style={boxingBody}>
-        A bout, a Puzzle Boxing round, a lesson. Whichever is fastest. The streak
-        does not care which one, it just wants a finished thing.
-      </Text>
-
-      <Section style={boxingButtonContainer}>
-        <BoxingButton href={boxHref} color="gold">
-          Keep the streak
-        </BoxingButton>
+      <Section style={{ textAlign: 'center' as const, margin: '0 0 20px 0' }}>
+        <Img
+          src={`${CB_IMG}/sign.png`}
+          alt="There is no tomorrow"
+          width={260}
+          style={{ display: 'block', margin: '0 auto', width: '260px', maxWidth: '100%', height: 'auto' }}
+        />
       </Section>
 
-      <Text style={boxingSignoff}>
+      {/* The number IS the headline. Nothing competes with it. */}
+      <Text style={bigNumber}>{currentStreak}</Text>
+      <Text style={bigLabel}>Days, ending at midnight</Text>
+
+      <CornerLine>
+        &ldquo;{greeting}You are {currentStreak} days deep and today is still blank.
+        One round fixes it. Any round.&rdquo;
+      </CornerLine>
+
+      <Text style={{ ...cbBody, textAlign: 'center' as const }}>
+        A bout, a Puzzle Boxing round, a lesson. Whichever is fastest. The streak
+        does not care which, it just wants a finished thing.
+      </Text>
+
+      <Section style={cbButtonWrap}>
+        <FightButton href={home} tone="gold">
+          Keep the streak
+        </FightButton>
+      </Section>
+
+      <Text style={{ ...cbSignoff, textAlign: 'center' as const }}>
         Gloves up,
         <br />
         Rookie
       </Text>
-    </EmailLayout>
+    </BoxingEmailLayout>
   );
 }
+
+const bigNumber = {
+  color: CB.ink,
+  fontSize: '76px',
+  fontWeight: 900,
+  letterSpacing: '-0.04em',
+  lineHeight: '76px',
+  margin: '0 0 2px 0',
+  textAlign: 'center' as const,
+};
+
+const bigLabel = {
+  color: CB.ink55,
+  fontSize: '12px',
+  fontWeight: 900,
+  letterSpacing: '0.22em',
+  lineHeight: '16px',
+  margin: '0 0 20px 0',
+  textAlign: 'center' as const,
+  textTransform: 'uppercase' as const,
+};
 
 export default BoxingStreakRisk;

@@ -1,33 +1,34 @@
-import { Section, Text, Hr, Img, Link } from '@react-email/components';
+import { Section, Text, Link } from '@react-email/components';
 import * as React from 'react';
-import { EmailLayout } from './components/EmailLayout';
 import {
-  APP_STORE_URL,
-  BoxingButton,
-  IMAGE_BASE,
-  PillTitle,
-  RookQuote,
-  StatRow,
-  boxingAppIcon,
-  boxingBody,
-  boxingButtonContainer,
-  boxingDivider,
-  boxingHeading,
-  boxingSignoff,
-  boxingSubheading,
-  boxingWebLink,
-  boxingWebNote,
-} from './components/BoxingBits';
+  BoxingEmailLayout,
+  CardRule,
+  CornerLine,
+  FightButton,
+  GymPhoto,
+  ModeRow,
+  PosterBanner,
+  ScoreCard,
+  CB,
+  CB_APP_STORE,
+  CB_IMG,
+  cbGoldBody,
+  cbGoldHeading,
+  cbButtonWrap,
+  cbFootnote,
+  cbLink,
+  cbSignoff,
+} from './components/BoxingEmailLayout';
 import type { BoxingWelcomeProps } from '@/types/email';
 
-const UTM_BASE = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_welcome';
+const UTM = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_welcome';
 
 /**
  * cb_welcome — the day after someone's first ever bout.
  *
- * They fought one thing. This email tells them what the other rounds are, in
- * the app's own language (BOUT MODE / PUZZLE BOXING), and points at the streak
- * as the reason to come back tomorrow.
+ * Spine: the card for the rest of the night. They fought one thing; this names
+ * the others in the app's own language and plants the streak. Rookie reacts to
+ * how the first bout actually went, because she watched it.
  */
 export function BoxingWelcome({
   displayName,
@@ -35,138 +36,115 @@ export function BoxingWelcome({
   unsubscribeUrl,
   result,
   punches,
-  imageBase = IMAGE_BASE,
 }: BoxingWelcomeProps) {
   const greeting = displayName ? `${displayName}. ` : '';
-  const boxHref = `${appUrl}/box?${UTM_BASE}&utm_content=home`;
-  const workoutHref = `${appUrl}/workout?${UTM_BASE}&utm_content=workout`;
-  const boutHref = `${appUrl}/box/bout?${UTM_BASE}&utm_content=bout`;
-  const storeHref = `${APP_STORE_URL}?${UTM_BASE}`;
+  const home = `${appUrl}/box?${UTM}&utm_content=home`;
+  const workout = `${appUrl}/workout?${UTM}&utm_content=workout`;
+  const bout = `${appUrl}/box/bout?${UTM}&utm_content=bout`;
+  const store = `${CB_APP_STORE}?${UTM}`;
 
-  const outcomeLine =
+  const outcome =
     result === 'win'
-      ? 'You won your first one. That is not how these usually go for the other guy.'
+      ? 'You won it. That is not how these usually go for the other guy.'
       : result === 'loss'
-        ? 'You lost your first one. Everybody does. I have lost hundreds and I am made of math.'
-        : 'You drew your first one. The judges are still arguing about it.';
+        ? 'You lost it. Everybody loses the first one. I have lost hundreds and I am made of arithmetic.'
+        : 'You drew it. The judges are still arguing.';
 
   return (
-    <EmailLayout
-      preview="You fought one. Here is what the rest of the card looks like."
+    <BoxingEmailLayout
+      preview="You fought one. Here is the rest of the card."
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Section style={{ textAlign: 'center' as const, margin: '0 0 4px 0' }}>
-        <Img
-          src={`${imageBase}/social/chessboxing-app-icon.png`}
-          alt="Chess Boxing app icon"
-          width={84}
-          style={boxingAppIcon}
-        />
-      </Section>
+      <PosterBanner kicker="ROUND ONE IS IN THE BOOKS" headline="You fought one" />
 
-      <Text style={boxingHeading}>You Fought One</Text>
-      <Text style={boxingSubheading}>Welcome to the gym.</Text>
-
-      <RookQuote>
-        &ldquo;{greeting}You got through a bout. {outcomeLine} The hard part of
-        this sport is not the chess and it is not the punching. It is playing
-        chess right after the punching, while your hands are still shaking.
-        That is the whole thing. That is what we train.&rdquo;
-      </RookQuote>
+      <CornerLine>
+        &ldquo;{greeting}{outcome} The hard part of this sport is not the chess and
+        it is not the punching. It is the chess right after the punching. That is
+        the whole thing, and you just did it once.&rdquo;
+      </CornerLine>
 
       {typeof punches === 'number' && punches > 0 && (
-        <StatRow
+        <ScoreCard
+          title="YOUR FIRST CARD"
           items={[
-            { label: 'First bout', value: '1' },
-            { label: 'Punches thrown', value: String(punches) },
+            { label: 'Bouts', value: '1' },
+            { label: 'Punches', value: String(punches) },
           ]}
         />
       )}
 
-      <Hr style={boxingDivider} />
+      <CardRule />
 
-      <Section style={modeCard}>
-        <div style={{ marginBottom: '6px' }}>
-          <PillTitle text="PUZZLE BOXING" color="green" href={workoutHref} />
-        </div>
-        <Text style={boxingBody}>
-          The ranked mode. Puzzle rounds and exercise rounds, alternating, on a
-          clock. This is the one that scores you and puts you on the board.
-        </Text>
-        <Link href={workoutHref} style={inlineLink}>
-          Train a round &rarr;
-        </Link>
-      </Section>
+      <Text style={sectionHeading}>What else is on the card</Text>
 
-      <Section style={modeCard}>
-        <div style={{ marginBottom: '6px' }}>
-          <PillTitle text="BOUT MODE" color="purple" href={boutHref} />
-        </div>
-        <Text style={boxingBody}>
-          One game against me, split across the card. The board freezes at the
-          bell whether you like the position or not. One ranked bout a day.
-        </Text>
-        <Link href={boutHref} style={inlineLink}>
-          Fight again &rarr;
-        </Link>
-      </Section>
+      <ModeRow
+        icon={`${CB_IMG}/corner-puzzle.png`}
+        name="Puzzle Boxing"
+        line="The ranked one. Puzzle rounds and exercise rounds on a clock. It scores you and puts you on the board."
+        href={workout}
+        cta="Train a round"
+      />
+
+      <ModeRow
+        icon={`${CB_IMG}/corner-play.png`}
+        name="Bout Mode"
+        line="One game against me, split across the card. One ranked bout a day, so it always counts for something."
+        href={bout}
+        cta="Fight again"
+      />
+
+      <GymPhoto
+        src={`${CB_IMG}/photo-boards.jpg`}
+        alt="Boards set up on tables at Gleason's Gym between rounds"
+        caption="BETWEEN ROUNDS AT GLEASON'S"
+      />
 
       <Section style={streakBox}>
-        <Text style={streakHeading}>Come back tomorrow</Text>
-        <Text style={boxingBody}>
-          Any finished round keeps your streak alive. A bout, a workout, a
-          lesson. One a day is the whole ask.
+        <Text style={cbGoldHeading}>Then come back tomorrow</Text>
+        <Text style={cbGoldBody}>
+          Any finished round keeps the streak alive. A bout, a Puzzle Boxing round,
+          a lesson. One a day is the whole ask.
         </Text>
       </Section>
 
-      <Section style={boxingButtonContainer}>
-        <BoxingButton href={boxHref}>Back to the ring</BoxingButton>
-        <Text style={boxingWebNote}>
-          Not on your phone yet?{' '}
-          <Link href={storeHref} style={boxingWebLink}>
-            Get it on the App Store
+      <Section style={cbButtonWrap}>
+        <FightButton href={home} tone="ink">
+          Back to the ring
+        </FightButton>
+        <Text style={cbFootnote}>
+          Only played in the browser so far?{' '}
+          <Link href={store} style={cbLink}>
+            The app is on the App Store
           </Link>
           .
         </Text>
       </Section>
 
-      <Text style={boxingSignoff}>
+      <Text style={cbSignoff}>
         Gloves up,
         <br />
         Rookie
       </Text>
-    </EmailLayout>
+    </BoxingEmailLayout>
   );
 }
 
-const modeCard = {
-  backgroundColor: '#EEF6FC',
-  borderRadius: '12px',
-  border: '1px solid #DCE8F0',
-  padding: '16px',
-  margin: '0 0 12px 0',
+const sectionHeading = {
+  color: CB.ink,
+  fontSize: '12px',
+  fontWeight: 900,
+  letterSpacing: '0.26em',
+  lineHeight: '15px',
+  margin: '0 0 16px 0',
+  textAlign: 'center' as const,
+  textTransform: 'uppercase' as const,
 };
 
 const streakBox = {
-  backgroundColor: '#FFF8E1',
+  backgroundColor: CB.gold,
   borderRadius: '10px',
-  border: '1px solid #FFE9A8',
   padding: '14px 16px',
-  margin: '8px 0 0 0',
-};
-
-const streakHeading = {
-  color: '#2A3C45',
-  fontSize: '15px',
-  fontWeight: 'bold' as const,
-  margin: '0 0 6px 0',
-};
-
-const inlineLink = {
-  color: '#1CB0F6',
-  fontSize: '14px',
-  fontWeight: 'bold' as const,
-  textDecoration: 'none',
+  margin: '0 0 4px 0',
 };
 
 export default BoxingWelcome;

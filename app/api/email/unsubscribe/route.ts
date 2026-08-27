@@ -28,6 +28,7 @@ function getPreferenceColumn(emailType: EmailType | undefined): string | null {
     case 'cb_day3':
     case 'cb_streak_risk':
     case 'cb_winback':
+    case 'cb_launch_party':
       return 'marketing';
     default:
       return null; // Will unsubscribe from all
@@ -114,6 +115,7 @@ function getEmailTypeName(type: EmailType | null): string {
     case 'cb_day3':
     case 'cb_streak_risk':
     case 'cb_winback':
+    case 'cb_launch_party':
     case 'chess_boxing_launch':
       return 'Chess Boxing';
     case 'drip_day1':

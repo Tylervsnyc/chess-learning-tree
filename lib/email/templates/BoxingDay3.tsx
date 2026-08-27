@@ -1,27 +1,29 @@
-import { Section, Text, Hr, Link } from '@react-email/components';
+import { Section, Text, Img } from '@react-email/components';
 import * as React from 'react';
-import { EmailLayout } from './components/EmailLayout';
 import {
-  BoxingButton,
-  PillTitle,
-  RookQuote,
-  StatRow,
-  boxingBody,
-  boxingButtonContainer,
-  boxingDivider,
-  boxingHeading,
-  boxingSignoff,
-  boxingSubheading,
-} from './components/BoxingBits';
+  BoxingEmailLayout,
+  CardRule,
+  CornerLine,
+  FightButton,
+  ModeRow,
+  PosterBanner,
+  ScoreCard,
+  CB,
+  CB_IMG,
+  cbBody,
+  cbButtonWrap,
+  cbSignoff,
+} from './components/BoxingEmailLayout';
 import type { BoxingDay3Props } from '@/types/email';
 
-const UTM_BASE = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_day3';
+const UTM = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_day3';
 
 /**
  * cb_day3 — boxed, then went quiet for three days.
  *
- * Leads with their own fight record, because the record is the thing they came
- * for and the thing that stops moving when they stop showing up.
+ * Spine: the judges' card. Their record is the thing they came for and the
+ * thing that stops moving when they stop showing up, so it is the whole top of
+ * the email. The heavy bag hangs beside it, unswung.
  */
 export function BoxingDay3({
   displayName,
@@ -33,90 +35,88 @@ export function BoxingDay3({
   bestRound,
 }: BoxingDay3Props) {
   const greeting = displayName ? `${displayName}. ` : '';
-  const boutHref = `${appUrl}/box/bout?${UTM_BASE}&utm_content=bout`;
-  const workoutHref = `${appUrl}/workout?${UTM_BASE}&utm_content=workout`;
+  const bout = `${appUrl}/box/bout?${UTM}&utm_content=bout`;
+  const workout = `${appUrl}/workout?${UTM}&utm_content=workout`;
 
   const total = wins + losses + draws;
-  const stats: { label: string; value: string }[] = [
+  const stats = [
     { label: 'Record', value: `${wins}-${losses}-${draws}` },
-    { label: 'Bouts fought', value: String(total) },
+    { label: 'Bouts', value: String(total) },
   ];
   if (typeof bestRound === 'number' && bestRound > 0) {
     stats.push({ label: 'Best round', value: String(bestRound) });
   }
 
   return (
-    <EmailLayout
+    <BoxingEmailLayout
       preview="Your record has not moved in three days. I checked. Twice."
       unsubscribeUrl={unsubscribeUrl}
     >
-      <Text style={boxingHeading}>Three Days, Same Record</Text>
-      <Text style={boxingSubheading}>The mitts are still up.</Text>
+      <PosterBanner kicker="NO CONTEST FOR THREE DAYS" headline="Same record" />
 
-      <RookQuote>
-        &ldquo;{greeting}I have been standing here holding the pads for three
-        days. I am a rook. I do not have arms. You can imagine how this looks.
-        Come throw something.&rdquo;
-      </RookQuote>
+      {/* The card and the bag, side by side: the numbers that stopped, and the
+          thing hanging still next to them. Speed bag rather than heavy bag —
+          the heavy bag's 1:3.6 aspect towers over the scorecard and opens a
+          hole under it. */}
+      <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
+        <tbody>
+          <tr>
+            <td style={{ verticalAlign: 'middle', paddingRight: '14px' }}>
+              {total > 0 ? (
+                <ScoreCard title="THE JUDGES' CARD" items={stats} />
+              ) : (
+                <Text style={cbBody}>
+                  Nothing on the card yet. That is fixable in about ten minutes.
+                </Text>
+              )}
+            </td>
+            <td style={{ verticalAlign: 'middle', width: '62px' }}>
+              <Img
+                src={`${CB_IMG}/speedbag.png`}
+                alt=""
+                width={62}
+                style={{ display: 'block', width: '62px', height: 'auto' }}
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      {total > 0 && <StatRow items={stats} />}
+      <CornerLine>
+        &ldquo;{greeting}I have been holding the pads for three days. I am a rook. I
+        do not have arms. You can imagine how this looks to the rest of the
+        gym.&rdquo;
+      </CornerLine>
 
-      <Hr style={boxingDivider} />
+      <CardRule />
 
-      <Section style={modeCard}>
-        <div style={{ marginBottom: '6px' }}>
-          <PillTitle text="BOUT MODE" color="purple" href={boutHref} />
-        </div>
-        <Text style={boxingBody}>
-          Your ranked bout for today is unused. One game, split across the card,
-          board freezes at the bell. Ten minutes and the record moves.
-        </Text>
-        <Link href={boutHref} style={inlineLink}>
-          Fight a bout &rarr;
-        </Link>
+      <ModeRow
+        icon={`${CB_IMG}/corner-play.png`}
+        name="Bout Mode"
+        line="Your ranked bout today is unused. One game, board freezes at the bell. Ten minutes and the record moves."
+        href={bout}
+        cta="Fight a bout"
+      />
+
+      <ModeRow
+        icon={`${CB_IMG}/corner-puzzle.png`}
+        name="Puzzle Boxing"
+        line="Shorter. Puzzle rounds and exercise rounds on a clock, scored, straight onto the board."
+        href={workout}
+        cta="Train a round"
+      />
+
+      <Section style={cbButtonWrap}>
+        <FightButton href={bout}>Get back in</FightButton>
       </Section>
 
-      <Section style={modeCard}>
-        <div style={{ marginBottom: '6px' }}>
-          <PillTitle text="PUZZLE BOXING" color="green" href={workoutHref} />
-        </div>
-        <Text style={boxingBody}>
-          Shorter. Puzzle rounds and exercise rounds on a clock, scored, straight
-          onto the leaderboard.
-        </Text>
-        <Link href={workoutHref} style={inlineLink}>
-          Train a round &rarr;
-        </Link>
-      </Section>
-
-      <Section style={boxingButtonContainer}>
-        <BoxingButton href={boutHref} color="purple">
-          Get back in
-        </BoxingButton>
-      </Section>
-
-      <Text style={boxingSignoff}>
+      <Text style={cbSignoff}>
         Gloves up,
         <br />
         Rookie
       </Text>
-    </EmailLayout>
+    </BoxingEmailLayout>
   );
 }
-
-const modeCard = {
-  backgroundColor: '#EEF6FC',
-  borderRadius: '12px',
-  border: '1px solid #DCE8F0',
-  padding: '16px',
-  margin: '0 0 12px 0',
-};
-
-const inlineLink = {
-  color: '#1CB0F6',
-  fontSize: '14px',
-  fontWeight: 'bold' as const,
-  textDecoration: 'none',
-};
 
 export default BoxingDay3;
