@@ -102,8 +102,8 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
 
       <CardRule />
 
-      {/* The card. */}
-      <Text style={cardHeading}>Tonight&apos;s card</Text>
+      {/* What the app actually does. */}
+      <Text style={cardHeading}>Chess Boxing Features</Text>
 
       <ModeRow
         icon={`${CB_IMG}/corner-puzzle.png`}

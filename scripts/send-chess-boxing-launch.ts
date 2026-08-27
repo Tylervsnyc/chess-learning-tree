@@ -39,7 +39,7 @@ const VARIANTS = {
   },
   celebration: {
     type: 'cb_launch_party' as const,
-    subject: "It's live. Chess Boxing is on the App Store.",
+    subject: 'Chess Boxing App is LIVE in App Store!',
     render: BoxingLaunchParty,
     label: 'the celebration',
   },
