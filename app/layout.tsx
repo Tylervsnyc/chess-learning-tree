@@ -84,7 +84,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var p=location.pathname;if(['/','/welcome','/path','/play'].indexOf(p)<0)return;var w=window;if(/[?&]boxapp=frame/.test(location.search))return;var inApp=(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||/[?&]boxapp/.test(location.search)||sessionStorage.getItem('cp:boxapp')==='1';if(!inApp)return;sessionStorage.setItem('cp:boxapp','1');document.cookie='cp_boxapp=1;path=/;max-age=31536000;SameSite=Lax';if(sessionStorage.getItem('cp:box-home-redirected')==='1')return;sessionStorage.setItem('cp:box-home-redirected','1');location.replace('/box');}catch(e){}})();",
+              "(function(){try{var p=location.pathname.replace(/\/+$/,'')||'/';if(['/','/welcome','/path','/play'].indexOf(p)<0)return;var w=window;if(/[?&]boxapp=frame/.test(location.search))return;var inApp=(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||/[?&]boxapp/.test(location.search)||sessionStorage.getItem('cp:boxapp')==='1';if(!inApp)return;sessionStorage.setItem('cp:boxapp','1');document.cookie='cp_boxapp=1;path=/;max-age=31536000;SameSite=Lax';if(sessionStorage.getItem('cp:box-home-redirected')==='1')return;sessionStorage.setItem('cp:box-home-redirected','1');location.replace('/box');}catch(e){}})();",
           }}
         />
       </head>
