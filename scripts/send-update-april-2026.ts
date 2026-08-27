@@ -41,7 +41,10 @@ async function main() {
     .from('email_log')
     .select('user_id')
     .eq('email_type', 'update_april_2026')
-    .eq('status', 'sent');
+    // 'sent' = Resend accepted it, 'delivered' = it landed. Both mean this
+    // person already got it; matching only 'sent' re-mails everyone once
+    // scripts/sync-email-bounces.ts promotes their row to 'delivered'.
+    .in('status', ['sent', 'delivered']);
 
   const alreadySent = new Set((sentLogs ?? []).map((l) => l.user_id));
 

@@ -24,6 +24,7 @@ import { ChessBoxingLaunch } from '../lib/email/templates/ChessBoxingLaunch';
 import { BoxingLaunchParty } from '../lib/email/templates/BoxingLaunchParty';
 import { sendEmail, getUnsubscribeUrl, getAppUrl, generateUnsubscribeToken } from '../lib/email/send';
 import { getResendClient, EMAIL_FROM } from '../lib/email/resend';
+import { fetchSuppressedAddresses, isSuppressed } from '../lib/email/suppression';
 
 /**
  * Two takes on the same moment. Pass --celebration for the poster version
@@ -146,19 +147,33 @@ async function main() {
     .select('user_id, marketing, unsubscribed_all');
   const prefBy = new Map((prefs || []).map((p: any) => [p.user_id, p]));
 
+  // 'sent' means Resend accepted it; 'delivered' means it landed. BOTH mean
+  // this person already got this email — matching only 'sent' would re-mail
+  // everyone the moment scripts/sync-email-bounces.ts promotes their row to
+  // 'delivered'. Only a failure is worth retrying.
   const { data: already } = await sb
     .from('email_log')
     .select('user_id')
     .eq('email_type', EMAIL_TYPE)
-    .eq('status', 'sent');
+    .in('status', ['sent', 'delivered']);
   const sentTo = new Set((already || []).map((r: any) => r.user_id));
+
+  // Addresses that have already bounced anywhere. Mailing a dead mailbox on
+  // every broadcast is how sender reputation quietly rots, and it makes the
+  // "delivered" number in every report a lie.
+  const suppressed = await fetchSuppressedAddresses(sb);
 
   const optedOut: string[] = [];
   const skipped: string[] = [];
+  const dead: string[] = [];
   const recipients = (profiles as any[]).filter((p) => {
     const pr: any = prefBy.get(p.id);
     if (pr && (pr.unsubscribed_all || pr.marketing === false)) {
       optedOut.push(p.email);
+      return false;
+    }
+    if (isSuppressed(suppressed, p.email)) {
+      dead.push(p.email);
       return false;
     }
     if (sentTo.has(p.id)) {
@@ -175,6 +190,7 @@ async function main() {
   console.log(`  ${'-'.repeat(58)}`);
   console.log(`  profiles with an email : ${profiles!.length}`);
   console.log(`  opted out of marketing : ${optedOut.length}`);
+  console.log(`  bounced previously     : ${dead.length}`);
   console.log(`  already sent this email: ${skipped.length}`);
   console.log(`  WILL RECEIVE           : ${targets.length}`);
   console.log(`  ${'-'.repeat(58)}`);

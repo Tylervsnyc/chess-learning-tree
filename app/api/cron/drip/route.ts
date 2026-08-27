@@ -11,6 +11,7 @@ import { BoxingStreakRisk } from '@/lib/email/templates/BoxingStreakRisk';
 import { BoxingWinback } from '@/lib/email/templates/BoxingWinback';
 import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
+import { fetchSuppressedAddresses, isSuppressed } from '@/lib/email/suppression';
 import {
   fetchActivityByUser,
   fetchFirstActivityByUser,
@@ -99,12 +100,19 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
       )
     ` as const;
 
-    const [activityByUser, firstActivityByUser, solverSet, profilesRes] = await Promise.all([
-      fetchActivityByUser(supabase),
-      fetchFirstActivityByUser(supabase),
-      fetchSolverSet(supabase),
-      supabase.from('profiles').select(PROFILE_SELECT).not('email', 'is', null),
-    ]);
+    // Addresses that have already bounced. email_log.status is written 'sent'
+    // at send time and only becomes truthful once
+    // scripts/sync-email-bounces.ts reconciles it with Resend — without this
+    // screen the crons keep mailing dead mailboxes daily, which is exactly how
+    // sender reputation erodes.
+    const [activityByUser, firstActivityByUser, solverSet, suppressed, profilesRes] =
+      await Promise.all([
+        fetchActivityByUser(supabase),
+        fetchFirstActivityByUser(supabase),
+        fetchSolverSet(supabase),
+        fetchSuppressedAddresses(supabase),
+        supabase.from('profiles').select(PROFILE_SELECT).not('email', 'is', null),
+      ]);
 
     if (profilesRes.error) {
       console.error('Drip profiles query error:', profilesRes.error);
@@ -131,7 +139,7 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
 
       for (const user of users) {
         // Check email preferences
-        if (!user.email || isOptedOut(user)) {
+        if (!user.email || isOptedOut(user) || isSuppressed(suppressed, user.email)) {
           dayResults.skipped++;
           continue;
         }
@@ -227,8 +235,9 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
           continue;
         }
 
-        // Respect marketing preference + global unsubscribe.
-        if (isOptedOut(user)) {
+        // Respect marketing preference + global unsubscribe, and never mail an
+        // address that has already bounced.
+        if (isOptedOut(user) || isSuppressed(suppressed, user.email)) {
           res.skipped++;
           continue;
         }
