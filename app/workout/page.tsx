@@ -176,6 +176,57 @@ function pick<T>(arr: T[], seed: number): T {
 
 type Discipline = 'puzzles' | 'fight';
 
+// ── Puzzle queue loading ────────────────────────────────────────────────────
+// The chess segment is dead without a queue and the round clock is already
+// running, so a slow or failed request must never be swallowed: each attempt
+// gets its own timeout, an empty list counts as a failure, and the caller gets
+// a rejection it can surface as a Retry button.
+const QUEUE_TIMEOUT_MS = 8000;
+const QUEUE_ATTEMPTS = 3;
+
+async function fetchPuzzleQueue(minutes: number): Promise<WorkoutPuzzleData[]> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < QUEUE_ATTEMPTS; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, 400 * 2 ** (attempt - 1)));
+    }
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), QUEUE_TIMEOUT_MS);
+    try {
+      const res = await fetch(`/api/workout/puzzles?minutes=${minutes}`, {
+        signal: ctrl.signal,
+      });
+      if (!res.ok) throw new Error(`workout puzzles: HTTP ${res.status}`);
+      const data = await res.json();
+      const puzzles = Array.isArray(data?.puzzles)
+        ? (data.puzzles as WorkoutPuzzleData[])
+        : [];
+      if (puzzles.length === 0) throw new Error('workout puzzles: empty queue');
+      return puzzles;
+    } catch (err) {
+      lastErr = err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error('workout puzzles: unavailable');
+}
+
+// The resume snapshot is rewritten every second, so it carries a trimmed queue:
+// the puzzles still ahead of the user, capped. Selection prefers unseen puzzles
+// anyway, so dropping the solved ones costs nothing and keeps the write cheap.
+const RESUME_QUEUE_CAP = 60;
+
+function trimQueueForResume(
+  queue: WorkoutPuzzleData[],
+  seenIds: string[],
+): WorkoutPuzzleData[] {
+  const seen = new Set(seenIds);
+  const ahead = queue.filter((p) => !seen.has(p.puzzleId || p.id || ''));
+  return (ahead.length ? ahead : queue).slice(0, RESUME_QUEUE_CAP);
+}
+
+
 const FIGHT_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const FIGHT_ANIM_MS = 300;
 
@@ -403,6 +454,15 @@ function WorkoutPageInner() {
   const firedUpEverRef = useRef(false); // hit the 80-punch trigger at least once
 
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
+  // True when every attempt to load the queue failed — the chess segment shows
+  // a Retry button instead of an indefinite "Loading puzzles…".
+  const [queueError, setQueueError] = useState(false);
+  // In-flight (or prefetched) queue request, keyed by the session length it was
+  // fetched for, so starting a workout reuses the setup-screen prefetch.
+  const queueReqRef = useRef<{
+    minutes: number;
+    promise: Promise<WorkoutPuzzleData[]>;
+  } | null>(null);
   const [puzzlePos, setPuzzlePos] = useState(0);
   const [targetElo, setTargetElo] = useState(START_ELO);
 
@@ -1082,6 +1142,40 @@ function WorkoutPageInner() {
     setSegIndex(next);
   }, [schedule, segIndex, finishSession, isFight, freezeFight, bankFightSegment]);
 
+  /**
+   * Load the puzzle queue for a session length, reusing an in-flight or already
+   * prefetched request. `force` starts a fresh one (the Retry button).
+   */
+  const loadQueue = useCallback((mins: number, force = false) => {
+    const cached = queueReqRef.current;
+    let req = !force && cached && cached.minutes === mins ? cached.promise : null;
+    if (!req) {
+      req = fetchPuzzleQueue(mins);
+      queueReqRef.current = { minutes: mins, promise: req };
+    }
+    const mine = req;
+    setQueueError(false);
+    req
+      .then((puzzles) => {
+        if (queueReqRef.current?.promise !== mine) return; // superseded
+        setQueue(puzzles);
+      })
+      .catch(() => {
+        if (queueReqRef.current?.promise !== mine) return;
+        queueReqRef.current = null; // drop the failure so a retry refetches
+        setQueue([]);
+        setQueueError(true);
+      });
+  }, []);
+
+  // Prefetch while the setup screen is up: the bell should ring with puzzles
+  // already in hand, not start a 3-minute round on a network round-trip.
+  useEffect(() => {
+    if (phase !== 'setup') return;
+    if (fightEnabled && discipline === 'fight') return;
+    loadQueue(minutes);
+  }, [phase, minutes, discipline, fightEnabled, loadQueue]);
+
   // ── Begin a session ───────────────────────────────────────────────────────
   const begin = useCallback(() => {
     warmupAudio();
@@ -1144,16 +1238,13 @@ function WorkoutPageInner() {
     setPhase('running');
     WorkoutEvents.started(minutes, false);
 
-    // Prefetch the ramped puzzle queue (puzzles discipline only).
+    // Puzzles discipline: adopt the setup-screen prefetch (or start it now).
     if (fight) {
       setQueue([]);
     } else {
-      fetch(`/api/workout/puzzles?minutes=${minutes}`)
-        .then((r) => (r.ok ? r.json() : { puzzles: [] }))
-        .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
-        .catch(() => setQueue([]));
+      loadQueue(minutes);
     }
-  }, [minutes, fightEnabled, discipline]);
+  }, [minutes, fightEnabled, discipline, loadQueue]);
 
   // ── Resume a workout that was killed mid-session ──────────────────────────
   const resume = useCallback((snap: WorkoutResumeState) => {
@@ -1227,13 +1318,10 @@ function WorkoutPageInner() {
     } else if (snap.queue?.length) {
       setQueue(snap.queue);
     } else {
-      // Older snapshot without a queue — fall back to a fresh fetch.
-      fetch(`/api/workout/puzzles?minutes=${snap.minutes}`)
-        .then((r) => (r.ok ? r.json() : { puzzles: [] }))
-        .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
-        .catch(() => setQueue([]));
+      // Older snapshot without a queue — fetch a fresh one.
+      loadQueue(snap.minutes, true);
     }
-  }, []);
+  }, [loadQueue]);
 
   // On mount, surface any resumable in-progress workout on the setup screen.
   useEffect(() => {
@@ -1317,7 +1405,7 @@ function WorkoutPageInner() {
       solved: solvedRef.current,
       seenIds: seenIdsRef.current,
       clientSessionId: clientSessionIdRef.current,
-      queue,
+      queue: trimQueueForResume(queue, seenIdsRef.current),
       discipline: isFight ? 'fight' : 'puzzles',
       fight: isFight
         ? {
@@ -1453,6 +1541,15 @@ function WorkoutPageInner() {
     return bestUnused ?? bestAny;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue, targetElo, puzzlePos]);
+
+  // A chess round that opens with no puzzles (prefetch still failing, or a
+  // resume whose snapshot had none) retries instead of sitting on
+  // "Loading puzzles…" for the whole round. Deduped by the request ref.
+  useEffect(() => {
+    if (phase !== 'running' || isFight) return;
+    if (current?.kind !== 'chess' || queue.length > 0 || queueError) return;
+    loadQueue(minutes);
+  }, [phase, isFight, current?.kind, queue.length, queueError, minutes, loadQueue]);
 
   useEffect(() => {
     puzzleShownAtRef.current = Date.now();
@@ -2007,6 +2104,22 @@ function WorkoutPageInner() {
                 onWrong={handleWrong}
                 comboIndex={combo}
               />
+            ) : queueError ? (
+              <div className="py-12 flex flex-col items-center gap-3 text-center">
+                <p className="text-sm font-semibold text-chess-text">
+                  Couldn&rsquo;t load the puzzles.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => loadQueue(minutes, true)}
+                  className="min-h-[44px] px-6 rounded-xl bg-chess-green text-white font-bold active:scale-95 transition-transform"
+                >
+                  Try again
+                </button>
+                <p className="text-xs text-chess-text-muted">
+                  Or hit Skip to move to the next round.
+                </p>
+              </div>
             ) : (
               <div className="text-center text-chess-text-muted py-12">
                 Loading puzzles…

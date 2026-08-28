@@ -60,6 +60,35 @@ const BANDS: { min: number; max: number }[] = [
 // Common tactical themes that exist across all the levels we use.
 const THEMES = ['fork', 'pin', 'skewer', 'hangingPiece', 'discoveredAttack', 'mateIn2'];
 
+// The user's seen-puzzle history is a nice-to-have (it keeps sessions fresh),
+// never a reason to hold up the queue. Bounded and time-boxed.
+const SEEN_READ_TIMEOUT_MS = 2500;
+const SEEN_READ_LIMIT = 5000;
+
+async function readSeenPuzzleIds(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data } = await supabase
+    .from('workout_seen_puzzles')
+    .select('puzzle_id')
+    .eq('user_id', user.id)
+    .limit(SEEN_READ_LIMIT);
+  return (data ?? [])
+    .map((row) => row.puzzle_id)
+    .filter((id): id is string => typeof id === 'string');
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(fallback), ms);
+    promise
+      .then((value) => resolve(value))
+      .catch(() => resolve(fallback))
+      .finally(() => clearTimeout(timer));
+  });
+}
+
 export async function GET(request: NextRequest) {
   const minutes = parseInt(request.nextUrl.searchParams.get('minutes') || '16');
   const safeMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : 16;
@@ -77,19 +106,13 @@ export async function GET(request: NextRequest) {
   // Puzzles this user has already been served in past workouts. We exclude
   // these so every session feels fresh. Anonymous users (or a DB read failure)
   // get an empty set — i.e. the original, repeat-allowing behavior.
+  // The round clock is already running when this is called, so the history read
+  // is bounded and time-boxed: a slow or unavailable DB degrades to "repeats
+  // allowed" instead of stalling the queue behind it.
   const excludeHistory = new Set<string>();
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: seenRows } = await supabase
-        .from('workout_seen_puzzles')
-        .select('puzzle_id')
-        .eq('user_id', user.id);
-      for (const row of seenRows ?? []) {
-        if (typeof row.puzzle_id === 'string') excludeHistory.add(row.puzzle_id);
-      }
-    }
+    const seenIds = await withTimeout(readSeenPuzzleIds(), SEEN_READ_TIMEOUT_MS, []);
+    for (const id of seenIds) excludeHistory.add(id);
   } catch (err) {
     console.error('workout puzzles: seen-set read failed', err);
   }
@@ -158,6 +181,27 @@ export async function GET(request: NextRequest) {
       seen.add(p.id);
       orderedPuzzles.push(p);
     }
+  }
+
+  // Last resort: selection produced nothing (a filter combination went dry, or
+  // a data file is missing). An empty queue leaves the user staring at
+  // "Loading puzzles…" for the whole round, so serve unfiltered puzzles rather
+  // than nothing — and say so loudly in the logs.
+  if (orderedPuzzles.length === 0) {
+    console.error('workout puzzles: selection empty, falling back to raw pool');
+    for (const band of BANDS) {
+      const level = getLevelFromRating(band.min);
+      for (const theme of THEMES) {
+        const data = loadPuzzleFile(level, theme);
+        if (!data) continue;
+        for (const p of data.puzzles.slice(0, 10).map(transformToPuzzle)) {
+          if (seen.has(p.id)) continue;
+          seen.add(p.id);
+          orderedPuzzles.push(p);
+        }
+      }
+    }
+    orderedPuzzles.sort((a, b) => a.rating - b.rating);
   }
 
   const puzzles = orderedPuzzles.map((p) => ({
