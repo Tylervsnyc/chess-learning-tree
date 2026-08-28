@@ -56,6 +56,12 @@ import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 import { FightResultCard } from '@/components/chessboxing/result/FightResultCard';
 import { buildPuzzleShareFrames } from '@/lib/share/fight-night-frames';
+import {
+  loadQueueCache,
+  mergeQueues,
+  saveQueueCache,
+  unshown,
+} from '@/lib/workout/queue-cache';
 import { getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
 import type { AchievementUnlock, NextMedal } from '@/lib/achievements/types';
@@ -221,8 +227,7 @@ function trimQueueForResume(
   queue: WorkoutPuzzleData[],
   seenIds: string[],
 ): WorkoutPuzzleData[] {
-  const seen = new Set(seenIds);
-  const ahead = queue.filter((p) => !seen.has(p.puzzleId || p.id || ''));
+  const ahead = unshown(queue, seenIds);
   return (ahead.length ? ahead : queue).slice(0, RESUME_QUEUE_CAP);
 }
 
@@ -506,6 +511,8 @@ function WorkoutPageInner() {
   // Per-puzzle results (theme + rating + time) for the skill profile.
   const resultsRef = useRef<{ puzzleId?: string; themes?: string[]; rating?: number; correct: boolean; timeMs: number }[]>([]);
   const puzzleShownAtRef = useRef<number>(0);
+  // Id of the puzzle currently on the board — see the pin note in currentPuzzle.
+  const pinnedIdRef = useRef<string | null>(null);
 
   // Stable id for THIS workout, re-sent on every /api/workout/finish retry so the
   // server awards points exactly once (set in begin(), restored on resume()).
@@ -1158,7 +1165,10 @@ function WorkoutPageInner() {
     req
       .then((puzzles) => {
         if (queueReqRef.current?.promise !== mine) return; // superseded
-        setQueue(puzzles);
+        // Merge, never replace: a queue already on screen (warm-start cache or
+        // an earlier fetch) must not be yanked out from under a live puzzle.
+        setQueue((prev) => mergeQueues(prev, puzzles));
+        saveQueueCache(puzzles);
       })
       .catch(() => {
         if (queueReqRef.current?.promise !== mine) return;
@@ -1200,6 +1210,10 @@ function WorkoutPageInner() {
     missedRef.current = [];
     solvedRef.current = [];
     shareGifRef.current = null;
+    // Puzzles shown in an earlier session THIS page-load. seenIdsRef resets
+    // below, so without carrying these forward a back-to-back session would
+    // re-serve the same puzzles out of the queue still in memory.
+    const shownEarlier = seenIdsRef.current;
     seenIdsRef.current = [];
     resultsRef.current = [];
     puzzleShownAtRef.current = Date.now();
@@ -1238,11 +1252,19 @@ function WorkoutPageInner() {
     setPhase('running');
     WorkoutEvents.started(minutes, false);
 
-    // Puzzles discipline: adopt the setup-screen prefetch (or start it now).
+    // Puzzles discipline: paint from whatever is already in hand — the
+    // setup-screen prefetch, or last session's leftovers in localStorage — so
+    // the first board is up on this frame instead of after a round-trip. The
+    // network queue merges in behind it.
     if (fight) {
       setQueue([]);
     } else {
-      loadQueue(minutes);
+      setQueue((prev) => {
+        const kept = unshown(prev, shownEarlier);
+        return kept.length ? kept : loadQueueCache();
+      });
+      // A second session this page-load has a stale memoized request; force it.
+      loadQueue(minutes, shownEarlier.length > 0);
     }
   }, [minutes, fightEnabled, discipline, loadQueue]);
 
@@ -1422,6 +1444,16 @@ function WorkoutPageInner() {
     });
   }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, highWaterElo, queue, isFight, fightFen]);
 
+  // Keep the warm-start cache trimmed to puzzles this user has NOT been shown,
+  // so the next session's instant board never opens on one they just solved.
+  // Written at segment boundaries and at the finish — a handful of times a
+  // session, not once per answer.
+  useEffect(() => {
+    if (isFight) return;
+    if (phase !== 'running' && phase !== 'done') return;
+    saveQueueCache(unshown(queue, seenIdsRef.current));
+  }, [segIndex, phase, isFight, queue]);
+
   // Pre-render the Fight Night share GIF (toughest solve) the moment the
   // result shows, so tapping Share is instant — same rhythm as the bout.
   useEffect(() => {
@@ -1521,6 +1553,16 @@ function WorkoutPageInner() {
   // the deps so this recomputes after each answer (seenIds is a ref).
   const currentPuzzle = useMemo<WorkoutPuzzleData | undefined>(() => {
     if (!queue.length) return undefined;
+    // A puzzle already on the board stays on the board. The queue can grow
+    // underneath it (the warm-start cache being topped up by the network
+    // queue), and re-picking mid-solve would remount the board and wipe the
+    // user's work. Cleared the moment they answer.
+    if (pinnedIdRef.current) {
+      const pinned = queue.find(
+        (p) => (p.puzzleId || p.id || '') === pinnedIdRef.current,
+      );
+      if (pinned) return pinned;
+    }
     const used = new Set(seenIdsRef.current);
     let bestUnused: WorkoutPuzzleData | undefined;
     let bestUnusedDiff = Infinity;
@@ -1553,6 +1595,9 @@ function WorkoutPageInner() {
 
   useEffect(() => {
     puzzleShownAtRef.current = Date.now();
+    pinnedIdRef.current = currentPuzzle
+      ? currentPuzzle.puzzleId || currentPuzzle.id || null
+      : null;
   }, [currentPuzzle]);
 
   const recordResult = useCallback((correct: boolean) => {
@@ -1570,6 +1615,7 @@ function WorkoutPageInner() {
   const handleCorrect = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
+    pinnedIdRef.current = null; // answered — free the board for the next pick
     recordResult(true);
     const rating = currentPuzzle?.rating ?? 1000;
     // Scoring v2: pay is anchored to the session's high-water ELO. Farm-tier
@@ -1604,6 +1650,7 @@ function WorkoutPageInner() {
   const handleWrong = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
+    pinnedIdRef.current = null; // answered — free the board for the next pick
     recordResult(false);
     // Wrong = 0 points; the cost is losing the combo back to ×1.
     comboRef.current = 0;

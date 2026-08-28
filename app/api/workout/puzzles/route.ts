@@ -79,6 +79,15 @@ async function readSeenPuzzleIds(): Promise<string[]> {
     .filter((id): id is string => typeof id === 'string');
 }
 
+function shuffle<T>(items: readonly T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return new Promise((resolve) => {
     const timer = setTimeout(() => resolve(fallback), ms);
@@ -109,10 +118,25 @@ export async function GET(request: NextRequest) {
   // The round clock is already running when this is called, so the history read
   // is bounded and time-boxed: a slow or unavailable DB degrades to "repeats
   // allowed" instead of stalling the queue behind it.
+  //
+  // Started BEFORE the file work so the Supabase round-trip overlaps with
+  // parsing the first band off disk instead of running after it.
+  const seenPromise = withTimeout(readSeenPuzzleIds(), SEEN_READ_TIMEOUT_MS, []);
+
+  // Which themes each band draws from, shuffled per request. Bands are filled
+  // from the first themes that yield enough puzzles, so the shuffle is what
+  // keeps the theme mix varied across sessions.
+  const bandThemes = BANDS.map(() => shuffle(THEMES));
+
+  // Warm the first band's likely files while the DB read is still in flight.
+  // Every session starts at the bottom of the ramp, so this is the band whose
+  // puzzles the user actually sees first.
+  const firstLevel = getLevelFromRating(BANDS[0].min);
+  for (const theme of bandThemes[0].slice(0, 2)) loadPuzzleFile(firstLevel, theme);
+
   const excludeHistory = new Set<string>();
   try {
-    const seenIds = await withTimeout(readSeenPuzzleIds(), SEEN_READ_TIMEOUT_MS, []);
-    for (const id of seenIds) excludeHistory.add(id);
+    for (const id of await seenPromise) excludeHistory.add(id);
   } catch (err) {
     console.error('workout puzzles: seen-set read failed', err);
   }
@@ -120,19 +144,23 @@ export async function GET(request: NextRequest) {
   const orderedPuzzles: Puzzle[] = [];
   const seen = new Set<string>();
 
-  for (const band of BANDS) {
+  for (const [bandIndex, band] of BANDS.entries()) {
     const level = getLevelFromRating(band.min);
-    const bandPool: Puzzle[] = [];
+    const themes = bandThemes[bandIndex];
 
-    // Load each theme file for this level and gather candidates.
-    for (const theme of THEMES) {
+    // Theme files are loaded LAZILY. selectPuzzlesForLesson returns up to 6 per
+    // call and a band needs ~7, so two files usually fill it — loading all six
+    // up front parsed ~2.4MB per band (~14MB per request) to discard most of
+    // it. Cached per band so a repeat theme doesn't re-map the file.
+    const themePools = new Map<string, Puzzle[]>();
+    const poolFor = (theme: string): Puzzle[] => {
+      const cached = themePools.get(theme);
+      if (cached) return cached;
       const data = loadPuzzleFile(level, theme);
-      if (data) {
-        bandPool.push(...data.puzzles.map(transformToPuzzle));
-      }
-    }
-
-    if (bandPool.length === 0) continue;
+      const pool = data ? data.puzzles.map(transformToPuzzle) : [];
+      themePools.set(theme, pool);
+      return pool;
+    };
 
     // selectPuzzlesForLesson caps at ~6, so call it per theme until we have
     // enough for this band, then sort the band ascending by rating.
@@ -142,8 +170,10 @@ export async function GET(request: NextRequest) {
     // band (far-future: thousands of puzzles seen), do a second pass that
     // allows repeats so the queue is never short — a stale puzzle beats a gap.
     const fillBand = (allowRepeats: boolean) => {
-      for (const theme of THEMES) {
+      for (const theme of themes) {
         if (bandSelected.length >= perBand) break;
+        const bandPool = poolFor(theme);
+        if (bandPool.length === 0) continue;
 
         const criteria: LessonSelectionCriteria = {
           themes: [theme],
