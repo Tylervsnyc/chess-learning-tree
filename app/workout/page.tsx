@@ -56,6 +56,12 @@ import { fireConfetti } from '@/lib/confetti';
 import { StreakComplete } from '@/components/shared/StreakComplete';
 import { FightResultCard } from '@/components/chessboxing/result/FightResultCard';
 import { buildPuzzleShareFrames } from '@/lib/share/fight-night-frames';
+import {
+  loadQueueCache,
+  mergeQueues,
+  saveQueueCache,
+  unshown,
+} from '@/lib/workout/queue-cache';
 import { getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
 import type { AchievementUnlock, NextMedal } from '@/lib/achievements/types';
@@ -175,6 +181,56 @@ function pick<T>(arr: T[], seed: number): T {
 // (~45MB), so it is warmed on the setup screen, never inside a timed segment.
 
 type Discipline = 'puzzles' | 'fight';
+
+// ── Puzzle queue loading ────────────────────────────────────────────────────
+// The chess segment is dead without a queue and the round clock is already
+// running, so a slow or failed request must never be swallowed: each attempt
+// gets its own timeout, an empty list counts as a failure, and the caller gets
+// a rejection it can surface as a Retry button.
+const QUEUE_TIMEOUT_MS = 8000;
+const QUEUE_ATTEMPTS = 3;
+
+async function fetchPuzzleQueue(minutes: number): Promise<WorkoutPuzzleData[]> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < QUEUE_ATTEMPTS; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, 400 * 2 ** (attempt - 1)));
+    }
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), QUEUE_TIMEOUT_MS);
+    try {
+      const res = await fetch(`/api/workout/puzzles?minutes=${minutes}`, {
+        signal: ctrl.signal,
+      });
+      if (!res.ok) throw new Error(`workout puzzles: HTTP ${res.status}`);
+      const data = await res.json();
+      const puzzles = Array.isArray(data?.puzzles)
+        ? (data.puzzles as WorkoutPuzzleData[])
+        : [];
+      if (puzzles.length === 0) throw new Error('workout puzzles: empty queue');
+      return puzzles;
+    } catch (err) {
+      lastErr = err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error('workout puzzles: unavailable');
+}
+
+// The resume snapshot is rewritten every second, so it carries a trimmed queue:
+// the puzzles still ahead of the user, capped. Selection prefers unseen puzzles
+// anyway, so dropping the solved ones costs nothing and keeps the write cheap.
+const RESUME_QUEUE_CAP = 60;
+
+function trimQueueForResume(
+  queue: WorkoutPuzzleData[],
+  seenIds: string[],
+): WorkoutPuzzleData[] {
+  const ahead = unshown(queue, seenIds);
+  return (ahead.length ? ahead : queue).slice(0, RESUME_QUEUE_CAP);
+}
+
 
 const FIGHT_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const FIGHT_ANIM_MS = 300;
@@ -403,6 +459,15 @@ function WorkoutPageInner() {
   const firedUpEverRef = useRef(false); // hit the 80-punch trigger at least once
 
   const [queue, setQueue] = useState<WorkoutPuzzleData[]>([]);
+  // True when every attempt to load the queue failed — the chess segment shows
+  // a Retry button instead of an indefinite "Loading puzzles…".
+  const [queueError, setQueueError] = useState(false);
+  // In-flight (or prefetched) queue request, keyed by the session length it was
+  // fetched for, so starting a workout reuses the setup-screen prefetch.
+  const queueReqRef = useRef<{
+    minutes: number;
+    promise: Promise<WorkoutPuzzleData[]>;
+  } | null>(null);
   const [puzzlePos, setPuzzlePos] = useState(0);
   const [targetElo, setTargetElo] = useState(START_ELO);
 
@@ -446,6 +511,8 @@ function WorkoutPageInner() {
   // Per-puzzle results (theme + rating + time) for the skill profile.
   const resultsRef = useRef<{ puzzleId?: string; themes?: string[]; rating?: number; correct: boolean; timeMs: number }[]>([]);
   const puzzleShownAtRef = useRef<number>(0);
+  // Id of the puzzle currently on the board — see the pin note in currentPuzzle.
+  const pinnedIdRef = useRef<string | null>(null);
 
   // Stable id for THIS workout, re-sent on every /api/workout/finish retry so the
   // server awards points exactly once (set in begin(), restored on resume()).
@@ -1082,6 +1149,43 @@ function WorkoutPageInner() {
     setSegIndex(next);
   }, [schedule, segIndex, finishSession, isFight, freezeFight, bankFightSegment]);
 
+  /**
+   * Load the puzzle queue for a session length, reusing an in-flight or already
+   * prefetched request. `force` starts a fresh one (the Retry button).
+   */
+  const loadQueue = useCallback((mins: number, force = false) => {
+    const cached = queueReqRef.current;
+    let req = !force && cached && cached.minutes === mins ? cached.promise : null;
+    if (!req) {
+      req = fetchPuzzleQueue(mins);
+      queueReqRef.current = { minutes: mins, promise: req };
+    }
+    const mine = req;
+    setQueueError(false);
+    req
+      .then((puzzles) => {
+        if (queueReqRef.current?.promise !== mine) return; // superseded
+        // Merge, never replace: a queue already on screen (warm-start cache or
+        // an earlier fetch) must not be yanked out from under a live puzzle.
+        setQueue((prev) => mergeQueues(prev, puzzles));
+        saveQueueCache(puzzles);
+      })
+      .catch(() => {
+        if (queueReqRef.current?.promise !== mine) return;
+        queueReqRef.current = null; // drop the failure so a retry refetches
+        setQueue([]);
+        setQueueError(true);
+      });
+  }, []);
+
+  // Prefetch while the setup screen is up: the bell should ring with puzzles
+  // already in hand, not start a 3-minute round on a network round-trip.
+  useEffect(() => {
+    if (phase !== 'setup') return;
+    if (fightEnabled && discipline === 'fight') return;
+    loadQueue(minutes);
+  }, [phase, minutes, discipline, fightEnabled, loadQueue]);
+
   // ── Begin a session ───────────────────────────────────────────────────────
   const begin = useCallback(() => {
     warmupAudio();
@@ -1106,6 +1210,10 @@ function WorkoutPageInner() {
     missedRef.current = [];
     solvedRef.current = [];
     shareGifRef.current = null;
+    // Puzzles shown in an earlier session THIS page-load. seenIdsRef resets
+    // below, so without carrying these forward a back-to-back session would
+    // re-serve the same puzzles out of the queue still in memory.
+    const shownEarlier = seenIdsRef.current;
     seenIdsRef.current = [];
     resultsRef.current = [];
     puzzleShownAtRef.current = Date.now();
@@ -1144,16 +1252,21 @@ function WorkoutPageInner() {
     setPhase('running');
     WorkoutEvents.started(minutes, false);
 
-    // Prefetch the ramped puzzle queue (puzzles discipline only).
+    // Puzzles discipline: paint from whatever is already in hand — the
+    // setup-screen prefetch, or last session's leftovers in localStorage — so
+    // the first board is up on this frame instead of after a round-trip. The
+    // network queue merges in behind it.
     if (fight) {
       setQueue([]);
     } else {
-      fetch(`/api/workout/puzzles?minutes=${minutes}`)
-        .then((r) => (r.ok ? r.json() : { puzzles: [] }))
-        .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
-        .catch(() => setQueue([]));
+      setQueue((prev) => {
+        const kept = unshown(prev, shownEarlier);
+        return kept.length ? kept : loadQueueCache();
+      });
+      // A second session this page-load has a stale memoized request; force it.
+      loadQueue(minutes, shownEarlier.length > 0);
     }
-  }, [minutes, fightEnabled, discipline]);
+  }, [minutes, fightEnabled, discipline, loadQueue]);
 
   // ── Resume a workout that was killed mid-session ──────────────────────────
   const resume = useCallback((snap: WorkoutResumeState) => {
@@ -1227,13 +1340,10 @@ function WorkoutPageInner() {
     } else if (snap.queue?.length) {
       setQueue(snap.queue);
     } else {
-      // Older snapshot without a queue — fall back to a fresh fetch.
-      fetch(`/api/workout/puzzles?minutes=${snap.minutes}`)
-        .then((r) => (r.ok ? r.json() : { puzzles: [] }))
-        .then((data) => setQueue(Array.isArray(data?.puzzles) ? data.puzzles : []))
-        .catch(() => setQueue([]));
+      // Older snapshot without a queue — fetch a fresh one.
+      loadQueue(snap.minutes, true);
     }
-  }, []);
+  }, [loadQueue]);
 
   // On mount, surface any resumable in-progress workout on the setup screen.
   useEffect(() => {
@@ -1317,7 +1427,7 @@ function WorkoutPageInner() {
       solved: solvedRef.current,
       seenIds: seenIdsRef.current,
       clientSessionId: clientSessionIdRef.current,
-      queue,
+      queue: trimQueueForResume(queue, seenIdsRef.current),
       discipline: isFight ? 'fight' : 'puzzles',
       fight: isFight
         ? {
@@ -1333,6 +1443,16 @@ function WorkoutPageInner() {
         : undefined,
     });
   }, [phase, minutes, segIndex, secondsLeft, score, right, wrong, combo, puzzlePos, targetElo, highWaterElo, queue, isFight, fightFen]);
+
+  // Keep the warm-start cache trimmed to puzzles this user has NOT been shown,
+  // so the next session's instant board never opens on one they just solved.
+  // Written at segment boundaries and at the finish — a handful of times a
+  // session, not once per answer.
+  useEffect(() => {
+    if (isFight) return;
+    if (phase !== 'running' && phase !== 'done') return;
+    saveQueueCache(unshown(queue, seenIdsRef.current));
+  }, [segIndex, phase, isFight, queue]);
 
   // Pre-render the Fight Night share GIF (toughest solve) the moment the
   // result shows, so tapping Share is instant — same rhythm as the bout.
@@ -1433,6 +1553,16 @@ function WorkoutPageInner() {
   // the deps so this recomputes after each answer (seenIds is a ref).
   const currentPuzzle = useMemo<WorkoutPuzzleData | undefined>(() => {
     if (!queue.length) return undefined;
+    // A puzzle already on the board stays on the board. The queue can grow
+    // underneath it (the warm-start cache being topped up by the network
+    // queue), and re-picking mid-solve would remount the board and wipe the
+    // user's work. Cleared the moment they answer.
+    if (pinnedIdRef.current) {
+      const pinned = queue.find(
+        (p) => (p.puzzleId || p.id || '') === pinnedIdRef.current,
+      );
+      if (pinned) return pinned;
+    }
     const used = new Set(seenIdsRef.current);
     let bestUnused: WorkoutPuzzleData | undefined;
     let bestUnusedDiff = Infinity;
@@ -1454,8 +1584,20 @@ function WorkoutPageInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue, targetElo, puzzlePos]);
 
+  // A chess round that opens with no puzzles (prefetch still failing, or a
+  // resume whose snapshot had none) retries instead of sitting on
+  // "Loading puzzles…" for the whole round. Deduped by the request ref.
+  useEffect(() => {
+    if (phase !== 'running' || isFight) return;
+    if (current?.kind !== 'chess' || queue.length > 0 || queueError) return;
+    loadQueue(minutes);
+  }, [phase, isFight, current?.kind, queue.length, queueError, minutes, loadQueue]);
+
   useEffect(() => {
     puzzleShownAtRef.current = Date.now();
+    pinnedIdRef.current = currentPuzzle
+      ? currentPuzzle.puzzleId || currentPuzzle.id || null
+      : null;
   }, [currentPuzzle]);
 
   const recordResult = useCallback((correct: boolean) => {
@@ -1473,6 +1615,7 @@ function WorkoutPageInner() {
   const handleCorrect = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
+    pinnedIdRef.current = null; // answered — free the board for the next pick
     recordResult(true);
     const rating = currentPuzzle?.rating ?? 1000;
     // Scoring v2: pay is anchored to the session's high-water ELO. Farm-tier
@@ -1507,6 +1650,7 @@ function WorkoutPageInner() {
   const handleWrong = useCallback(() => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
+    pinnedIdRef.current = null; // answered — free the board for the next pick
     recordResult(false);
     // Wrong = 0 points; the cost is losing the combo back to ×1.
     comboRef.current = 0;
@@ -2007,6 +2151,22 @@ function WorkoutPageInner() {
                 onWrong={handleWrong}
                 comboIndex={combo}
               />
+            ) : queueError ? (
+              <div className="py-12 flex flex-col items-center gap-3 text-center">
+                <p className="text-sm font-semibold text-chess-text">
+                  Couldn&rsquo;t load the puzzles.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => loadQueue(minutes, true)}
+                  className="min-h-[44px] px-6 rounded-xl bg-chess-green text-white font-bold active:scale-95 transition-transform"
+                >
+                  Try again
+                </button>
+                <p className="text-xs text-chess-text-muted">
+                  Or hit Skip to move to the next round.
+                </p>
+              </div>
             ) : (
               <div className="text-center text-chess-text-muted py-12">
                 Loading puzzles…
