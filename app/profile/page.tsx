@@ -282,6 +282,39 @@ function RecentWorkouts({ sessions, loading }: { sessions: WorkoutSession[] | nu
   );
 }
 
+// ── Sign out — client-side (supabase.auth.signOut via useUser), so it works
+// in the offline iOS bundles where /api/auth/logout doesn't exist. Clears
+// localStorage like the Chess Boxing settings screen, so the next launch is a
+// clean slate (onboarding / sign-in), then lands on the root.
+function SignOutButton() {
+  const router = useRouter();
+  const { user, signOut } = useUser();
+  const [busy, setBusy] = useState(false);
+  if (!user) return null;
+
+  const onSignOut = async () => {
+    if (busy) return;
+    setBusy(true);
+    await signOut();
+    try { localStorage.clear(); } catch {}
+    router.replace('/');
+    router.refresh();
+  };
+
+  return (
+    <div className="mt-6 flex justify-center">
+      <button
+        type="button"
+        onClick={onSignOut}
+        disabled={busy}
+        className="min-h-[44px] w-full max-w-xs rounded-xl border border-slate-300 bg-chess-surface text-sm font-bold text-chess-text disabled:opacity-50"
+      >
+        {busy ? 'Signing out…' : 'Sign out'}
+      </button>
+    </div>
+  );
+}
+
 // ── Delete account — Apple 5.1.1(v). Quiet red link at the bottom that
 // expands into an inline confirm (type DELETE). No browser dialogs.
 function DeleteAccount() {
@@ -598,6 +631,7 @@ export default function ProfilePage() {
         </div>
         </>)}
 
+        <SignOutButton />
         <DeleteAccount />
       </div>
 
