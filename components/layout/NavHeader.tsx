@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 import { DailyWorkoutBadge } from '@/components/shared/DailyWorkoutBadge';
 import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
-import { IS_CHESSPATH_APP } from '@/lib/config/offline';
 
 function LearnDropdown({ pathname }: { pathname: string | null }) {
   const [open, setOpen] = useState(false);
@@ -97,10 +96,9 @@ export function NavHeader() {
 
   // Chess Boxing app shell: the BoxTabBar owns ALL navigation inside the app,
   // on every route — the site header would double the nav and steal ~64px of
-  // the no-scroll fit budget. useBoxShell is the one shell detection.
-  // The Chess Path app has no BoxTabBar, so there the header stays — it is
-  // the app's only navigation.
-  const inBoxShell = useBoxShell() && !IS_CHESSPATH_APP;
+  // the no-scroll fit budget. useBoxShell is the one shell detection (and is
+  // always false in the Chess Path app, where this header IS the navigation).
+  const inBoxShell = useBoxShell();
 
   // Early bail — avoids loading useUser/Supabase on pages that never show the header
   const hidden = HIDDEN_PATHS.some(p => pathname?.startsWith(p))
