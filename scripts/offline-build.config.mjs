@@ -145,3 +145,40 @@ export const ROOT_FILES = [
   'package.json', 'tsconfig.json', 'postcss.config.mjs', 'eslint.config.mjs',
   'next-env.d.ts',
 ];
+
+/**
+ * Per-app build targets. Two iOS apps ship from this one pipeline:
+ *
+ *   chessboxing — the original Chess Boxing app (default; APP_TARGET unset).
+ *   chesspath   — the Chess Path app: the learning app with every boxing
+ *                 surface removed. No /box, no /workout, no leaderboard (it
+ *                 ranks workout points, which don't exist there).
+ *
+ * Each target gets its own output dir so a `cap sync` for one app can never
+ * pick up the other's bundle, and its own overrides dir applied AFTER the
+ * shared one (later files win — that's how chesspath swaps the root page).
+ * `target` is also forwarded as NEXT_PUBLIC_APP_TARGET so app code can gate
+ * boxing-only UI (see lib/config/offline.ts).
+ */
+const CHESSPATH_ROUTE_DROP = new Set([
+  'box', 'box/settings', 'box/onboarding', 'workout', 'leaderboard',
+]);
+
+export const APP_TARGETS = {
+  chessboxing: {
+    routes: ROUTE_ALLOWLIST,
+    appPurge: APP_PURGE,
+    publicAllowlist: PUBLIC_ALLOWLIST,
+    overridesDirs: ['offline-overrides'],
+    outDir: 'capacitor-shell',
+  },
+  chesspath: {
+    routes: ROUTE_ALLOWLIST.filter((r) => !CHESSPATH_ROUTE_DROP.has(r)),
+    appPurge: [...APP_PURGE, 'box', 'workout', 'leaderboard'],
+    publicAllowlist: PUBLIC_ALLOWLIST.filter(
+      (e) => e !== 'boxing' && e !== 'audio/combo-coach',
+    ),
+    overridesDirs: ['offline-overrides', 'offline-overrides-chesspath'],
+    outDir: 'capacitor-shell-chesspath',
+  },
+};

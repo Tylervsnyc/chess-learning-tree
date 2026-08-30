@@ -9,6 +9,7 @@ import type { WorkoutSessionSummary as WorkoutSession } from '@/lib/workout/sess
 import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { useIsNativeApp } from '@/lib/native-app';
+import { IS_CHESSPATH_APP } from '@/lib/config/offline';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
 import { StreakHero } from '@/components/shared/StreakHero';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
@@ -376,7 +377,8 @@ export default function ProfilePage() {
   // Client-side because Capacitor is only detectable in the browser; the
   // shell can't be sniffed from a request header.
   useEffect(() => {
-    if (nativeApp) pageRouter.replace('/box/profile');
+    // Chess Path app: there is no /box/profile — this page IS the profile.
+    if (nativeApp && !IS_CHESSPATH_APP) pageRouter.replace('/box/profile');
   }, [nativeApp, pageRouter]);
   // ?preview=gold — see the gold profile without a premium/patron account.
   const [previewGold, setPreviewGold] = useState(false);
@@ -555,6 +557,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* ── Boxing surfaces — hidden in the Chess Path app (no /workout,
+               no bouts there; the section's CTAs would 404) ─────────────── */}
+        {!IS_CHESSPATH_APP && (<>
         {/* ── Trophy case — Chess Boxing achievements ──────────────────── */}
         <TrophyCase />
 
@@ -591,6 +596,7 @@ export default function ProfilePage() {
 
           <RecentWorkouts sessions={sessions} loading={sessionsLoading} />
         </div>
+        </>)}
 
         <DeleteAccount />
       </div>

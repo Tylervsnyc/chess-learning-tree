@@ -80,13 +80,19 @@ export default function RootLayout({
             cookie (the middleware then handles / server-side on every later
             launch), and replace to /box. Once per session so the Play tab and
             in-app browsing are left alone. Debug on web with ?boxapp=1;
-            ?boxapp=frame previews one document and writes nothing (iframes). */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){try{var p=location.pathname.replace(/\/+$/,'')||'/';if(['/','/welcome','/path','/play'].indexOf(p)<0)return;var w=window;if(/[?&]boxapp=frame/.test(location.search))return;var inApp=(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||/[?&]boxapp/.test(location.search)||sessionStorage.getItem('cp:boxapp')==='1';if(!inApp)return;sessionStorage.setItem('cp:boxapp','1');document.cookie='cp_boxapp=1;path=/;max-age=31536000;SameSite=Lax';if(sessionStorage.getItem('cp:box-home-redirected')==='1')return;sessionStorage.setItem('cp:box-home-redirected','1');location.replace('/box');}catch(e){}})();",
-          }}
-        />
+            ?boxapp=frame previews one document and writes nothing (iframes).
+            Compiled OUT of the Chess Path app bundle (NEXT_PUBLIC_APP_TARGET
+            = 'chesspath'): that bundle has no /box route, and its shell must
+            never be treated as the boxing app. Unset everywhere else, so web
+            and Chess Boxing output are unchanged. */}
+        {process.env.NEXT_PUBLIC_APP_TARGET !== 'chesspath' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "(function(){try{var p=location.pathname.replace(/\/+$/,'')||'/';if(['/','/welcome','/path','/play'].indexOf(p)<0)return;var w=window;if(/[?&]boxapp=frame/.test(location.search))return;var inApp=(w.Capacitor&&w.Capacitor.isNativePlatform&&w.Capacitor.isNativePlatform())||/[?&]boxapp/.test(location.search)||sessionStorage.getItem('cp:boxapp')==='1';if(!inApp)return;sessionStorage.setItem('cp:boxapp','1');document.cookie='cp_boxapp=1;path=/;max-age=31536000;SameSite=Lax';if(sessionStorage.getItem('cp:box-home-redirected')==='1')return;sessionStorage.setItem('cp:box-home-redirected','1');location.replace('/box');}catch(e){}})();",
+            }}
+          />
+        )}
       </head>
       <body className="antialiased">
         <OfflineBridge />
@@ -119,7 +125,9 @@ export default function RootLayout({
               </RookieErrorBoundary>
             </main>
             <SilentErrorBoundary label="BoxTabBar">
-              <BoxTabBar />
+              {/* Boxing-only chrome: the Chess Path app navigates with the
+                  regular NavHeader instead (see NavHeader's shell check). */}
+              {process.env.NEXT_PUBLIC_APP_TARGET !== 'chesspath' && <BoxTabBar />}
               <StatusBarSync />
             </SilentErrorBoundary>
           </PostHogProvider>

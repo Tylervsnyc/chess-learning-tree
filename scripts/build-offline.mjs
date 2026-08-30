@@ -37,17 +37,24 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  ROUTE_ALLOWLIST,
-  APP_PURGE,
-  PUBLIC_ALLOWLIST,
   SRC_COPY,
   DATA_ALLOWLIST,
   ROOT_FILES,
+  APP_TARGETS,
 } from './offline-build.config.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD = path.join(ROOT, '.offline-build');
-const OUT = path.join(ROOT, 'capacitor-shell');
+
+// Which app this bundle is for. Unset = chessboxing, the original app — so
+// every existing invocation keeps producing exactly what it always did.
+const TARGET_NAME = process.env.APP_TARGET || 'chessboxing';
+const TARGET = APP_TARGETS[TARGET_NAME];
+if (!TARGET) {
+  console.error(`[offline] FAILED: unknown APP_TARGET "${TARGET_NAME}" — expected one of: ${Object.keys(APP_TARGETS).join(', ')}`);
+  process.exit(1);
+}
+const OUT = path.join(ROOT, TARGET.outDir);
 
 const log = (msg) => console.log(`[offline] ${msg}`);
 const die = (msg) => { console.error(`\n[offline] FAILED: ${msg}\n`); process.exit(1); };
@@ -92,7 +99,7 @@ function findRouteDirs(appDir, prefix = '') {
 function pruneApp() {
   const appDir = path.join(BUILD, 'app');
 
-  for (const dir of APP_PURGE) {
+  for (const dir of TARGET.appPurge) {
     fs.rmSync(path.join(appDir, dir), { recursive: true, force: true });
   }
 
@@ -114,7 +121,7 @@ function pruneApp() {
     fs.rmSync(path.join(appDir, f), { force: true });
   }
 
-  const allowed = new Set(ROUTE_ALLOWLIST);
+  const allowed = new Set(TARGET.routes);
   let dropped = 0;
   for (const route of findRouteDirs(appDir)) {
     if (allowed.has(route)) continue;
@@ -123,7 +130,7 @@ function pruneApp() {
   }
 
   const kept = findRouteDirs(appDir);
-  const missing = ROUTE_ALLOWLIST.filter((r) => !kept.includes(r));
+  const missing = TARGET.routes.filter((r) => !kept.includes(r));
   if (missing.length) {
     die(`these allowlisted routes have no page.tsx — the allowlist is stale:\n  ${missing.join('\n  ')}`);
   }
@@ -195,26 +202,30 @@ function filterDir(name, allowlist) {
  * exactly what ships without running the build.
  */
 function applyOverrides() {
-  const src = path.join(ROOT, 'scripts', 'offline-overrides');
-  if (!fs.existsSync(src)) return;
-
+  // Dirs apply in order, later files winning — the shared overrides first,
+  // then the per-app ones (that's how chesspath swaps the root page).
   let count = 0;
-  const walk = (dir, rel = '') => {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const relPath = rel ? path.join(rel, entry.name) : entry.name;
-      if (entry.isDirectory()) { walk(path.join(dir, entry.name), relPath); continue; }
+  for (const dirName of TARGET.overridesDirs) {
+    const src = path.join(ROOT, 'scripts', dirName);
+    if (!fs.existsSync(src)) continue;
 
-      const target = path.join(BUILD, relPath);
-      if (!fs.existsSync(path.join(ROOT, relPath))) {
-        die(`override scripts/offline-overrides/${relPath} has no counterpart in the repo — it was moved or deleted.`);
+    const walk = (dir, rel = '') => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const relPath = rel ? path.join(rel, entry.name) : entry.name;
+        if (entry.isDirectory()) { walk(path.join(dir, entry.name), relPath); continue; }
+
+        const target = path.join(BUILD, relPath);
+        if (!fs.existsSync(path.join(ROOT, relPath))) {
+          die(`override scripts/${dirName}/${relPath} has no counterpart in the repo — it was moved or deleted.`);
+        }
+        fs.mkdirSync(path.dirname(target), { recursive: true });
+        fs.copyFileSync(path.join(dir, entry.name), target);
+        count++;
       }
-      fs.mkdirSync(path.dirname(target), { recursive: true });
-      fs.copyFileSync(path.join(dir, entry.name), target);
-      count++;
-    }
-  };
-  walk(src);
-  log(`applied ${count} offline overrides`);
+    };
+    walk(src);
+  }
+  log(`applied ${count} offline overrides (${TARGET.overridesDirs.join(' → ')})`);
 }
 
 /* ------------------------------------------- 4. generateStaticParams inject */
@@ -358,6 +369,10 @@ function writeEnv() {
   }
 
   vars.NEXT_PUBLIC_OFFLINE_BUILD = '1';
+  // Only non-default targets carry an app-target var, so the chessboxing
+  // bundle stays byte-identical with every build shipped before targets
+  // existed (unset has always meant "the boxing app").
+  if (TARGET_NAME !== 'chessboxing') vars.NEXT_PUBLIC_APP_TARGET = TARGET_NAME;
   fs.writeFileSync(
     path.join(BUILD, '.env.production'),
     Object.entries(vars).map(([k, v]) => `${k}=${v}`).join('\n') + '\n'
@@ -395,10 +410,12 @@ export default nextConfig;
 
 function build() {
   log('running next build (output: export) — this takes a few minutes');
+  const env = { ...process.env, NEXT_PUBLIC_OFFLINE_BUILD: '1' };
+  if (TARGET_NAME !== 'chessboxing') env.NEXT_PUBLIC_APP_TARGET = TARGET_NAME;
   execFileSync('npx', ['next', 'build'], {
     cwd: BUILD,
     stdio: 'inherit',
-    env: { ...process.env, NEXT_PUBLIC_OFFLINE_BUILD: '1' },
+    env,
   });
 }
 
@@ -431,8 +448,10 @@ function publish() {
 
   const bytes = execFileSync('du', ['-sk', OUT]).toString().split('\t')[0];
   const pages = execFileSync('sh', ['-c', `find ${OUT} -name '*.html' | wc -l`]).toString().trim();
-  log(`published ${pages} pages to capacitor-shell/ (${Math.round(bytes / 1024)} MB)`);
-  log('next: npx cap sync ios');
+  log(`published ${pages} pages to ${TARGET.outDir}/ (${Math.round(bytes / 1024)} MB)`);
+  log(TARGET_NAME === 'chessboxing'
+    ? 'next: npx cap sync ios'
+    : `next: APP_TARGET=${TARGET_NAME} npx cap sync ios`);
 }
 
 /* -------------------------------------------------------------------- run */
@@ -440,7 +459,7 @@ function publish() {
 copyTree();
 pruneApp();
 const pack = buildPuzzlePack();
-filterDir('public', PUBLIC_ALLOWLIST);
+filterDir('public', TARGET.publicAllowlist);
 filterDir('data', DATA_ALLOWLIST);
 copyPuzzlePack(pack);
 applyOverrides();
