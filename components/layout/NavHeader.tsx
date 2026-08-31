@@ -7,7 +7,7 @@ import { useBoxShell } from '@/hooks/useBoxShell';
 import { usePathname } from 'next/navigation';
 import { BreathingHeaderLogo } from '@/components/ui/BreathingHeaderLogo';
 import { DailyWorkoutBadge } from '@/components/shared/DailyWorkoutBadge';
-import { MONETIZATION_ENABLED } from '@/lib/feature-flags';
+import { MONETIZATION_ENABLED, DAILY_RUN_ENABLED } from '@/lib/feature-flags';
 
 function LearnDropdown({ pathname }: { pathname: string | null }) {
   const [open, setOpen] = useState(false);
@@ -72,16 +72,18 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
             </svg>
             Openings
           </Link>
-          <Link
-            href="/run"
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap bg-chess-blue/10 text-chess-blue hover:bg-chess-blue hover:text-white"
-            onClick={() => setOpen(false)}
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 3h3v2h2V3h2v2h2V3h3v4l-1.5 1.5V17L19 19v2H5v-2l2.5-2V8.5L6 7V3z" />
-            </svg>
-            Daily Run
-          </Link>
+          {DAILY_RUN_ENABLED && (
+            <Link
+              href="/run"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap bg-chess-blue/10 text-chess-blue hover:bg-chess-blue hover:text-white"
+              onClick={() => setOpen(false)}
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 3h3v2h2V3h2v2h2V3h3v4l-1.5 1.5V17L19 19v2H5v-2l2.5-2V8.5L6 7V3z" />
+              </svg>
+              Daily Run
+            </Link>
+          )}
         </div>
       )}
     </div>
