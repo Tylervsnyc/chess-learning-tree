@@ -185,6 +185,8 @@ export const PlayEvents = {
     trackEvent('play_again_clicked', { lastResult, levelAtClick }),
   levelUpTriggered: (oldLevel: number, newLevel: number) =>
     trackEvent('play_level_up', { oldLevel, newLevel }),
+  levelPicked: (pickedLevel: number, ladderLevel: number) =>
+    trackEvent('play_level_picked', { pickedLevel, ladderLevel, replay: pickedLevel < ladderLevel }),
   quipShown: (
     category: 'win' | 'loss' | 'level_up' | 'landing',
     text: string,

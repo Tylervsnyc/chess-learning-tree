@@ -9,13 +9,16 @@
  *   - 3 wins at your current level advance you one level. Cap at level 10.
  *   - Wins don't have to be consecutive; losses and draws change NOTHING.
  *   - The level only ever goes UP. There is no demotion path, by design.
+ *   - A win counts toward the ladder ONLY when the game was played AT the
+ *     then-current level or above (2026-08-31, with the level picker):
+ *     replaying a lower level for fun never promotes. A win with no recorded
+ *     difficulty counts defensively — never punish missing data.
  *
  * Derived on read, like the streak — no stored counter, no new columns. The
  * server replays every finished Rookie game (game_sessions: result +
- * rookie_difficulty) and every Chess Boxing bout (bout_sessions) in
- * chronological order, counting each win toward the then-current derived
- * level. Historical games played under the old matchmaking at whatever
- * difficulty count the same way — every win is a win. Simple, predictable.
+ * rookie_difficulty) and every Chess Boxing bout (bout_sessions: result +
+ * level) in chronological order, counting each qualifying win toward the
+ * then-current derived level.
  *
  * The old Elo matchmaking rating (lib/rookie/rating.ts) is ANALYTICS-ONLY
  * now: it still gets folded so the number stays continuous, but nothing reads
@@ -56,16 +59,26 @@ export function applyWin(state: WinLadderState): WinLadderState {
   return { level: state.level, winsAtLevel: wins };
 }
 
+/**
+ * Does a win at `playedLevel` count toward the ladder from `state`?
+ * At-level or above counts (above is defensive — it shouldn't happen, but a
+ * harder win should never count for less). Below = replayed for fun, never
+ * promotes. Unknown difficulty (null) counts — never punish missing data.
+ */
+export function winCounts(state: WinLadderState, playedLevel: number | null): boolean {
+  return playedLevel === null || playedLevel >= state.level;
+}
+
 export interface DerivedWinLadder extends WinLadderState {
   /**
-   * State BEFORE the most recent counted win — lets a POST that races the
+   * State BEFORE the most recent COUNTED win — lets a POST that races the
    * game_sessions insert tell whether the just-reported win already landed
    * and whether it crossed a level boundary.
    */
   beforeLastWin: WinLadderState;
-  /** When the most recent counted win landed, or null if no wins yet. */
+  /** When the most recent COUNTED win landed, or null if no counted wins yet. */
   lastWinAt: string | null;
-  /** Total wins counted, all levels. */
+  /** Total wins counted toward the ladder (lower-level replay wins excluded). */
   totalWins: number;
 }
 
@@ -89,11 +102,12 @@ export async function deriveWinLadder(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<DerivedWinLadder> {
-  const winTimes: string[] = [];
+  // Every win with when it landed and what level it was played at.
+  const wins: Array<{ t: string; playedLevel: number | null }> = [];
 
   const games = await supabase
     .from('game_sessions')
-    .select('ended_at')
+    .select('ended_at, rookie_difficulty')
     .eq('user_id', userId)
     .eq('result', 'win')
     .not('rookie_difficulty', 'is', null)
@@ -103,13 +117,18 @@ export async function deriveWinLadder(
     console.error('win ladder: game read failed', games.error);
   } else {
     for (const row of games.data ?? []) {
-      if (typeof row.ended_at === 'string') winTimes.push(row.ended_at);
+      if (typeof row.ended_at === 'string') {
+        wins.push({
+          t: row.ended_at,
+          playedLevel: typeof row.rookie_difficulty === 'number' ? row.rookie_difficulty : null,
+        });
+      }
     }
   }
 
   const bouts = await supabase
     .from('bout_sessions')
-    .select('created_at')
+    .select('created_at, level')
     .eq('user_id', userId)
     .eq('result', 'win')
     .order('created_at', { ascending: true });
@@ -120,23 +139,34 @@ export async function deriveWinLadder(
     }
   } else {
     for (const row of bouts.data ?? []) {
-      if (typeof row.created_at === 'string') winTimes.push(row.created_at);
+      if (typeof row.created_at === 'string') {
+        wins.push({
+          t: row.created_at,
+          playedLevel: typeof row.level === 'number' ? row.level : null,
+        });
+      }
     }
   }
 
-  winTimes.sort((a, b) => a.localeCompare(b));
+  wins.sort((a, b) => a.t.localeCompare(b.t));
 
   let state: WinLadderState = LADDER_START;
   let beforeLastWin: WinLadderState = LADDER_START;
-  for (const _t of winTimes) {
+  let lastWinAt: string | null = null;
+  let counted = 0;
+  for (const win of wins) {
+    // A win at a lower level (replayed for fun via the picker) never promotes.
+    if (!winCounts(state, win.playedLevel)) continue;
     beforeLastWin = state;
     state = applyWin(state);
+    lastWinAt = win.t;
+    counted++;
   }
 
   return {
     ...state,
     beforeLastWin,
-    lastWinAt: winTimes.length > 0 ? winTimes[winTimes.length - 1] : null,
-    totalWins: winTimes.length,
+    lastWinAt,
+    totalWins: counted,
   };
 }

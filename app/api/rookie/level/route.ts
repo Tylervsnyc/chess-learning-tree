@@ -5,6 +5,7 @@ import { applyGameResult } from '@/lib/rookie/rating';
 import {
   deriveWinLadder,
   applyWin,
+  winCounts,
   maxLevel,
   WINS_TO_ADVANCE,
   type WinLadderState,
@@ -17,6 +18,8 @@ import { getLevelElo } from '@/lib/rookie-levels';
  * WIN-COUNTER LADDER, restored 2026-08-31 (Tyler's call, reversing the
  * 2026-08-05 rating-matchmaking rework): beat Rookie 3 times at your level and
  * she levels up. The level ONLY goes up — losses and draws change nothing.
+ * A win counts only when played AT the ladder level or above (the level
+ * picker lets users replay lower rungs for fun — those wins never promote).
  *
  * GET  → { level, winsAtLevel, winsToAdvance, levelElo }
  * POST { level, result: 'win'|'loss'|'draw' } →
@@ -103,15 +106,18 @@ export async function POST(request: NextRequest) {
     const landed =
       derived.lastWinAt !== null &&
       Date.now() - Date.parse(derived.lastWinAt) < JUST_LANDED_MS;
-    if (landed) {
-      // The game_sessions insert beat us here — the derived state already
-      // includes this win. beforeLastWin tells us if it crossed a boundary.
+    if (landed && winCounts(derived.beforeLastWin, rawLevel)) {
+      // The game_sessions insert beat us here AND this win qualified from the
+      // pre-win state — the derived state already includes it. beforeLastWin
+      // tells us if it crossed a boundary.
       before = derived.beforeLastWin;
-    } else {
+    } else if (winCounts(derived, rawLevel)) {
       // The insert hasn't landed yet — fold the reported win on top. The next
       // derive will count the real row and agree with this answer.
       after = applyWin(derived);
     }
+    // else: a win at a LOWER level (replayed for fun via the level picker) —
+    // it never moves the ladder. The derive above already ignores such rows.
   }
 
   // Analytics-only: keep the old Elo rating continuous. Nothing reads it for

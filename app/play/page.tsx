@@ -121,6 +121,15 @@ const ANIM_MS = 300;
 // LEVEL PROGRESS BAR (from test/play-design)
 // ════════════════════════════════
 
+/** Tiny padlock for locked rungs. SVG, not an emoji — never emojis. */
+function LockGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="9" height="9" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 1 1 6 0v3H9Z" />
+    </svg>
+  );
+}
+
 function LevelProgressBar({
   currentLevel,
   playingLevel,
@@ -145,32 +154,66 @@ function LevelProgressBar({
   // 9 gaps between 10 levels. Level 1 = 0%, level 10 = 100%.
   const levelPct = (lvl: number) => ((lvl - 1) / 9) * 100;
   const fillPct = levelPct(currentLevel) + Math.max(0, Math.min(1, subProgress)) * (100 / 9);
+  const canPick = !!onPickLevel && (isDev || currentLevel > 1);
 
   return (
     <div className="w-full">
-      {/* Level numbers above */}
-      <div className="relative h-4 mb-1">
+      <div className="relative">
+      {/* Level numbers above — the tap targets. Locked rungs show a padlock. */}
+      <div className="relative h-5 mb-1">
         {ROOKIE_LEVELS.map((l) => {
           const pos = levelPct(l.level);
           const isCompleted = l.level < currentLevel;
           const isCurrent = l.level === currentLevel;
           const isPlaying = l.level === activePlayLevel;
           const isUnlocked = l.level <= currentLevel;
-          const clickable = onPickLevel && (isDev || isUnlocked);
+          const clickable = !!onPickLevel && (isDev || isUnlocked);
           return (
-            <span
+            <button
               key={l.level}
+              type="button"
               onClick={clickable ? () => onPickLevel!(l.level) : undefined}
-              className={`absolute -translate-x-1/2 text-[10px] font-bold tabular-nums ${
-                isPlaying ? 'text-chess-green underline decoration-2 underline-offset-2'
-                  : isCurrent ? 'text-chess-green'
-                  : isCompleted ? (dark ? 'text-white/70' : 'text-chess-text-muted')
-                  : (dark ? 'text-white/30' : 'text-chess-disabled')
-              } ${clickable ? 'cursor-pointer hover:text-chess-green hover:scale-125 transition-transform' : ''}`}
-              style={{ left: `${pos}%` }}
+              disabled={!clickable}
+              title={isUnlocked || isDev ? `Level ${l.level}: ${l.title} · ~${l.elo} ELO` : `Level ${l.level} · locked — reach it by beating her`}
+              aria-label={
+                isUnlocked || isDev
+                  ? `Play Rookie at level ${l.level}, ${l.title}, about ${l.elo} ELO${isPlaying ? ' (selected)' : ''}`
+                  : `Level ${l.level} is locked`
+              }
+              aria-pressed={isPlaying}
+              // The visible rung is small, but the hit area extends down over the
+              // bar (h-5 rung + overlay padding below) so each tap target is
+              // ~44px tall. 10 rungs across a 328px phone bar can't each be
+              // 44px WIDE — they get ~32px, the honest maximum.
+              className={`absolute -translate-x-1/2 top-0 z-20 flex h-full w-8 items-start justify-center bg-transparent p-0 ${
+                clickable ? 'cursor-pointer group' : 'cursor-default'
+              }`}
+              style={{ left: `${pos}%`, height: '48px' }}
             >
-              {l.level}
-            </span>
+              {isUnlocked || isDev ? (
+                <span
+                  className={`flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-bold tabular-nums transition-transform ${
+                    isPlaying
+                      ? 'bg-chess-green text-white shadow-[0_1px_4px_rgba(88,204,2,0.5)] scale-110'
+                      : isCurrent
+                        ? 'text-chess-green ring-1 ring-chess-green/50 group-hover:scale-125'
+                        : isCompleted
+                          ? (dark ? 'text-white/70' : 'text-chess-text-muted') + ' group-hover:scale-125 group-hover:text-chess-green'
+                          : (dark ? 'text-white/40' : 'text-chess-disabled') + ' group-hover:scale-125'
+                  }`}
+                >
+                  {l.level}
+                </span>
+              ) : (
+                <span
+                  className={`flex h-[18px] w-[18px] items-center justify-center rounded-full ${
+                    dark ? 'text-white/25' : 'text-chess-disabled opacity-60'
+                  }`}
+                >
+                  <LockGlyph />
+                </span>
+              )}
+            </button>
           );
         })}
       </div>
@@ -219,6 +262,13 @@ function LevelProgressBar({
           );
         })}
       </div>
+      </div>
+      {/* Hint: only once there's actually a choice to make */}
+      {canPick && (
+        <div className={`mt-1.5 text-center text-[10px] font-semibold uppercase tracking-wide ${dark ? 'text-white/40' : 'text-chess-text-muted'}`}>
+          Tap a level to play it
+        </div>
+      )}
     </div>
   );
 }
@@ -229,8 +279,18 @@ function LevelProgressBar({
  * Rookie up. Losses change nothing (no reset, no demotion), so the pips only
  * ever fill until they pop.
  */
-function WinPipsNote({ level, wins, dark }: { level: number; wins: number; dark?: boolean }) {
+function WinPipsNote({ level, playingLevel, wins, dark }: { level: number; playingLevel?: number; wins: number; dark?: boolean }) {
   const muted = dark ? 'text-white/60' : 'text-chess-text-muted';
+  const playing = playingLevel ?? level;
+  // Replaying a lower rung via the picker — be honest: these wins are for
+  // fun, they never move the ladder (lib/rookie/win-ladder.ts).
+  if (playing < level) {
+    return (
+      <span className={`text-xs ${muted} font-semibold text-center`}>
+        Level {playing} is a victory lap &mdash; wins here don&apos;t count toward leveling her up.
+      </span>
+    );
+  }
   if (level >= 10) {
     return <span className="text-xs font-bold text-chess-gold">SHE IS ALL OUT OF GEARS</span>;
   }
@@ -255,6 +315,43 @@ function WinPipsNote({ level, wins, dark }: { level: number; wins: number; dark?
         Beat her {WINS_TO_ADVANCE - wins} more time{WINS_TO_ADVANCE - wins === 1 ? '' : 's'} to reach
         {' '}Level {nextLevel.level} &middot; ~{nextLevel.elo} ELO
       </span>
+    </div>
+  );
+}
+
+/**
+ * Level 10 — MAX ELO. Shown on the setup screen whenever Rookie is playing at
+ * the top of the ladder (derived from level === 10, nothing persisted). A
+ * dramatic warning treatment, but still the app's light design language.
+ */
+function MaxEloBanner({ dark }: { dark?: boolean }) {
+  return (
+    <div
+      role="status"
+      className={`w-full rounded-2xl border-2 px-4 py-3 text-center ${
+        dark ? 'border-red-500/50 bg-red-500/15' : 'border-red-200 bg-red-50'
+      }`}
+      style={{
+        boxShadow: dark
+          ? '0 0 24px rgba(239,68,68,0.25)'
+          : '0 4px 16px rgba(239,68,68,0.12), inset 0 1px 0 rgba(255,255,255,0.6)',
+      }}
+    >
+      <div className="flex items-center justify-center gap-2">
+        {/* Warning triangle — SVG, never an emoji */}
+        <svg viewBox="0 0 24 24" width="14" height="14" className="text-red-500 animate-pulse" fill="currentColor" aria-hidden="true">
+          <path d="M12 2 1 21h22L12 2Zm0 6.5c.6 0 1 .4 1 1V14a1 1 0 1 1-2 0V9.5c0-.6.4-1 1-1Zm0 8.2a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z" />
+        </svg>
+        <span className="text-[11px] font-black uppercase tracking-widest text-red-600">
+          Warning: Rookie is playing at MAX ELO
+        </span>
+        <svg viewBox="0 0 24 24" width="14" height="14" className="text-red-500 animate-pulse" fill="currentColor" aria-hidden="true">
+          <path d="M12 2 1 21h22L12 2Zm0 6.5c.6 0 1 .4 1 1V14a1 1 0 1 1-2 0V9.5c0-.6.4-1 1-1Zm0 8.2a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z" />
+        </svg>
+      </div>
+      <p className={`mt-1 text-xs font-semibold ${dark ? 'text-white/80' : 'text-chess-text'}`}>
+        No more training wheels. She has been waiting for this.
+      </p>
     </div>
   );
 }
@@ -341,6 +438,9 @@ export default function PlayRookiePage() {
   // rookieLevel is what she's actually playing this game (dev can override).
   const [matchedLevel, setMatchedLevel] = useState(1);
   const [rookieLevel, setRookieLevel] = useState(1);
+  // True while the user has explicitly picked a rung on the bar (usually a
+  // lower level, replayed for fun). Server syncs must not stomp their choice.
+  const userPickedLevelRef = useRef(false);
   const [subProgress, setSubProgress] = useState(0);
   const [winsAtLevel, setWinsAtLevel] = useState(0);
   const { name: playerNameValue } = useName();
@@ -365,7 +465,7 @@ export default function PlayRookiePage() {
     fetchMatchedLevel().then((state) => {
       if (cancelled) return;
       setMatchedLevel(state.level);
-      setRookieLevel(state.level);
+      if (!userPickedLevelRef.current) setRookieLevel(state.level);
       setWinsAtLevel(state.winsAtLevel);
       setSubProgress(levelProgress(state));
     });
@@ -698,6 +798,7 @@ export default function PlayRookiePage() {
     }, 80);
     window.setTimeout(() => {
       setMatchedLevel(newLevel);
+      userPickedLevelRef.current = false;
       setRookieLevel(newLevel);
       setWinsAtLevel(0);
       setSubProgress(0);
@@ -737,6 +838,7 @@ export default function PlayRookiePage() {
         } catch {}
         if (alreadyCelebrated) {
           setMatchedLevel(pendingLevelUp.newLevel);
+          userPickedLevelRef.current = false;
           setRookieLevel(pendingLevelUp.newLevel);
           setWinsAtLevel(0);
           setSubProgress(0);
@@ -1039,9 +1141,10 @@ export default function PlayRookiePage() {
         pendingLevelUpRef.current = { oldLevel: levelPlayed, newLevel: update.level };
       } else {
         // Same level: sync to the server's answer (it can only ever be equal
-        // or higher — e.g. wins landed from another device).
+        // or higher — e.g. wins landed from another device). Never stomp an
+        // explicit picker choice, though.
         setMatchedLevel(update.level);
-        setRookieLevel(update.level);
+        if (!userPickedLevelRef.current) setRookieLevel(update.level);
       }
     });
 
@@ -2098,10 +2201,14 @@ export default function PlayRookiePage() {
               animDurationMs={levelBarAnim ? levelBarAnim.duration : 700}
               celebrate={!!levelBarAnim}
               onPickLevel={(lvl) => {
-                // Rookie picks the level now — she matches your rating. The bar
-                // is read-only in production; dev can still jump around to test.
-                if (process.env.NODE_ENV !== 'development') return;
+                // Real feature (2026-08-31): play any level you've unlocked.
+                // Locked rungs (> ladder level) stay locked in production;
+                // dev can still jump anywhere to test.
+                const isDev = process.env.NODE_ENV === 'development';
+                if (!isDev && lvl > matchedLevel) return;
+                userPickedLevelRef.current = lvl !== matchedLevel;
                 setRookieLevel(lvl);
+                PlayEvents.levelPicked(lvl, matchedLevel);
               }}
             />
             <LevelUpCelebration active={!!levelBarAnim} />
@@ -2149,9 +2256,14 @@ export default function PlayRookiePage() {
               </div>
             </div>
 
-            {/* Win counter: 3 pips at the current level, next level's ELO */}
+            {/* Win counter: 3 pips at the current level, next level's ELO.
+                At the top of the ladder the MAX ELO warning takes over. */}
             <div className="flex justify-center pointer-events-auto">
-              <WinPipsNote level={matchedLevel} wins={winsAtLevel} dark={inBoxShell} />
+              {rookieLevel >= 10 ? (
+                <MaxEloBanner dark={inBoxShell} />
+              ) : (
+                <WinPipsNote level={matchedLevel} playingLevel={rookieLevel} wins={winsAtLevel} dark={inBoxShell} />
+              )}
             </div>
 
             {/* Color picker */}

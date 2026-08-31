@@ -22,6 +22,7 @@
 
 import {
   applyWin,
+  winCounts,
   maxLevel,
   WINS_TO_ADVANCE,
   type WinLadderState,
@@ -131,8 +132,11 @@ export interface LevelUpdate extends RookieLevelState {
  * Record a finished game and get the new ladder state back.
  *
  * Only a WIN moves the counter; a loss or draw changes nothing — no demotion,
- * no reset (Tyler, 2026-08-31). Logged-out players are counted locally in
- * localStorage, same rules.
+ * no reset (Tyler, 2026-08-31). And a win counts toward the ladder ONLY when
+ * the game was played AT the current ladder level or above — replaying a
+ * lower rung via the level picker is just for fun (same rule as the server's
+ * replay in lib/rookie/win-ladder.ts). Logged-out players are counted locally
+ * in localStorage, same rules.
  */
 export async function recordGameResult(
   level: number,
@@ -158,6 +162,9 @@ export async function recordGameResult(
   // Logged out (401) or offline: the localStorage ladder is the authority.
   const before = peekRookieLevel();
   if (result !== 'win') return { ...before, change: 'same' };
+  // Mirror the server rule: a win at a lower (replayed-for-fun) level never
+  // moves the ladder.
+  if (!winCounts(before, level)) return { ...before, change: 'same' };
   const next: RookieLevelState = { ...applyWin(before), source: before.source };
   writeLocal(next);
   cached = next;
