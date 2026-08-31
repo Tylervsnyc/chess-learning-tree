@@ -9,9 +9,9 @@ offline-bundle architecture, selected by `APP_TARGET`:
 | APP_TARGET | (unset) | `chesspath` |
 | web bundle | `capacitor-shell/` | `capacitor-shell-chesspath/` |
 | Xcode project | `ios/App/` | `ios-chesspath/App/` |
-| entry | /box (locker home) | onboarding → /path |
+| entry | /box (locker home) | onboarding → /play (onboarded/signed-in devices go straight to /play) |
 | chrome | BoxTabBar, no NavHeader | NavHeader, no tab bar |
-| splash | navy #101a33 | page blue #eef6fc |
+| splash | navy #101a33 | page blue #eef6fc, bare rook mark (see Cold start) |
 
 Chess Path contains NO boxing: `/box`, `/workout` and `/leaderboard` (a
 workout-points board) are stripped from its bundle by
@@ -19,6 +19,19 @@ workout-points board) are stripped from its bundle by
 shared screens is gated by `IS_CHESSPATH_APP` (`lib/config/offline.ts`). The
 boot-to-/box script in `app/layout.tsx` is compiled out of this bundle. No
 purchases in v1 (NativeNoSaleGuard + purged pricing routes apply as on boxing).
+
+## Cold start (2026-08-31)
+
+One continuous sequence, no logo swap: the native launch image is the bare
+rook mark on page blue (`scripts/generate-chesspath-splash.ts`, geometry from
+`lib/brand/rook-mark.ts`); the web `NativeSplash` paints the identical rook
+at the identical size (`ROOK_FRACTION * max(100vw,100vh)` mirrors
+scaleAspectFill), hides the Capacitor splash itself with no fade, plays a
+random Rookie intro (hop / wiggle / shimmer / scatter — all start from the
+static pose), and fades the moment `/play` has painted
+(`lib/native-splash.ts`, min 1.15s, max 4s). Replay on `/test/native-splash`
+or any page with `?nativeSplash=hop`. If you change the rook geometry,
+re-run the generator AND rebuild the iOS app — the launch image is native.
 
 ## Build + ship
 

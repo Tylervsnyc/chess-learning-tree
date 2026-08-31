@@ -50,7 +50,13 @@ const config: CapacitorConfig = IS_CHESSPATH
       },
       plugins: {
         SplashScreen: {
-          launchShowDuration: 1400,
+          // The web NativeSplash hides this itself the moment it has painted
+          // an identical frame (same rook, same size — lib/brand/rook-mark),
+          // so the handoff is invisible. launchShowDuration is only the
+          // safety net if the web never boots. No fade: the frames match.
+          launchShowDuration: 4000,
+          launchAutoHide: true,
+          launchFadeOutDuration: 0,
           // MUST match the native launch image background (Splash.imageset)
           // and the web NativeSplash's Chess Path branch — the app's light
           // page blue, NOT the boxing navy.
