@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { headers, cookies } from 'next/headers';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import { ColdBoardLanding } from '@/components/onboarding/ColdBoardLanding';
+import { SuiteLanding } from '@/components/onboarding/SuiteLanding';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { FIRST_TOUCH_COOKIE, parseFirstTouch } from '@/lib/growth/first-touch';
 
@@ -44,6 +45,12 @@ export default async function WelcomePage({
 
   if (FEATURE_FLAGS.IG_FAST_LANDING && (await isColdIg(params))) {
     return <ColdBoardLanding />;
+  }
+
+  // Suite hub for non-IG traffic (SUITE_LANDING). ?start=1 (the hub's own
+  // "Start learning" CTA) drops back into the classic onboarding funnel.
+  if (FEATURE_FLAGS.SUITE_LANDING && !('start' in params)) {
+    return <SuiteLanding />;
   }
 
   // Non-IG / desktop / existing users: ZERO change.

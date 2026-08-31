@@ -49,6 +49,19 @@ export const FEATURE_FLAGS = {
    */
   IG_FAST_LANDING: true,
   /**
+   * Suite landing (2026-08-31) — chesspath.app front door presents the whole
+   * product family (Chess Path · Chess Boxing · Rookie's Revenge) instead of
+   * dropping straight into the Chess Path onboarding funnel. Server-rendered,
+   * zero client JS — it doubles as the <2s ultra-light landing the perf-cliff
+   * investigation called for. Applies ONLY to the non-IG branch of /welcome:
+   * cold-IG traffic keeps the checkmate-board funnel (IG_FAST_LANDING /
+   * IG_LANDING_CHECKMATE) untouched, and "Start learning" on the hub routes to
+   * /welcome?start=1 which renders the classic <OnboardingFlow>. OFF = exact
+   * pre-2026-08-31 behavior. Built + browser-verified 2026-08-31; holding OFF
+   * until Tyler flips it for launch.
+   */
+  SUITE_LANDING: false,
+  /**
    * Camera punch counter in the Chess Boxing workout's exercise segments
    * (components/workout/PunchTracker). Fully on-device (MediaPipe pose,
    * self-hosted model — video never leaves the phone). Flag ON shows an
