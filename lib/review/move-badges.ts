@@ -88,6 +88,15 @@ export const BADGE_SPECS: Record<MoveClassification, BadgeSpec> = {
     text: '#ffffff',
     tint: 'rgba(46, 125, 50, 0.38)',
   },
+  // Ungradable (no trustworthy eval). Review surfaces skip rendering this
+  // badge entirely — the spec exists so the Record stays total.
+  unknown: {
+    glyph: '·',
+    label: 'Not evaluated',
+    circle: '#b0b6bd',
+    text: '#ffffff',
+    tint: 'rgba(176, 182, 189, 0.20)',
+  },
 };
 
 /** Open-book glyph (two filled pages) — text glyphs don't read as "book". */

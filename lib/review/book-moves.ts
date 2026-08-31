@@ -14,7 +14,8 @@
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import type { GameAnalysis } from '@/lib/game-eval';
 
-const BOOK_OVERRIDES = new Set(['good', 'great', 'forced']);
+// 'unknown' included: an opening-theory move whose eval failed is safely book.
+const BOOK_OVERRIDES = new Set(['good', 'great', 'forced', 'unknown']);
 
 /**
  * Mutates `analysis` in place (and returns it): moves with index <

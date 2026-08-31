@@ -144,10 +144,10 @@ export function GameReview({
     : 50;
 
   // ── Square styles: classification badge + tint on the move played ────────
-  const currentClassification = useMemo(
-    () => (moveIndex >= 0 && analysis ? analysis.moves[moveIndex]?.classification ?? null : null),
-    [moveIndex, analysis],
-  );
+  const currentClassification = useMemo(() => {
+    const cls = moveIndex >= 0 && analysis ? analysis.moves[moveIndex]?.classification ?? null : null;
+    return cls === 'unknown' ? null : cls; // ungradable move — show no badge
+  }, [moveIndex, analysis]);
 
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};

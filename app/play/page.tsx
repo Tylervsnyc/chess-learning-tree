@@ -604,8 +604,11 @@ export default function PlayRookiePage() {
   const isMyTurn = (game.turn() === 'w' && playerColor === 'white') || (game.turn() === 'b' && playerColor === 'black');
 
 
-  // Accumulate position evals during play — used for instant post-game analysis
-  const positionEvalsRef = useRef<PositionEval[]>([]);
+  // Accumulate position evals during play — used for instant post-game analysis.
+  // INDEXED by position (0 = start, N = after move N), never appended: an
+  // append on a path that can early-return shifts every later index and
+  // grades the wrong position. A hole (null/undefined) = ungradable move.
+  const positionEvalsRef = useRef<(PositionEval | null)[]>([]);
 
   // Update eval bar + eval-based mood after each position change
   const updateEval = useCallback((fenStr: string) => {
@@ -619,20 +622,23 @@ export default function PlayRookiePage() {
       if (gen !== gameGenRef.current) return; // stale — new game started
       if (!result) {
         console.warn('[play] stockfish eval returned null — engine likely crashed');
+        // Record the hole at this move's index so later evals don't shift
+        // down one slot and grade the wrong positions.
+        positionEvalsRef.current[moveSeq] = null;
         return;
       }
       const { cp, mate, bestMove } = result;
 
-      // Always store for post-game analysis — the eval is correct for ITS
-      // position (engine requests resolve in order), and analyzeGameMoves
-      // needs one entry per move.
-      positionEvalsRef.current.push({
+      // Store for post-game analysis at THIS move's index — the eval belongs
+      // to the position after move `moveSeq`, regardless of what else landed
+      // while the engine was thinking.
+      positionEvalsRef.current[moveSeq] = {
         cp: cp,
         mate: mate,
         bestMove: bestMove,
         bestLine: [],
         depth: 10,
-      });
+      };
 
       // A newer move was played while this eval was in flight — don't drive
       // the eval bar, mood, blunder speech, or Honcho logging off an outdated
@@ -1613,6 +1619,7 @@ export default function PlayRookiePage() {
     const evals = positionEvalsRef.current;
     if (positionIndex < 0 || positionIndex >= evals.length) return;
     const ev = evals[positionIndex];
+    if (!ev) return; // eval never landed for this position — keep the bar where it is
     evalCp.current = ev.cp ?? 0;
     evalMate.current = ev.mate;
     setEvalPct(evalToWhitePercent(ev.cp, ev.mate));
@@ -1730,7 +1737,9 @@ export default function PlayRookiePage() {
     if (phase !== 'review' || reviewMoveIndex < 0) return null;
     const move = moveLogRef.current[reviewMoveIndex];
     if (!move || !postGame.analysis) return null;
-    return postGame.analysis.moves[reviewMoveIndex]?.classification ?? null;
+    const cls = postGame.analysis.moves[reviewMoveIndex]?.classification ?? null;
+    return cls === 'unknown' ? null : cls; // ungradable move — no badge
+
   }, [phase, reviewMoveIndex, postGame.analysis]);
 
   const sqStyles = useMemo(() => {

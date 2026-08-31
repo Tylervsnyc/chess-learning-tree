@@ -70,7 +70,7 @@ export interface CoachReview {
  */
 export async function fetchCoachReview(args: {
   analysis: GameAnalysis;
-  evals: PositionEval[];
+  evals: (PositionEval | null)[];
   moves: ReviewMove[];
   playerColor: 'white' | 'black';
   playerElo: number;

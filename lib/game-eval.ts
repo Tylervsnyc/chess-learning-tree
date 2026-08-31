@@ -27,7 +27,8 @@ export type MoveClassification =
   | 'mistake'      // >= 20% win% drop
   | 'blunder'      // >= 30% win% drop
   | 'book'         // opening book move
-  | 'forced';      // only reasonable move
+  | 'forced'       // only reasonable move
+  | 'unknown';     // no trustworthy eval for this move — never grade it
 
 export interface PositionEval {
   cp: number | null;       // centipawns (positive = white advantage)
@@ -101,7 +102,14 @@ export function evalToWinningChances(cp: number | null, mate: number | null): nu
   if (cp !== null) {
     return cpToWinningChances(cp);
   }
-  return 0; // no eval = assume equal
+  // No eval — 0 keeps DISPLAY surfaces (eval bar) centered, but grading code
+  // must never reach here: analyzeGameMoves marks such moves 'unknown'.
+  return 0;
+}
+
+/** Does this position eval carry a real score? Grading requires one. */
+export function hasUsableEval(e: PositionEval | null | undefined): e is PositionEval {
+  return !!e && (e.cp !== null || e.mate !== null);
 }
 
 /**
@@ -130,10 +138,13 @@ export function winPercentForColor(whiteWinPercent: number, color: 'white' | 'bl
 // MOVE CLASSIFICATION
 // ════════════════════════════════
 
-// Win% drop thresholds (from Lichess Advice.scala)
-const BLUNDER_THRESHOLD = 30;
-const MISTAKE_THRESHOLD = 20;
-const INACCURACY_THRESHOLD = 10;
+// Win% drop thresholds (from Lichess Advice.scala). Lichess's 0.3/0.2/0.1
+// are on the winning-chances scale [-1, +1]; our deltas are in win% points
+// [0, 100], so the equivalent thresholds are halved-of-100 = 15/10/5.
+// (The old 30/20/10 misread the scale and was 2x more lenient than Lichess.)
+const BLUNDER_THRESHOLD = 15;
+const MISTAKE_THRESHOLD = 10;
+const INACCURACY_THRESHOLD = 5;
 const GREAT_MOVE_THRESHOLD = 2; // within 2% of engine's best
 // "!" is earned, not given: the best move only rates 'great' when it punished
 // an opponent error (their previous move dropped ≥ this much win%). Playing
@@ -489,7 +500,7 @@ export function isBrilliant(input: BrilliantInput): boolean {
  * @param startFen - starting position (default: standard start)
  */
 export function analyzeGameMoves(
-  positionEvals: PositionEval[],
+  positionEvals: (PositionEval | null)[],
   moves: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number; fenAfter?: string; fenBefore?: string }[],
   playerColor: 'white' | 'black',
   startFen: string = START_FEN,
@@ -497,19 +508,63 @@ export function analyzeGameMoves(
   const evaluatedMoves: MoveEvaluation[] = [];
   // Win% the previous move (the opponent's) gave away — fuels the "!" gate.
   let prevMoveDelta: number | null = null;
+  // Parity must respect the starting position — a game (or stored fragment)
+  // where black moves first would otherwise grade every move as its opponent's.
+  const firstMover: 'white' | 'black' = (startFen.split(' ')[1] || 'w') === 'b' ? 'black' : 'white';
+  const NO_EVAL: PositionEval = { cp: null, mate: null, bestMove: null, bestLine: [], depth: 0 };
 
   for (let i = 0; i < moves.length; i++) {
     const evalBefore = positionEvals[i];
     const evalAfter = positionEvals[i + 1];
-    if (!evalBefore || !evalAfter) {
+    const move = moves[i];
+    const fenBefore = move.fenBefore ?? (i > 0 ? moves[i - 1].fenAfter : startFen);
+
+    // Determine mover's color
+    const moverColor: 'white' | 'black' =
+      i % 2 === 0 ? firstMover : firstMover === 'white' ? 'black' : 'white';
+
+    // The mating move ends the game — no eval needed, and the terminal
+    // position can't be scored anyway.
+    if (move.san.endsWith('#')) {
+      evaluatedMoves.push({
+        moveNumber: move.moveNumber,
+        san: move.san,
+        movedBy: move.movedBy,
+        evalBefore: evalBefore ?? NO_EVAL,
+        evalAfter: evalAfter ?? NO_EVAL,
+        winPercentBefore: 100,
+        winPercentAfter: 100,
+        winPercentDelta: 0,
+        classification: 'checkmate',
+        accuracy: 100,
+        bestMoveSan: move.san,
+      });
       prevMoveDelta = null;
       continue;
     }
 
-    const move = moves[i];
-
-    // Determine mover's color
-    const moverColor: 'white' | 'black' = i % 2 === 0 ? 'white' : 'black';
+    // No trustworthy eval on either side of the move → the move is
+    // UNGRADABLE. Never fall back to "assume equal" — that graded every
+    // move around an engine failure as "good". Emit a placeholder so
+    // downstream index-aligned consumers (badges, key moments, coach) stay
+    // in sync; they skip 'unknown'.
+    if (!hasUsableEval(evalBefore) || !hasUsableEval(evalAfter)) {
+      evaluatedMoves.push({
+        moveNumber: move.moveNumber,
+        san: move.san,
+        movedBy: move.movedBy,
+        evalBefore: evalBefore ?? NO_EVAL,
+        evalAfter: evalAfter ?? NO_EVAL,
+        winPercentBefore: 50,
+        winPercentAfter: 50,
+        winPercentDelta: 0,
+        classification: 'unknown',
+        accuracy: 0, // excluded from accuracy math below
+        bestMoveSan: null,
+      });
+      prevMoveDelta = null;
+      continue;
+    }
 
     // Win% from mover's perspective
     const wpBefore = winPercentForColor(
@@ -522,7 +577,36 @@ export function analyzeGameMoves(
     );
 
     const delta = wpBefore - wpAfter; // positive = lost ground
-    const effectivelyBest = delta <= GREAT_MOVE_THRESHOLD;
+
+    // Compare the played move against the engine's actual best move from the
+    // position before it (captured by the same eval search — Lichess shows
+    // "X was best" the same way). Falls back to the delta heuristic when the
+    // engine line is missing or unparsable.
+    let bestMoveSan: string | null = null;
+    let playedEngineBest = false;
+    if (fenBefore && evalBefore.bestMove) {
+      try {
+        const board = new Chess(fenBefore);
+        const played = board.move(move.san);
+        const playedUci = played.from + played.to + (played.promotion ?? '');
+        playedEngineBest = playedUci === evalBefore.bestMove;
+        if (playedEngineBest) {
+          bestMoveSan = played.san;
+        } else {
+          const bm = evalBefore.bestMove;
+          const alt = new Chess(fenBefore).move({
+            from: bm.slice(0, 2),
+            to: bm.slice(2, 4),
+            promotion: bm.length > 4 ? bm.slice(4, 5) : undefined,
+          });
+          bestMoveSan = alt.san;
+        }
+      } catch {
+        // illegal/garbled move data — leave nulls, grade on delta alone
+      }
+    }
+    const effectivelyBest = playedEngineBest || delta <= GREAT_MOVE_THRESHOLD;
+
     // "!" only when this best move cashes in an opponent error, from a
     // position that wasn't already decided.
     const punishedError =
@@ -531,18 +615,10 @@ export function analyzeGameMoves(
       wpBefore < GREAT_MAX_WP_BEFORE;
 
     let classification = classifyMove(delta, effectivelyBest, undefined, punishedError);
-    let accuracy = moveAccuracy(wpBefore, wpAfter);
+    const accuracy = moveAccuracy(wpBefore, wpAfter);
 
-    // The mating move ends the game — there's no position left to eval, so the
-    // delta math above is garbage (it reads a terminal position as a collapse).
-    if (move.san.endsWith('#')) {
-      classification = 'checkmate';
-      accuracy = 100;
-    }
-
-    // Brilliant: needs board state. Only when the caller supplied FENs.
-    const fenBefore = move.fenBefore ?? (i > 0 ? moves[i - 1].fenAfter : startFen);
-    if (move.fenAfter && fenBefore && classification !== 'forced' && classification !== 'checkmate') {
+    // Brilliant: needs board state AND a trustworthy eval (guaranteed above).
+    if (move.fenAfter && fenBefore && classification !== 'forced') {
       const brilliant = isBrilliant({
         fenBefore,
         fenAfter: move.fenAfter,
@@ -567,14 +643,16 @@ export function analyzeGameMoves(
       winPercentDelta: delta,
       classification,
       accuracy,
-      bestMoveSan: null, // filled by post-game analysis with deeper search
+      bestMoveSan,
     });
     prevMoveDelta = delta;
   }
 
-  // Separate player and rookie moves for game accuracy
-  const playerEvals = evaluatedMoves.filter(m => m.movedBy === 'player');
-  const rookieEvals = evaluatedMoves.filter(m => m.movedBy === 'rookie');
+  // Separate player and rookie moves for game accuracy — ungradable moves
+  // carry no information and must not drag the accuracy average.
+  const gradable = evaluatedMoves.filter(m => m.classification !== 'unknown');
+  const playerEvals = gradable.filter(m => m.movedBy === 'player');
+  const rookieEvals = gradable.filter(m => m.movedBy === 'rookie');
 
   const playerAccuracies = playerEvals.map(m => m.accuracy);
   const rookieAccuracies = rookieEvals.map(m => m.accuracy);

@@ -9,6 +9,9 @@
 
 export interface StockfishResult {
   bestMove: string | null;
+  /** True when the search was cancelled or the worker errored — any partial
+   * scores captured so far must NOT be trusted as a real evaluation. */
+  failed?: boolean;
 }
 
 type ResultCallback = (result: StockfishResult) => void;
@@ -57,7 +60,9 @@ class StockfishEngine {
         }
 
         if (line.startsWith('bestmove')) {
-          const bestMove = line.split(' ')[1] || null;
+          const raw = line.split(' ')[1];
+          // Terminal positions (checkmate/stalemate) report "bestmove (none)".
+          const bestMove = raw && raw !== '(none)' ? raw : null;
           this.infoListener = null;
           if (this.pendingCallback) {
             const cb = this.pendingCallback;
@@ -78,7 +83,7 @@ class StockfishEngine {
         if (this.pendingCallback) {
           const cb = this.pendingCallback;
           this.pendingCallback = null;
-          cb({ bestMove: null });
+          cb({ bestMove: null, failed: true });
         }
         // Flush the queue so callers aren't stuck waiting forever
         this.busy = false;
@@ -251,6 +256,10 @@ class StockfishEngine {
   /**
    * Get rich position evaluation (from white's perspective).
    * Returns cp, mate, and bestMove for mood/analysis systems.
+   *
+   * Returns null when no trustworthy eval exists: the search was cancelled,
+   * the worker errored, or no score line was ever seen. Callers must treat
+   * null as "ungradable", never as "equal".
    */
   getFullEval(fen: string, depth = 12): Promise<{ cp: number | null; mate: number | null; bestMove: string | null } | null> {
     const sideToMove = fen.split(' ')[1] || 'w';
@@ -261,6 +270,12 @@ class StockfishEngine {
       let lastMate: number | null = null;
 
       this.pendingCallback = (result) => {
+        // Cancelled/errored search — a depth-2 partial score is not a real
+        // eval; claiming it is misgrades moves. Propagate failure instead.
+        if (result.failed || (lastCp === null && lastMate === null)) {
+          resolve(null);
+          return;
+        }
         resolve({
           cp: lastCp !== null ? lastCp * flip : null,
           mate: lastMate !== null ? lastMate * flip : null,
@@ -271,6 +286,13 @@ class StockfishEngine {
       // Capture score info lines for this request only
       this.infoListener = (line: string) => {
         if (!line.includes(' score ')) return;
+        // MultiPV leak guard: only ever read the principal variation's score.
+        // (Options persist on the shared worker; even though we reset MultiPV
+        // below, parse defensively.)
+        const mpv = line.match(/ multipv (\d+)/);
+        if (mpv && mpv[1] !== '1') return;
+        // Bound scores are search artifacts, not settled evals (Lichess skips them too).
+        if (line.includes(' lowerbound') || line.includes(' upperbound')) return;
         const cpMatch = line.match(/score cp (-?\d+)/);
         if (cpMatch) {
           lastCp = parseInt(cpMatch[1], 10);
@@ -283,7 +305,13 @@ class StockfishEngine {
         }
       };
 
-      this.worker!.postMessage(`setoption name Skill Level value 20`);
+      // UCI options persist on this shared worker — Rookie's move picker sets
+      // MultiPV 2-8 / limited strength. An eval search MUST run full-strength
+      // single-PV or it reads the score of the Nth-best line (the root cause
+      // of losing sacs grading as "good").
+      this.worker!.postMessage('setoption name UCI_LimitStrength value false');
+      this.worker!.postMessage('setoption name MultiPV value 1');
+      this.worker!.postMessage('setoption name Skill Level value 20');
       this.worker!.postMessage('ucinewgame');
       this.worker!.postMessage(`position fen ${fen}`);
       this.worker!.postMessage(`go depth ${depth}`);
@@ -296,12 +324,13 @@ class StockfishEngine {
    * The engine stays alive for new requests.
    */
   cancel() {
-    // Resolve the in-flight request with null
+    // Resolve the in-flight request as FAILED — partial scores from a
+    // cancelled search must not masquerade as a completed eval.
     if (this.pendingCallback) {
       const cb = this.pendingCallback;
       this.pendingCallback = null;
       this.infoListener = null;
-      cb({ bestMove: null });
+      cb({ bestMove: null, failed: true });
     }
     // Resolve every queued caller with null so nobody hangs.
     const pending = this.queue;

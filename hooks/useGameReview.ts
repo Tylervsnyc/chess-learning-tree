@@ -136,7 +136,7 @@ export function useGameReview(): GameReviewData & {
           fenAfter: m.fenAfter,
         }));
         const analysis = applyBookMoves(
-          analyzeGameMoves(evals, moveInfos, args.playerColor),
+          analyzeGameMoves(evals, moveInfos, args.playerColor, startFen),
           args.moves.map((m) => m.san),
           args.playerColor,
         );
