@@ -76,8 +76,10 @@ import { GymBackdrop } from '@/components/chessboxing/GymBackdrop';
 import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
 import { BOXING_PLAY_TAP_QUIPS, BOXING_PLAY_DEFAULT_LINE } from '@/data/quips/boxing-play-quips';
 import { isIgCohort } from '@/lib/growth/ig-cohort';
-import { IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
+import { FEATURE_FLAGS, IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { getArrowColor, ARROW_BEST, fetchCoachReview } from '@/lib/review/review-core';
+import { applyBookMoves } from '@/lib/review/book-moves';
+import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
 
 // CHE-381: post-game-only UI — code-split so the coaching drawer (and the
 // coaching-prompt lib it pulls in) never loads on the play-page boot path.
@@ -854,12 +856,14 @@ export default function PlayRookiePage() {
         landingFiredRef.current = true;
         setupGreetingSpokenRef.current = true;
         PlayEvents.landingViewed('post_game', rookieLevel);
-        const linePromise = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
-        linePromise.then((line) => {
-          if (line) {
-            PlayEvents.quipShown(pendingResult, line);
-          }
-        });
+        if (FEATURE_FLAGS.POSTGAME_BANTER) {
+          const linePromise = pendingResult === 'win' ? speech.queueWinQuip() : speech.queueLossQuip();
+          linePromise.then((line) => {
+            if (line) {
+              PlayEvents.quipShown(pendingResult, line);
+            }
+          });
+        }
         return;
       }
 
@@ -1152,7 +1156,11 @@ export default function PlayRookiePage() {
     const moves = moveLogRef.current;
     const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter }));
     const analysis = moves.length > 0
-      ? analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor)
+      ? applyBookMoves(
+          analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor),
+          moves.map(m => m.san),
+          playerColor,
+        )
       : null;
 
     if (moves.length > 0 && analysis) {
@@ -1268,7 +1276,7 @@ export default function PlayRookiePage() {
       }
 
       // Generate Rookie's post-game summary with full analysis data
-      if (analysis && result) {
+      if (FEATURE_FLAGS.POSTGAME_BANTER && analysis && result) {
         const rookieWon = result === 'loss';
         const gameSummary = {
           result,
@@ -1718,22 +1726,25 @@ export default function PlayRookiePage() {
   // main style memo so async analysis updates (postGame.analysis) and review
   // navigation can't recompute all 64 square styles during live play — in
   // play/gameover this stays null, so sqStyles only depends on the position.
-  const reviewMoveColor = useMemo(() => {
-    if (phase !== 'review' || !coachReady || reviewMoveIndex < 0) return null;
+  const reviewClassification = useMemo(() => {
+    if (phase !== 'review' || reviewMoveIndex < 0) return null;
     const move = moveLogRef.current[reviewMoveIndex];
     if (!move || !postGame.analysis) return null;
-    const cls = postGame.analysis.moves[reviewMoveIndex]?.classification;
-    if (cls === 'blunder' || cls === 'mistake') return 'rgba(239, 68, 68, 0.5)';
-    if (cls === 'inaccuracy') return 'rgba(234, 179, 8, 0.4)';
-    return null;
-  }, [phase, coachReady, reviewMoveIndex, postGame.analysis]);
+    return postGame.analysis.moves[reviewMoveIndex]?.classification ?? null;
+  }, [phase, reviewMoveIndex, postGame.analysis]);
 
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
     if (lastMv) {
-      const moveColor = reviewMoveColor ?? 'rgba(255, 170, 0, 0.4)'; // default orange
-      s[lastMv.from] = { background: moveColor };
-      s[lastMv.to] = { background: moveColor };
+      if (reviewClassification) {
+        // Review: classification tint + the corner badge on the destination.
+        s[lastMv.from] = { backgroundColor: BADGE_SPECS[reviewClassification].tint };
+        s[lastMv.to] = badgeSquareStyle(reviewClassification);
+      } else {
+        const moveColor = 'rgba(255, 170, 0, 0.4)'; // default orange
+        s[lastMv.from] = { background: moveColor };
+        s[lastMv.to] = { background: moveColor };
+      }
     }
     if (game.isCheck()) {
       const board = game.board();
@@ -1771,7 +1782,7 @@ export default function PlayRookiePage() {
       s[sq] = { ...s[sq], ...style };
     }
     return s;
-  }, [game, fen, lastMv, selected, reviewMoveColor, isMyTurn, premove, premoveEnabled, playerColor]);
+  }, [game, fen, lastMv, selected, reviewClassification, isMyTurn, premove, premoveEnabled, playerColor]);
 
   const resetToSetup = useCallback(() => {
     PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
@@ -2147,7 +2158,7 @@ export default function PlayRookiePage() {
       >
         &#9665;
       </button>
-      <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono">
+      <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono inline-flex items-center justify-center gap-1">
         {reviewMoveIndex < 0 ? 'Start' : (() => {
           const m = moveLogRef.current[reviewMoveIndex];
           if (!m) return 'Start';
@@ -2155,6 +2166,18 @@ export default function PlayRookiePage() {
           const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
           return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
         })()}
+        {reviewClassification && (
+          <span
+            className="inline-flex items-center justify-center rounded-full px-1.5 h-4 text-[9px] font-black not-italic"
+            style={{
+              backgroundColor: BADGE_SPECS[reviewClassification].circle,
+              color: BADGE_SPECS[reviewClassification].text,
+            }}
+            title={BADGE_SPECS[reviewClassification].label}
+          >
+            {BADGE_SPECS[reviewClassification].glyph}
+          </span>
+        )}
       </span>
       <button
         type="button"

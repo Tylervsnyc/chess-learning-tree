@@ -8,6 +8,7 @@ import {
   GameAnalysis,
 } from '@/lib/game-eval';
 import { MoveRecord } from '@/lib/game-session';
+import { applyBookMoves } from '@/lib/review/book-moves';
 
 export interface PostGameAnalysisState {
   analysis: GameAnalysis | null;
@@ -81,7 +82,11 @@ export function usePostGameAnalysis() {
       if (cancelledRef.current) return null;
 
       const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter }));
-      const analysis = analyzeGameMoves(evals, moveInfos, playerColor, startFen);
+      const analysis = applyBookMoves(
+        analyzeGameMoves(evals, moveInfos, playerColor, startFen),
+        moves.map(m => m.san),
+        playerColor,
+      );
 
       setState({ analysis, isAnalyzing: false, progress: 100, error: null });
       return analysis;

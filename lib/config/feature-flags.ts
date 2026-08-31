@@ -179,6 +179,27 @@ export const FEATURE_FLAGS = {
    * OFF = the app behaves exactly as before: no limits, no paywall, no IAP UI.
    */
   CHESSBOXING_PRO: false,
+  /**
+   * Chess clock tab in the Chess Boxing app (2026-08-31, Tyler). Replaces the
+   * Train tab (Tactics/Openings drop-up) in BoxTabBar with a Clock tab →
+   * /box/clock: the phone lies flat between two players as a real chess clock
+   * (presets + custom, Fischer increment, bell on flag, offline, no account).
+   * Learning moves to chesspath.app — the app becomes the sport's companion.
+   * The /box/clock ROUTE is always reachable; this flag only swaps the tab.
+   * OFF until the current App Store review (build 3) resolves — the shipped
+   * shell loads the live site, so flipping this changes the in-review app.
+   */
+  BOX_CLOCK_TAB: false,
+  /**
+   * Rookie's post-game banter on /play (2026-08-31, Tyler: "has got to go").
+   * Gates BOTH post-game speech paths: the spoken game summary right after a
+   * game ends (speech.onPostGame) and the win/loss quip when landing back on
+   * /play after a game (queueWinQuip/queueLossQuip). Level-up lines and
+   * in-game speech are NOT gated by this. The earlier 2026-08-31 pass already
+   * removed the landing greeting; this finishes the job. OFF = Rookie says
+   * nothing after a game.
+   */
+  POSTGAME_BANTER: false,
 } as const;
 
 /**
