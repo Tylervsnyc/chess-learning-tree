@@ -14,6 +14,7 @@ import {
   cbButtonWrap,
   cbFootnote,
   cbGoldBody,
+  cbGoldBox,
   cbGoldHeading,
   cbLink,
   cbSignoff,
@@ -120,7 +121,7 @@ export function ChessBoxingLaunch({
         </Text>
       </Section>
 
-      <Section style={askBox}>
+      <Section style={{ ...cbGoldBox, margin: '20px 0 0 0' }}>
         <Text style={cbGoldHeading}>One small, undignified request</Text>
         <Text style={cbGoldBody}>
           We launched with zero ratings. Zero. A blank space where the stars go. If
@@ -171,7 +172,7 @@ function Feature({
 }
 
 const dek = {
-  color: CB.ink70,
+  color: CB.text70,
   fontSize: '16px',
   fontWeight: 600,
   lineHeight: '23px',
@@ -180,7 +181,7 @@ const dek = {
 };
 
 const featureName = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '16px',
   fontWeight: 900,
   letterSpacing: '0.12em',
@@ -190,7 +191,7 @@ const featureName = {
 };
 
 const featureTagline = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '15px',
   fontWeight: 700,
   lineHeight: '21px',
@@ -198,18 +199,11 @@ const featureTagline = {
 };
 
 const featureCta = {
-  color: CB.redDeep,
+  color: CB.gold,
   fontSize: '13px',
   fontWeight: 800,
   letterSpacing: '0.04em',
   textDecoration: 'none',
-};
-
-const askBox = {
-  backgroundColor: CB.gold,
-  borderRadius: '10px',
-  padding: '14px 16px',
-  margin: '20px 0 0 0',
 };
 
 export default ChessBoxingLaunch;

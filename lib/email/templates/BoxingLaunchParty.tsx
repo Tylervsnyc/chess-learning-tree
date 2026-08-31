@@ -13,7 +13,9 @@ import {
   CB_IMG,
   cbBody,
   cbGoldBody,
+  cbGoldBox,
   cbGoldHeading,
+  cbSectionHeading,
   cbButtonWrap,
   cbFootnote,
   cbLink,
@@ -101,7 +103,7 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
       <CardRule />
 
       {/* What the app actually does. */}
-      <Text style={cardHeading}>Chess Boxing Features</Text>
+      <Text style={cbSectionHeading}>Chess Boxing Features</Text>
 
       <ModeRow
         icon={`${CB_IMG}/corner-puzzle.png`}
@@ -153,7 +155,7 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
         </Text>
       </Section>
 
-      <Section style={askBox}>
+      <Section style={{ ...cbGoldBox, margin: '20px 0 0 0' }}>
         <Text style={cbGoldHeading}>One undignified request</Text>
         <Text style={cbGoldBody}>
           We launched with zero ratings. A blank space where the stars go. If you
@@ -173,7 +175,7 @@ export function BoxingLaunchParty({ appUrl, unsubscribeUrl }: BoxingLaunchPartyP
 }
 
 const billing = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '38px',
   fontWeight: 900,
   letterSpacing: '-0.02em',
@@ -184,7 +186,7 @@ const billing = {
 };
 
 const billingSub = {
-  color: CB.ink70,
+  color: CB.text70,
   fontSize: '15px',
   fontWeight: 600,
   lineHeight: '22px',
@@ -193,23 +195,5 @@ const billingSub = {
 };
 
 const topButtonWrap = { margin: '4px 0 20px', textAlign: 'center' as const };
-
-const cardHeading = {
-  color: CB.ink,
-  fontSize: '13px',
-  fontWeight: 900,
-  letterSpacing: '0.26em',
-  lineHeight: '16px',
-  margin: '0 0 16px 0',
-  textAlign: 'center' as const,
-  textTransform: 'uppercase' as const,
-};
-
-const askBox = {
-  backgroundColor: CB.gold,
-  borderRadius: '10px',
-  padding: '14px 16px',
-  margin: '20px 0 0 0',
-};
 
 export default BoxingLaunchParty;

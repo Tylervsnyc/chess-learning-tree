@@ -1,5 +1,5 @@
 import { createHmac } from 'crypto';
-import { getResendClient, EMAIL_FROM } from './resend';
+import { getResendClient, EMAIL_FROM, CB_EMAIL_FROM } from './resend';
 import { createServiceClient } from '@/lib/supabase/service';
 import type { SendEmailParams, EmailPreferences, EmailType } from '@/types/email';
 
@@ -46,9 +46,9 @@ function shouldSendEmail(
     case 'streak_science':
     case 'chess_boxing_launch':
     case 'cb_welcome':
-    case 'cb_day3':
-    case 'cb_streak_risk':
-    case 'cb_winback':
+    case 'cb_weekly_report':
+    case 'cb_comeback':
+    case 'cb_highscore':
     case 'cb_launch_party':
       return preferences.marketing;
     default:
@@ -118,7 +118,7 @@ export async function sendEmail(params: SendEmailParams): Promise<{
   try {
     const resend = getResendClient();
     const { data, error } = await resend.emails.send({
-      from: EMAIL_FROM,
+      from: type.startsWith('cb_') ? CB_EMAIL_FROM : EMAIL_FROM,
       to,
       subject,
       react,

@@ -1,4 +1,4 @@
-import { Section, Text, Img, Link } from '@react-email/components';
+import { Section, Text, Link } from '@react-email/components';
 import * as React from 'react';
 import {
   BoxingEmailLayout,
@@ -6,6 +6,7 @@ import {
   CornerLine,
   FightButton,
   ScoreCard,
+  Sticker,
   CB,
   CB_APP_STORE,
   CB_IMG,
@@ -15,26 +16,26 @@ import {
   cbLink,
   cbSignoff,
 } from './components/BoxingEmailLayout';
-import type { BoxingWinbackProps } from '@/types/email';
+import type { BoxingComebackProps } from '@/types/email';
 
-const UTM = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_winback';
+const UTM = 'utm_source=email&utm_medium=lifecycle&utm_campaign=cb_comeback';
 
 /**
- * cb_winback — two weeks or more since any boxing.
+ * cb_comeback — a week or more since any boxing.
  *
  * Spine: the empty gym. Their gloves are still on the hook and their numbers
  * are still on the card; nobody took either away. It leads with what they did,
  * never with what they owe, and the closing argument is that the leaderboard
- * resets daily so the gap cost them nothing.
+ * resets daily so the week away cost them nothing.
  */
-export function BoxingWinback({
+export function BoxingComeback({
   displayName,
   appUrl,
   unsubscribeUrl,
   bestRound,
   punches,
   bouts,
-}: BoxingWinbackProps) {
+}: BoxingComebackProps) {
   const greeting = displayName ? `${displayName}. ` : '';
   const home = `${appUrl}/box?${UTM}&utm_content=home`;
   const workout = `${appUrl}/workout?${UTM}&utm_content=workout`;
@@ -61,21 +62,16 @@ export function BoxingWinback({
     >
       {/* The gloves are the whole opening image — hanging, unused, waiting. */}
       <Section style={{ textAlign: 'center' as const, margin: '0 0 4px 0' }}>
-        <Img
-          src={`${CB_IMG}/gloves.png`}
-          alt=""
-          width={150}
-          style={{ display: 'block', margin: '0 auto', width: '150px', height: 'auto' }}
-        />
+        <Sticker src={`${CB_IMG}/gloves.png`} width={150} height={153} pad={10} radius={22} align="center" />
       </Section>
 
       <Text style={heading}>Still on the hook</Text>
       <Text style={dek}>Nobody moved them. I checked more than once.</Text>
 
       <CornerLine>
-        &ldquo;{greeting}It has been a couple of weeks. I am not going to make it a
-        thing. I only want you to know the ring is exactly where you left it and I
-        have been standing in it the whole time, which in hindsight was a
+        &ldquo;{greeting}It has been a week. I am not going to make it a thing. I
+        only want you to know the ring is exactly where you left it and I have
+        been standing in it the whole time, which in hindsight was a
         choice.&rdquo;
       </CornerLine>
 
@@ -86,7 +82,7 @@ export function BoxingWinback({
       <Text style={cbBody}>
         Start light. One Puzzle Boxing round takes a few minutes, it scores you,
         and it puts you back on today&apos;s board. There is nothing to catch up
-        on either &mdash; the board resets every day, so two weeks away cost you
+        on either &mdash; the board resets every day, so a week away cost you
         exactly nothing.
       </Text>
 
@@ -115,22 +111,22 @@ export function BoxingWinback({
 }
 
 const heading = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '30px',
   fontWeight: 900,
   letterSpacing: '-0.01em',
   lineHeight: '34px',
-  margin: '6px 0 6px 0',
+  margin: '18px 0 6px 0',
   textAlign: 'center' as const,
   textTransform: 'uppercase' as const,
 };
 
 const dek = {
-  color: CB.ink70,
+  color: CB.text70,
   fontSize: '15px',
   lineHeight: '22px',
   margin: '0 0 18px 0',
   textAlign: 'center' as const,
 };
 
-export default BoxingWinback;
+export default BoxingComeback;

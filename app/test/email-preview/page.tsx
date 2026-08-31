@@ -8,9 +8,9 @@ import { StreakScience } from '@/lib/email/templates/StreakScience';
 import { ChessBoxingLaunch } from '@/lib/email/templates/ChessBoxingLaunch';
 import { BoxingLaunchParty } from '@/lib/email/templates/BoxingLaunchParty';
 import { BoxingWelcome } from '@/lib/email/templates/BoxingWelcome';
-import { BoxingDay3 } from '@/lib/email/templates/BoxingDay3';
-import { BoxingStreakRisk } from '@/lib/email/templates/BoxingStreakRisk';
-import { BoxingWinback } from '@/lib/email/templates/BoxingWinback';
+import { BoxingWeeklyReport } from '@/lib/email/templates/BoxingWeeklyReport';
+import { BoxingComeback } from '@/lib/email/templates/BoxingComeback';
+import { BoxingHighScore } from '@/lib/email/templates/BoxingHighScore';
 
 // Preview-only. NEVER queries real users — all data below is fake sample data.
 const SAMPLE = {
@@ -125,8 +125,8 @@ export default async function EmailPreviewPage() {
       ),
     },
     {
-      label: 'cb_welcome — the day after their FIRST ever bout',
-      angle: 'They fought one thing. This names the other rounds in the app\'s own language (PUZZLE BOXING / BOUT MODE) and plants the streak. Rookie reacts to how the first bout actually went. Primary CTA -> /box.',
+      label: 'cb_welcome — the day after their FIRST ever bout or workout',
+      angle: 'The features tour: Puzzle Boxing, Bout Mode, the streak, the daily board — each with its engraved icon. Rookie reacts to how the first bout actually went. Primary CTA -> /box.',
       html: await render(
         BoxingWelcome({
           displayName: SAMPLE.displayName,
@@ -138,43 +138,47 @@ export default async function EmailPreviewPage() {
       ),
     },
     {
-      label: 'cb_day3 — boxed, then quiet for 3 days',
-      angle: 'Leads with their own fight record, because the record is the thing that stops moving when they stop showing up. Rookie is holding pads she does not have arms for. Primary CTA -> /box/bout.',
+      label: 'cb_weekly_report — 3+ workouts in the trailing 7 days (once per 7 days)',
+      angle: 'Your week on the card: workouts, punches, best round, streak, plus the bout record if they fought. Only sends to people already training. Dedupe: weekly via email_log. Primary CTA -> /workout.',
       html: await render(
-        BoxingDay3({
+        BoxingWeeklyReport({
           displayName: SAMPLE.displayName,
           appUrl: SAMPLE.appUrl,
           unsubscribeUrl: SAMPLE.unsubscribeUrl,
-          wins: 2,
-          losses: 3,
-          draws: 1,
+          workouts: 5,
+          punches: 438,
           bestRound: 180,
+          currentStreak: 4,
+          wins: 2,
+          losses: 1,
+          draws: 0,
         }),
       ),
     },
     {
-      label: 'cb_streak_risk — streak 3+, nothing today (REPEATS daily)',
-      angle: 'The shortest email in the set on purpose: one number, one deadline, one button. The only lifecycle type that can send more than once per user (dedupe: daily). Primary CTA -> /box.',
+      label: 'cb_comeback — 7+ days since any boxing',
+      angle: 'Leads with what they already did, not what they owe. Best round + punches thrown are theirs. Reassures that the daily leaderboard reset means a week away costs nothing. Primary CTA -> /workout.',
       html: await render(
-        BoxingStreakRisk({
-          displayName: SAMPLE.displayName,
-          appUrl: SAMPLE.appUrl,
-          unsubscribeUrl: SAMPLE.unsubscribeUrl,
-          currentStreak: 6,
-        }),
-      ),
-    },
-    {
-      label: 'cb_winback — 14+ days since any boxing',
-      angle: 'Leads with what they already did, not what they owe. Best round + punches thrown are theirs. Reassures that the daily leaderboard reset means a two week gap costs nothing. Primary CTA -> /workout.',
-      html: await render(
-        BoxingWinback({
+        BoxingComeback({
           displayName: SAMPLE.displayName,
           appUrl: SAMPLE.appUrl,
           unsubscribeUrl: SAMPLE.unsubscribeUrl,
           bestRound: 180,
           punches: 612,
           bouts: 9,
+        }),
+      ),
+    },
+    {
+      label: 'cb_highscore — yesterday set a new personal-best workout score',
+      angle: 'The shortest celebration we can print: the number huge in gold, one line from the corner, one button back to /workout. Fires the morning after the record; dedupe daily. Top of the CB priority ladder.',
+      html: await render(
+        BoxingHighScore({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          score: 212,
+          previousBest: 180,
         }),
       ),
     },

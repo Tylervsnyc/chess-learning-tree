@@ -6,9 +6,9 @@ import { DripDay1 } from '@/lib/email/templates/DripDay1';
 import { DripDay7 } from '@/lib/email/templates/DripDay7';
 import { Winback } from '@/lib/email/templates/Winback';
 import { BoxingWelcome } from '@/lib/email/templates/BoxingWelcome';
-import { BoxingDay3 } from '@/lib/email/templates/BoxingDay3';
-import { BoxingStreakRisk } from '@/lib/email/templates/BoxingStreakRisk';
-import { BoxingWinback } from '@/lib/email/templates/BoxingWinback';
+import { BoxingWeeklyReport } from '@/lib/email/templates/BoxingWeeklyReport';
+import { BoxingComeback } from '@/lib/email/templates/BoxingComeback';
+import { BoxingHighScore } from '@/lib/email/templates/BoxingHighScore';
 import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { createServiceClient } from '@/lib/supabase/service';
 import { fetchSuppressedAddresses, isSuppressed } from '@/lib/email/suppression';
@@ -42,12 +42,14 @@ const LIFECYCLE_ENABLED = process.env.EMAIL_LIFECYCLE_ENABLED === 'true';
 // on the first deploy instead of letting us read a dry run first.
 const CB_LIFECYCLE_ENABLED = process.env.CB_EMAIL_LIFECYCLE_ENABLED === 'true';
 
-// Streak-at-risk is the one email in the set that REPEATS (every day the user
-// is about to break a streak). Everything else is once-per-user-forever.
-const CB_STREAK_RISK_MIN_DAYS = 3;
-
 // Window edges, in whole days back from "now", for created_at-based cohorts.
 const WINBACK_INACTIVE_DAYS = 14;
+
+// Chess Boxing: the comeback fires after a shorter dark spell than the Chess
+// Path winback — a boxer who misses a week has usually left the gym.
+const CB_COMEBACK_INACTIVE_DAYS = 7;
+// The weekly report needs a real training week, not a single visit.
+const CB_WEEKLY_MIN_WORKOUTS = 3;
 
 type LifecycleResult = { sent: number; skipped: number; errors: number; dryRun: number };
 
@@ -216,10 +218,11 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
       opts?: {
         /**
          * 'once' (default) = never send this type to a user twice, ever.
-         * 'daily' = at most once per UTC day, for types that legitimately
-         * repeat (streak-at-risk).
+         * 'daily' = at most once per UTC day (cb_highscore — a new record
+         * can legitimately happen again tomorrow).
+         * 'weekly' = at most once per rolling 7 days (cb_weekly_report).
          */
-        dedupe?: 'once' | 'daily';
+        dedupe?: 'once' | 'daily' | 'weekly';
         /** Which kill-switch gates this type. Defaults to EMAIL_LIFECYCLE_ENABLED. */
         enabled?: boolean;
       },
@@ -251,6 +254,11 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
           .eq('email_type', emailType);
         if (dedupe === 'daily') {
           dedupeQuery = dedupeQuery.gte('sent_at', `${todayUtc}T00:00:00.000Z`);
+        } else if (dedupe === 'weekly') {
+          dedupeQuery = dedupeQuery.gte(
+            'sent_at',
+            new Date(today.getTime() - 7 * 24 * 3600 * 1000).toISOString(),
+          );
         }
         const { data: existing } = await dedupeQuery.limit(1);
 
@@ -382,8 +390,8 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
 
 
     // ----------------------------------------------------------------------
-    // Chess Boxing lifecycle (cb_welcome / cb_day3 / cb_streak_risk /
-    // cb_winback). Targeting runs on BOXING activity only — bout_sessions +
+    // Chess Boxing lifecycle (cb_highscore / cb_welcome / cb_weekly_report /
+    // cb_comeback). Targeting runs on BOXING activity only — bout_sessions +
     // workout_sessions — so a Chess Path user who has never opened /box is
     // never in any of these audiences.
     //
@@ -393,14 +401,19 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
     {
       const boxingByUser = await fetchBoxingActivityByUser(supabase);
       const cbOpts = { enabled: CB_LIFECYCLE_ENABLED } as const;
+      // Tyler (2026-08-31): only cb_welcome is LIVE for now. The other three
+      // stay in dry-run regardless of the flag until their copy is finalized.
+      const cbHold = { enabled: false } as const;
       const boxersOnly = allProfiles.filter((u) => boxingByUser.has(u.id));
       const box = (u: LifecycleUser): BoxingActivity => boxingByUser.get(u.id)!;
 
       // At most ONE Chess Boxing email per person per run. The windows overlap
-      // by design (a brand-new boxer on a 4-day streak matches both cb_welcome
-      // and cb_streak_risk), and two emails from the same product on the same
-      // morning is how you get unsubscribed. Blocks run in priority order and
-      // claim their audience; later blocks only see who is left.
+      // by design, and two emails from the same product on the same morning is
+      // how you get unsubscribed. Blocks run in priority order and claim their
+      // audience; later blocks only see who is left. Order: the celebration
+      // (cb_highscore) beats everything; then the one-time welcome, so a
+      // brand-new boxer never gets a weekly report before their welcome; then
+      // the weekly report; then the comeback.
       const cbClaimed = new Set<string>();
       const claim = (users: LifecycleUser[]): LifecycleUser[] => {
         const fresh = users.filter((u) => !cbClaimed.has(u.id));
@@ -408,7 +421,39 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
         return fresh;
       };
 
-      // --- cb_welcome: first EVER bout landed 20-48h ago ---
+      // --- cb_highscore: yesterday's best workout score beat every prior day ---
+      // dedupe 'daily' = at most one per user per UTC day. The trigger itself
+      // only matches the morning after the record, so in practice that is one
+      // email per new record.
+      {
+        const users = claim(
+          boxersOnly.filter((u) => {
+            const b = box(u);
+            return b.yesterdayBestScore > 0 && b.yesterdayBestScore > b.priorBestScore;
+          }),
+        );
+
+        await processLifecycle('cb_highscore', 'cb_highscore', users, (user) => {
+          const b = box(user);
+          return {
+            subject: `${b.yesterdayBestScore}. New personal best.`,
+            react: BoxingHighScore({
+              displayName: user.display_name || undefined,
+              appUrl,
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_highscore'),
+              score: b.yesterdayBestScore,
+              previousBest: b.priorBestScore > 0 ? b.priorBestScore : undefined,
+            }),
+            metadata: {
+              lifecycle: 'cb_highscore',
+              score: b.yesterdayBestScore,
+              previous_best: b.priorBestScore,
+            },
+          };
+        }, { ...cbHold, dedupe: 'daily' });
+      }
+
+      // --- cb_welcome: first EVER boxing activity (bout or workout) 20-48h ago ---
       // Same window shape as day1 (28h wide against a daily cron), which the
       // email_log dedup then narrows to at-most-once.
       {
@@ -417,7 +462,7 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
 
         const users = claim(
           boxersOnly.filter((u) => {
-            const first = box(u).firstBoutAt;
+            const first = box(u).firstAt;
             return first !== null && first >= windowStart && first < windowEnd;
           }),
         );
@@ -425,7 +470,7 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
         await processLifecycle('cb_welcome', 'cb_welcome', users, (user) => {
           const b = box(user);
           return {
-            subject: 'You fought one',
+            subject: 'Welcome to the gym',
             react: BoxingWelcome({
               displayName: user.display_name || undefined,
               appUrl,
@@ -435,79 +480,56 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
             }),
             metadata: {
               lifecycle: 'cb_welcome',
-              first_bout_at: b.firstBoutAt,
+              first_boxing_at: b.firstAt,
               first_bout_result: b.firstBoutResult,
             },
           };
         }, cbOpts);
       }
 
-      // --- cb_day3: last boxing day was exactly 3 days ago ---
-      {
-        const target = new Date(today);
-        target.setDate(target.getDate() - 3);
-        const targetStr = target.toISOString().split('T')[0];
-
-        const users = claim(boxersOnly.filter((u) => box(u).lastDay === targetStr));
-
-        await processLifecycle('cb_day3', 'cb_day3', users, (user) => {
-          const b = box(user);
-          return {
-            subject: 'Three days, same record',
-            react: BoxingDay3({
-              displayName: user.display_name || undefined,
-              appUrl,
-              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_day3'),
-              wins: b.wins,
-              losses: b.losses,
-              draws: b.draws,
-              bestRound: b.bestRound > 0 ? b.bestRound : undefined,
-            }),
-            metadata: {
-              lifecycle: 'cb_day3',
-              record: `${b.wins}-${b.losses}-${b.draws}`,
-              last_boxing_day: b.lastDay,
-            },
-          };
-        }, cbOpts);
-      }
-
-      // --- cb_streak_risk: streak of 3+ and nothing finished today ---
-      // The streak here is the REAL app streak (any finished unit counts, same
-      // as the nav badge), not a boxing-only streak — breaking it costs them
-      // the number they actually see. Audience is still boxers only.
-      // dedupe: 'daily' because this one legitimately repeats.
+      // --- cb_weekly_report: 3+ workouts in the trailing 7 days ---
+      // Fires on any day the condition holds; the 'weekly' email_log dedup
+      // caps it at one per user per rolling 7 days.
       {
         const users = claim(
-          boxersOnly.filter((u) => {
-            const days = activityByUser.get(u.id)?.days ?? [];
-            if (days.includes(todayUtc)) return false;
-            return currentStreakFromDays(days, todayUtc) >= CB_STREAK_RISK_MIN_DAYS;
-          }),
+          boxersOnly.filter((u) => box(u).recentWorkouts >= CB_WEEKLY_MIN_WORKOUTS),
         );
 
-        await processLifecycle('cb_streak_risk', 'cb_streak_risk', users, (user) => {
+        await processLifecycle('cb_weekly_report', 'cb_weekly_report', users, (user) => {
+          const b = box(user);
           const streak = currentStreakFromDays(
             activityByUser.get(user.id)?.days ?? [],
             todayUtc,
           );
           return {
-            subject: `${streak} days. Ends at midnight.`,
-            react: BoxingStreakRisk({
+            subject: 'Your week on the card',
+            react: BoxingWeeklyReport({
               displayName: user.display_name || undefined,
               appUrl,
-              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_streak_risk'),
-              currentStreak: streak,
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_weekly_report'),
+              workouts: b.recentWorkouts,
+              punches: b.recentPunches > 0 ? b.recentPunches : undefined,
+              bestRound: b.recentBestRound > 0 ? b.recentBestRound : undefined,
+              currentStreak: streak > 0 ? streak : undefined,
+              wins: b.recentWins,
+              losses: b.recentLosses,
+              draws: b.recentDraws,
             }),
-            metadata: { lifecycle: 'cb_streak_risk', current_streak: streak },
+            metadata: {
+              lifecycle: 'cb_weekly_report',
+              workouts_7d: b.recentWorkouts,
+              punches_7d: b.recentPunches,
+              best_round_7d: b.recentBestRound,
+              record_7d: `${b.recentWins}-${b.recentLosses}-${b.recentDraws}`,
+            },
           };
-        }, { ...cbOpts, dedupe: 'daily' });
+        }, { ...cbHold, dedupe: 'weekly' });
       }
 
-      // --- cb_winback: 14+ days since any boxing ---
+      // --- cb_comeback: 7+ days since any boxing ---
       {
         const cutoff = new Date(today);
-        cutoff.setDate(cutoff.getDate() - WINBACK_INACTIVE_DAYS);
+        cutoff.setDate(cutoff.getDate() - CB_COMEBACK_INACTIVE_DAYS);
         const cutoffStr = cutoff.toISOString().split('T')[0];
 
         const users = claim(
@@ -517,21 +539,21 @@ export const GET = withCronHeartbeat('drip', async (_request: NextRequest) => {
           }),
         );
 
-        await processLifecycle('cb_winback', 'cb_winback', users, (user) => {
+        await processLifecycle('cb_comeback', 'cb_comeback', users, (user) => {
           const b = box(user);
           return {
             subject: 'Still your best round',
-            react: BoxingWinback({
+            react: BoxingComeback({
               displayName: user.display_name || undefined,
               appUrl,
-              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_winback'),
+              unsubscribeUrl: getUnsubscribeUrl(user.id, 'cb_comeback'),
               bestRound: b.bestRound > 0 ? b.bestRound : undefined,
               punches: b.punches > 0 ? b.punches : undefined,
               bouts: b.bouts > 0 ? b.bouts : undefined,
             }),
-            metadata: { lifecycle: 'cb_winback', last_boxing_day: b.lastDay },
+            metadata: { lifecycle: 'cb_comeback', last_boxing_day: b.lastDay },
           };
-        }, cbOpts);
+        }, cbHold);
       }
     }
 

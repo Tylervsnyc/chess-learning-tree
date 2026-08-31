@@ -16,41 +16,53 @@ import * as React from 'react';
  *
  * The Chess Path EmailLayout (light blue #EEF6FC, pixel rook, "The Fun Way To
  * Learn Chess") is the wrong brand for these: Chess Boxing runs the gym
- * palette. This mirrors the shipped FightResultCard instead — a cream
- * fight-poster card (#f3e9d2) in navy ink (#1b2340), sitting on a dark gym
- * floor, with belt gold and corner red as the only accents.
+ * palette. The app is DARK — gym navy floor (#131a2e) with raised navy
+ * surfaces (#1b2a4a) — so the email is too. Cream (#f3e9d2) is the ink the
+ * card is printed in, not the paper. Belt gold and corner red are the only
+ * accents. The old-school engraved icons are drawn on cream, so each one sits
+ * in a cream "sticker" cell and reads as a patch sewn onto the dark card.
  *
- * Every colour here is lifted from components/chessboxing/*, not invented.
+ * Every colour here is lifted from components/chessboxing/* (RingHome,
+ * BoxingLogoLoader, FightResultCard), not invented.
  *
  * Email constraints this obeys: tables not flex, inline styles only, no webp
  * (see scripts/build-email-assets.ts), no CSS transforms, and no reliance on
- * background-image — Outlook ignores all four.
+ * background-image — Outlook ignores all four. Every cream/gold surface is a
+ * real backgroundColor on a td or section (the same inline style FightButton always used).
  */
 
 // --- the palette, straight from the app ---------------------------------
 export const CB = {
-  /** Gym floor, behind the card. components/chessboxing/RingHome.tsx */
+  /** Page floor behind the card. components/chessboxing/RingHome.tsx */
   gym: '#131a2e',
   gymDeep: '#0b101e',
-  /** Fight-poster paper. FightResultCard's window. */
+  /** Raised panels in the app (BoxingLogoLoader / RingHome cards). */
+  surface: '#1b2a4a',
+  /** Board-square blue; borders and hairlines on a surface. */
+  square: '#28375f',
+  /** The cream the card is printed in. FightResultCard's paper, now the ink. */
   cream: '#f3e9d2',
-  /** The ink everything is printed in. */
+  /** Navy ink — used ON cream stickers and cream buttons only. */
   ink: '#1b2340',
-  /** Secondary body copy on cream — 6.7:1. */
-  ink70: '#4a5068',
-  /** Small caps labels on cream — 5.1:1. */
-  ink55: '#5c6076',
-  /** Cream at reduced weight on navy — 7.1:1. */
+  /** Secondary copy on the dark card — 11:1 on gym, 9:1 on surface. */
+  text70: '#cfc8b8',
+  /** Small caps labels on the dark card — 7.1:1 on gym, 5.6:1 on surface. */
+  text55: '#a8a598',
+  /** @deprecated alias kept for older templates: reads as text70 on dark. */
+  ink70: '#cfc8b8',
+  /** @deprecated alias kept for older templates: reads as text55 on dark. */
+  ink55: '#a8a598',
+  /** Cream at reduced weight on navy. Same value as text55. */
   creamMuted: '#a8a598',
   /** Belt gold. */
   gold: '#f6c445',
   goldDeep: '#b8860b',
   goldInk: '#3d2e00',
-  /** Corner red. */
-  red: '#ff4b4b',
+  /** Corner red — the rope red the app uses. */
+  red: '#e5484d',
+  redBright: '#ff4b4b',
   redDeep: '#8a1f1f',
-  /** Body copy printed ON gold — a darker shade of gold's own hue, 5.9:1.
-   *  Cool gray on gold reads muddy; never use ink70 there. */
+  /** Body copy printed ON a solid gold slab (only FightButton gold uses it). */
   onGold: '#54430f',
 } as const;
 
@@ -96,13 +108,13 @@ export function BoxingEmailLayout({
       <Preview>{preview}</Preview>
       <Body style={body}>
         <Container style={container}>
-          {/* Gym strip: icon + wordmark, on the dark floor. */}
+          {/* Gym strip: the ring-rook app icon, big, with the wordmark beside it. */}
           <Section style={header}>
             <table cellPadding="0" cellSpacing="0" role="presentation" style={{ margin: '0 auto' }}>
               <tbody>
                 <tr>
-                  <td style={{ verticalAlign: 'middle', paddingRight: 12 }}>
-                    <Img src={`${CB_IMG}/icon.png`} alt="" width={44} height={44} style={headerIcon} />
+                  <td style={{ verticalAlign: 'middle', paddingRight: 16 }}>
+                    <Img src={`${CB_IMG}/icon.png`} alt="Chess Boxing" width={68} height={68} style={headerIcon} />
                   </td>
                   <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
                     <Text style={wordmark}>CHESS BOXING</Text>
@@ -118,13 +130,23 @@ export function BoxingEmailLayout({
             <Text style={ruleSpacer}>&nbsp;</Text>
           </Section>
 
-          {/* The fight card. */}
+          {/* The fight card. Same navy as the floor — the content is the card. */}
           <Section style={card}>{children}</Section>
 
           <Section style={footer}>
             <Text style={footerText}>
               You get this because you have an account at Chess Path. Chess Boxing is
               the same account.
+            </Text>
+            <Text style={footerText}>
+              From the makers of{' '}
+              <Link
+                href="https://chesspath.app?utm_source=email&utm_medium=lifecycle&utm_campaign=cb_footer"
+                style={footerLink}
+              >
+                Chess Path
+              </Link>{' '}
+              &mdash; the fun way to learn chess.
             </Text>
             <Link href={unsubscribeUrl} style={unsubscribeLink}>
               Stop these emails
@@ -142,9 +164,13 @@ export function BoxingEmailLayout({
 // -----------------------------------------------------------------------
 
 /**
- * The poster banner — a solid bar of colour with the headline knocked out of
- * it, the way a fight poster names the event. Straight, not rotated: CSS
+ * The poster banner — a bar of colour with the headline knocked out of it,
+ * the way a fight poster names the event. Straight, not rotated: CSS
  * transforms don't survive Outlook.
+ *
+ * 'ink' is the default and is now a raised navy surface with a gold kicker —
+ * on a dark card the loud tones (red / gold) are reserved for the one email
+ * that earns them.
  */
 export function PosterBanner({
   kicker,
@@ -155,16 +181,15 @@ export function PosterBanner({
   headline: string;
   tone?: 'ink' | 'red' | 'gold';
 }) {
-  // Contrast, measured: cream on #ff4b4b is only 2.75:1, so bright red never
-  // carries cream text. Navy ink on it is 4.65:1 and reads like a fight poster.
-  const bg = tone === 'red' ? CB.red : tone === 'gold' ? CB.gold : CB.ink;
-  const onColour = tone === 'red' || tone === 'gold';
+  // Contrast, measured: cream on #e5484d is only 3.2:1, so red never carries
+  // cream text. Navy ink on it is 5.1:1 and reads like a fight poster.
+  const bg = tone === 'red' ? CB.red : tone === 'gold' ? CB.gold : CB.surface;
   const fg = tone === 'red' ? CB.ink : tone === 'gold' ? CB.goldInk : CB.cream;
-  // The kicker is 10px, so it needs the full 4.5:1 too — no tinted-down variant.
-  const sub = onColour ? fg : CB.creamMuted;
+  // The kicker is 10px, so it needs the full 4.5:1 too. Gold on surface is 9:1.
+  const sub = tone === 'ink' ? CB.gold : fg;
 
   return (
-    <Section style={{ ...banner, backgroundColor: bg }}>
+    <Section style={{ ...banner, backgroundColor: bg, borderColor: tone === 'ink' ? CB.square : bg }}>
       {kicker && <Text style={{ ...bannerKicker, color: sub }}>{kicker}</Text>}
       <Text style={{ ...bannerHeadline, color: fg }}>{headline}</Text>
     </Section>
@@ -172,8 +197,8 @@ export function PosterBanner({
 }
 
 /**
- * The voice block. A solid navy panel, not a quote with a coloured edge —
- * whoever is speaking is in the corner, so they get the corner's colour.
+ * The voice block. A raised navy panel with the corner's gold rule down the
+ * left — whoever is speaking is in the corner, so they get the corner's colour.
  *
  * Defaults to Rookie ("FROM YOUR CORNER"). The celebration email overrides the
  * label because Tyler is the one talking there, not the mascot.
@@ -188,13 +213,36 @@ export function CornerLine({
   return (
     <Section style={cornerBlock}>
       <Text style={cornerLabel}>{label}</Text>
-      {React.Children.toArray(children).map((para, i) => (
+      {groupParagraphs(children).map((para, i) => (
         <Text key={i} style={i === 0 ? cornerText : cornerTextNext}>
           {para}
         </Text>
       ))}
     </Section>
   );
+}
+
+/**
+ * One paragraph per React element child; runs of plain strings/numbers
+ * (`&ldquo;{greeting}{outcome} ...&rdquo;` is four text nodes) stay together
+ * as ONE paragraph instead of each landing on its own line.
+ */
+function groupParagraphs(children: React.ReactNode): React.ReactNode[] {
+  const out: React.ReactNode[] = [];
+  let run: React.ReactNode[] = [];
+  const flush = () => {
+    if (run.length) out.push(run.length === 1 ? run[0] : <>{run}</>);
+    run = [];
+  };
+  React.Children.toArray(children).forEach((child) => {
+    if (typeof child === 'string' || typeof child === 'number') run.push(child);
+    else {
+      flush();
+      out.push(child);
+    }
+  });
+  flush();
+  return out;
 }
 
 /** The judges' card: big tabular numbers over hairline-ruled labels. */
@@ -224,7 +272,7 @@ export function ScoreCard({
                   width: w,
                   textAlign: 'center' as const,
                   verticalAlign: 'top' as const,
-                  borderLeft: i === 0 ? 'none' : `1px solid ${CB.ink}22`,
+                  borderLeft: i === 0 ? 'none' : `1px solid ${CB.square}`,
                 }}
               >
                 <Text style={valueStyle}>{it.value}</Text>
@@ -239,12 +287,79 @@ export function ScoreCard({
 }
 
 /**
- * A mode on the card: painted sprite on the left, name and one line of what it
- * is on the right. Used for PUZZLE BOXING / BOUT MODE.
+ * A cream sticker: the engraved icons are drawn on cream paper, so on the dark
+ * card each one sits in a rounded cream cell and reads as a patch. Renders as
+ * a table so the cream is a real bgcolor, not a CSS effect Outlook drops.
+ */
+export function Sticker({
+  src,
+  alt = '',
+  width,
+  height,
+  href,
+  pad = 6,
+  radius = 16,
+  align = 'left',
+}: {
+  src: string;
+  alt?: string;
+  width: number;
+  height?: number;
+  href?: string;
+  pad?: number;
+  radius?: number;
+  align?: 'left' | 'center';
+}) {
+  const img = (
+    <Img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      style={{
+        display: 'block',
+        width: `${width}px`,
+        height: height ? `${height}px` : 'auto',
+        borderRadius: `${Math.max(radius - pad, 4)}px`,
+      }}
+    />
+  );
+  return (
+    <table
+      cellPadding="0"
+      cellSpacing="0"
+      role="presentation"
+      style={{ margin: align === 'center' ? '0 auto' : 0 }}
+    >
+      <tbody>
+        <tr>
+          <td
+            style={{
+              backgroundColor: CB.cream,
+              borderRadius: `${radius}px`,
+              padding: `${pad}px`,
+              boxShadow: `0 3px 0 0 ${CB.goldDeep}`,
+              lineHeight: 0,
+              fontSize: 0,
+            }}
+          >
+            {href ? <Link href={href}>{img}</Link> : img}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ * A mode on the card: engraved sticker on the left, name and one line of what
+ * it is on the right. Used for PUZZLE BOXING / BOUT MODE.
  */
 export function ModeRow({
   icon,
-  iconWidth = 52,
+  iconWidth = 64,
+  iconHeight,
+  cellWidth,
   name,
   line,
   href,
@@ -252,6 +367,10 @@ export function ModeRow({
 }: {
   icon: string;
   iconWidth?: number;
+  /** For non-square art (the sign, the speed bag). Defaults to square. */
+  iconHeight?: number;
+  /** Fix the icon column so rows with different icon widths still align. */
+  cellWidth?: number;
   name: string;
   line: string;
   href: string;
@@ -262,15 +381,8 @@ export function ModeRow({
       <table cellPadding="0" cellSpacing="0" role="presentation" style={{ width: '100%' }}>
         <tbody>
           <tr>
-            <td style={{ width: `${iconWidth + 16}px`, verticalAlign: 'top' }}>
-              <Link href={href}>
-                <Img
-                  src={icon}
-                  alt=""
-                  width={iconWidth}
-                  style={{ display: 'block', width: `${iconWidth}px`, height: 'auto' }}
-                />
-              </Link>
+            <td style={{ width: `${(cellWidth ?? iconWidth) + 12 + 16}px`, verticalAlign: 'top', paddingRight: '16px' }}>
+              <Sticker src={icon} width={iconWidth} height={iconHeight ?? iconWidth} href={href} />
             </td>
             <td style={{ verticalAlign: 'top' }}>
               <Text style={modeName}>{name}</Text>
@@ -296,12 +408,13 @@ export function FightButton({
   children: React.ReactNode;
   tone?: 'red' | 'gold' | 'ink';
 }) {
-  // Buttons use the app's DEEP red (FightResultCard's meltdown red), not the
-  // bright one: cream on #8a1f1f is 7.6:1, cream on #ff4b4b is 2.75:1.
+  // Red: the app's rope red with navy ink on it (5.1:1) — cream on it is
+  // only 3.2:1. 'ink' is the quiet button: on a navy card it is cream with
+  // navy text, the inverse of the old cream-on-navy.
   const map = {
-    red: { bg: CB.redDeep, edge: '#5c1414', fg: CB.cream },
+    red: { bg: CB.red, edge: CB.redDeep, fg: CB.ink },
     gold: { bg: CB.gold, edge: CB.goldDeep, fg: CB.goldInk },
-    ink: { bg: CB.ink, edge: '#0b101e', fg: CB.cream },
+    ink: { bg: CB.cream, edge: CB.text55, fg: CB.ink },
   } as const;
   const c = map[tone];
 
@@ -382,69 +495,78 @@ const container = {
   maxWidth: '560px',
   overflow: 'hidden',
   borderRadius: '14px',
+  border: `1px solid ${CB.square}`,
 };
 
 const header = {
   backgroundColor: CB.gym,
-  padding: '22px 24px 18px',
+  padding: '26px 24px 22px',
   textAlign: 'center' as const,
 };
 
 const headerIcon = {
-  borderRadius: '10px',
+  borderRadius: '15px',
   display: 'block' as const,
-  width: '44px',
-  height: '44px',
+  width: '68px',
+  height: '68px',
 };
 
 const wordmark = {
   color: CB.cream,
-  fontSize: '21px',
+  fontSize: '26px',
   fontWeight: 900,
   letterSpacing: '0.14em',
-  lineHeight: '22px',
+  lineHeight: '28px',
   margin: 0,
 };
 
 const wordmarkSub = {
-  color: CB.creamMuted,
+  color: CB.gold,
   fontSize: '11px',
-  fontWeight: 600,
-  letterSpacing: '0.02em',
+  fontWeight: 800,
+  letterSpacing: '0.12em',
   lineHeight: '14px',
-  margin: '3px 0 0 0',
+  margin: '4px 0 0 0',
+  textTransform: 'uppercase' as const,
 };
 
 const ruleBar = { height: '5px', lineHeight: '5px', fontSize: 0 };
 const ruleSpacer = { margin: 0, fontSize: 0, lineHeight: 0 };
 
 const card = {
-  backgroundColor: CB.cream,
+  backgroundColor: CB.gym,
   padding: '28px 26px 26px',
 };
 
 const footer = {
-  backgroundColor: CB.gym,
+  backgroundColor: CB.gymDeep,
+  borderTop: `1px solid ${CB.square}`,
   padding: '18px 24px 20px',
   textAlign: 'center' as const,
 };
 
 const footerText = {
-  color: CB.creamMuted,
+  color: CB.text55,
   fontSize: '12px',
   lineHeight: '18px',
   margin: '0 0 6px 0',
 };
 
-const unsubscribeLink = {
+const footerLink = {
   color: CB.creamMuted,
+  textDecoration: 'underline',
+};
+
+const unsubscribeLink = {
+  color: CB.text55,
   fontSize: '12px',
   textDecoration: 'underline',
 };
 
 const banner = {
-  padding: '14px 18px',
-  borderRadius: '10px',
+  padding: '16px 18px',
+  borderRadius: '12px',
+  border: '1px solid',
   margin: '0 0 18px 0',
   textAlign: 'center' as const,
 };
@@ -467,14 +589,15 @@ const bannerHeadline = {
 };
 
 const cornerBlock = {
-  backgroundColor: CB.ink,
-  borderRadius: '10px',
+  backgroundColor: CB.surface,
+  borderLeft: `4px solid ${CB.gold}`,
+  borderRadius: '12px',
   padding: '14px 16px',
   margin: '0 0 18px 0',
 };
 
 const cornerLabel = {
-  color: CB.creamMuted,
+  color: CB.gold,
   fontSize: '9px',
   fontWeight: 900,
   letterSpacing: '0.26em',
@@ -493,14 +616,15 @@ const cornerText = {
 const cornerTextNext = { ...cornerText, margin: '12px 0 0 0' };
 
 const scoreWrap = {
-  border: `2px solid ${CB.ink}`,
-  borderRadius: '10px',
+  backgroundColor: CB.surface,
+  border: `1px solid ${CB.square}`,
+  borderRadius: '12px',
   padding: '14px 8px 12px',
   margin: '0 0 18px 0',
 };
 
 const scoreTitle = {
-  color: CB.ink55,
+  color: CB.gold,
   fontSize: '9px',
   fontWeight: 900,
   letterSpacing: '0.26em',
@@ -510,7 +634,7 @@ const scoreTitle = {
 };
 
 const scoreValue = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '28px',
   fontWeight: 900,
   lineHeight: '30px',
@@ -521,7 +645,7 @@ const scoreValue = {
 const scoreValueTight = { ...scoreValue, fontSize: '22px', lineHeight: '26px' };
 
 const scoreLabel = {
-  color: CB.ink55,
+  color: CB.text55,
   fontSize: '10px',
   fontWeight: 800,
   letterSpacing: '0.14em',
@@ -534,28 +658,28 @@ const scoreLabel = {
 };
 
 const modeRow = {
-  margin: '0 0 16px 0',
+  margin: '0 0 18px 0',
 };
 
 const modeName = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '15px',
   fontWeight: 900,
   letterSpacing: '0.1em',
   lineHeight: '18px',
-  margin: '0 0 4px 0',
+  margin: '2px 0 4px 0',
   textTransform: 'uppercase' as const,
 };
 
 const modeLine = {
-  color: CB.ink70,
+  color: CB.text70,
   fontSize: '14px',
   lineHeight: '21px',
   margin: '0 0 6px 0',
 };
 
 const modeCta = {
-  color: CB.redDeep,
+  color: CB.gold,
   fontSize: '13px',
   fontWeight: 800,
   letterSpacing: '0.04em',
@@ -563,7 +687,7 @@ const modeCta = {
 };
 
 const photo = {
-  borderRadius: '10px',
+  borderRadius: '12px',
   display: 'block' as const,
   height: 'auto',
   maxWidth: '100%',
@@ -571,7 +695,7 @@ const photo = {
 };
 
 const photoCaption = {
-  color: CB.ink55,
+  color: CB.text55,
   fontSize: '11px',
   fontWeight: 700,
   letterSpacing: '0.06em',
@@ -581,7 +705,7 @@ const photoCaption = {
 };
 
 const cardRule = {
-  borderTop: `1px dashed ${CB.ink}55`,
+  borderTop: `1px dashed ${CB.square}`,
   height: '1px',
   lineHeight: '1px',
   fontSize: 0,
@@ -591,7 +715,7 @@ const cardRule = {
 // --- text styles the templates share ------------------------------------
 
 export const cbHeading = {
-  color: CB.ink,
+  color: CB.cream,
   fontSize: '26px',
   fontWeight: 900,
   letterSpacing: '-0.01em',
@@ -602,7 +726,7 @@ export const cbHeading = {
 };
 
 export const cbDek = {
-  color: CB.ink70,
+  color: CB.text70,
   fontSize: '15px',
   lineHeight: '22px',
   margin: '0 0 18px 0',
@@ -610,14 +734,14 @@ export const cbDek = {
 };
 
 export const cbBody = {
-  color: CB.ink70,
+  color: CB.text70,
   fontSize: '15px',
   lineHeight: '24px',
   margin: '0 0 16px 0',
 };
 
 export const cbSignoff = {
-  color: CB.ink55,
+  color: CB.text55,
   fontSize: '14px',
   lineHeight: '21px',
   margin: '18px 0 0 0',
@@ -626,26 +750,52 @@ export const cbSignoff = {
 export const cbButtonWrap = { margin: '22px 0 6px', textAlign: 'center' as const };
 
 export const cbFootnote = {
-  color: CB.ink55,
+  color: CB.text55,
   fontSize: '13px',
   lineHeight: '20px',
   margin: '12px 0 0 0',
   textAlign: 'center' as const,
 };
 
-export const cbLink = { color: CB.redDeep, textDecoration: 'underline' };
+export const cbLink = { color: CB.gold, textDecoration: 'underline' };
 
-/** Body copy inside a gold block. Uses gold's own hue, not the cool ink ramp. */
+/** Small-caps section heading on the card, e.g. "WHAT ELSE IS ON THE CARD". */
+export const cbSectionHeading = {
+  color: CB.gold,
+  fontSize: '12px',
+  fontWeight: 900,
+  letterSpacing: '0.26em',
+  lineHeight: '15px',
+  margin: '0 0 16px 0',
+  textAlign: 'center' as const,
+  textTransform: 'uppercase' as const,
+};
+
+/**
+ * The gold callout ("THEN COME BACK TOMORROW", the rating ask). On the dark
+ * card a solid gold slab shouted; it is now a raised navy panel with a gold
+ * rule down the left and the heading in gold. Same shape as CornerLine so the
+ * two read as one system, told apart by who is speaking.
+ */
+export const cbGoldBox = {
+  backgroundColor: CB.surface,
+  borderLeft: `4px solid ${CB.gold}`,
+  borderRadius: '12px',
+  padding: '14px 16px',
+  margin: '0 0 4px 0',
+};
+
+/** Body copy inside a gold callout. */
 export const cbGoldBody = {
-  color: CB.onGold,
+  color: CB.text70,
   fontSize: '14px',
   lineHeight: '21px',
   margin: 0,
 };
 
-/** The heading of a gold block. */
+/** The heading of a gold callout. */
 export const cbGoldHeading = {
-  color: CB.goldInk,
+  color: CB.gold,
   fontSize: '14px',
   fontWeight: 900,
   letterSpacing: '0.04em',

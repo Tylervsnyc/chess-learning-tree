@@ -13,9 +13,9 @@ export type EmailType =
   | 'knicks_takeover'
   | 'chess_boxing_launch'
   | 'cb_welcome'
-  | 'cb_day3'
-  | 'cb_streak_risk'
-  | 'cb_winback'
+  | 'cb_weekly_report'
+  | 'cb_comeback'
+  | 'cb_highscore'
   | 'cb_launch_party';
 
 export interface EmailPreferences {
@@ -118,29 +118,38 @@ export interface BoxingWelcomeProps {
   punches?: number;
 }
 
-export interface BoxingDay3Props {
+export interface BoxingWeeklyReportProps {
   displayName?: string;
   appUrl: string;
   unsubscribeUrl: string;
+  /** Workout sessions in the trailing 7 days (3+ or this email never sends). */
+  workouts: number;
+  /** Punches thrown across workouts + bouts, trailing 7 days. */
+  punches?: number;
+  /** Best single round score, trailing 7 days. */
+  bestRound?: number;
+  currentStreak?: number;
+  /** Bout record for the week, only shown if they bouted. */
   wins?: number;
   losses?: number;
   draws?: number;
-  /** Best single round points across workouts + bouts. */
-  bestRound?: number;
 }
 
-export interface BoxingStreakRiskProps {
-  displayName?: string;
-  appUrl: string;
-  unsubscribeUrl: string;
-  currentStreak: number;
-}
-
-export interface BoxingWinbackProps {
+export interface BoxingComebackProps {
   displayName?: string;
   appUrl: string;
   unsubscribeUrl: string;
   bestRound?: number;
   punches?: number;
   bouts?: number;
+}
+
+export interface BoxingHighScoreProps {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  /** The new personal-best workout score. */
+  score: number;
+  /** The record it beat, when one existed. */
+  previousBest?: number;
 }

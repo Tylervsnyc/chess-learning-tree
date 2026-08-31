@@ -123,6 +123,8 @@ export async function fetchFirstActivityByUser(
  * as the bout_sessions read in fetchCompletionRows.
  */
 export interface BoxingActivity extends UserActivity {
+  /** Earliest boxing timestamp of ANY kind (bout or workout) — the cb_welcome window. */
+  firstAt: string | null;
   /** Earliest bout timestamp, for the "first ever bout" window. */
   firstBoutAt: string | null;
   /** Outcome of that first bout, so the welcome email can react to it. */
@@ -134,12 +136,29 @@ export interface BoxingActivity extends UserActivity {
   /** Best single round across workouts and bouts. */
   bestRound: number;
   punches: number;
+  /** --- Trailing 7 days (for cb_weekly_report) --- */
+  recentWorkouts: number;
+  recentPunches: number;
+  recentBestRound: number;
+  recentBouts: number;
+  recentWins: number;
+  recentLosses: number;
+  recentDraws: number;
+  /**
+   * --- Personal best detection (for cb_highscore) ---
+   * Best workout_sessions.points score from yesterday (UTC) vs the best from
+   * every day BEFORE yesterday. yesterdayBestScore > priorBestScore means
+   * yesterday set a new personal best.
+   */
+  yesterdayBestScore: number;
+  priorBestScore: number;
 }
 
 function emptyBoxing(): BoxingActivity {
   return {
     days: [],
     lastDay: null,
+    firstAt: null,
     firstBoutAt: null,
     firstBoutResult: null,
     bouts: 0,
@@ -148,6 +167,15 @@ function emptyBoxing(): BoxingActivity {
     draws: 0,
     bestRound: 0,
     punches: 0,
+    recentWorkouts: 0,
+    recentPunches: 0,
+    recentBestRound: 0,
+    recentBouts: 0,
+    recentWins: 0,
+    recentLosses: 0,
+    recentDraws: 0,
+    yesterdayBestScore: 0,
+    priorBestScore: 0,
   };
 }
 
@@ -188,13 +216,18 @@ export async function fetchBoxingActivityByUser(
       'bout_sessions',
     ),
     safe(
-      fetchRows(supabase, 'workout_sessions', 'user_id, created_at, best_round_points, punches'),
+      fetchRows(supabase, 'workout_sessions', 'user_id, created_at, points, best_round_points, punches'),
       'workout_sessions',
     ),
   ]);
 
   const out = new Map<string, BoxingActivity>();
   const daySets = new Map<string, Set<string>>();
+
+  // Window edges for the derived fields. All UTC, same convention as `days`.
+  const now = new Date();
+  const cutoff7 = new Date(now.getTime() - 7 * 24 * 3600 * 1000).toISOString();
+  const yesterdayDay = new Date(now.getTime() - 24 * 3600 * 1000).toISOString().slice(0, 10);
 
   const rec = (userId: string): BoxingActivity => {
     let r = out.get(userId);
@@ -224,6 +257,16 @@ export async function fetchBoxingActivityByUser(
     r.punches += num(row.punches);
     r.bestRound = Math.max(r.bestRound, num(row.points));
 
+    if (ts >= cutoff7) {
+      r.recentBouts += 1;
+      if (result === 'win') r.recentWins += 1;
+      else if (result === 'loss') r.recentLosses += 1;
+      else if (result === 'draw') r.recentDraws += 1;
+      r.recentPunches += num(row.punches);
+      r.recentBestRound = Math.max(r.recentBestRound, num(row.points));
+    }
+
+    if (!r.firstAt || ts < r.firstAt) r.firstAt = ts;
     if (!r.firstBoutAt || ts < r.firstBoutAt) {
       r.firstBoutAt = ts;
       r.firstBoutResult =
@@ -236,9 +279,24 @@ export async function fetchBoxingActivityByUser(
     const ts = row.created_at as string | null;
     if (!userId || !ts) continue;
     const r = rec(userId);
-    daySets.get(userId)!.add(ts.slice(0, 10));
+    const day = ts.slice(0, 10);
+    daySets.get(userId)!.add(day);
     r.punches += num(row.punches);
     r.bestRound = Math.max(r.bestRound, num(row.best_round_points));
+
+    if (!r.firstAt || ts < r.firstAt) r.firstAt = ts;
+
+    if (ts >= cutoff7) {
+      r.recentWorkouts += 1;
+      r.recentPunches += num(row.punches);
+      r.recentBestRound = Math.max(r.recentBestRound, num(row.best_round_points));
+    }
+
+    // Personal best tracking runs on the full workout score (`points`), the
+    // number the finish screen shows — not best_round_points.
+    const score = num(row.points);
+    if (day === yesterdayDay) r.yesterdayBestScore = Math.max(r.yesterdayBestScore, score);
+    else if (day < yesterdayDay) r.priorBestScore = Math.max(r.priorBestScore, score);
   }
 
   for (const [userId, set] of daySets) {

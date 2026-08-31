@@ -25,9 +25,9 @@ function getPreferenceColumn(emailType: EmailType | undefined): string | null {
     case 'knicks_takeover':
     case 'chess_boxing_launch':
     case 'cb_welcome':
-    case 'cb_day3':
-    case 'cb_streak_risk':
-    case 'cb_winback':
+    case 'cb_weekly_report':
+    case 'cb_comeback':
+    case 'cb_highscore':
     case 'cb_launch_party':
       return 'marketing';
     default:
@@ -112,9 +112,9 @@ export async function GET(request: NextRequest) {
 function getEmailTypeName(type: EmailType | null): string {
   switch (type) {
     case 'cb_welcome':
-    case 'cb_day3':
-    case 'cb_streak_risk':
-    case 'cb_winback':
+    case 'cb_weekly_report':
+    case 'cb_comeback':
+    case 'cb_highscore':
     case 'cb_launch_party':
     case 'chess_boxing_launch':
       return 'Chess Boxing';
