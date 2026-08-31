@@ -16,7 +16,7 @@ import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { pickRookieMove } from '@/lib/rookie/pick-move';
 import { getRookieLevel, peekRookieLevel } from '@/lib/rookie/level-client';
-import { maxLevel } from '@/lib/rookie/matchmaking';
+import { maxLevel } from '@/lib/rookie/win-ladder';
 import { maia } from '@/lib/maia/maia-adapter';
 import {
   buildSchedule,

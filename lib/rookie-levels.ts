@@ -26,11 +26,13 @@ export interface RookieLevel {
 // CONSTANTS
 // ════════════════════════════════
 
-// WINS_TO_ADVANCE is GONE (2026-08-05). "Win 3 to unlock the next level" could
-// only ratchet upward — a lucky run stranded you a rung above your real
-// strength, permanently, losing. Rookie is now MATCHED to your rating every
-// game and can ease off as well as climb: lib/rookie/matchmaking.ts,
-// RULES.md §20b. Do not reintroduce a win counter alongside the rating.
+// WINS_TO_ADVANCE is BACK (2026-08-31 — Tyler's explicit call, reversing the
+// 2026-08-05 removal). Beat Rookie 3 times at your current level and she
+// levels up; the level NEVER goes down — losses and draws change nothing.
+// The ladder lives in lib/rookie/win-ladder.ts (derived on read from
+// game_sessions + bout_sessions, like the streak — no stored counter). The
+// Elo matchmaking rating (lib/rookie/rating.ts) is ANALYTICS-ONLY now.
+// RULES.md §20b.
 
 /**
  * Stockfish engine config per level.

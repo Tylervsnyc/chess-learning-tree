@@ -6,56 +6,89 @@
  * can never show a different Rookie, the same way lib/streak-client.ts is the
  * one read for the streak.
  *
- * Logged in  → the server owns it (/api/rookie/level, derived from the Rookie
- *              rating). localStorage is only a cache so the first paint isn't
- *              blank and so a dropped connection doesn't reset anyone.
- * Logged out → localStorage alone. It merges up the moment they log in and the
- *              server's answer arrives.
+ * WIN-COUNTER LADDER (restored 2026-08-31, Tyler's call — RULES.md §20b):
+ * beat Rookie 3 times at your current level and she levels up. The level only
+ * ever goes UP; losses and draws change nothing, and wins don't have to be
+ * consecutive.
  *
- * The server is always the authority when it answers. A cached value is never
- * written back over a fresher server value.
+ * Logged in  → the server owns it (/api/rookie/level, derived by replaying
+ *              the user's win history). localStorage is only a cache so the
+ *              first paint isn't blank and a dropped connection doesn't reset
+ *              anyone.
+ * Logged out → localStorage alone ('rookie-level' + 'rookie-level-wins', the
+ *              original keys). The server's answer wins the moment they log
+ *              in and it arrives.
  */
 
-import { matchLevel } from './matchmaking';
+import {
+  applyWin,
+  maxLevel,
+  WINS_TO_ADVANCE,
+  type WinLadderState,
+} from './win-ladder';
+
+export { WINS_TO_ADVANCE };
 
 const LEVEL_KEY = 'rookie-level';
+const WINS_KEY = 'rookie-level-wins';
 
-export interface RookieLevelState {
-  level: number;
-  /** Present only for logged-in players; null when we're on the local cache. */
-  rating: number | null;
-  /** True while the rating is still finding its feet (few games). */
-  provisional: boolean;
-  /** Where the level came from — 'server' is authoritative. */
+export interface RookieLevelState extends WinLadderState {
+  /** Where the ladder came from — 'server' is authoritative. */
   source: 'server' | 'cache';
 }
 
 let cached: RookieLevelState | null = null;
 let inflight: Promise<RookieLevelState> | null = null;
 
-function readLocalLevel(): number {
-  if (typeof window === 'undefined') return 1;
+function clampLevel(level: number): number {
+  return Math.max(1, Math.min(maxLevel(), level));
+}
+
+function clampWins(wins: number): number {
+  return Math.max(0, Math.min(WINS_TO_ADVANCE - 1, wins));
+}
+
+function readLocal(): WinLadderState {
+  if (typeof window === 'undefined') return { level: 1, winsAtLevel: 0 };
   try {
-    const raw = parseInt(window.localStorage.getItem(LEVEL_KEY) || '1', 10);
-    return Number.isFinite(raw) ? Math.max(1, Math.min(10, raw)) : 1;
+    const level = parseInt(window.localStorage.getItem(LEVEL_KEY) || '1', 10);
+    const wins = parseInt(window.localStorage.getItem(WINS_KEY) || '0', 10);
+    return {
+      level: Number.isFinite(level) ? clampLevel(level) : 1,
+      winsAtLevel: Number.isFinite(wins) ? clampWins(wins) : 0,
+    };
   } catch {
-    return 1;
+    return { level: 1, winsAtLevel: 0 };
   }
 }
 
-function writeLocalLevel(level: number): void {
+function writeLocal(state: WinLadderState): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(LEVEL_KEY, String(level));
+    window.localStorage.setItem(LEVEL_KEY, String(state.level));
+    window.localStorage.setItem(WINS_KEY, String(state.winsAtLevel));
   } catch {
     /* private mode — the server copy still holds for logged-in players */
   }
 }
 
-/** The cached level with no network call — for a first paint that can't wait. */
+/** The cached ladder with no network call — for a first paint that can't wait. */
 export function peekRookieLevel(): RookieLevelState {
   if (cached) return cached;
-  return { level: readLocalLevel(), rating: null, provisional: true, source: 'cache' };
+  return { ...readLocal(), source: 'cache' };
+}
+
+function stateFromBody(body: Record<string, unknown>): RookieLevelState | null {
+  if (typeof body.level !== 'number') return null;
+  const state: RookieLevelState = {
+    level: clampLevel(body.level),
+    winsAtLevel:
+      typeof body.winsAtLevel === 'number' ? clampWins(body.winsAtLevel) : 0,
+    source: 'server',
+  };
+  writeLocal(state);
+  cached = state;
+  return state;
 }
 
 /**
@@ -71,22 +104,8 @@ export async function getRookieLevel(opts: { fresh?: boolean } = {}): Promise<Ro
     try {
       const res = await fetch('/api/rookie/level');
       if (res.ok) {
-        const body = (await res.json()) as {
-          level?: number;
-          rating?: number;
-          provisional?: boolean;
-        };
-        if (typeof body.level === 'number') {
-          const state: RookieLevelState = {
-            level: Math.max(1, Math.min(10, body.level)),
-            rating: typeof body.rating === 'number' ? body.rating : null,
-            provisional: body.provisional !== false,
-            source: 'server',
-          };
-          writeLocalLevel(state.level);
-          cached = state;
-          return state;
-        }
+        const state = stateFromBody((await res.json()) as Record<string, unknown>);
+        if (state) return state;
       }
     } catch {
       /* offline — the cache below is the honest answer */
@@ -104,22 +123,21 @@ export async function getRookieLevel(opts: { fresh?: boolean } = {}): Promise<Ro
 }
 
 export interface LevelUpdate extends RookieLevelState {
-  /** Which way the level moved as a result of this game. */
-  change: 'up' | 'down' | 'same';
+  /** 'up' when this game's win was the 3rd at the level. Never 'down'. */
+  change: 'up' | 'same';
 }
 
 /**
- * Record a finished game and get the new level back.
+ * Record a finished game and get the new ladder state back.
  *
- * A loss lowers the rating, which can lower the level — that is the feature,
- * not a failure state. Logged-out players get a 'same' with their cached level
- * (nothing to record without an account).
+ * Only a WIN moves the counter; a loss or draw changes nothing — no demotion,
+ * no reset (Tyler, 2026-08-31). Logged-out players are counted locally in
+ * localStorage, same rules.
  */
 export async function recordGameResult(
   level: number,
   result: 'win' | 'loss' | 'draw',
 ): Promise<LevelUpdate> {
-  const before = peekRookieLevel();
   try {
     const res = await fetch('/api/rookie/level', {
       method: 'POST',
@@ -127,40 +145,30 @@ export async function recordGameResult(
       body: JSON.stringify({ level, result }),
     });
     if (res.ok) {
-      const body = (await res.json()) as {
-        level?: number;
-        rating?: number;
-        provisional?: boolean;
-        change?: 'up' | 'down' | 'same';
-      };
-      if (typeof body.level === 'number') {
-        const state: RookieLevelState = {
-          level: Math.max(1, Math.min(10, body.level)),
-          rating: typeof body.rating === 'number' ? body.rating : null,
-          provisional: body.provisional !== false,
-          source: 'server',
-        };
-        writeLocalLevel(state.level);
-        cached = state;
-        return { ...state, change: body.change ?? 'same' };
+      const body = (await res.json()) as Record<string, unknown>;
+      const state = stateFromBody(body);
+      if (state) {
+        return { ...state, change: body.change === 'up' ? 'up' : 'same' };
       }
     }
   } catch {
-    /* offline — fall through */
+    /* offline — fall through to the local ladder */
   }
-  return { ...before, change: 'same' };
+
+  // Logged out (401) or offline: the localStorage ladder is the authority.
+  const before = peekRookieLevel();
+  if (result !== 'win') return { ...before, change: 'same' };
+  const next: RookieLevelState = { ...applyWin(before), source: before.source };
+  writeLocal(next);
+  cached = next;
+  return { ...next, change: next.level > before.level ? 'up' : 'same' };
 }
 
 /**
- * How far the rating sits between the current level's strength and the next
- * one's, 0..1 — the sub-level fill on the progress bar. Replaces "wins out of
- * 3", which measured a counter rather than the player.
+ * Wins banked toward the next level as a 0..1 fill — the sub-level fill on
+ * the progress bar (winsAtLevel / WINS_TO_ADVANCE). Full at the level cap.
  */
 export function levelProgress(state: RookieLevelState): number {
-  if (state.rating === null) return 0;
-  const here = matchLevel(state.rating).snapError;
-  // snapError is (level elo - target). Negative means the player has outgrown
-  // this rung and is heading for the next one.
-  const span = 200; // nominal gap between rungs
-  return Math.max(0, Math.min(1, -here / span));
+  if (state.level >= maxLevel()) return 1;
+  return Math.max(0, Math.min(1, state.winsAtLevel / WINS_TO_ADVANCE));
 }

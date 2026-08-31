@@ -21,6 +21,7 @@ import {
   peekRookieLevel,
   recordGameResult,
   levelProgress,
+  WINS_TO_ADVANCE,
 } from '@/lib/rookie/level-client';
 import {
   ROOKIE_LEVELS,
@@ -89,9 +90,11 @@ const CoachingDrawer = nextDynamic(
 // LEVEL PERSISTENCE (localStorage)
 // ════════════════════════════════
 
-// Level persistence lives in lib/rookie/level-client.ts now — the server owns
-// the rating and the localStorage key is only its cache. The old
-// `rookie-level-wins` key is dead: there is no win counter any more.
+// Level persistence lives in lib/rookie/level-client.ts — the server owns the
+// win-counter ladder (derived from game_sessions + bout_sessions) and the
+// localStorage keys are its cache / the logged-out ladder. The win counter is
+// BACK (2026-08-31, Tyler's call): `rookie-level` + `rookie-level-wins` are
+// both live again. Beat Rookie 3 times → she levels up; never down.
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -221,26 +224,38 @@ function LevelProgressBar({
 }
 
 /**
- * Replaces the old "win 3 to reach Level N" counter. There is no counter any
- * more — Rookie is matched to your rating every game, so what the player needs
- * to know is that she's set to THEM, not how many boxes are left to tick.
+ * The "win 3 to reach Level N" counter — RESTORED 2026-08-31 (Tyler's call).
+ * One pip per win at the current level; the 3rd fills the set and levels
+ * Rookie up. Losses change nothing (no reset, no demotion), so the pips only
+ * ever fill until they pop.
  */
-function MatchNote({ level, provisional, dark }: { level: number; provisional: boolean; dark?: boolean }) {
+function WinPipsNote({ level, wins, dark }: { level: number; wins: number; dark?: boolean }) {
   const muted = dark ? 'text-white/60' : 'text-chess-text-muted';
-  if (provisional) {
-    return (
-      <span className={`text-xs ${muted} font-semibold text-center`}>
-        Rookie is still finding your level.
-      </span>
-    );
-  }
   if (level >= 10) {
     return <span className="text-xs font-bold text-chess-gold">SHE IS ALL OUT OF GEARS</span>;
   }
+  const nextLevel = getRookieLevel(level + 1);
   return (
-    <span className={`text-xs ${muted} font-semibold text-center`}>
-      Rookie is matched to you. Beat her and she gets harder.
-    </span>
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="flex items-center gap-1.5" aria-label={`${wins} of ${WINS_TO_ADVANCE} wins at level ${level}`}>
+        {Array.from({ length: WINS_TO_ADVANCE }).map((_, i) => (
+          <span
+            key={i}
+            className={`w-2.5 h-2.5 rounded-full ${
+              i < wins
+                ? 'bg-chess-green shadow-[0_0_6px_rgba(88,204,2,0.5)]'
+                : dark
+                  ? 'bg-white/15 ring-1 ring-white/20'
+                  : 'bg-slate-200 ring-1 ring-slate-300'
+            }`}
+          />
+        ))}
+      </div>
+      <span className={`text-xs ${muted} font-semibold text-center`}>
+        Beat her {WINS_TO_ADVANCE - wins} more time{WINS_TO_ADVANCE - wins === 1 ? '' : 's'} to reach
+        {' '}Level {nextLevel.level} &middot; ~{nextLevel.elo} ELO
+      </span>
+    </div>
   );
 }
 
@@ -320,14 +335,14 @@ export default function PlayRookiePage() {
     tapQuipTimerRef.current = setTimeout(() => setTapQuip(null), 4000);
   }, []);
   const [playerColor, setPlayerColor] = useState<'white' | 'black'>('white');
-  // Rookie MATCHES you (lib/rookie/matchmaking.ts) — she is no longer unlocked
-  // by a win counter. matchedLevel is what the rating says she should play at;
+  // Rookie is UNLOCKED by the win counter (restored 2026-08-31, Tyler's call
+  // — lib/rookie/win-ladder.ts): 3 wins at your level advance her one rung,
+  // and the level NEVER falls. matchedLevel is the ladder's current level;
   // rookieLevel is what she's actually playing this game (dev can override).
-  // A loss lowers the rating, so matchedLevel can fall — silently, by design.
   const [matchedLevel, setMatchedLevel] = useState(1);
   const [rookieLevel, setRookieLevel] = useState(1);
   const [subProgress, setSubProgress] = useState(0);
-  const [levelProvisional, setLevelProvisional] = useState(true);
+  const [winsAtLevel, setWinsAtLevel] = useState(0);
   const { name: playerNameValue } = useName();
   const playerName = playerNameValue || '';
 
@@ -339,18 +354,20 @@ export default function PlayRookiePage() {
   const [levelBarAnim, setLevelBarAnim] = useState<{ level: number; sub: number; duration: number } | null>(null);
 
   // The level Rookie should play at. Paint from the cache immediately so the
-  // bar isn't blank, then take whatever the server says (it owns the rating).
+  // bar isn't blank, then take whatever the server says (it owns the ladder).
   useEffect(() => {
     const peeked = peekRookieLevel();
     setMatchedLevel(peeked.level);
     setRookieLevel(peeked.level);
+    setWinsAtLevel(peeked.winsAtLevel);
+    setSubProgress(levelProgress(peeked));
     let cancelled = false;
     fetchMatchedLevel().then((state) => {
       if (cancelled) return;
       setMatchedLevel(state.level);
       setRookieLevel(state.level);
+      setWinsAtLevel(state.winsAtLevel);
       setSubProgress(levelProgress(state));
-      setLevelProvisional(state.provisional);
     });
     return () => { cancelled = true; };
   }, []);
@@ -682,6 +699,7 @@ export default function PlayRookiePage() {
     window.setTimeout(() => {
       setMatchedLevel(newLevel);
       setRookieLevel(newLevel);
+      setWinsAtLevel(0);
       setSubProgress(0);
       setLevelBarAnim(null);
       speech.queueLevelUpQuip(newLevel).then((quip) => {
@@ -720,6 +738,7 @@ export default function PlayRookiePage() {
         if (alreadyCelebrated) {
           setMatchedLevel(pendingLevelUp.newLevel);
           setRookieLevel(pendingLevelUp.newLevel);
+          setWinsAtLevel(0);
           setSubProgress(0);
         } else {
           runLevelUpAnimation(pendingLevelUp.oldLevel, pendingLevelUp.newLevel);
@@ -1004,23 +1023,23 @@ export default function PlayRookiePage() {
     pendingPostGameRef.current = postGameResult;
     lastResultForTrackingRef.current = postGameResult;
 
-    // Record the game against the Rookie rating. EVERY result counts, at
-    // whatever level was played — a win moves it up, a loss moves it down, and
-    // the level follows the rating. There is nothing to farm: beating a level
-    // far below you barely moves an Elo, and losing to one costs you.
+    // Record the game against the win ladder (restored 2026-08-31). Only a
+    // WIN moves the counter — the 3rd win at the level promotes; a loss or
+    // draw changes nothing (no reset, no demotion — wins accumulate and don't
+    // need to be consecutive). The level only ever goes up.
     const scored: 'win' | 'loss' | 'draw' =
       result === 'win' ? 'win' : result === 'draw' ? 'draw' : 'loss';
     const levelPlayed = rookieLevel;
     void recordGameResult(levelPlayed, scored).then((update) => {
+      setWinsAtLevel(update.winsAtLevel);
       setSubProgress(levelProgress(update));
-      setLevelProvisional(update.provisional);
       if (update.change === 'up') {
         // Celebrated on the setup screen, so the animation doesn't fight the
         // result card for attention.
         pendingLevelUpRef.current = { oldLevel: levelPlayed, newLevel: update.level };
       } else {
-        // Down or same: no ceremony. Tyler, 2026-08-05 — she eases off
-        // silently; a visible demotion reads as punishment.
+        // Same level: sync to the server's answer (it can only ever be equal
+        // or higher — e.g. wins landed from another device).
         setMatchedLevel(update.level);
         setRookieLevel(update.level);
       }
@@ -2106,6 +2125,8 @@ export default function PlayRookiePage() {
                 <span className="text-chess-green font-black text-sm">LV. {rookieLevel}</span>
                 <span className={`font-semibold text-xs ${inBoxShell ? 'text-white/50' : 'text-chess-text-muted'}`}>&middot;</span>
                 <span className={`font-semibold text-xs ${inBoxShell ? 'text-white/70' : 'text-chess-text-muted'}`}>{currentRookieLevel.title}</span>
+                <span className={`font-semibold text-xs ${inBoxShell ? 'text-white/50' : 'text-chess-text-muted'}`}>&middot;</span>
+                <span className={`font-semibold text-xs tabular-nums ${inBoxShell ? 'text-white/70' : 'text-chess-text-muted'}`}>~{currentRookieLevel.elo} ELO</span>
               </div>
 
               <PlayPageRookie
@@ -2128,9 +2149,9 @@ export default function PlayRookiePage() {
               </div>
             </div>
 
-            {/* How Rookie's difficulty is set */}
+            {/* Win counter: 3 pips at the current level, next level's ELO */}
             <div className="flex justify-center pointer-events-auto">
-              <MatchNote level={matchedLevel} provisional={levelProvisional} dark={inBoxShell} />
+              <WinPipsNote level={matchedLevel} wins={winsAtLevel} dark={inBoxShell} />
             </div>
 
             {/* Color picker */}

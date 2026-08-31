@@ -1,7 +1,14 @@
 /**
  * lib/rookie/rating.ts
  *
- * The ROOKIE RATING — the one number that decides how strong Rookie plays.
+ * The ROOKIE RATING — ANALYTICS-ONLY as of 2026-08-31 (Tyler's call).
+ *
+ * This Elo used to decide how strong Rookie plays (2026-08-05 matchmaking).
+ * That was reversed: the level authority is the win-counter ladder in
+ * lib/rookie/win-ladder.ts ("beat her 3 times → she levels up", level never
+ * goes down). This rating is still folded on every game/bout so the number
+ * stays continuous for analysis, but NOTHING reads it for matchmaking. Do not
+ * derive a level from it.
  *
  * Distinct from Chess Path ELO, deliberately (RULES §20):
  *   - Chess Path ELO is the DISPLAY rating. Puzzles dominate it, and it's the
@@ -235,20 +242,6 @@ export async function applyGameResult(
   return updated;
 }
 
-/**
- * Lift the rating to at least `floor` — the bout promotion rule: a checkmate
- * win in the ring at your true level guarantees the next rung in /play. Only
- * ever raises; a rating already past the floor is untouched. Counts no event
- * (the bout itself was already folded in at full weight).
- */
-export async function raiseRatingToFloor(
-  supabase: SupabaseClient,
-  userId: string,
-  current: RookieRating,
-  floor: number,
-): Promise<RookieRating> {
-  if (current.rating >= floor) return current;
-  const updated: RookieRating = { ...current, rating: Math.round(floor) };
-  await store(supabase, userId, updated);
-  return updated;
-}
+// raiseRatingToFloor (the ko_win bout promotion rule) was deleted 2026-08-31
+// with the rating matchmaking — the level moves only by wins on the ladder
+// now, and a bout win counts as one of the 3 (lib/rookie/win-ladder.ts).

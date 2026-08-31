@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { periodStartISO } from '@/lib/leaderboard/period';
-import {
-  getRookieRating,
-  applyGameResult,
-  raiseRatingToFloor,
-  BOUT_GAME_WEIGHT,
-} from '@/lib/rookie/rating';
-import { matchLevel, floorRatingForLevel, maxLevel } from '@/lib/rookie/matchmaking';
+import { applyGameResult, BOUT_GAME_WEIGHT } from '@/lib/rookie/rating';
+import { deriveWinLadder } from '@/lib/rookie/win-ladder';
 import {
   boutPoints,
   boutResult,
@@ -151,9 +146,10 @@ export async function POST(request: NextRequest) {
   // LEVEL IS NOT ACCEPTED FROM THE CLIENT. Bout points scale with Rookie's
   // level, and the client's level came from editable localStorage — sending
   // `level: 10` would have bought a 1.6x multiplier on every ranked bout. The
-  // server derives it from the user's Rookie rating instead.
-  const { rating } = await getRookieRating(svc, user.id);
-  const level = matchLevel(rating).level;
+  // server derives it from the win-counter ladder (lib/rookie/win-ladder.ts,
+  // restored 2026-08-31) — the SAME Rookie as /play. Derived BEFORE this
+  // bout's row is inserted, so a bout can't count toward its own points.
+  const { level } = await deriveWinLadder(svc, user.id);
 
   // Idempotency: if this bout already landed (double-tap, retry, flaky
   // network), return the existing row instead of writing a second one.
@@ -229,20 +225,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'write failed' }, { status: 500 });
   }
 
-  // A bout is a full game against Rookie fought across rounds, so it moves the
-  // Rookie rating at DOUBLE weight (BOUT_GAME_WEIGHT, both directions) —
-  // otherwise a player who only ever fights bouts would never have her
-  // difficulty adapt. Folded HERE rather than from the client so it can't be
-  // replayed, and only on a fresh row (the duplicate path returns above).
-  const updated = await applyGameResult(svc, user.id, level, RATING_SCORE[result], BOUT_GAME_WEIGHT);
-
-  // Promotion rule: a CHECKMATE win in the ring guarantees the next rung — the
-  // rating is lifted to the next level's floor, so the next /play game AND the
-  // next bout are against a stronger Rookie. The ring is no longer capped, so
-  // `level` is always the true matched level and there is nothing to skip.
-  if (outcome === 'ko_win' && level < maxLevel()) {
-    await raiseRatingToFloor(svc, user.id, updated, floorRatingForLevel(level + 1));
-  }
+  // Progression: the bout_sessions row just written IS the progression record
+  // — a bout win counts as one win on the win-counter ladder (deriveWinLadder
+  // replays bout_sessions alongside game_sessions), so 3 wins in the ring
+  // level Rookie up the same as 3 wins on /play. The old "ko_win lifts the
+  // rating to the next level's floor" promotion is gone with the rating
+  // matchmaking (2026-08-31) — the ladder only moves by wins now.
+  //
+  // The Rookie Elo rating is ANALYTICS-ONLY now; still folded (double weight,
+  // BOUT_GAME_WEIGHT) so the number stays continuous, but nothing reads it
+  // for matchmaking.
+  await applyGameResult(svc, user.id, level, RATING_SCORE[result], BOUT_GAME_WEIGHT);
 
   // Achievements — best-effort, after the row landed (the streak-derived
   // detectors count this bout). Runs only on a fresh row: the duplicate path

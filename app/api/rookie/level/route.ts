@@ -1,33 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
-import { getRookieRating, applyGameResult } from '@/lib/rookie/rating';
-import { matchLevel, levelChange, maxLevel } from '@/lib/rookie/matchmaking';
+import { applyGameResult } from '@/lib/rookie/rating';
+import {
+  deriveWinLadder,
+  applyWin,
+  maxLevel,
+  WINS_TO_ADVANCE,
+  type WinLadderState,
+} from '@/lib/rookie/win-ladder';
+import { getLevelElo } from '@/lib/rookie-levels';
 
 /**
  * /api/rookie/level — how strong Rookie should play for this user.
  *
- * GET  → { rating, level, provisional, expectedWinRate }
- * POST { level, result: 'win'|'loss'|'draw' } → records the game, returns the
- *        new { rating, level, change: 'up'|'down'|'same' }
+ * WIN-COUNTER LADDER, restored 2026-08-31 (Tyler's call, reversing the
+ * 2026-08-05 rating-matchmaking rework): beat Rookie 3 times at your level and
+ * she levels up. The level ONLY goes up — losses and draws change nothing.
  *
- * The level is DERIVED from the rating on every read, so there is one number
- * and it cannot disagree with itself. The rating falls on losses, which is how
- * Rookie eases off — there is no separate demotion path.
+ * GET  → { level, winsAtLevel, winsToAdvance, levelElo }
+ * POST { level, result: 'win'|'loss'|'draw' } →
+ *        { level, winsAtLevel, winsToAdvance, levelElo, change: 'up'|'same' }
  *
- * Logged-out players get a 401 and keep using their localStorage level; that
- * cache merges up on login.
+ * The ladder is DERIVED on every read by replaying the user's win history
+ * (lib/rookie/win-ladder.ts — game_sessions + bout_sessions), like the
+ * streak: no stored counter, nothing to drift. The client's game_sessions
+ * insert races this POST, so the POST checks whether the just-reported win
+ * already landed (a counted win in the last minute) before folding it on top
+ * — a player can't finish two real games inside a minute.
  *
- * Reads use the service role because the rating is derived from game_sessions
- * and written to a privileged profile column — a client must never be able to
- * hand itself an easier opponent, or a bigger bout multiplier (bout points
- * scale with level, see /api/bout/finish).
+ * The old Elo rating (lib/rookie/rating.ts) is ANALYTICS-ONLY: the POST still
+ * folds the result so profiles.rookie_rating stays continuous, but the level
+ * never reads it.
+ *
+ * Logged-out players get a 401 and keep using their localStorage ladder
+ * ('rookie-level' + 'rookie-level-wins', managed by lib/rookie/level-client.ts).
+ *
+ * The level is never accepted from a client (bout points scale with it —
+ * see /api/bout/finish); the reported `level` is validated but the ladder is
+ * derived server-side regardless.
  */
 
 const RESULTS = { win: 1, draw: 0.5, loss: 0 } as const;
 
+/** A counted win this recent is assumed to BE the game the POST reports. */
+const JUST_LANDED_MS = 60_000;
+
 function isResult(v: unknown): v is keyof typeof RESULTS {
   return v === 'win' || v === 'loss' || v === 'draw';
+}
+
+function ladderJson(state: WinLadderState, extra?: Record<string, unknown>) {
+  return NextResponse.json({
+    level: state.level,
+    winsAtLevel: state.winsAtLevel,
+    winsToAdvance: WINS_TO_ADVANCE,
+    levelElo: getLevelElo(state.level),
+    ...extra,
+  });
 }
 
 export async function GET() {
@@ -38,15 +68,8 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
   const svc = createServiceClient();
-  const { rating, provisional } = await getRookieRating(svc, user.id);
-  const matched = matchLevel(rating);
-
-  return NextResponse.json({
-    rating,
-    provisional,
-    level: matched.level,
-    expectedWinRate: Number(matched.expectedWinRate.toFixed(3)),
-  });
+  const derived = await deriveWinLadder(svc, user.id);
+  return ladderJson(derived);
 }
 
 export async function POST(request: NextRequest) {
@@ -72,15 +95,28 @@ export async function POST(request: NextRequest) {
   }
 
   const svc = createServiceClient();
-  const before = matchLevel((await getRookieRating(svc, user.id)).rating);
-  const after = await applyGameResult(svc, user.id, rawLevel, RESULTS[body.result]);
-  const matched = matchLevel(after.rating);
+  const derived = await deriveWinLadder(svc, user.id);
 
-  return NextResponse.json({
-    rating: after.rating,
-    provisional: after.provisional,
-    level: matched.level,
-    change: levelChange(before.level, matched.level),
-    expectedWinRate: Number(matched.expectedWinRate.toFixed(3)),
-  });
+  let before: WinLadderState = derived;
+  let after: WinLadderState = derived;
+  if (body.result === 'win') {
+    const landed =
+      derived.lastWinAt !== null &&
+      Date.now() - Date.parse(derived.lastWinAt) < JUST_LANDED_MS;
+    if (landed) {
+      // The game_sessions insert beat us here — the derived state already
+      // includes this win. beforeLastWin tells us if it crossed a boundary.
+      before = derived.beforeLastWin;
+    } else {
+      // The insert hasn't landed yet — fold the reported win on top. The next
+      // derive will count the real row and agree with this answer.
+      after = applyWin(derived);
+    }
+  }
+
+  // Analytics-only: keep the old Elo rating continuous. Nothing reads it for
+  // matchmaking any more (2026-08-31) — do not derive a level from it.
+  await applyGameResult(svc, user.id, rawLevel, RESULTS[body.result]);
+
+  return ladderJson(after, { change: after.level > before.level ? 'up' : 'same' });
 }

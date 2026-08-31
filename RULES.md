@@ -1146,25 +1146,17 @@ The raw `Chessboard` component ships with default piece styling and no board col
 - **Display (CHE-385):** the honest estimate is THE Chess Path ELO everywhere — every surface's headline number is `current` (popup = profile, always identical) and graphs plot the real `series` (dips included; the popup day-fills it via `chessPathEloSeries`, whole journey). NEVER apply a monotonic/running-max/ratchet transform — it desyncs surfaces and renders flat lines. Encouragement lives in copy only: a down day hides the "+N today" badge (gate on `> 0`), never shows a red negative.
 - The stored value is cosmetic (not used for gating). Puzzles still have their own ELO ratings (400-2300) for difficulty selection.
 
-### 20b. Rookie rating (matchmaking) — DIFFERENT NUMBER, DIFFERENT JOB
+### 20b. Rookie's level — WIN-COUNTER LADDER (restored 2026-08-31)
 
-**Chess Path ELO does NOT drive matchmaking.** A separate **Rookie rating** does. Two numbers, two jobs, one shared update step — never merge them, and never add a third.
+**Chess Path ELO does NOT drive Rookie's level.** Rookie's level is a **win-counter ladder** — "beat her 3 times and she levels up" — restored 2026-08-31 by Tyler's explicit call, deliberately reversing the 2026-08-05 rating-matchmaking rework (commit ebad9bc). The old rule against a win counter is superseded.
 
-| | Chess Path ELO | Rookie rating |
-|---|---|---|
-| Job | display / legible progress | how hard Rookie plays |
-| Fed by | puzzles **and** games **and** bouts | games + bouts vs Rookie only |
-| Lives | `profiles.estimated_elo` | `profiles.rookie_rating` |
-| Code | `lib/elo/profile-elo.ts` | `lib/rookie/rating.ts` |
-
-- **Seeded** from Chess Path ELO on first read, then moved only by games. Backfilled from `game_sessions` (`rookie_difficulty` + `result`) — no migration needed.
-- **Both directions.** A loss lowers it. That is deliberate: the level is derived from the rating on every read (`matchLevel`, `lib/rookie/matchmaking.ts`), so a falling rating is how Rookie eases off. There is no separate demotion rule, and nothing to keep in sync.
-- **`HANDICAP_ELO = 70`** — Rookie aims that far below you, which puts the player at about a 60% win rate. One constant; retune it to change how hard the whole app feels.
-- **Bouts hit this rating at DOUBLE weight** (`BOUT_GAME_WEIGHT = 2`, both directions — a bout loss costs double too). Folded live in `/api/bout/finish` and mirrored in the replay (`derive`); change the constant in `lib/rookie/rating.ts` only.
-- **Bout promotion rule (2026-08-07):** a checkmate win (`ko_win`) in a bout at your TRUE match level lifts the rating to `floorRatingForLevel(level + 1)` — guaranteed next rung in /play. Never fires when the bout was capped below your real level (`FIGHT_MAX_LEVEL`). Implemented as a rating floor (`raiseRatingToFloor`), NEVER as a separate level override — the level stays derived from one number.
-- **The level is never accepted from a client.** It used to come from localStorage, and bout points scale with it (`/api/bout/finish`) — sending `level: 10` bought a 1.6x multiplier. Server derives it, always.
-- **`WINS_TO_ADVANCE` is gone.** "Win 3 to unlock the next level" could only ratchet up: a lucky run stranded you above your strength permanently. Do not reintroduce a win counter alongside the rating.
-- Client reads go through `lib/rookie/level-client.ts` (`getRookieLevel` / `peekRookieLevel`) — never fetch the endpoint or read the localStorage key directly.
+- **The rules:** `WINS_TO_ADVANCE = 3` wins at the current level advance one rung; cap at level 10. Wins don't have to be consecutive. Losses and draws change NOTHING — **the level only ever goes UP.** There is no demotion path, by design.
+- **One authority:** `lib/rookie/win-ladder.ts`. Derived on every read, like the streak — no stored counter, no columns. The server replays the user's win history chronologically (`game_sessions` rows with `result='win'` + `rookie_difficulty`, plus `bout_sessions` wins), counting each win toward the then-current derived level. Historical games under the old matchmaking count the same way — every win is a win, whatever difficulty it was played at.
+- **API:** `GET /api/rookie/level` → `{ level, winsAtLevel, winsToAdvance, levelElo }`; `POST { level, result }` → same + `change: 'up'|'same'`. The POST races the client's `game_sessions` insert, so it treats a counted win in the last 60s as the just-reported game before folding.
+- **The level is never accepted from a client.** Bout points scale with it (`/api/bout/finish`) — sending `level: 10` bought a 1.6x multiplier. Server derives it, always. Bouts count as wins on the same ladder (the old `ko_win` rating-floor promotion is gone).
+- **Client reads** go through `lib/rookie/level-client.ts` (`getRookieLevel` / `peekRookieLevel`) — never fetch the endpoint or touch the localStorage keys (`rookie-level`, `rookie-level-wins` — the logged-out ladder and the logged-in cache) directly.
+- **UI:** the /play level bar fill between rungs is `winsAtLevel / 3`; the setup screen shows 3 win pips and every level shows its estimated ELO (`getLevelElo`) — e.g. "LV. 4 · Attentive · ~800 ELO".
+- **The old Rookie Elo rating (`lib/rookie/rating.ts`, `profiles.rookie_rating`) is ANALYTICS-ONLY.** Still folded on every game (weight 1) and bout (`BOUT_GAME_WEIGHT = 2`) so the number stays continuous — but NOTHING reads it for matchmaking. Never derive a level from it, and never add a second level authority next to the ladder.
 
 ### 20c. The level ladder must be MEASURED
 
