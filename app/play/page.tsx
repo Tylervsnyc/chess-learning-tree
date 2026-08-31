@@ -607,30 +607,8 @@ export default function PlayRookiePage() {
   const { speakQuip, talkIntensity, isTalking, isTalkingRef, stopAudio } = useRookieVoice(audioOn);
 
   // ── Speech system (replaces getRookieQuip + getMoodShiftQuip) ──
-  const generateOpeningLine = useCallback(async (threadName: string, pName: string): Promise<string> => {
-    const res = await fetch('/api/rookie-speech', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'opening',
-        context: {
-          threadName,
-          playerName: pName,
-          memory: rookieMemoryRef.current,
-          attitudeLevel,
-        },
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.text) throw new Error('Failed');
-    // Remember this line so Rookie doesn't repeat herself (in-session + persisted on game end).
-    rookieMemoryRef.current = {
-      ...rookieMemoryRef.current,
-      recentLines: [...rookieMemoryRef.current.recentLines, data.text as string].slice(-6),
-    };
-    return data.text;
-  }, [attitudeLevel]);
-
+  // No opening line — Rookie stays quiet until the game gives her something
+  // to react to (Tyler, 2026-08-31).
   const generateGameEndLine = useCallback(async (ctx: {
     playerName: string;
     rookieWon: boolean;
@@ -671,7 +649,6 @@ export default function PlayRookiePage() {
   const speech = useRookieSpeech({
     speakQuip,
     isTalkingRef,
-    generateOpeningLine,
     generateGameEndLine,
     initialUsedRecently: rookieMemory.usedRecently,
     attitudeLevel,
@@ -768,15 +745,8 @@ export default function PlayRookiePage() {
       landingFiredRef.current = true;
       setupGreetingSpokenRef.current = true;
       PlayEvents.landingViewed('direct', rookieLevel);
-      const mem = rookieMemoryRef.current;
-      speech.queueLandingQuip({
-        breadcrumb: consumeBreadcrumb(),
-        gamesPlayed: mem.gamesPlayed,
-      }).then((line) => {
-        if (line) {
-          PlayEvents.quipShown('landing', line);
-        }
-      });
+      // No landing greeting — Rookie stays quiet until there's a game to
+      // react to (Tyler, 2026-08-31). Post-game + level-up lines above stay.
     }, 0);
 
     return () => { cancelled = true; clearTimeout(timer); };

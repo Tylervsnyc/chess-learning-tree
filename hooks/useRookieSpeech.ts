@@ -19,7 +19,6 @@ import {
   endGame,
   cooldownForTalkativeness,
 } from '@/lib/speech/priority-queue';
-import { pickThread } from '@/lib/speech/threads';
 import { useRookieQuipQueue } from '@/hooks/useRookieQuipQueue';
 import { getQuipPool, loadQuipPoolModule } from '@/lib/quips/load-quip-pool';
 import { selectByCategory } from '@/lib/speech/priority-queue';
@@ -62,8 +61,6 @@ export interface EvalUpdate {
 export interface UseRookieSpeechOptions {
   speakQuip: (text: string) => void;
   isTalkingRef: React.RefObject<boolean>;
-  /** Called to generate opening line via Claude. Optional — falls back to authored lines. */
-  generateOpeningLine?: (threadName: string, playerName: string) => Promise<string>;
   /** Called to generate game-end line via Claude. Optional — falls back to authored lines. */
   generateGameEndLine?: (context: {
     playerName: string;
@@ -117,7 +114,7 @@ function createSeededQueueState(seeds?: string[]): QueueState {
 // ════════════════════════════════════════════════════════════════
 
 export function useRookieSpeech(options: UseRookieSpeechOptions) {
-  const { speakQuip, isTalkingRef, generateOpeningLine, generateGameEndLine, initialUsedRecently, attitudeLevel, talkativenessLevel } = options;
+  const { speakQuip, isTalkingRef, generateGameEndLine, initialUsedRecently, attitudeLevel, talkativenessLevel } = options;
 
   // Keep tone + talkativeness in refs so they're always up-to-date inside memoized callbacks
   // without forcing consumers to re-subscribe on every slider change.
@@ -244,33 +241,14 @@ export function useRookieSpeech(options: UseRookieSpeechOptions) {
 
       // Pool loads on demand (CHE-373) — cached after first game, so this is
       // instant on every game after the first chunk fetch.
+      // No opening line: Rookie stays quiet until the game gives her
+      // something to react to (Tyler, 2026-08-31 — less annoying).
       getQuipPool().then((pool) => {
         // Fresh copy each game — drops generated lines from the last game.
         linePoolRef.current = [...pool];
-
-        const context: QueueContext = {
-          beat: 'opening',
-          evalMood: 'even',
-          event: 'none',
-          movedBy: 'rookie', // doesn't matter for opening
-          moveNumber: 0,
-          activeThreadId: null,
-          playerName,
-          playerColor,
-          tone: toneRef.current,
-          talkativenessLevel: talkRef.current,
-        };
-
-        // Try Claude-generated opening line, fall back to authored pool
-        const thread = pickThread();
-        generateOrFallback(
-          generateOpeningLine ? generateOpeningLine(thread.name, playerName) : undefined,
-          'opening',
-          context,
-        );
       });
     },
-    [clearQueue, generateOpeningLine, generateOrFallback],
+    [clearQueue],
   );
 
   /** Call after every move with current game state */
