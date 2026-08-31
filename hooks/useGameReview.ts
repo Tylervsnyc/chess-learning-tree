@@ -29,6 +29,7 @@ import {
   START_FEN,
   type ReviewMove,
 } from '@/lib/review/review-core';
+import { applyBookMoves } from '@/lib/review/book-moves';
 
 /** Depth per position. /play's live evals run 10, its deep pass 18 — 14 is
  * the middle ground: close to deep quality, fast enough to finish while the
@@ -79,25 +80,31 @@ export function useGameReview(): GameReviewData & {
 } {
   const [data, setData] = useState<GameReviewData>(EMPTY);
   const startedRef = useRef(false);
-  const cancelledRef = useRef(false);
+  // Monotonic run token: bumping it orphans any in-flight analysis loop.
+  // A plain boolean breaks under StrictMode's dev double-mount — the first
+  // mount's cleanup would cancel forever while startedRef blocked a restart.
+  const runIdRef = useRef(0);
 
   const reset = useCallback(() => {
-    cancelledRef.current = true;
+    runIdRef.current++;
     startedRef.current = false;
     setData(EMPTY);
   }, []);
 
-  // Cancel in-flight analysis when the owning page unmounts.
+  // Cancel in-flight analysis when the owning page unmounts — and clear
+  // startedRef so a StrictMode remount (or back-navigation) can start fresh.
   useEffect(() => {
     return () => {
-      cancelledRef.current = true;
+      runIdRef.current++;
+      startedRef.current = false;
     };
   }, []);
 
   const start = useCallback((args: StartGameReviewArgs) => {
     if (startedRef.current || args.moves.length === 0) return;
     startedRef.current = true;
-    cancelledRef.current = false;
+    const runId = ++runIdRef.current;
+    const cancelled = () => runIdRef.current !== runId;
     setData({ ...EMPTY, isAnalyzing: true });
 
     (async () => {
@@ -108,7 +115,7 @@ export function useGameReview(): GameReviewData & {
         const fens = [startFen, ...args.moves.map((m) => m.fenAfter)];
         const evals: PositionEval[] = [];
         for (let i = 0; i < fens.length; i++) {
-          if (cancelledRef.current) return;
+          if (cancelled()) return;
           const result = await stockfish.getFullEval(fens[i], REVIEW_DEPTH);
           evals.push({
             cp: result?.cp ?? null,
@@ -118,9 +125,9 @@ export function useGameReview(): GameReviewData & {
             depth: REVIEW_DEPTH,
           });
           const progress = Math.round(((i + 1) / fens.length) * 100);
-          setData((prev) => ({ ...prev, progress }));
+          if (!cancelled()) setData((prev) => ({ ...prev, progress }));
         }
-        if (cancelledRef.current) return;
+        if (cancelled()) return;
 
         const moveInfos = args.moves.map((m) => ({
           san: m.san,
@@ -128,7 +135,11 @@ export function useGameReview(): GameReviewData & {
           moveNumber: m.moveNumber,
           fenAfter: m.fenAfter,
         }));
-        const analysis = analyzeGameMoves(evals, moveInfos, args.playerColor);
+        const analysis = applyBookMoves(
+          analyzeGameMoves(evals, moveInfos, args.playerColor),
+          args.moves.map((m) => m.san),
+          args.playerColor,
+        );
         // Same filter as /play: only blunder/mistake moments drive the review.
         const keyMoments = extractKeyMoments(analysis, args.moves, args.playerName)
           .filter((m) => m.type !== 'best-move' && m.type !== 'turning-point');
@@ -152,7 +163,7 @@ export function useGameReview(): GameReviewData & {
           result: args.result,
           startFen,
         });
-        if (cancelledRef.current || !review) return;
+        if (cancelled() || !review) return;
         setData((prev) => ({
           ...prev,
           coachMoves: review.moves,

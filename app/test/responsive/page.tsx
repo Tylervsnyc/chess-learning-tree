@@ -63,6 +63,7 @@ const ROUTES: Route[] = [
   { label: 'Privacy', url: '/privacy', group: 'Secondary' },
   { label: 'Terms', url: '/terms', group: 'Secondary' },
   { label: 'Support', url: '/support', group: 'Secondary' },
+  { label: 'Game review', url: '/test/game-review', group: 'Secondary', note: 'stands in for /review/[id] (needs live DB data); same GameReview UI over a sample game' },
 
   // Auth
   { label: 'Login', url: '/auth/login', group: 'Auth' },

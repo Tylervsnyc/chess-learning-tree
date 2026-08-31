@@ -27,6 +27,7 @@ import {
   type ReviewMove,
 } from '@/lib/review/review-core';
 import type { GameReviewData } from '@/hooks/useGameReview';
+import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
 
 interface GameReviewProps {
   moves: ReviewMove[];
@@ -142,21 +143,24 @@ export function GameReview({
     ? Math.max(5, Math.min(95, evalToWinPercent(posEval.cp, posEval.mate)))
     : 50;
 
-  // ── Square styles: last-move tint by classification + check highlight ────
-  const reviewMoveColor = useMemo(() => {
-    if (moveIndex < 0 || !analysis) return null;
-    const cls = analysis.moves[moveIndex]?.classification;
-    if (cls === 'blunder' || cls === 'mistake') return 'rgba(239, 68, 68, 0.5)';
-    if (cls === 'inaccuracy') return 'rgba(234, 179, 8, 0.4)';
-    return null;
-  }, [moveIndex, analysis]);
+  // ── Square styles: classification badge + tint on the move played ────────
+  const currentClassification = useMemo(
+    () => (moveIndex >= 0 && analysis ? analysis.moves[moveIndex]?.classification ?? null : null),
+    [moveIndex, analysis],
+  );
 
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
     if (lastMv) {
-      const moveColor = reviewMoveColor ?? 'rgba(255, 170, 0, 0.4)'; // default orange
-      s[lastMv.from] = { background: moveColor };
-      s[lastMv.to] = { background: moveColor };
+      const tint = currentClassification
+        ? BADGE_SPECS[currentClassification].tint
+        : 'rgba(255, 170, 0, 0.4)'; // default orange while analysis is pending
+      s[lastMv.from] = { background: tint };
+      // Destination: matching tint + the corner badge (longhand props — a
+      // `background` shorthand would wipe the badge image).
+      s[lastMv.to] = currentClassification
+        ? badgeSquareStyle(currentClassification)
+        : { background: tint };
     }
     try {
       const g = new Chess(fen);
@@ -178,7 +182,7 @@ export function GameReview({
       /* unparseable fen — no check highlight */
     }
     return s;
-  }, [fen, lastMv, reviewMoveColor]);
+  }, [fen, lastMv, currentClassification]);
 
   // ── Nav state ─────────────────────────────────────────────────────────────
   const totalMoves = moves.length;
@@ -286,11 +290,16 @@ export function GameReview({
 
             {/* Analysis still running — thin progress bar, review stays usable */}
             {isAnalyzing && (
-              <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-chess-green rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
+              <div className="flex flex-col gap-0.5">
+                <div className="h-1 w-full bg-chess-surface rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-chess-green rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-chess-text-muted font-medium text-center">
+                  Analyzing move {Math.min(totalMoves, Math.max(1, Math.ceil((progress / 100) * totalMoves)))}/{totalMoves}
+                </span>
               </div>
             )}
 
@@ -314,8 +323,22 @@ export function GameReview({
               >
                 &#9665;
               </button>
-              <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono">
-                {moveLabel}
+              <span className="flex items-center justify-center gap-1 min-w-[56px]">
+                <span className="text-xs text-chess-text-muted font-medium text-center font-mono">
+                  {moveLabel}
+                </span>
+                {currentClassification && (
+                  <span
+                    className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black leading-none whitespace-nowrap"
+                    style={{
+                      backgroundColor: BADGE_SPECS[currentClassification].circle,
+                      color: BADGE_SPECS[currentClassification].text,
+                    }}
+                    title={BADGE_SPECS[currentClassification].label}
+                  >
+                    {BADGE_SPECS[currentClassification].glyph}
+                  </span>
+                )}
               </span>
               <button
                 type="button"

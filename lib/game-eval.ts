@@ -19,8 +19,8 @@ import { Chess } from 'chess.js';
 // ════════════════════════════════
 
 export type MoveClassification =
-  | 'brilliant'    // best move in a sharp position (dopamine reward)
-  | 'great'        // engine's top move
+  | 'brilliant'    // sound sacrifice that keeps you on top (rare)
+  | 'great'        // best move that punished an opponent's error (rare)
   | 'good'         // small or no win% loss
   | 'inaccuracy'   // >= 10% win% drop
   | 'mistake'      // >= 20% win% drop
@@ -134,24 +134,32 @@ const BLUNDER_THRESHOLD = 30;
 const MISTAKE_THRESHOLD = 20;
 const INACCURACY_THRESHOLD = 10;
 const GREAT_MOVE_THRESHOLD = 2; // within 2% of engine's best
+// "!" is earned, not given: the best move only rates 'great' when it punished
+// an opponent error (their previous move dropped ≥ this much win%). Playing
+// the top move in a quiet position is just 'good' — chess.com's bar.
+const GREAT_PUNISH_MIN = 10;
+// Already at ≥ this win% before moving → nothing left to punish; no "!".
+const GREAT_MAX_WP_BEFORE = 90;
 
 /**
  * Classify a move based on win% delta.
  * @param winPercentDelta - drop in win% (positive = lost ground)
  * @param wasBestMove - did they play the engine's #1 choice?
  * @param alternativeCount - how many reasonable alternatives exist?
+ * @param punishedError - did the opponent's previous move hand over ≥ GREAT_PUNISH_MIN win%?
  */
 export function classifyMove(
   winPercentDelta: number,
   wasBestMove: boolean,
   alternativeCount?: number,
+  punishedError = false,
 ): MoveClassification {
   // Gained or maintained position
   if (winPercentDelta <= 0) {
     if (wasBestMove && alternativeCount !== undefined && alternativeCount <= 1) {
       return 'forced';
     }
-    if (wasBestMove) return 'great';
+    if (wasBestMove && punishedError) return 'great';
     return 'good';
   }
 
@@ -160,7 +168,7 @@ export function classifyMove(
   if (winPercentDelta >= MISTAKE_THRESHOLD) return 'mistake';
   if (winPercentDelta >= INACCURACY_THRESHOLD) return 'inaccuracy';
 
-  if (winPercentDelta <= GREAT_MOVE_THRESHOLD && wasBestMove) return 'great';
+  if (winPercentDelta <= GREAT_MOVE_THRESHOLD && wasBestMove && punishedError) return 'great';
 
   return 'good';
 }
@@ -365,8 +373,8 @@ export function extractKeyMoments(
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-const BRILLIANT_MAX_WP_BEFORE = 90;  // already crushing → not brilliant
-const BRILLIANT_MIN_WP_AFTER = 40;   // must still be roughly fine after
+const BRILLIANT_MAX_WP_BEFORE = 80;  // already clearly winning → not brilliant
+const BRILLIANT_MIN_WP_AFTER = 50;   // the sac must leave you at least equal
 const SACRIFICE_MIN_LOSS = 2;        // net material given up (> a pawn)
 
 export interface BrilliantInput {
@@ -486,11 +494,16 @@ export function analyzeGameMoves(
   startFen: string = START_FEN,
 ): GameAnalysis {
   const evaluatedMoves: MoveEvaluation[] = [];
+  // Win% the previous move (the opponent's) gave away — fuels the "!" gate.
+  let prevMoveDelta: number | null = null;
 
   for (let i = 0; i < moves.length; i++) {
     const evalBefore = positionEvals[i];
     const evalAfter = positionEvals[i + 1];
-    if (!evalBefore || !evalAfter) continue;
+    if (!evalBefore || !evalAfter) {
+      prevMoveDelta = null;
+      continue;
+    }
 
     const move = moves[i];
 
@@ -508,11 +521,15 @@ export function analyzeGameMoves(
     );
 
     const delta = wpBefore - wpAfter; // positive = lost ground
-    const wasBestMove = evalBefore.bestMove !== null &&
-      move.san !== null; // We can't easily compare SAN to UCI here — use delta instead
     const effectivelyBest = delta <= GREAT_MOVE_THRESHOLD;
+    // "!" only when this best move cashes in an opponent error, from a
+    // position that wasn't already decided.
+    const punishedError =
+      prevMoveDelta !== null &&
+      prevMoveDelta >= GREAT_PUNISH_MIN &&
+      wpBefore < GREAT_MAX_WP_BEFORE;
 
-    let classification = classifyMove(delta, effectivelyBest);
+    let classification = classifyMove(delta, effectivelyBest, undefined, punishedError);
     const accuracy = moveAccuracy(wpBefore, wpAfter);
 
     // Brilliant: needs board state. Only when the caller supplied FENs.
@@ -544,6 +561,7 @@ export function analyzeGameMoves(
       accuracy,
       bestMoveSan: null, // filled by post-game analysis with deeper search
     });
+    prevMoveDelta = delta;
   }
 
   // Separate player and rookie moves for game accuracy

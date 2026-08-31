@@ -282,6 +282,135 @@ function RecentWorkouts({ sessions, loading }: { sessions: WorkoutSession[] | nu
   );
 }
 
+// ── Recent Games — collapsible dropdown of past Play Rookie games, each row
+// linking to /review/[id]. Fetches /api/games lazily on first expand so the
+// profile load pays nothing for it.
+
+interface RecentGame {
+  id: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  result: 'win' | 'loss' | 'draw' | null;
+  totalMoves: number;
+  brilliantMoves: number;
+  greatMoves: number;
+}
+
+const GAME_RESULT = {
+  win: { label: 'Won', cls: 'text-chess-green' },
+  loss: { label: 'Lost', cls: 'text-[#e5484d]' },
+  draw: { label: 'Draw', cls: 'text-chess-text-muted' },
+} as const;
+
+function RecentGameRow({ game }: { game: RecentGame }) {
+  const result = GAME_RESULT[game.result ?? 'draw'] ?? GAME_RESULT.draw;
+  return (
+    <Link
+      href={`/review/${game.id}`}
+      className="flex items-center gap-3 px-4 py-3 min-h-[44px] active:bg-chess-page transition-colors"
+    >
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-chess-text leading-tight">
+            {fmtSessionDate(game.endedAt || game.startedAt || '')}
+          </span>
+          <span className={`text-sm font-black ${result.cls}`}>{result.label}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-chess-text-muted mt-0.5">
+          <span>{game.totalMoves} moves</span>
+          {game.brilliantMoves > 0 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/15 text-cyan-600">
+              {game.brilliantMoves} brilliant
+            </span>
+          )}
+          {game.greatMoves > 0 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/15 text-emerald-600">
+              {game.greatMoves} great
+            </span>
+          )}
+        </div>
+      </div>
+      <svg className="w-4 h-4 text-chess-text-faint shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    </Link>
+  );
+}
+
+function RecentGames() {
+  const [open, setOpen] = useState(false);
+  const [games, setGames] = useState<RecentGame[] | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
+    if (next && games === null && !failed) {
+      fetch('/api/games')
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`${res.status}`))))
+        .then((data) => setGames(Array.isArray(data.games) ? data.games : []))
+        .catch(() => setFailed(true));
+    }
+  };
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={open}
+        className="w-full min-h-[44px] flex items-center justify-between px-1"
+      >
+        <h2 className="text-xs font-black uppercase tracking-wide text-chess-text-muted">
+          Recent Games{games !== null ? ` (${games.length})` : ''}
+        </h2>
+        <svg
+          className={`w-4 h-4 text-chess-text-muted transition-transform ${open ? 'rotate-180' : ''}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      {open && (
+        <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-1">
+          {failed ? (
+            <p className="text-sm text-chess-text-muted py-6 px-4 text-center">
+              Could not load your games. Try again in a moment.
+            </p>
+          ) : games === null ? (
+            <div className="divide-y divide-slate-100">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="px-4 py-3 flex items-center gap-3">
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <div className="h-3.5 w-24 bg-slate-100 rounded animate-pulse" />
+                    <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : games.length === 0 ? (
+            <p className="text-sm text-chess-text-muted py-6 px-4 text-center">
+              Play a game and it&apos;ll show up here.
+            </p>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {games.map((g) => (
+                <RecentGameRow key={g.id} game={g} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Sign out — client-side (supabase.auth.signOut via useUser), so it works
 // in the offline iOS bundles where /api/auth/logout doesn't exist. Clears
 // localStorage like the Chess Boxing settings screen, so the next launch is a
@@ -589,6 +718,9 @@ export default function ProfilePage() {
             <StatTile kind="great" label="Great moves" value={stats?.greatMoves ?? 0} loading={dataLoading} />
           </div>
         </div>
+
+        {/* ── Recent games — collapsed dropdown, rows link to /review/[id] ── */}
+        {user && <RecentGames />}
 
         {/* ── Boxing surfaces — hidden in the Chess Path app (no /workout,
                no bouts there; the section's CTAs would 404) ─────────────── */}
