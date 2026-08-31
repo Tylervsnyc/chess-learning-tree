@@ -306,7 +306,7 @@ function RecentGameRow({ game }: { game: RecentGame }) {
   const result = GAME_RESULT[game.result ?? 'draw'] ?? GAME_RESULT.draw;
   return (
     <Link
-      href={`/review/${game.id}`}
+      href={`/review?id=${game.id}`}
       className="flex items-center gap-3 px-4 py-3 min-h-[44px] active:bg-chess-page transition-colors"
     >
       <div className="flex-1 min-w-0">

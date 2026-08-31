@@ -35,6 +35,7 @@ export const ROUTE_ALLOWLIST = [
   'workout',
   'level-test/[transition]',
   'profile',
+  'review',                 // past-game review via ?id= (the [id] form can't export)
   'leaderboard',            // renders an offline state, see Phase 4
   'auth/login',
   'auth/signup',
