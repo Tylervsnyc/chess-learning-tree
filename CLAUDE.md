@@ -192,6 +192,27 @@ Supabase project ref: `ruseupjmldymfvpybqdl`
 
 ---
 
+## Shipping a change to the web + iOS apps (playbook, 2026-08-31)
+
+One codebase, THREE ship targets. The iOS apps ship an **offline bundle** — they do NOT load chesspath.app live, so pushing to main does NOT update them.
+
+| Target | How it updates |
+|---|---|
+| Web (chesspath.app) | push to main → Vercel auto-deploys |
+| Chess Boxing (`ios/App`, live on App Store) | `npm run build:offline && npm run ios:sync` → `fastlane beta` + upload (Apple review to reach users) |
+| Chess Path iOS (`ios-chesspath/App`) | `npm run build:offline:chesspath && npm run ios:sync:chesspath` → fastlane (runbook: `docs/chesspath-ios.md`) |
+
+**Rules (each one bit us on 2026-08-31):**
+
+1. **Commit the whole dependency graph.** Before pushing a subset of files, check every import in the committed files resolves on `origin/main` — a file that exists locally but was never committed builds fine locally and fails the Vercel deploy (`Module not found`). Other sessions leave untracked files; `git status` the dirs you import from.
+2. **Verify the deploy, not the push.** `vercel ls chess-path` → `vercel inspect <newest-url>` must say `Ready`. Another session may push right after you; make sure the deploy that's `Ready` contains your commit.
+3. **Offline builds must run ONE AT A TIME, to completion.** A failed/interrupted `build-offline.mjs` can leave an orphaned `next build` running inside `.offline-build/` — every later build then dies with `ENOENT ..._buildManifest.js.tmp...` (two builds clobbering each other's temp files). Fix: `ps aux | grep offline-build`, kill orphans, `rm -rf .offline-build/.next`, run once and wait. Don't chain the build with `&&` into other long commands, and don't run it sandboxed (the sandbox can't fully rm `.offline-build`, which leaves the half-deleted state that caused the phantom `PARAM_LAYOUTS` error).
+4. **After the offline build, sync + verify the code actually shipped:** run the matching `ios:sync*`, then grep the synced chunks for a string from your change (e.g. `grep -rl "MultiPV value 1" ios/App/App/public/_next/static/chunks/`). "Build finished" is not proof — a stale bundle syncs just as happily.
+5. **A synced bundle is not an updated app.** Users only get it after `fastlane beta` + TestFlight/App Store. Chess Boxing updates need Apple review; Chess Path iOS is blocked on its ASC record (Tyler). Say "bundle ready, needs upload" — never "the app is updated" — until a build is actually uploaded.
+6. **Never point users' phones at localhost logic:** `.offline-build/` holds a stale COPY of `lib/` made at build time. If you fixed `lib/` today, any bundle built before the fix still has the bug — rebuild both targets after any shared-lib fix that matters on device.
+
+---
+
 ## Testing Rule
 
 When testing changes, run: `./scripts/ensure-dev.sh && open http://localhost:3000/{page}`
