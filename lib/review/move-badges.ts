@@ -81,6 +81,13 @@ export const BADGE_SPECS: Record<MoveClassification, BadgeSpec> = {
     text: '#ffffff',
     tint: 'rgba(239, 68, 68, 0.45)',
   },
+  checkmate: {
+    glyph: '#',
+    label: 'Checkmate',
+    circle: '#2e7d32',
+    text: '#ffffff',
+    tint: 'rgba(46, 125, 50, 0.38)',
+  },
 };
 
 /** Open-book glyph (two filled pages) — text glyphs don't read as "book". */

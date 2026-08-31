@@ -21,6 +21,7 @@ import { Chess } from 'chess.js';
 export type MoveClassification =
   | 'brilliant'    // sound sacrifice that keeps you on top (rare)
   | 'great'        // best move that punished an opponent's error (rare)
+  | 'checkmate'    // the mating move — engines can't eval a finished game
   | 'good'         // small or no win% loss
   | 'inaccuracy'   // >= 10% win% drop
   | 'mistake'      // >= 20% win% drop
@@ -530,11 +531,18 @@ export function analyzeGameMoves(
       wpBefore < GREAT_MAX_WP_BEFORE;
 
     let classification = classifyMove(delta, effectivelyBest, undefined, punishedError);
-    const accuracy = moveAccuracy(wpBefore, wpAfter);
+    let accuracy = moveAccuracy(wpBefore, wpAfter);
+
+    // The mating move ends the game — there's no position left to eval, so the
+    // delta math above is garbage (it reads a terminal position as a collapse).
+    if (move.san.endsWith('#')) {
+      classification = 'checkmate';
+      accuracy = 100;
+    }
 
     // Brilliant: needs board state. Only when the caller supplied FENs.
     const fenBefore = move.fenBefore ?? (i > 0 ? moves[i - 1].fenAfter : startFen);
-    if (move.fenAfter && fenBefore && classification !== 'forced') {
+    if (move.fenAfter && fenBefore && classification !== 'forced' && classification !== 'checkmate') {
       const brilliant = isBrilliant({
         fenBefore,
         fenAfter: move.fenAfter,
