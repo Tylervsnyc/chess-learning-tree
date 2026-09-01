@@ -21,6 +21,7 @@ import { byDate, readAll as readAllExperiments } from './experiment-log';
 import type { Hypothesis } from './hypothesis-queue';
 import type { PublishResult } from './model-version';
 import { describeMutation } from './mutations';
+import { renderPowerReport, type PowerReport } from './ability-power-test';
 import type { AblationResult, LevelTierStats, TierId } from './types';
 
 export interface DigestInput {
@@ -48,6 +49,11 @@ export interface DigestInput {
     baseline: { meanLevelsCompleted: number; medianLevelsCompleted: number; fullRunRate: number };
     byAbility: Map<AbilityId, Map<string, { meanLevelsCompleted: number; medianLevelsCompleted: number; fullRunRate: number; meanAbilitiesAtEnd: number }>>;
   } | null;
+  /**
+   * Daily ability power report — full-roster win-rate-lift leaderboard on a
+   * fixed level panel, plus promote/hold verdicts for experimental abilities.
+   */
+  powerReport?: PowerReport | null;
   caveats: string[];
 }
 
@@ -278,13 +284,21 @@ export function renderDigest(input: DigestInput): string {
   // measure, how is the model doing across the rolling window.
   lines.push(...renderHypothesisLedger(input));
 
+  // ─── Ability power report ───────────────────────────────────────────────
+  if (input.powerReport) {
+    lines.push(`## Ability Power Report`);
+    lines.push(``);
+    lines.push(...renderPowerReport(input.powerReport));
+    lines.push(``);
+  }
+
   // ─── 7. Methodology + caveats ───────────────────────────────────────────
   lines.push(`## Methodology`);
   lines.push(``);
-  lines.push(`- **T3 Casual** — 1-ply lookahead, "don't blunder, advance, take free captures." Mild move-selection noise.`);
-  lines.push(`- **T4 Sharp** — 2-ply minimax over the same eval. Lower noise.`);
-  lines.push(`- **T5 Expert v0.1** — 3-ply minimax, deterministic argmax. Same eval as T4 (ability-aware planner is a future upgrade).`);
-  lines.push(`- All bots take offers reactively and tap Aegis when threatened. Most other abilities are enumerated as concrete candidate moves and scored by eval. Bots do NOT plan multi-step ability combos.`);
+  lines.push(`- **T3 Casual** — MCTS, 40 rollouts/decision. Noisiest play.`);
+  lines.push(`- **T4 Sharp** — MCTS, 80 rollouts/decision.`);
+  lines.push(`- **T5 Expert** — MCTS, 160 rollouts/decision.`);
+  lines.push(`- Every candidate (moves AND ability casts) is scored by forward rollouts plus a tier-scaled strategic prior (\`bots/ability-eval.ts\`). \`candidatesForAbility\` is exhaustive over AbilityId (typechecked), so every shipped ability is castable. Offers — at the root and inside rollouts — are scored by \`offerUsefulness\`, and per-run \`allowedAbilities\` restrictions are honored (runId is threaded into the sim).`);
   lines.push(`- Rookie starts on file 4 (d1) for every sim — date-independent for stable comparisons.`);
   lines.push('- Seeds are deterministic per `levelId__tier__trial`.');
   lines.push(``);

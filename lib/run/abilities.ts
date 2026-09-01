@@ -8,7 +8,7 @@
  * the permanent / unlimited payoff.
  */
 
-import { rookieLegalMoves } from './movement';
+import { boulderAt, enemyNoGo, rookieLegalMoves } from './movement';
 import { getRunById } from './runs';
 import { mulberry32 } from './seed';
 import { TEMPO_MAX, TEMPO_REWARD } from './scoring';
@@ -36,7 +36,17 @@ export type AbilityId =
   | 'squad'
   | 'surge'
   | 'aegis'
-  | 'decoy';
+  | 'decoy'
+  // Experimental (bot-tested only — never offered to players; see
+  // EXPERIMENTAL_ABILITY_IDS). Promote by removing from that list + adding
+  // card art/FX.
+  | 'detonate'
+  | 'yank'
+  | 'phalanx'
+  // Experimental BOARD-EDITING abilities (bot-tested only) — they add
+  // terrain (smoke clouds / boulders) rather than acting on pieces.
+  | 'smoke'
+  | 'boulder';
 
 export type AbilityTier = 1 | 2 | 3 | 4 | 5;
 
@@ -164,6 +174,41 @@ export const ABILITY_DEFS: Record<AbilityId, AbilityDef> = {
     typeLine: 'Targeted · Trick',
     description: 'Mark an enemy. Its teammates will attack it.',
   },
+  detonate: {
+    id: 'detonate',
+    name: 'Detonate',
+    activation: 'instant',
+    typeLine: 'Instant · Blast',
+    description: 'Destroy enemies next to Rookie.',
+  },
+  yank: {
+    id: 'yank',
+    name: 'Grapple',
+    activation: 'targeted',
+    typeLine: 'Targeted · Pull',
+    description: 'Drag an enemy you can see next to Rookie, briefly frozen.',
+  },
+  phalanx: {
+    id: 'phalanx',
+    name: 'Phalanx',
+    activation: 'instant',
+    typeLine: 'Instant · Bodyguards',
+    description: 'Summon pawn allies around Rookie.',
+  },
+  smoke: {
+    id: 'smoke',
+    name: 'Smoke',
+    activation: 'instant',
+    typeLine: 'Instant · Cloud',
+    description: 'Puff a cloud around Rookie. Enemies cannot see through it.',
+  },
+  boulder: {
+    id: 'boulder',
+    name: 'Boulder',
+    activation: 'targeted',
+    typeLine: 'Targeted · Rock',
+    description: 'Drop a rock near Rookie. It blocks everyone for the level.',
+  },
 };
 
 export const ALL_ABILITY_IDS: AbilityId[] = Object.keys(
@@ -171,11 +216,31 @@ export const ALL_ABILITY_IDS: AbilityId[] = Object.keys(
 ) as AbilityId[];
 
 /**
- * Back-compat alias kept so playtest scripts (digest.ts, simulate.ts, etc.)
- * don't break. Now identical to ALL_ABILITY_IDS — every ability in this file
- * is shipped to real players.
+ * Prototype abilities under bot-driven power testing. Fully playable by the
+ * ENGINE (so playtest sims can seed them via preownedAbilities), but excluded
+ * from the offer pool so real players never see them — they have no card art
+ * or FX yet. Promote one by removing it from this list and adding its UI.
  */
-export const SHIPPED_ABILITY_IDS: AbilityId[] = ALL_ABILITY_IDS;
+export const EXPERIMENTAL_ABILITY_IDS: readonly AbilityId[] = [
+  'detonate',
+  'yank',
+  'phalanx',
+  // Board-editing (terrain) abilities. `smoke` was promoted to the offer
+  // pool 2026-08-18 (power test T4×12: 19.2/30.0/37.5pp at T1/T3/T5, above
+  // freeze-ray at every tier). `boulder` stays bot-only: T1 8.3 / T3 11.7pp
+  // is below the weakest shipped ability by more than the 5pp band.
+  // Suggested next buff: T3 range 3 + 3 rocks + crush PAWNS from T3 (move
+  // the T4 pawn-crush down a tier), then retest.
+  'boulder',
+];
+
+/**
+ * The abilities real players can be OFFERED. Playtest scripts (digest.ts,
+ * ablation.ts, etc.) iterate this list too.
+ */
+export const SHIPPED_ABILITY_IDS: AbilityId[] = ALL_ABILITY_IDS.filter(
+  (id) => !EXPERIMENTAL_ABILITY_IDS.includes(id),
+);
 
 /** Hard cap on how many abilities Rookie can own in a single run. */
 export const MAX_OWNED_ABILITIES = 3;
@@ -231,6 +296,25 @@ export function maxUsesForTier(id: AbilityId, tier: AbilityTier): number {
     case 'squad':
       // Passive — no per-activation uses.
       return -1;
+    case 'detonate':
+      if (tier <= 2) return 1;
+      return 2;
+    case 'yank':
+      if (tier <= 2) return 1;
+      return 2;
+    case 'phalanx':
+      if (tier <= 2) return 1;
+      return 2;
+    case 'smoke':
+      // Uses per level: 1/1/2/2/3.
+      if (tier <= 2) return 1;
+      if (tier <= 4) return 2;
+      return 3;
+    case 'boulder':
+      // Uses = rocks per level: 2/2/3/3/4.
+      if (tier <= 2) return 2;
+      if (tier <= 4) return 3;
+      return 4;
     case 'surge':
       if (tier === 1) return 1;
       if (tier === 2) return 2;
@@ -312,6 +396,11 @@ const HOW: Record<AbilityId, string> = {
   surge: 'Tap card. You get an extra move.',
   aegis: 'Tap card. Shield stays up until used.',
   decoy: 'Tap card, then tap an enemy.',
+  detonate: 'Tap card. Enemies next to Rookie are destroyed.',
+  yank: 'Tap card, then tap an enemy you can see.',
+  phalanx: 'Tap card. Pawn allies spawn around Rookie.',
+  smoke: 'Tap card. A cloud puffs around Rookie.',
+  boulder: 'Tap card, then tap an empty square near Rookie.',
 };
 
 function limitText(id: AbilityId, tier: AbilityTier): string {
@@ -403,6 +492,37 @@ function whatForTier(id: AbilityId, tier: AbilityTier): string {
         return 'Mark an enemy for 3 turns. Whoever captures it freezes.';
       if (tier >= 2) return 'Mark an enemy for 2 turns. Its team will attack it.';
       return 'Mark an enemy for 1 turn. Its team will attack it.';
+    case 'detonate':
+      if (tier >= 4) return 'Destroy every enemy within 2 squares of Rookie.';
+      if (tier === 3) return 'Destroy every enemy next to Rookie.';
+      if (tier === 2) return 'Destroy pawns, knights and bishops next to Rookie.';
+      return 'Destroy pawns next to Rookie.';
+    case 'yank':
+      if (tier >= 4)
+        return 'Drag any enemy you can see next to Rookie. It stays frozen 2 turns.';
+      if (tier === 3)
+        return 'Drag any enemy you can see next to Rookie, frozen 1 turn.';
+      if (tier === 2)
+        return 'Drag a pawn, knight or bishop you can see next to Rookie, frozen 1 turn.';
+      return 'Drag a pawn you can see next to Rookie, frozen 1 turn.';
+    case 'phalanx':
+      if (tier === 5) return 'Summon 4 pawn allies around Rookie.';
+      if (tier === 4) return 'Summon 3 pawn allies around Rookie.';
+      if (tier >= 2) return 'Summon 2 pawn allies around Rookie.';
+      return 'Summon a pawn ally in front of Rookie.';
+    case 'smoke':
+      if (tier === 5) return 'A 5×5 cloud hides Rookie for 4 enemy turns.';
+      if (tier === 4) return 'A 5×5 cloud hides Rookie for 3 enemy turns.';
+      if (tier === 3) return 'A 3×3 cloud hides Rookie for 3 enemy turns.';
+      if (tier === 2) return 'A 3×3 cloud hides Rookie for 2 enemy turns.';
+      return 'A 3×3 cloud hides Rookie for 1 enemy turn.';
+    case 'boulder':
+      if (tier === 5)
+        return 'Drop a rock within 3 squares — even onto an enemy, crushing it. Blocks everyone.';
+      if (tier === 4)
+        return 'Drop a rock within 3 squares — even onto a pawn, crushing it. Blocks everyone.';
+      if (tier >= 3) return 'Drop a rock on an empty square within 3. Blocks everyone.';
+      return 'Drop a rock on an empty square within 2. Blocks everyone.';
   }
 }
 
@@ -486,6 +606,34 @@ export function blurbForTier(id: AbilityId, tier: AbilityTier): string {
       if (tier === 3) return 'Mark for 2 turns. 2/level.';
       if (tier === 2) return 'Mark for 2 turns. 1/level.';
       return 'Mark an enemy for 1 turn. 1/level.';
+    case 'detonate':
+      if (tier >= 4) return 'Blast radius 2. 2/level.';
+      if (tier === 3) return 'Blast all adjacent. 2/level.';
+      if (tier === 2) return 'Blast adjacent P/N/B. 1/level.';
+      return 'Blast adjacent pawns. 1/level.';
+    case 'yank':
+      if (tier >= 4) return 'Pull any enemy in. Frozen 2 turns. 2/level.';
+      if (tier === 3) return 'Pull any enemy in. 2/level.';
+      if (tier === 2) return 'Pull a P/N/B in. 1/level.';
+      return 'Pull a pawn in. 1/level.';
+    case 'phalanx':
+      if (tier === 5) return '4 pawn allies. 2/level.';
+      if (tier === 4) return '3 pawn allies. 2/level.';
+      if (tier === 3) return '2 pawn allies. 2/level.';
+      if (tier === 2) return '2 pawn allies. 1/level.';
+      return '1 pawn ally. 1/level.';
+    case 'smoke':
+      if (tier === 5) return '5×5 cloud, 4 turns. 3/level.';
+      if (tier === 4) return '5×5 cloud, 3 turns. 2/level.';
+      if (tier === 3) return '3×3 cloud, 3 turns. 2/level.';
+      if (tier === 2) return '3×3 cloud, 2 turns. 1/level.';
+      return '3×3 cloud, 1 turn. 1/level.';
+    case 'boulder':
+      if (tier === 5) return 'Range 3, crushes enemies. 4 rocks/level.';
+      if (tier === 4) return 'Range 3, crushes pawns. 3 rocks/level.';
+      if (tier === 3) return 'Range 3. 3 rocks/level.';
+      if (tier === 2) return 'Range 2. 2 rocks/level.';
+      return 'Range 2. 2 rocks/level.';
   }
 }
 
@@ -528,7 +676,11 @@ export function rollOffer(state: BoardState, rng: () => number): AbilityOffer {
       })()
     : null;
 
-  const newPool: AbilityOfferOption[] = ALL_ABILITY_IDS.filter(
+  // A run with an EXPLICIT allowlist may name experimental abilities (that's
+  // how they get human-playtested, e.g. /run?run=abilities-x). Runs without an
+  // allowlist — every normal run — only ever offer SHIPPED abilities.
+  const offerPool = runAllowed ? ALL_ABILITY_IDS : SHIPPED_ABILITY_IDS;
+  const newPool: AbilityOfferOption[] = offerPool.filter(
     (id) => !owned.has(id) && (!runAllowed || runAllowed.has(id)),
   ).map((id) => ({
     kind: 'new',
@@ -653,8 +805,11 @@ export function abilityLegalMoves(
   abilityId: AbilityId,
 ): Coord[] {
   // v2: no movement abilities remain; convert/drones use other UI paths.
-  void state;
-  void abilityId;
+  // Boulder is the one square-targeting ability: highlight its legal drops.
+  if (abilityId === 'boulder') {
+    const owned = state.abilities.find((a) => a.id === 'boulder');
+    return owned ? boulderTargets(state, owned.tier) : [];
+  }
   return [];
 }
 
@@ -676,6 +831,269 @@ export function convertTargets(state: BoardState): Coord[] {
   return state.pieces
     .filter((p) => elig.has(p.type as 'pawn' | 'knight' | 'bishop' | 'queen'))
     .map((p) => ({ file: p.file, rank: p.rank }));
+}
+
+// ---------------------------------------------------------------------------
+// Experimental abilities (bot-tested, not player-offered): Detonate, Grapple
+// (yank), Phalanx. See EXPERIMENTAL_ABILITY_IDS.
+// ---------------------------------------------------------------------------
+
+/** Blast radius (Chebyshev) for Detonate at a tier. */
+export function detonateRadius(tier: AbilityTier): number {
+  return tier >= 4 ? 2 : 1;
+}
+
+/** Which enemy types Detonate destroys at a tier. */
+export function detonateEligibleTypes(tier: AbilityTier): Set<PieceType> {
+  if (tier === 1) return new Set<PieceType>(['pawn']);
+  if (tier === 2) return new Set<PieceType>(['pawn', 'knight', 'bishop']);
+  return new Set<PieceType>(['pawn', 'knight', 'bishop', 'queen']);
+}
+
+/** Enemies Detonate would destroy right now (bot candidate check). */
+export function detonateVictims(state: BoardState, tier: AbilityTier): EnemyPiece[] {
+  const r = detonateRadius(tier);
+  const elig = detonateEligibleTypes(tier);
+  return state.pieces.filter(
+    (p) =>
+      elig.has(p.type) &&
+      Math.max(Math.abs(p.file - state.rookie.file), Math.abs(p.rank - state.rookie.rank)) <= r,
+  );
+}
+
+function applyDetonate(state: BoardState, tier: AbilityTier): BoardState {
+  const victims = detonateVictims(state, tier);
+  if (victims.length === 0) return state;
+  let statusOverlay: Partial<BoardState> = {};
+  let acc: BoardState = state;
+  for (const v of victims) {
+    const overlay = clearStatusOnSquare(acc, toSquare(v));
+    statusOverlay = { ...statusOverlay, ...overlay };
+    acc = { ...acc, ...overlay };
+  }
+  const victimSet = new Set(victims);
+  let tempo = state.tempo;
+  for (const v of victims) {
+    tempo = Math.min(TEMPO_MAX, tempo + (TEMPO_REWARD[v.type] ?? 0));
+  }
+  return {
+    ...state,
+    ...statusOverlay,
+    pieces: state.pieces.filter((p) => !victimSet.has(p)),
+    captures: [...state.captures, ...victims.map((v) => v.type)],
+    tempo,
+    abilities: decrementUse(state.abilities, 'detonate'),
+    cancellableActivation: undefined,
+    activeAbility: null,
+  };
+}
+
+/** Which enemy types Grapple can pull at a tier. */
+export function yankEligibleTypes(tier: AbilityTier): Set<PieceType> {
+  if (tier === 1) return new Set<PieceType>(['pawn']);
+  if (tier === 2) return new Set<PieceType>(['pawn', 'knight', 'bishop']);
+  return new Set<PieceType>(['pawn', 'knight', 'bishop', 'queen']);
+}
+
+/**
+ * Empty square adjacent to Rookie where a yanked enemy lands — the free
+ * adjacent square closest to the enemy's current position (deterministic).
+ * Null when Rookie is fully boxed in.
+ */
+export function yankDestination(state: BoardState, from: Coord): Coord | null {
+  let best: Coord | null = null;
+  let bestDist = Infinity;
+  for (let df = -1; df <= 1; df++) {
+    for (let dr = -1; dr <= 1; dr++) {
+      if (df === 0 && dr === 0) continue;
+      const file = state.rookie.file + df;
+      const rank = state.rookie.rank + dr;
+      if (file < 1 || file > 8 || rank < 1 || rank > 8) continue;
+      if (state.pieces.some((p) => p.file === file && p.rank === rank)) continue;
+      if (state.allies.some((a) => a.file === file && a.rank === rank)) continue;
+      if (state.hazards.some((h) => h.file === file && h.rank === rank)) continue;
+      if (boulderAt(state, { file, rank })) continue;
+      const dist = Math.max(Math.abs(file - from.file), Math.abs(rank - from.rank));
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = { file, rank };
+      }
+    }
+  }
+  return best;
+}
+
+/** How many pawn allies Phalanx summons at a tier. */
+export function phalanxCount(tier: AbilityTier): number {
+  if (tier === 1) return 1;
+  if (tier <= 3) return 2;
+  if (tier === 4) return 3;
+  return 4;
+}
+
+/**
+ * Squares Phalanx would fill right now — front first, then flanks, then rear,
+ * empty squares only. Exported so bots can check "would this do anything."
+ */
+export function phalanxSpawnSquares(state: BoardState, tier: AbilityTier): Coord[] {
+  const want = phalanxCount(tier);
+  const offsets: Array<[number, number]> = [
+    [0, 1], [-1, 1], [1, 1], [-1, 0], [1, 0], [0, -1],
+  ];
+  const out: Coord[] = [];
+  for (const [df, dr] of offsets) {
+    if (out.length >= want) break;
+    const file = state.rookie.file + df;
+    const rank = state.rookie.rank + dr;
+    if (file < 1 || file > 8 || rank < 1 || rank > 8) continue;
+    if (state.pieces.some((p) => p.file === file && p.rank === rank)) continue;
+    if (state.allies.some((a) => a.file === file && a.rank === rank)) continue;
+    if (state.hazards.some((h) => h.file === file && h.rank === rank)) continue;
+    if (boulderAt(state, { file, rank })) continue;
+    out.push({ file, rank });
+  }
+  return out;
+}
+
+function applyPhalanx(state: BoardState, tier: AbilityTier): BoardState {
+  const squares = phalanxSpawnSquares(state, tier);
+  if (squares.length === 0) return state;
+  const spawned: AllyPiece[] = squares.map((c, i) => ({
+    id: Date.now() * 1000 + i,
+    type: 'pawn' as PieceType,
+    file: c.file,
+    rank: c.rank,
+    source: 'squad' as const,
+  }));
+  return {
+    ...state,
+    allies: [...state.allies, ...spawned],
+    abilities: decrementUse(state.abilities, 'phalanx'),
+    cancellableActivation: undefined,
+    activeAbility: null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Experimental BOARD-EDITING abilities: Smoke, Boulder. These add terrain
+// to BoardState (`smoke`, `boulders`) instead of acting on pieces. Enemy
+// movement treats both as no-go squares (`enemyNoGo` in movement.ts);
+// boulders additionally block Rookie, allies and drones.
+// ---------------------------------------------------------------------------
+
+/** Chebyshev radius of the Smoke cloud: T1-T3 = 1 (3×3), T4/T5 = 2 (5×5). */
+export function smokeRadius(tier: AbilityTier): number {
+  if (tier <= 3) return 1;
+  return 2;
+}
+
+/** Enemy turns a Smoke cloud lasts: T1 = 1, T2 = 2, T3/T4 = 3, T5 = 4. */
+export function smokeTurns(tier: AbilityTier): number {
+  if (tier === 1) return 1;
+  if (tier === 2) return 2;
+  if (tier <= 4) return 3;
+  return 4;
+}
+
+/** Squares a Smoke cast would cover right now (centered on Rookie, clipped to the board). */
+export function smokeSquares(state: BoardState, tier: AbilityTier): Coord[] {
+  const r = smokeRadius(tier);
+  const out: Coord[] = [];
+  for (let df = -r; df <= r; df++) {
+    for (let dr = -r; dr <= r; dr++) {
+      const file = state.rookie.file + df;
+      const rank = state.rookie.rank + dr;
+      if (file < 1 || file > 8 || rank < 1 || rank > 8) continue;
+      out.push({ file, rank });
+    }
+  }
+  return out;
+}
+
+function applySmoke(state: BoardState, tier: AbilityTier): BoardState {
+  const turnsLeft = smokeTurns(tier);
+  const fresh = smokeSquares(state, tier).map((c) => ({ ...c, turnsLeft }));
+  // Merge with any existing cloud — a square keeps the LONGER remaining life.
+  const merged = [...(state.smoke ?? [])];
+  for (const c of fresh) {
+    const i = merged.findIndex((m) => m.file === c.file && m.rank === c.rank);
+    if (i < 0) merged.push(c);
+    else if (merged[i].turnsLeft < c.turnsLeft) merged[i] = c;
+  }
+  return {
+    ...state,
+    smoke: merged,
+    abilities: decrementUse(state.abilities, 'smoke'),
+    cancellableActivation: undefined,
+    activeAbility: null,
+  };
+}
+
+/** Chebyshev drop range for Boulder: T1/T2 = 2, T3-T5 = 3. */
+export function boulderRange(tier: AbilityTier): number {
+  if (tier <= 2) return 2;
+  return 3;
+}
+
+/**
+ * Whether a Boulder at this tier may be dropped ON an enemy of this type,
+ * crushing it. T4 crushes pawns only; T5 crushes anything.
+ */
+export function boulderCanCrush(tier: AbilityTier, pieceType?: PieceType): boolean {
+  if (tier >= 5) return true;
+  if (tier === 4) return pieceType === undefined || pieceType === 'pawn';
+  return false;
+}
+
+/**
+ * Legal Boulder targets right now: squares within range of Rookie that are
+ * empty (no enemy, ally, hazard, existing boulder, not Rookie's own square).
+ * At T4 pawn-occupied and at T5 any enemy-occupied squares in range are ALSO
+ * legal (crush).
+ */
+export function boulderTargets(state: BoardState, tier: AbilityTier): Coord[] {
+  const r = boulderRange(tier);
+  const out: Coord[] = [];
+  for (let df = -r; df <= r; df++) {
+    for (let dr = -r; dr <= r; dr++) {
+      if (df === 0 && dr === 0) continue;
+      const file = state.rookie.file + df;
+      const rank = state.rookie.rank + dr;
+      if (file < 1 || file > 8 || rank < 1 || rank > 8) continue;
+      const c = { file, rank };
+      if (boulderAt(state, c)) continue;
+      if (state.hazards.some((h) => h.file === file && h.rank === rank)) continue;
+      if (state.allies.some((a) => a.file === file && a.rank === rank)) continue;
+      const enemy = state.pieces.find((p) => p.file === file && p.rank === rank);
+      if (enemy && !boulderCanCrush(tier, enemy.type)) continue;
+      out.push(c);
+    }
+  }
+  return out;
+}
+
+function applyBoulder(state: BoardState, tier: AbilityTier, target: Coord): BoardState {
+  if (!boulderTargets(state, tier).some((c) => c.file === target.file && c.rank === target.rank)) {
+    return state;
+  }
+  const crushed = state.pieces.find(
+    (p) => p.file === target.file && p.rank === target.rank,
+  );
+  // Crushing an enemy banks it as a Rookie capture (tempo + share), like Detonate.
+  const cleared = crushed ? clearStatusOnSquare(state, toSquare(target)) : {};
+  return {
+    ...state,
+    ...cleared,
+    pieces: crushed ? state.pieces.filter((p) => p !== crushed) : state.pieces,
+    captures: crushed ? [...state.captures, crushed.type] : state.captures,
+    tempo: crushed
+      ? Math.min(TEMPO_MAX, state.tempo + (TEMPO_REWARD[crushed.type] ?? 0))
+      : state.tempo,
+    boulders: [...(state.boulders ?? []), { file: target.file, rank: target.rank }],
+    abilities: decrementUse(state.abilities, 'boulder'),
+    cancellableActivation: undefined,
+    activeAbility: null,
+  };
 }
 
 /** Directions each Drones tier launches in. dx/dy from Rookie's perspective. */
@@ -737,11 +1155,21 @@ export function applyAbilityActivate(
   if (abilityId === 'drones') {
     return applyDrones(state);
   }
+  if (abilityId === 'detonate') {
+    return applyDetonate(state, owned.tier);
+  }
+  if (abilityId === 'phalanx') {
+    return applyPhalanx(state, owned.tier);
+  }
+  if (abilityId === 'smoke') {
+    return applySmoke(state, owned.tier);
+  }
 
   // All targeted abilities (freeze ray, poison dart, rabies dart, decoy)
   // pick an enemy as their second tap.
   let step: 'pick-square' | 'pick-enemy' = 'pick-square';
   if (def.activation === 'targeted') step = 'pick-enemy';
+  if (abilityId === 'boulder') step = 'pick-square'; // targets a square, not a piece
   return { ...state, activeAbility: { id: abilityId, step } };
 }
 
@@ -1021,6 +1449,41 @@ export function applyAbilityTargeted(
         id: Date.now() + Math.random(),
       },
     };
+  }
+
+  if (abilityId === 'yank') {
+    // Grapple: drag a visible, tier-eligible enemy onto an empty square
+    // adjacent to Rookie and freeze it briefly (so it can't immediately bite).
+    if (!isVisibleEnemy(state, target)) return state;
+    const hit = state.pieces.find(
+      (p) => p.file === target.file && p.rank === target.rank,
+    );
+    if (!hit) return state;
+    if (!yankEligibleTypes(owned.tier).has(hit.type)) return state;
+    const dest = yankDestination(state, target);
+    if (!dest) return state; // no free adjacent square — no-op
+    const oldSq = toSquare(target);
+    const cleared = clearStatusOnSquare(state, oldSq);
+    const destSq = toSquare(dest);
+    const freezeFor = owned.tier >= 4 ? 2 : 1;
+    const base = { ...state, ...cleared };
+    return {
+      ...base,
+      pieces: state.pieces.map((p) =>
+        p === hit ? { ...p, file: dest.file, rank: dest.rank } : p,
+      ),
+      frozenSquares: base.frozenSquares.includes(destSq)
+        ? base.frozenSquares
+        : [...base.frozenSquares, destSq],
+      frozenTurnsLeft: { ...base.frozenTurnsLeft, [destSq]: freezeFor },
+      abilities: decrementUse(state.abilities, abilityId),
+      activeAbility: null,
+      cancellableActivation: undefined,
+    };
+  }
+
+  if (abilityId === 'boulder') {
+    return applyBoulder(state, owned.tier, target);
   }
 
   if (abilityId === 'rabies-dart') {
@@ -1312,6 +1775,7 @@ export function stepDroneTurn(state: BoardState): BoardState {
     let f = d.file + chosen[0];
     let r = d.rank + chosen[1];
     while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+      if (boulderAt(state, { file: f, rank: r })) break; // drones can't pass a boulder
       const enemy = pieces.find((p) => p.file === f && p.rank === r);
       if (enemy) {
         captured = enemy;
@@ -1445,7 +1909,11 @@ function allyInBounds(f: number, r: number): boolean {
 }
 
 function allyIsHazard(state: BoardState, f: number, r: number): boolean {
-  return state.hazards.some((h) => h.file === f && h.rank === r);
+  // Boulders block allies too (smoke does not — allies see through it).
+  return (
+    state.hazards.some((h) => h.file === f && h.rank === r) ||
+    boulderAt(state, { file: f, rank: r })
+  );
 }
 
 /** Possible (target, capturedEnemy|null) moves for an ally piece. */
@@ -1553,6 +2021,8 @@ function squareAttackedByEnemy(
       let f = e.file + df;
       let r = e.rank + dr;
       while (f >= 1 && f <= 8 && r >= 1 && r <= 8) {
+        // Enemy rays stop before hazards / smoke / boulders.
+        if (enemyNoGo(state, { file: f, rank: r })) break;
         if (f === sq.file && r === sq.rank) return true;
         // Stop at any blocker — Rookie, ally (not the moving one) or enemy.
         if (state.rookie.file === f && state.rookie.rank === r) break;

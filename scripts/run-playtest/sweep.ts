@@ -119,6 +119,7 @@ export function runSweep(opts: SweepOpts): Outcome[] {
         const seed = `${entry.levelId}__${tier}__${trial}`;
         const r = simulateGame({
           puzzle: entry.puzzle,
+          runId: entry.runId,
           bot,
           seed,
           excludedAbilities: opts.excludedAbilities,

@@ -228,6 +228,21 @@ function AbilityIcon({ id, size }: { id: AbilityId; size: number }) {
           <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z" />
         </svg>
       );
+    case 'smoke':
+      // puffy cloud
+      return (
+        <svg {...props}>
+          <path d="M7 18h10a4 4 0 0 0 0-8 5 5 0 0 0-9.6-1.5A3.5 3.5 0 0 0 7 18z" />
+        </svg>
+      );
+    case 'boulder':
+      // lumpy rock
+      return (
+        <svg {...props}>
+          <path d="M5 17l2-6 4-4 6 1 3 5-2 5H7z" />
+          <path d="M9 12l3 2" />
+        </svg>
+      );
     default:
       return null;
   }

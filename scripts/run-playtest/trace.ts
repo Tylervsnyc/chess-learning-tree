@@ -71,6 +71,7 @@ function main(): void {
   const t0 = Date.now();
   const r = simulateGame({
     puzzle: entry.puzzle,
+    runId: entry.runId,
     bot: BOTS[tier],
     seed,
     recordTrace: true,

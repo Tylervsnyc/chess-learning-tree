@@ -7,6 +7,7 @@
  */
 
 import { stepEnemyTurn } from '../../../lib/run/pawn-ai';
+import { stepAllyTurn, stepDroneTurn } from '../../../lib/run/abilities';
 import type { BoardState } from '../../../lib/run/types';
 import { createMctsBot } from './mcts';
 import type { Bot } from '../types';
@@ -17,12 +18,24 @@ export const T3: Bot = createMctsBot({
   rolloutCount: 40,
 });
 
-/** Resolve enemy turns until control returns to Rookie (or game ends). */
+/**
+ * Resolve every non-Rookie phase until control returns to Rookie (or the game
+ * ends). The engine hands off rookie → allies → enemy → rookie, and a Drones
+ * cast inserts a 'drones' phase; the UI ticks each one step at a time. Before
+ * 2026-08-15 this only stepped 'enemy', so any board with allies or drones
+ * stalled on an un-steppable turn and was scored as a dead-end — every
+ * Squad / Convert / Phalanx / Drones measurement was bogus.
+ */
 export function settleEnemyTurns(state: BoardState): BoardState {
   let s = state;
   let guard = 0;
-  while (s.status === 'playing' && s.turn === 'enemy' && guard < 64) {
-    const next = stepEnemyTurn(s);
+  while (s.status === 'playing' && s.turn !== 'rookie' && guard < 256) {
+    const next =
+      s.turn === 'allies'
+        ? stepAllyTurn(s)
+        : s.turn === 'drones'
+          ? stepDroneTurn(s)
+          : stepEnemyTurn(s);
     if (next === s) break;
     s = next;
     guard++;

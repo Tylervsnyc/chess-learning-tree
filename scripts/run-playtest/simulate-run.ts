@@ -120,6 +120,7 @@ export function simulateRun(opts: SimulateRunOpts): RunOutcome {
 
     const r = simulateGame({
       puzzle,
+      runId: run.id,
       bot: opts.bot,
       seed: `${opts.seed}__L${i}`,
       carryTempo,

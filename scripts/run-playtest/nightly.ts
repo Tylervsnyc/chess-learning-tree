@@ -42,6 +42,7 @@ import { join } from 'path';
 import { runSweep } from './sweep';
 import { aggregate } from './aggregate';
 import { runAblation } from './ablation';
+import { runPowerTest, type PowerReport } from './ability-power-test';
 import { runAbilityImpact } from './simulate-run';
 import type { AbilityForceMode } from './simulate-run';
 import { generateLevels } from './generate-levels';
@@ -82,6 +83,9 @@ interface CliOpts {
   levelGenSeedOffset: number;
   abilityImpactRunId: string;
   abilityImpactTrials: number;
+  skipPowerReport: boolean;
+  powerTrials: number;
+  powerBotTier: TierId;
 }
 
 function parseArgs(): CliOpts {
@@ -107,6 +111,12 @@ function parseArgs(): CliOpts {
     // so any ability that helps shows up clearly. Cost: ~3 min at 5 trials.
     abilityImpactRunId: 'the-gauntlet',
     abilityImpactTrials: 5,
+    skipPowerReport: false,
+    // ~10 trials × 16 abilities × 3 tiers × 10 levels ≈ a few minutes —
+    // noisy per cell but the mean-over-panel is stable enough for a daily
+    // trend line; the standalone CLI covers high-precision runs.
+    powerTrials: 10,
+    powerBotTier: 'T4',
   };
   let hypothesesExplicit = false;
   let fullMode = false;
@@ -117,6 +127,9 @@ function parseArgs(): CliOpts {
     else if (arg === '--skip-features') opts.skipFeatures = true;
     else if (arg === '--skip-hypotheses') opts.skipHypotheses = true;
     else if (arg === '--skip-ability-impact') opts.skipAbilityImpact = true;
+    else if (arg === '--skip-power-report') opts.skipPowerReport = true;
+    else if (arg.startsWith('--power-trials='))
+      opts.powerTrials = parseInt(arg.split('=')[1], 10);
     else if (arg.startsWith('--ability-impact-run='))
       opts.abilityImpactRunId = arg.split('=')[1];
     else if (arg.startsWith('--ability-impact-trials='))
@@ -148,6 +161,7 @@ function parseArgs(): CliOpts {
     opts.ablationTrials = 10;
     if (!hypothesesExplicit) opts.hypothesesPerNight = 1;
     opts.experimentTrials = 10;
+    opts.powerTrials = 4;
   }
   return opts;
 }
@@ -246,6 +260,32 @@ async function main(): Promise<void> {
     );
   } else {
     caveats.push('Ability impact skipped this run.');
+  }
+
+  // ─── Ability power report (experimental vs shipped roster) ────────────
+  // Daily answer to "are the prototype abilities correctly powered, and
+  // should any be promoted?" — full-roster lift leaderboard + verdicts.
+  let powerReport: PowerReport | null = null;
+  if (!opts.skipPowerReport) {
+    console.log(
+      `[nightly] ability power report (${opts.powerTrials} trials × full roster at ${opts.powerBotTier})`,
+    );
+    const tP = Date.now();
+    powerReport = runPowerTest({
+      trials: opts.powerTrials,
+      botTier: opts.powerBotTier,
+      fullRoster: true,
+      log: (s) => console.log(s),
+    });
+    writeFileSync(
+      join(rawDir, 'ability-power-test.json'),
+      JSON.stringify(powerReport, null, 2),
+    );
+    console.log(
+      `[nightly] power report done in ${((Date.now() - tP) / 1000).toFixed(1)}s`,
+    );
+  } else {
+    caveats.push('Ability power report skipped this run.');
   }
 
   // ─── Features + correlations ──────────────────────────────────────────
@@ -366,6 +406,7 @@ async function main(): Promise<void> {
             byAbility: abilityImpact.byAbility,
           }
         : null,
+      powerReport,
       caveats,
     });
     const digestPath = join(digestsDir, `${date}.md`);

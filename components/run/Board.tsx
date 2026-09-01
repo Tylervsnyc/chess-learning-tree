@@ -88,6 +88,13 @@ const GOAL_MOTES: Array<[number, number, number, number, number]> = [
 const HAZARD_BG = 'rgba(190, 18, 60, 0.45)';
 const HAZARD_PATTERN =
   'repeating-linear-gradient(45deg, rgba(0,0,0,0.18) 0 6px, transparent 6px 12px)';
+// Smoke cloud — translucent grey wash (enemies can't see through it).
+const SMOKE_BG = 'rgba(120, 128, 140, 0.55)';
+const SMOKE_PATTERN =
+  'radial-gradient(circle at 35% 40%, rgba(255,255,255,0.35) 0 18%, transparent 30%), radial-gradient(circle at 65% 62%, rgba(255,255,255,0.28) 0 22%, transparent 34%)';
+// Boulder — dark stone disc, blocks everyone for the level.
+const BOULDER_DISC =
+  'radial-gradient(circle at 42% 38%, #8b8f98 0 12%, #4b505a 13% 34%, #2b2f38 35% 38%, transparent 39%)';
 // Selected-piece highlight — same blue as /learn (BasicsTutorial pattern).
 const SELECTED_BG = 'rgba(28, 176, 246, 0.18)';
 const SELECTED_RING = 'inset 0 0 0 3px rgba(28, 176, 246, 0.75)';
@@ -309,6 +316,28 @@ export function RunBoard({
         ...styles[sq],
         backgroundColor: HAZARD_BG,
         backgroundImage: HAZARD_PATTERN,
+      };
+    }
+
+    // Smoke squares — grey wash with soft puffs (rendered like hazards).
+    for (const c of state.smoke ?? []) {
+      const sq = toSquare(c);
+      styles[sq] = {
+        ...styles[sq],
+        backgroundColor: SMOKE_BG,
+        backgroundImage: SMOKE_PATTERN,
+      };
+    }
+
+    // Boulders — a dark stone disc on the square.
+    for (const c of state.boulders ?? []) {
+      const sq = toSquare(c);
+      const prev = styles[sq] ?? {};
+      styles[sq] = {
+        ...prev,
+        backgroundImage: prev.backgroundImage
+          ? `${BOULDER_DISC}, ${prev.backgroundImage}`
+          : BOULDER_DISC,
       };
     }
 
