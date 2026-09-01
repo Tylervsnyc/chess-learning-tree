@@ -21,6 +21,9 @@ import { useBoxShell } from '@/hooks/useBoxShell';
 
 /** Routes where the bar must not cover an immersive full-screen activity. */
 const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding'];
+/** Exceptions under a hidden prefix: the post-workout report + Fix-It are
+ *  regular app screens (dark shell, no timer) and keep the tabs. */
+const SHOWN_ROUTES = ['/workout/report', '/workout/fixit'];
 
 /**
  * The four tabs. `match` lists the extra routes a tab claims as "active" —
@@ -45,7 +48,8 @@ export function BoxTabBar() {
   const inShell = useBoxShell();
   const [trainOpen, setTrainOpen] = useState(false);
 
-  const hidden = HIDDEN_ROUTES.some((r) => pathname?.startsWith(r));
+  const hidden =
+    HIDDEN_ROUTES.some((r) => pathname?.startsWith(r)) && !SHOWN_ROUTES.some((r) => pathname?.startsWith(r));
   const visible = inShell && !hidden;
 
   useEffect(() => {

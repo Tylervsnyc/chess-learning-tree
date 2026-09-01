@@ -4,7 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
-import { playButtonClick } from '@/lib/sounds';
+import { ArenaScene } from '@/components/chessboxing/Arena';
+import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
+import { isSoundEnabled, playButtonClick } from '@/lib/sounds';
 
 /**
  * /workout/fixit — the Fix-It workout (learn-from-mistakes, layer 3).
@@ -14,7 +16,52 @@ import { playButtonClick } from '@/lib/sounds';
  * unscored — like /workout/review, we advance on BOTH right and wrong so the
  * user always keeps moving (momentum over perfection). The only score is a
  * "10 for 10" style tally at the end.
+ *
+ * Chess Boxing feature → ALWAYS the dark box shell (arena backdrop, white
+ * text, one fixed window). Web users get the same screen.
  */
+
+/** The sound helpers don't all check the global toggle themselves. */
+function sfx(fn: () => unknown) {
+  if (!isSoundEnabled()) return;
+  try {
+    void fn();
+  } catch {
+    /* audio is never load-bearing */
+  }
+}
+
+/** Dark arena shell shared by every state of this page. */
+function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="h-full relative overflow-hidden bg-[#131a2e] flex flex-col">
+      <FullBleedShell />
+      <ArenaScene />
+      {children}
+    </div>
+  );
+}
+
+/** Close X → /box, in the ArenaBackButton slot/style. */
+function CloseButton() {
+  return (
+    <Link
+      href="/box"
+      aria-label="Back to the gym"
+      className="absolute left-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex items-center justify-center w-11 h-11 rounded-2xl bg-white/10 text-white/70 border border-white/15 active:translate-y-[2px] transition-transform tap-highlight"
+    >
+      <Icon path={ICONS.close} className="w-5 h-5" />
+    </Link>
+  );
+}
+
+const BTN_PRIMARY =
+  'w-full min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-[0_4px_0_0_#0d7ec4] active:translate-y-[2px] active:shadow-none transition';
+const BTN_SECONDARY =
+  'w-full min-h-[44px] rounded-2xl bg-white/10 border border-white/15 hover:bg-white/15 text-white font-black text-lg py-4 active:translate-y-[2px] transition';
+/** Centered card column for the loading / error / complete states. */
+const CENTER_SCROLL =
+  'flex-1 min-h-0 relative z-10 overflow-y-auto ring-scroll pt-[max(4rem,calc(env(safe-area-inset-top)+3.5rem))] pb-[max(1rem,env(safe-area-inset-bottom))]';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ────────
 
@@ -124,21 +171,24 @@ export default function WorkoutFixitPage() {
   }, [advance]);
 
   const goGym = useCallback(() => {
-    playButtonClick();
+    sfx(playButtonClick);
     router.push('/box');
   }, [router]);
 
   const runAgain = useCallback(() => {
-    playButtonClick();
+    sfx(playButtonClick);
     setRun((n) => n + 1);
   }, []);
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (status === 'loading') {
     return (
-      <div className="h-full overflow-auto bg-chess-page flex items-center justify-center">
-        <p className="text-chess-text-muted text-sm">Building your Fix-It set…</p>
-      </div>
+      <Shell>
+        <CloseButton />
+        <div className="flex-1 relative z-10 flex items-center justify-center">
+          <p className="text-white/60 text-sm">Building your Fix-It set…</p>
+        </div>
+      </Shell>
     );
   }
 
@@ -151,38 +201,34 @@ export default function WorkoutFixitPage() {
           ? { title: 'No workout yet', body: 'Do one Puzzle Boxing workout first. Fix-It builds itself from what you missed.' }
           : { title: 'Could not build your set', body: 'Something went wrong on our side. Give it another go in a moment.' };
     return (
-      <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md mx-auto px-5 py-16 flex flex-col items-center text-center gap-5">
-          <div className="w-16 h-16 rounded-3xl bg-chess-blue/15 flex items-center justify-center">
-            <Icon path={ICONS.wrench} className="w-9 h-9 text-chess-blue" />
+      <Shell>
+        <CloseButton />
+        <div className={CENTER_SCROLL}>
+          <div className="max-w-md mx-auto px-5 py-6 flex flex-col items-center text-center gap-5">
+            <div className="w-16 h-16 rounded-3xl bg-chess-blue/25 flex items-center justify-center">
+              <Icon path={ICONS.wrench} className="w-9 h-9 text-chess-blue" />
+            </div>
+            <h1 className="text-2xl font-black text-white">{copy.title}</h1>
+            <p className="text-sm text-white/60 max-w-xs">{copy.body}</p>
+            {status === 'signin' ? (
+              <Link href="/auth/login?redirect=/workout/fixit" className="w-full max-w-xs">
+                <button className={BTN_PRIMARY}>Sign in</button>
+              </Link>
+            ) : status === 'empty' ? (
+              <Link href="/workout?from=box" className="w-full max-w-xs">
+                <button className={BTN_PRIMARY}>Start a workout</button>
+              </Link>
+            ) : (
+              <button onClick={runAgain} className={`max-w-xs ${BTN_PRIMARY}`}>
+                Try again
+              </button>
+            )}
+            <Link href="/box" className="text-sm font-bold text-white/60 hover:text-white underline underline-offset-2">
+              Back to the gym
+            </Link>
           </div>
-          <h1 className="text-2xl font-black text-chess-text">{copy.title}</h1>
-          <p className="text-sm text-chess-text-muted max-w-xs">{copy.body}</p>
-          {status === 'signin' ? (
-            <Link href="/auth/login?redirect=/workout/fixit" className="w-full max-w-xs">
-              <button className="w-full min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition">
-                Sign in
-              </button>
-            </Link>
-          ) : status === 'empty' ? (
-            <Link href="/workout?from=box" className="w-full max-w-xs">
-              <button className="w-full min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition">
-                Start a workout
-              </button>
-            </Link>
-          ) : (
-            <button
-              onClick={runAgain}
-              className="w-full max-w-xs min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition"
-            >
-              Try again
-            </button>
-          )}
-          <Link href="/box" className="text-sm font-bold text-chess-text-muted underline underline-offset-2">
-            Back to the gym
-          </Link>
         </div>
-      </div>
+      </Shell>
     );
   }
 
@@ -191,35 +237,32 @@ export default function WorkoutFixitPage() {
     const total = puzzles.length;
     const clean = wrong === 0;
     return (
-      <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md mx-auto px-5 py-16 flex flex-col items-center text-center gap-5">
-          <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${clean ? 'bg-chess-gold/15' : 'bg-chess-green/15'}`}>
-            <Icon path={ICONS.check} className={`w-9 h-9 ${clean ? 'text-chess-gold-dark' : 'text-chess-green'}`} />
-          </div>
-          <h1 className="text-3xl font-black text-chess-text leading-none">
-            {right} for {total}
-          </h1>
-          <p className="text-sm text-chess-text-muted max-w-xs">
-            {clean
-              ? 'Every one. Those misses are fixed.'
-              : `${right} right, ${wrong} to keep working on. This is how it sticks.`}
-          </p>
-          <div className="w-full max-w-xs flex flex-col gap-3">
-            <button
-              onClick={goGym}
-              className="w-full min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition"
-            >
-              Back to the gym
-            </button>
-            <button
-              onClick={runAgain}
-              className="w-full min-h-[44px] rounded-2xl bg-chess-surface border-2 border-slate-200 hover:border-chess-blue text-chess-text font-black text-lg py-4 transition"
-            >
-              Run it again
-            </button>
+      <Shell>
+        <CloseButton />
+        <div className={CENTER_SCROLL}>
+          <div className="max-w-md mx-auto px-5 py-6 flex flex-col items-center text-center gap-5">
+            <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${clean ? 'bg-chess-gold/25' : 'bg-chess-green/25'}`}>
+              <Icon path={ICONS.check} className={`w-9 h-9 ${clean ? 'text-chess-gold' : 'text-chess-green'}`} />
+            </div>
+            <h1 className="text-3xl font-black text-white leading-none">
+              {right} for {total}
+            </h1>
+            <p className="text-sm text-white/60 max-w-xs">
+              {clean
+                ? 'Every one. Those misses are fixed.'
+                : `${right} right, ${wrong} to keep working on. This is how it sticks.`}
+            </p>
+            <div className="w-full max-w-xs flex flex-col gap-3">
+              <button onClick={goGym} className={BTN_PRIMARY}>
+                Back to the gym
+              </button>
+              <button onClick={runAgain} className={BTN_SECONDARY}>
+                Run it again
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </Shell>
     );
   }
 
@@ -229,35 +272,25 @@ export default function WorkoutFixitPage() {
   const progressPct = Math.round((index / total) * 100);
 
   return (
-    <div className="h-full overflow-auto bg-chess-page flex flex-col">
-      {/* Header: close + title + progress */}
-      <div className="bg-chess-surface border-b border-slate-200">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <Link
-            href="/box"
-            className="w-11 h-11 -ml-2 rounded-xl flex items-center justify-center text-chess-text-muted hover:bg-chess-page transition"
-            aria-label="Back to the gym"
-          >
-            <Icon path={ICONS.close} className="w-5 h-5" />
-          </Link>
-          <div className="flex flex-col items-center min-w-0">
-            <span className="text-sm font-bold text-chess-text leading-tight">Fix-It workout</span>
-            <span className="text-xs font-semibold text-chess-text-muted">
-              Built from your last workout · {index + 1} of {total}
-            </span>
-          </div>
-          {/* Spacer to balance the close button */}
-          <div className="w-11 h-11" aria-hidden />
+    <Shell>
+      <CloseButton />
+      {/* Header: title + targets + progress (the X lives in the arena back-button slot) */}
+      <div className="relative z-10 shrink-0 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <div className="max-w-md mx-auto w-full px-16 min-h-[44px] flex flex-col items-center justify-center">
+          <span className="text-sm font-bold text-white leading-tight">Fix-It workout</span>
+          <span className="text-xs font-semibold text-white/60">
+            Built from your last workout · {index + 1} of {total}
+          </span>
         </div>
         {targets.length > 0 && (
-          <div className="max-w-md mx-auto px-4 pb-3 flex flex-wrap justify-center gap-1.5">
+          <div className="max-w-md mx-auto px-4 pt-2 flex flex-wrap justify-center gap-1.5">
             {targets.map((t) => (
               <span
                 key={t}
                 className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
                   current?.slotLabel === t
                     ? 'bg-chess-blue text-white border-chess-blue'
-                    : 'bg-chess-page text-chess-text-muted border-slate-200'
+                    : 'bg-white/[0.07] text-white/60 border-white/15'
                 }`}
               >
                 {t}
@@ -265,7 +298,7 @@ export default function WorkoutFixitPage() {
             ))}
           </div>
         )}
-        <div className="h-1.5 bg-slate-100">
+        <div className="mt-2 mx-4 h-1.5 rounded-full bg-white/10 overflow-hidden">
           <div
             className="h-full bg-chess-blue transition-[width] duration-300 ease-out"
             style={{ width: `${progressPct}%` }}
@@ -273,15 +306,15 @@ export default function WorkoutFixitPage() {
         </div>
       </div>
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col">
-        <div className="max-w-md md:max-w-2xl mx-auto w-full px-4 py-5 flex flex-col gap-4">
+      {/* Body: one window; the puzzle column scrolls only if it must. */}
+      <div className="flex-1 min-h-0 relative z-10 flex flex-col overflow-y-auto ring-scroll">
+        <div className="max-w-md md:max-w-2xl mx-auto w-full px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-3">
           <div className="text-center">
-            <p className="text-base font-black text-chess-text">{current?.slotLabel}</p>
+            <p className="text-base font-black text-white">{current?.slotLabel}</p>
             {current?.slotReason && (
-              <p className="text-xs text-chess-text-muted">{current.slotReason}</p>
+              <p className="text-xs text-white/60">{current.slotReason}</p>
             )}
-            <p className="text-xs font-semibold text-chess-text-muted">
+            <p className="text-xs font-semibold text-white/60">
               Find the best move — no timer, no score.
             </p>
           </div>
@@ -295,6 +328,6 @@ export default function WorkoutFixitPage() {
           )}
         </div>
       </div>
-    </div>
+    </Shell>
   );
 }

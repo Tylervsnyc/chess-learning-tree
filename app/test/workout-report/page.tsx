@@ -19,12 +19,12 @@ const MISSES = [
 export default function TestWorkoutReport() {
   const r = useMissAnalysis(MISSES, 'test-session');
   return (
-    <div className="h-full overflow-auto bg-chess-page p-4">
+    <div className="h-full overflow-auto bg-[#131a2e] p-4">
       <div className="max-w-md mx-auto space-y-8">
-        <p className="text-sm text-chess-text-muted">status: {r.status} · progress {Math.round(r.progress * 100)}%</p>
+        <p className="text-sm text-white/60">status: {r.status} · progress {Math.round(r.progress * 100)}%</p>
         {r.analyses.map((a, i) => (
-          <div key={a.puzzleId} className="bg-chess-surface rounded-2xl p-3 shadow-sm">
-            <p className="text-xs font-bold text-chess-text-faint mb-2">Miss {i + 1} · {a.puzzleId} · {a.rating}</p>
+          <div key={a.puzzleId} className="bg-white/[0.04] border border-white/10 rounded-2xl p-3">
+            <p className="text-xs font-bold text-white/45 mb-2">Miss {i + 1} · {a.puzzleId} · {a.rating}</p>
             <MissReplay analysis={a} line={r.lines[i]} lineLoading={r.status !== 'done' && r.status !== 'error'} />
           </div>
         ))}

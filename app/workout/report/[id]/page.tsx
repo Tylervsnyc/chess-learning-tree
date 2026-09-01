@@ -7,7 +7,9 @@ import { MissReplay } from '@/components/workout/MissReplay';
 import { useMissAnalysis } from '@/hooks/useMissAnalysis';
 import type { WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { playButtonClick } from '@/lib/sounds';
+import { ArenaScene } from '@/components/chessboxing/Arena';
+import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
+import { isSoundEnabled, playBoxingBell, playButtonClick } from '@/lib/sounds';
 
 /**
  * /workout/report/[id] — the interactive post-workout report.
@@ -15,7 +17,50 @@ import { playButtonClick } from '@/lib/sounds';
  * Step through each miss on a board (red = what you played, green = the
  * answer, the line auto-plays, Rookie explains), then "what these have in
  * common", then "why these 10" — which hands into /workout/fixit.
+ *
+ * Chess Boxing feature → ALWAYS the dark box shell (arena backdrop, white
+ * text, one fixed window, no page scroll). Web users get the same screen.
  */
+
+/** The sound helpers don't all check the global toggle themselves. */
+function sfx(fn: () => unknown) {
+  if (!isSoundEnabled()) return;
+  try {
+    void fn();
+  } catch {
+    /* audio is never load-bearing */
+  }
+}
+
+/** Dark arena shell shared by every state of this page. */
+function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="h-full relative overflow-hidden bg-[#131a2e] flex flex-col">
+      <FullBleedShell />
+      <ArenaScene />
+      {children}
+    </div>
+  );
+}
+
+/** Close X → /box, in the ArenaBackButton slot/style. */
+function CloseButton() {
+  return (
+    <Link
+      href="/box"
+      aria-label="Back to the gym"
+      className="absolute left-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex items-center justify-center w-11 h-11 rounded-2xl bg-white/10 text-white/70 border border-white/15 active:translate-y-[2px] transition-transform tap-highlight"
+    >
+      <Icon path={ICONS.close} className="w-5 h-5" />
+    </Link>
+  );
+}
+
+const BTN_PRIMARY =
+  'flex-1 min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-3.5 shadow-[0_4px_0_0_#0d7ec4] active:translate-y-[2px] active:shadow-none transition';
+const BTN_SECONDARY =
+  'min-h-[44px] px-5 rounded-2xl bg-white/10 border border-white/15 hover:bg-white/15 text-white font-black active:translate-y-[2px] transition';
+const CARD = 'rounded-2xl bg-white/[0.07] border border-white/15';
 
 // ─── Inline icons (lucide-react isn't installed; app uses inline SVGs) ────────
 
@@ -177,7 +222,7 @@ export default function WorkoutReportPage() {
   const total = analyses.length;
 
   const next = useCallback(() => {
-    playButtonClick();
+    sfx(playButtonClick);
     setScreen((s) => {
       if (s.kind === 'miss') return s.index + 1 < total ? { kind: 'miss', index: s.index + 1 } : { kind: 'pattern' };
       if (s.kind === 'pattern') return { kind: 'why' };
@@ -186,7 +231,7 @@ export default function WorkoutReportPage() {
   }, [total]);
 
   const back = useCallback(() => {
-    playButtonClick();
+    sfx(playButtonClick);
     setScreen((s) => {
       if (s.kind === 'miss') return s.index > 0 ? { kind: 'miss', index: s.index - 1 } : s;
       if (s.kind === 'pattern') return { kind: 'miss', index: Math.max(0, total - 1) };
@@ -194,17 +239,22 @@ export default function WorkoutReportPage() {
     });
   }, [total]);
 
+  // Ding ding — the bell is the hand-off into the Fix-It round. Navigate a
+  // beat later so it's actually heard before the page swaps.
   const startFixit = useCallback(() => {
-    playButtonClick();
-    router.push('/workout/fixit');
+    sfx(playBoxingBell);
+    window.setTimeout(() => router.push('/workout/fixit'), 250);
   }, [router]);
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (status === 'loading') {
     return (
-      <div className="h-full overflow-auto bg-chess-page flex items-center justify-center">
-        <p className="text-chess-text-muted text-sm">Opening your report…</p>
-      </div>
+      <Shell>
+        <CloseButton />
+        <div className="flex-1 relative z-10 flex items-center justify-center">
+          <p className="text-white/60 text-sm">Opening your report…</p>
+        </div>
+      </Shell>
     );
   }
 
@@ -218,53 +268,55 @@ export default function WorkoutReportPage() {
     const signin = status === 'signin';
     const notfound = status === 'notfound';
     return (
-      <div className="h-full overflow-auto bg-chess-page">
-        <div className="max-w-md mx-auto w-full px-5 py-16 flex flex-col items-center text-center gap-5">
-          <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${signin ? 'bg-chess-blue/15' : 'bg-chess-green/15'}`}>
-            <Icon path={signin ? ICONS.chart : ICONS.check} className={`w-9 h-9 ${signin ? 'text-chess-blue' : 'text-chess-green'}`} />
-          </div>
-          <h1 className="text-2xl font-black text-chess-text">
-            {signin ? 'Sign in to see your report' : notfound ? 'Not your workout' : 'Nothing to report'}
-          </h1>
-          {!signin && !notfound && (
-            <p className="text-[11px] text-chess-text-faint">
-              {reason || (report.status === 'error' ? 'could not rebuild the missed positions' : '')}
+      <Shell>
+        <CloseButton />
+        <div className="flex-1 min-h-0 relative z-10 overflow-y-auto ring-scroll pt-[max(4rem,calc(env(safe-area-inset-top)+3.5rem))] pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="max-w-md mx-auto w-full px-5 py-6 flex flex-col items-center text-center gap-5">
+            <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${signin ? 'bg-chess-blue/25' : 'bg-chess-green/25'}`}>
+              <Icon path={signin ? ICONS.chart : ICONS.check} className={`w-9 h-9 ${signin ? 'text-chess-blue' : 'text-chess-green'}`} />
+            </div>
+            <h1 className="text-2xl font-black text-white">
+              {signin ? 'Sign in to see your report' : notfound ? 'Not your workout' : 'Nothing to report'}
+            </h1>
+            {!signin && !notfound && (
+              <p className="text-[11px] text-white/45">
+                {reason || (report.status === 'error' ? 'could not rebuild the missed positions' : '')}
+              </p>
+            )}
+            <p className="text-sm text-white/60 max-w-xs">
+              {signin
+                ? 'Your report is built from your own workout, so we need to know who you are.'
+                : notfound
+                  ? "This workout was saved on a different account than the one you're signed in with. Switch accounts, or open the report from your profile."
+                  : 'There are no missed puzzles for this workout — nice and clean.'}
             </p>
-          )}
-          <p className="text-sm text-chess-text-muted max-w-xs">
-            {signin
-              ? 'Your report is built from your own workout, so we need to know who you are.'
-              : notfound
-                ? "This workout was saved on a different account than the one you're signed in with. Switch accounts, or open the report from your profile."
-                : 'There are no missed puzzles for this workout — nice and clean.'}
-          </p>
-          {signin ? (
-            <Link href={`/auth/login?redirect=/workout/report/${id ?? ''}`} className="w-full max-w-xs">
-              <button className="w-full min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition">
-                Sign in
-              </button>
+            {signin ? (
+              <Link href={`/auth/login?redirect=/workout/report/${id ?? ''}`} className="w-full max-w-xs">
+                <button className={`w-full ${BTN_PRIMARY} py-4`}>Sign in</button>
+              </Link>
+            ) : (
+              <Link href="/profile" className="w-full max-w-xs">
+                <button className={`w-full ${BTN_PRIMARY} py-4`}>Back to profile</button>
+              </Link>
+            )}
+            <Link href="/box" className="text-sm font-bold text-white/60 hover:text-white underline underline-offset-2">
+              Back to the gym
             </Link>
-          ) : (
-            <Link href="/profile" className="w-full max-w-xs">
-              <button className="w-full min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-4 shadow-sm transition">
-                Back to profile
-              </button>
-            </Link>
-          )}
-          <Link href="/box" className="text-sm font-bold text-chess-text-muted underline underline-offset-2">
-            Back to the gym
-          </Link>
+          </div>
         </div>
-      </div>
+      </Shell>
     );
   }
 
   // Engine still reconstructing (only before the first analysis lands).
   if (total === 0) {
     return (
-      <div className="h-full overflow-auto bg-chess-page flex items-center justify-center">
-        <p className="text-chess-text-muted text-sm">Setting up the board…</p>
-      </div>
+      <Shell>
+        <CloseButton />
+        <div className="flex-1 relative z-10 flex items-center justify-center">
+          <p className="text-white/60 text-sm">Setting up the board…</p>
+        </div>
+      </Shell>
     );
   }
 
@@ -282,15 +334,15 @@ export default function WorkoutReportPage() {
           <span
             key={`${a.puzzleId}-${i}`}
             className={`h-2 rounded-full transition-all ${
-              active ? 'w-5 bg-chess-blue' : passed ? 'w-2 bg-chess-blue/60' : 'w-2 bg-slate-200'
+              active ? 'w-5 bg-chess-blue' : passed ? 'w-2 bg-chess-blue/60' : 'w-2 bg-white/20'
             }`}
           />
         );
       })}
-      <span className="mx-1 text-chess-text-faint text-xs">·</span>
-      <span className={`text-[11px] font-black ${screen.kind === 'pattern' ? 'text-chess-blue' : 'text-chess-text-faint'}`}>Pattern</span>
-      <span className="mx-1 text-chess-text-faint text-xs">·</span>
-      <span className={`text-[11px] font-black ${screen.kind === 'why' ? 'text-chess-blue' : 'text-chess-text-faint'}`}>Fix-It</span>
+      <span className="mx-1 text-white/40 text-xs">·</span>
+      <span className={`text-[11px] font-black ${screen.kind === 'pattern' ? 'text-chess-blue' : 'text-white/45'}`}>Pattern</span>
+      <span className="mx-1 text-white/40 text-xs">·</span>
+      <span className={`text-[11px] font-black ${screen.kind === 'why' ? 'text-chess-blue' : 'text-white/45'}`}>Fix-It</span>
     </div>
   );
 
@@ -301,20 +353,16 @@ export default function WorkoutReportPage() {
     const a = analyses[screen.index];
     body = (
       <>
+        {/* Board pinned, everything under it scrolls (inside MissReplay); the
+            Next/Back row is always on screen. */}
         <MissReplay key={`${a.puzzleId}-${screen.index}`} analysis={a} line={lines[screen.index]} lineLoading={lineLoading} />
-        <div className="flex gap-3">
+        <div className="flex gap-3 shrink-0">
           {screen.index > 0 && (
-            <button
-              onClick={back}
-              className="min-h-[44px] px-5 rounded-2xl bg-chess-surface border-2 border-slate-200 hover:border-chess-blue text-chess-text font-black transition"
-            >
+            <button onClick={back} className={BTN_SECONDARY}>
               Back
             </button>
           )}
-          <button
-            onClick={next}
-            className="flex-1 min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-3.5 shadow-sm transition"
-          >
+          <button onClick={next} className={BTN_PRIMARY}>
             {screen.index + 1 < total ? 'Next →' : 'What these have in common →'}
           </button>
         </div>
@@ -325,61 +373,57 @@ export default function WorkoutReportPage() {
     const strongest = profile?.strongest?.slice(0, 2) ?? [];
     body = (
       <>
-        <div className="text-center">
-          <h1 className="text-2xl font-black text-chess-text leading-tight">What these have in common</h1>
-          <p className="text-xs font-semibold text-chess-text-muted mt-1">
-            {session?.correct ?? 0} right · {total} missed
-          </p>
-        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto ring-scroll flex flex-col gap-4">
+          <div className="text-center">
+            <h1 className="text-2xl font-black text-white leading-tight">What these have in common</h1>
+            <p className="text-xs font-semibold text-white/60 mt-1">
+              {session?.correct ?? 0} right · {total} missed
+            </p>
+          </div>
 
-        <div className="rounded-2xl bg-chess-surface border border-slate-200 px-4 py-4">
-          <p className="text-[11px] font-black uppercase tracking-wide text-chess-text-faint mb-1.5">Rookie</p>
-          {diagnosis ? (
-            <p className="text-base text-chess-text leading-snug">{diagnosis}</p>
-          ) : lineLoading ? (
-            <div className="space-y-1.5" aria-label="Rookie is looking…">
-              <div className="h-3.5 rounded bg-slate-100 animate-pulse w-full" />
-              <div className="h-3.5 rounded bg-slate-100 animate-pulse w-10/12" />
-              <div className="h-3.5 rounded bg-slate-100 animate-pulse w-1/2" />
+          <div className={`${CARD} px-4 py-4`}>
+            <p className="text-[11px] font-black uppercase tracking-wide text-white/50 mb-1.5">Rookie</p>
+            {diagnosis ? (
+              <p className="text-base text-white leading-snug">{diagnosis}</p>
+            ) : lineLoading ? (
+              <div className="space-y-1.5" aria-label="Rookie is looking…">
+                <div className="h-3.5 rounded bg-white/10 animate-pulse w-full" />
+                <div className="h-3.5 rounded bg-white/10 animate-pulse w-10/12" />
+                <div className="h-3.5 rounded bg-white/10 animate-pulse w-1/2" />
+              </div>
+            ) : (
+              <p className="text-sm text-white/60">Rookie couldn’t put a name on it this time — the numbers below still tell the story.</p>
+            )}
+          </div>
+
+          {weakest.length > 0 && (
+            <div className={`${CARD} overflow-hidden`}>
+              <p className="px-4 pt-3 pb-1 text-[11px] font-black uppercase tracking-wide text-chess-red">Needs work</p>
+              {weakest.map((t) => (
+                <ThemeRow key={t.theme} stat={t} tone="weak" />
+              ))}
             </div>
-          ) : (
-            <p className="text-sm text-chess-text-muted">Rookie couldn’t put a name on it this time — the numbers below still tell the story.</p>
+          )}
+          {strongest.length > 0 && (
+            <div className={`${CARD} overflow-hidden`}>
+              <p className="px-4 pt-3 pb-1 text-[11px] font-black uppercase tracking-wide text-chess-green">Solid</p>
+              {strongest.map((t) => (
+                <ThemeRow key={t.theme} stat={t} tone="strong" />
+              ))}
+            </div>
+          )}
+          {weakest.length === 0 && strongest.length === 0 && !lineLoading && (
+            <p className="text-center text-sm text-white/60">
+              A few more workouts and we’ll have enough to show your strongest and weakest themes.
+            </p>
           )}
         </div>
 
-        {weakest.length > 0 && (
-          <div className="rounded-2xl bg-chess-surface border border-slate-200 overflow-hidden">
-            <p className="px-4 pt-3 pb-1 text-[11px] font-black uppercase tracking-wide text-chess-red">Needs work</p>
-            {weakest.map((t) => (
-              <ThemeRow key={t.theme} stat={t} tone="weak" />
-            ))}
-          </div>
-        )}
-        {strongest.length > 0 && (
-          <div className="rounded-2xl bg-chess-surface border border-slate-200 overflow-hidden">
-            <p className="px-4 pt-3 pb-1 text-[11px] font-black uppercase tracking-wide text-chess-green-dark">Solid</p>
-            {strongest.map((t) => (
-              <ThemeRow key={t.theme} stat={t} tone="strong" />
-            ))}
-          </div>
-        )}
-        {weakest.length === 0 && strongest.length === 0 && !lineLoading && (
-          <p className="text-center text-sm text-chess-text-muted">
-            A few more workouts and we’ll have enough to show your strongest and weakest themes.
-          </p>
-        )}
-
-        <div className="flex gap-3">
-          <button
-            onClick={back}
-            className="min-h-[44px] px-5 rounded-2xl bg-chess-surface border-2 border-slate-200 hover:border-chess-blue text-chess-text font-black transition"
-          >
+        <div className="flex gap-3 shrink-0">
+          <button onClick={back} className={BTN_SECONDARY}>
             Back
           </button>
-          <button
-            onClick={next}
-            className="flex-1 min-h-[44px] rounded-2xl bg-chess-blue hover:bg-chess-blue-dark text-white font-black text-lg py-3.5 shadow-sm transition"
-          >
+          <button onClick={next} className={BTN_PRIMARY}>
             Why these 10 →
           </button>
         </div>
@@ -388,108 +432,106 @@ export default function WorkoutReportPage() {
   } else {
     body = (
       <>
-        <div className="text-center">
-          <h1 className="text-2xl font-black text-chess-text leading-tight">Why these 10</h1>
-          <p className="text-xs font-semibold text-chess-text-muted mt-1">
-            Your Fix-It set is built from today’s misses and your blind spots.
-          </p>
+        <div className="flex-1 min-h-0 overflow-y-auto ring-scroll flex flex-col gap-4">
+          <div className="text-center">
+            <h1 className="text-2xl font-black text-white leading-tight">Why these 10</h1>
+            <p className="text-xs font-semibold text-white/60 mt-1">
+              Your Fix-It set is built from today’s misses and your blind spots.
+            </p>
+          </div>
+
+          {slotsStatus === 'loading' || slotsStatus === 'idle' ? (
+            <div className="space-y-2" aria-label="Building your set…">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className={`h-16 ${CARD} animate-pulse`} />
+              ))}
+            </div>
+          ) : slots && slots.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {slots.map((s, i) => (
+                <div key={`${s.label}-${i}`} className={`${CARD} px-4 py-3 flex items-start gap-3`}>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-white leading-tight">{s.label}</p>
+                    {s.reason && <p className="text-xs text-white/60 mt-0.5 leading-snug">{s.reason}</p>}
+                  </div>
+                  {s.count > 0 && (
+                    <span className="shrink-0 text-xs font-black text-chess-blue bg-chess-blue/20 rounded-full px-2 py-0.5 tabular-nums">
+                      ×{s.count}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-sm text-white/60">
+              Your set is ready — 10 puzzles aimed at what you missed today.
+            </p>
+          )}
         </div>
 
-        {slotsStatus === 'loading' || slotsStatus === 'idle' ? (
-          <div className="space-y-2" aria-label="Building your set…">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-16 rounded-2xl bg-chess-surface border border-slate-200 animate-pulse" />
-            ))}
-          </div>
-        ) : slots && slots.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            {slots.map((s, i) => (
-              <div key={`${s.label}-${i}`} className="rounded-2xl bg-chess-surface border border-slate-200 px-4 py-3 flex items-start gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-chess-text leading-tight">{s.label}</p>
-                  {s.reason && <p className="text-xs text-chess-text-muted mt-0.5 leading-snug">{s.reason}</p>}
-                </div>
-                {s.count > 0 && (
-                  <span className="shrink-0 text-xs font-black text-chess-blue bg-chess-blue/10 rounded-full px-2 py-0.5 tabular-nums">
-                    ×{s.count}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-sm text-chess-text-muted">
-            Your set is ready — 10 puzzles aimed at what you missed today.
-          </p>
-        )}
-
-        <button
-          onClick={startFixit}
-          className="w-full min-h-[44px] rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-xl py-4 shadow-sm transition inline-flex items-center justify-center gap-2"
-        >
-          <Icon path={ICONS.wrench} className="w-5 h-5" />
-          Start Fix-It
-        </button>
-        <div className="flex items-center justify-between">
-          <button onClick={back} className="min-h-[44px] px-2 text-sm font-bold text-chess-text-muted underline underline-offset-2">
-            Back
-          </button>
-          <Link
-            href={`/workout/review/${id}`}
-            className="min-h-[44px] px-2 inline-flex items-center text-sm font-bold text-chess-blue hover:text-chess-blue-dark underline underline-offset-2"
+        <div className="shrink-0 flex flex-col gap-2">
+          <button
+            onClick={startFixit}
+            className="w-full min-h-[44px] rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-xl py-4 shadow-[0_4px_0_0_#3d8c01] active:translate-y-[2px] active:shadow-none transition inline-flex items-center justify-center gap-2"
           >
-            Replay my misses
-          </Link>
+            <Icon path={ICONS.wrench} className="w-5 h-5" />
+            Start Fix-It
+          </button>
+          <div className="flex items-center justify-between">
+            <button onClick={back} className="min-h-[44px] px-2 text-sm font-bold text-white/60 hover:text-white underline underline-offset-2">
+              Back
+            </button>
+            <Link
+              href={`/workout/review/${id}`}
+              className="min-h-[44px] px-2 inline-flex items-center text-sm font-bold text-chess-blue hover:text-white underline underline-offset-2"
+            >
+              Replay my misses
+            </Link>
+          </div>
         </div>
       </>
     );
   }
 
   return (
-    <div className="h-full overflow-auto bg-chess-page flex flex-col">
-      {/* Header: close + step dots */}
-      <div className="bg-chess-surface border-b border-slate-200">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 py-3 flex items-center justify-between gap-3">
-          <Link
-            href="/box"
-            className="w-11 h-11 -ml-2 rounded-xl flex items-center justify-center text-chess-text-muted hover:bg-chess-page transition"
-            aria-label="Back to the gym"
-          >
-            <Icon path={ICONS.close} className="w-5 h-5" />
-          </Link>
-          <div className="flex flex-col items-center gap-1 min-w-0">
-            <span className="text-sm font-bold text-chess-text leading-tight">Your report</span>
-            {dots}
-          </div>
-          <div className="w-11 h-11" aria-hidden />
+    <Shell>
+      <CloseButton />
+      {/* Header: title + step dots (the X lives in the arena back-button slot) */}
+      <div className="relative z-10 shrink-0 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-16 min-h-[44px] flex flex-col items-center justify-center gap-1">
+          <span className="text-sm font-bold text-white leading-tight">Your report</span>
+          {dots}
         </div>
         {report.status === 'engine' && (
-          <div className="h-1.5 bg-slate-100">
+          <div className="mt-2 mx-4 h-1.5 rounded-full bg-white/10 overflow-hidden">
             <div className="h-full bg-chess-blue transition-[width] duration-300 ease-out" style={{ width: `${enginePct}%` }} />
           </div>
         )}
       </div>
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col">
-        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4 pb-8">{body}</div>
+      {/* Body: ONE fixed window (native-shell rule). Each screen decides what
+          scrolls inside it — the board never does. */}
+      <div className="flex-1 min-h-0 relative z-10 flex flex-col">
+        <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] flex-1 min-h-0 flex flex-col gap-3">
+          {body}
+        </div>
       </div>
-    </div>
+    </Shell>
   );
 }
 
 function ThemeRow({ stat, tone }: { stat: { theme: string; accuracy: number; attempts: number }; tone: 'weak' | 'strong' }) {
   const pct = Math.round(stat.accuracy <= 1 ? stat.accuracy * 100 : stat.accuracy);
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 border-t border-slate-100">
+    <div className="flex items-center gap-3 px-4 py-2.5 border-t border-white/10">
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-chess-text leading-tight truncate">{prettyTheme(stat.theme)}</p>
-        <p className="text-xs text-chess-text-muted">{stat.attempts} {stat.attempts === 1 ? 'attempt' : 'attempts'}</p>
+        <p className="text-sm font-bold text-white leading-tight truncate">{prettyTheme(stat.theme)}</p>
+        <p className="text-xs text-white/60">{stat.attempts} {stat.attempts === 1 ? 'attempt' : 'attempts'}</p>
       </div>
-      <div className="w-20 h-2 rounded-full bg-slate-100 overflow-hidden shrink-0">
+      <div className="w-20 h-2 rounded-full bg-white/10 overflow-hidden shrink-0">
         <div className={`h-full ${tone === 'weak' ? 'bg-chess-red' : 'bg-chess-green'}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className={`text-sm font-black tabular-nums w-11 text-right ${tone === 'weak' ? 'text-chess-red' : 'text-chess-green-dark'}`}>{pct}%</span>
+      <span className={`text-sm font-black tabular-nums w-11 text-right ${tone === 'weak' ? 'text-chess-red' : 'text-chess-green'}`}>{pct}%</span>
     </div>
   );
 }
