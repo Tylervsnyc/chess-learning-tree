@@ -8,6 +8,7 @@ import { useProGate } from '@/hooks/useProGate';
 import { ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { useIsNativeApp } from '@/lib/native-app';
 import type { LeaderboardPeriod } from '@/lib/leaderboard/period';
 
 /**
@@ -91,6 +92,9 @@ function periodEndsIn(period: Period): string {
 }
 
 export function RingHome() {
+  // The offline iOS bundle doesn't export /workout/fixit — hide the row there
+  // until the app gets twin routes (same policy as /review before 15c18ff).
+  const native = useIsNativeApp();
   const inShell = useBoxShell();
   const [period, setPeriod] = useState<Period>('weekly');
   const [boards, setBoards] = useState<Partial<Record<Period, PeriodBoards>>>({});
@@ -204,7 +208,7 @@ export function RingHome() {
         </div>
 
         {/* ---- Fix-It — 10 remedial puzzles built from the last workout's misses ---- */}
-        {FEATURE_FLAGS.WORKOUT_FIXIT && (
+        {FEATURE_FLAGS.WORKOUT_FIXIT && !native && (
           <div className="relative z-10 mt-4 px-5">
             <Link
               href="/workout/fixit"

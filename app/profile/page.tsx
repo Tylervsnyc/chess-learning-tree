@@ -153,6 +153,8 @@ function PatronBadge() {
 }
 
 function SessionRow({ session }: { session: WorkoutSession }) {
+  // /workout/report isn't in the offline iOS bundle — hide the link there.
+  const native = useIsNativeApp();
   const total = session.correct + session.wrong;
   const reviewable = session.missedCount > 0;
 
@@ -196,7 +198,7 @@ function SessionRow({ session }: { session: WorkoutSession }) {
         >
           {inner}
         </Link>
-        {FEATURE_FLAGS.WORKOUT_REPORT && (
+        {FEATURE_FLAGS.WORKOUT_REPORT && !native && (
           <Link
             href={`/workout/report/${session.id}`}
             className="flex items-center min-h-[44px] px-4 -mt-1 pb-2 text-xs font-bold text-chess-blue hover:text-chess-blue-dark"
