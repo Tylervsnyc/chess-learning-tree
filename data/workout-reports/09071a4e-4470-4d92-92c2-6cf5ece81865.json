@@ -1,0 +1,483 @@
+{
+  "sessionId": "09071a4e-4470-4d92-92c2-6cf5ece81865",
+  "userId": "3990eeb1-6c54-49b2-a0a7-07a7af41b5b6",
+  "generatedAt": "2026-09-01T12:17:47.804Z",
+  "misses": [
+    {
+      "puzzleId": "GjTnf",
+      "rating": 1530,
+      "themes": [
+        "endgame",
+        "mate",
+        "mateIn2",
+        "short"
+      ],
+      "url": "https://lichess.org/training/GjTnf",
+      "solverColor": "White",
+      "solutionSan": [
+        "Rd7+",
+        "Ke8",
+        "Ra8#"
+      ],
+      "points": [
+        {
+          "moveNo": 1,
+          "fen": "3k4/R4p2/4p3/2Np4/3P3p/1KP3rq/4p3/R7 w - - 4 42",
+          "solutionSan": "Rd7+",
+          "best": {
+            "rank": 1,
+            "uci": "a7d7",
+            "san": "Rd7+",
+            "cp": null,
+            "mate": 2
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "a7f7",
+              "san": "Rxf7",
+              "cp": -262,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "c5b7",
+              "san": "Nb7+",
+              "cp": -457,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "a7b7",
+              "san": "Rb7",
+              "cp": -492,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "b3a2",
+              "san": "Ka2",
+              "cp": -510,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        },
+        {
+          "moveNo": 2,
+          "fen": "4k3/3R1p2/4p3/2Np4/3P3p/1KP3rq/4p3/R7 w - - 6 43",
+          "solutionSan": "Ra8#",
+          "best": {
+            "rank": 1,
+            "uci": "a1a8",
+            "san": "Ra8#",
+            "cp": null,
+            "mate": 1
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "a1a7",
+              "san": "Raa7",
+              "cp": -377,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "d7c7",
+              "san": "Rc7",
+              "cp": -409,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "b3b4",
+              "san": "Kb4",
+              "cp": -486,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "d7b7",
+              "san": "Rb7",
+              "cp": -506,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        }
+      ],
+      "trapAt": 1,
+      "played": null
+    },
+    {
+      "puzzleId": "NJO1s",
+      "rating": 1867,
+      "themes": [
+        "advantage",
+        "endgame",
+        "fork",
+        "long",
+        "sacrifice"
+      ],
+      "url": "https://lichess.org/training/NJO1s",
+      "solverColor": "White",
+      "solutionSan": [
+        "Ne4",
+        "Qxd5",
+        "Nxf6+",
+        "Kg7",
+        "Nxd5"
+      ],
+      "points": [
+        {
+          "moveNo": 1,
+          "fen": "3r2k1/5p2/3p1bp1/p1qQ3p/1pP5/1P1R3P/P2N2P1/7K w - - 5 32",
+          "solutionSan": "Ne4",
+          "best": {
+            "rank": 1,
+            "uci": "d2e4",
+            "san": "Ne4",
+            "cp": 402,
+            "mate": null
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "a2a4",
+              "san": "a4",
+              "cp": -60,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "d5c5",
+              "san": "Qxc5",
+              "cp": -67,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "d5f3",
+              "san": "Qf3",
+              "cp": -125,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "g2g4",
+              "san": "g4",
+              "cp": -137,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        },
+        {
+          "moveNo": 2,
+          "fen": "3r2k1/5p2/3p1bp1/p2q3p/1pP1N3/1P1R3P/P5P1/7K w - - 0 33",
+          "solutionSan": "Nxf6+",
+          "best": {
+            "rank": 1,
+            "uci": "e4f6",
+            "san": "Nxf6+",
+            "cp": 417,
+            "mate": null
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "d3d5",
+              "san": "Rxd5",
+              "cp": 1,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "c4d5",
+              "san": "cxd5",
+              "cp": -253,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "e4f2",
+              "san": "Nf2",
+              "cp": -799,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "d3e3",
+              "san": "Re3",
+              "cp": -924,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        },
+        {
+          "moveNo": 3,
+          "fen": "3r4/5pk1/3p1Np1/p2q3p/1pP5/1P1R3P/P5P1/7K w - - 1 34",
+          "solutionSan": "Nxd5",
+          "best": {
+            "rank": 1,
+            "uci": "f6d5",
+            "san": "Nxd5",
+            "cp": 412,
+            "mate": null
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "d3d5",
+              "san": "Rxd5",
+              "cp": 0,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "f6e8",
+              "san": "Ne8+",
+              "cp": -186,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "c4d5",
+              "san": "cxd5",
+              "cp": -386,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "f6h5",
+              "san": "Nxh5+",
+              "cp": -729,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        }
+      ],
+      "trapAt": 1,
+      "played": null
+    },
+    {
+      "puzzleId": "HmXaY",
+      "rating": 1844,
+      "themes": [
+        "advantage",
+        "defensiveMove",
+        "endgame",
+        "long",
+        "master",
+        "skewer"
+      ],
+      "url": "https://lichess.org/training/HmXaY",
+      "solverColor": "White",
+      "solutionSan": [
+        "Bg8+",
+        "Ke7",
+        "Bxb3",
+        "Rb2",
+        "Rd3"
+      ],
+      "points": [
+        {
+          "moveNo": 1,
+          "fen": "3R4/5k1B/1p3p2/pPp2P2/8/1b6/r4P1P/6K1 w - - 8 42",
+          "solutionSan": "Bg8+",
+          "best": {
+            "rank": 1,
+            "uci": "h7g8",
+            "san": "Bg8+",
+            "cp": 334,
+            "mate": null
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "h7g6",
+              "san": "Bg6+",
+              "cp": -184,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "d8b8",
+              "san": "Rb8",
+              "cp": -205,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "d8d3",
+              "san": "Rd3",
+              "cp": -249,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "h2h4",
+              "san": "h4",
+              "cp": -263,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        },
+        {
+          "moveNo": 2,
+          "fen": "3R2B1/4k3/1p3p2/pPp2P2/8/1b6/r4P1P/6K1 w - - 10 43",
+          "solutionSan": "Bxb3",
+          "best": {
+            "rank": 1,
+            "uci": "g8b3",
+            "san": "Bxb3",
+            "cp": 356,
+            "mate": null
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "d8a8",
+              "san": "Ra8",
+              "cp": -337,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "d8b8",
+              "san": "Rb8",
+              "cp": -343,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "d8c8",
+              "san": "Rc8",
+              "cp": -380,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "d8d3",
+              "san": "Rd3",
+              "cp": -486,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        },
+        {
+          "moveNo": 3,
+          "fen": "3R4/4k3/1p3p2/pPp2P2/8/1B6/1r3P1P/6K1 w - - 1 44",
+          "solutionSan": "Rd3",
+          "best": {
+            "rank": 1,
+            "uci": "d8d3",
+            "san": "Rd3",
+            "cp": 370,
+            "mate": null
+          },
+          "temptations": [
+            {
+              "rank": 2,
+              "uci": "d8b8",
+              "san": "Rb8",
+              "cp": 4,
+              "mate": null
+            },
+            {
+              "rank": 3,
+              "uci": "d8c8",
+              "san": "Rc8",
+              "cp": -206,
+              "mate": null
+            },
+            {
+              "rank": 4,
+              "uci": "d8a8",
+              "san": "Ra8",
+              "cp": -207,
+              "mate": null
+            },
+            {
+              "rank": 5,
+              "uci": "d8h8",
+              "san": "Rh8",
+              "cp": -311,
+              "mate": null
+            }
+          ],
+          "onlyMove": true
+        }
+      ],
+      "trapAt": 1,
+      "played": null
+    }
+  ],
+  "commentary": {
+    "perMiss": [
+      "Rxf7 grabs a pawn and hits the king, but Rd7+ ignores material and herds the king to e8 where Ra8 is mate — count the escape squares before you count the pawns.",
+      "a4 and Qxc5 are safe, useful-looking moves, but Ne4 offers the knight to deflect the queen off the f6 defender, and after Qxd5 Nxf6+ forks king and queen back with interest.",
+      "Bg6+ checks on the same diagonal but hits nothing behind it; Bg8+ drags the king to e7 so the bishop can swing to b3 and win the rook, and only then does the quiet Rd3 hold everything together.",
+      "Check the checks first: in each of these the forcing move looked like it gave something away."
+    ],
+    "diagnosis": "You reach for the safe capture or generic check instead of calculating the forcing line where you give material back to reach the point.",
+    "fixitIntro": "Here are 10 puzzles where the winning idea starts with an offer or a check that looks wrong until you see move two."
+  },
+  "fixit": [
+    {
+      "puzzleId": "bGHGb",
+      "rating": 1533,
+      "slot": "Warm-up: find the forcing move"
+    },
+    {
+      "puzzleId": "2Du38",
+      "rating": 1430,
+      "slot": "Warm-up: find the forcing move"
+    },
+    {
+      "puzzleId": "UftBZ",
+      "rating": 1608,
+      "slot": "Forks that finish the job"
+    },
+    {
+      "puzzleId": "DV5IF",
+      "rating": 1634,
+      "slot": "Forks that finish the job"
+    },
+    {
+      "puzzleId": "QsyT4",
+      "rating": 1697,
+      "slot": "Forks that finish the job"
+    },
+    {
+      "puzzleId": "KWkjh",
+      "rating": 1615,
+      "slot": "Skewers from your last workout"
+    },
+    {
+      "puzzleId": "HEVn2",
+      "rating": 1645,
+      "slot": "Skewers from your last workout"
+    },
+    {
+      "puzzleId": "4lQsA",
+      "rating": 1528,
+      "slot": "Keep what you won: the quiet move"
+    },
+    {
+      "puzzleId": "3YoAI",
+      "rating": 1666,
+      "slot": "Keep what you won: the quiet move"
+    },
+    {
+      "puzzleId": "gfMe1",
+      "rating": 1877,
+      "slot": "Closer: Pins, full length"
+    }
+  ]
+}

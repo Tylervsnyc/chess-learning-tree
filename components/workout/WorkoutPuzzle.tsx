@@ -41,12 +41,28 @@ export interface WorkoutPuzzleData {
   moves: string[] | string;
   rating: number;
   themes?: string[];
+  /** Recorded on a miss (missed_puzzles JSONB) — what the user actually played. */
+  playedMove?: string | null;
+  /** Index into the solution line where the miss happened. */
+  failedAtMove?: number | null;
+  /** Time from puzzle shown to the miss, ms. */
+  timeMs?: number | null;
+}
+
+/** What actually happened on a wrong move — passed to onWrong. */
+export interface WrongMoveDetail {
+  /** UCI of the move the user played (e.g. "e2e4", "e7e8q"). */
+  playedUci: string;
+  /** Index into the solution line (post-setup) where the miss happened. */
+  failedAtIndex: number;
+  /** Position the user was looking at when they missed. */
+  fenAtMove: string;
 }
 
 interface Props {
   puzzle: WorkoutPuzzleData;
   onCorrect: () => void;
-  onWrong: () => void;
+  onWrong: (detail?: WrongMoveDetail) => void;
   /** Current correct-streak length — drives the ascending chromatic pitch. */
   comboIndex?: number;
 }
@@ -92,14 +108,14 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
 
   const themes = useMemo(() => processed.themes ?? [], [processed.themes]);
 
-  const finishWrong = useCallback(() => {
+  const finishWrong = useCallback((detail?: WrongMoveDetail) => {
     if (advancedRef.current) return;
     advancedRef.current = true;
     setStatus('wrong');
     playErrorSound();
     vibrateOnError();
     // Brief red feedback, then advance to the next puzzle.
-    setTimeout(() => onWrong(), 650);
+    setTimeout(() => onWrong(detail), 650);
   }, [onWrong]);
 
   const finishCorrect = useCallback(() => {
@@ -132,7 +148,11 @@ export function WorkoutPuzzle({ puzzle, onCorrect, onWrong, comboIndex = 0 }: Pr
         isAlternateCheckmate(copy, themes);
 
       if (!correct) {
-        finishWrong();
+        finishWrong({
+          playedUci: move.from + move.to + (move.promotion ?? ''),
+          failedAtIndex: moveIndex,
+          fenAtMove: game.fen(),
+        });
         return false;
       }
 

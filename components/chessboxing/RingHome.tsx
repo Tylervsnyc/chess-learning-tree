@@ -203,6 +203,29 @@ export function RingHome() {
           </div>
         </div>
 
+        {/* ---- Fix-It — 10 remedial puzzles built from the last workout's misses ---- */}
+        {FEATURE_FLAGS.WORKOUT_FIXIT && (
+          <div className="relative z-10 mt-4 px-5">
+            <Link
+              href="/workout/fixit"
+              className="flex items-center gap-3 min-h-[48px] px-4 py-2 rounded-2xl bg-white/[0.07] border border-white/15 active:translate-y-[2px] transition-transform tap-highlight"
+            >
+              <span className="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-[#e8453c] text-white shadow-[0_2px_0_0_#8f1f18]">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-black leading-tight">Fix-It</span>
+                <span className="block text-[11px] font-semibold text-white/55 truncate">Train what you missed last workout</span>
+              </span>
+              <svg className="shrink-0 text-white/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </Link>
+          </div>
+        )}
+
         {/* ---- canvas apron trim ---- */}
         <div
           className="relative z-10 mt-7 mx-5 h-2 rounded-full overflow-hidden opacity-60"

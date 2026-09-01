@@ -19,6 +19,60 @@ const MAX_SESSION_PUNCHES = 10000;
 // clear this.
 const MAX_BEST_ROUND_POINTS = 1500;
 
+// Shape stored in workout_sessions.missed_puzzles (JSONB). Whitelisted so a
+// client can't stuff arbitrary payloads into the row.
+interface StoredMissedPuzzle {
+  id: string | null;
+  puzzleId: string | null;
+  fen: string;
+  moves: string[];
+  rating: number;
+  themes: string[];
+  playedMove: string | null;
+  failedAtMove: number | null;
+  timeMs: number | null;
+}
+const MAX_MISSED_THEMES = 20;
+const MAX_PLAYED_MOVE_LEN = 8;
+const MAX_MISS_TIME_MS = 300_000;
+
+function sanitizeMissedPuzzle(raw: unknown): StoredMissedPuzzle | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const o = raw as Record<string, unknown>;
+  const str = (v: unknown, max = 64): string | null =>
+    typeof v === 'string' && v.length > 0 ? v.slice(0, max) : null;
+  const fen = str(o.fen, 100);
+  const moves = Array.isArray(o.moves)
+    ? o.moves.filter((m): m is string => typeof m === 'string').slice(0, 40)
+    : typeof o.moves === 'string'
+      ? o.moves.split(' ').filter(Boolean).slice(0, 40)
+      : [];
+  if (!fen || moves.length === 0) return null;
+  const rating = typeof o.rating === 'number' && Number.isFinite(o.rating) ? Math.trunc(o.rating) : 0;
+  const themes = Array.isArray(o.themes)
+    ? o.themes.filter((t): t is string => typeof t === 'string' && t.length > 0).map((t) => t.slice(0, 40)).slice(0, MAX_MISSED_THEMES)
+    : [];
+  const failedAtMove =
+    typeof o.failedAtMove === 'number' && Number.isFinite(o.failedAtMove)
+      ? Math.max(0, Math.trunc(o.failedAtMove))
+      : null;
+  const timeMs =
+    typeof o.timeMs === 'number' && Number.isFinite(o.timeMs)
+      ? Math.min(MAX_MISS_TIME_MS, Math.max(0, Math.trunc(o.timeMs)))
+      : null;
+  return {
+    id: str(o.id),
+    puzzleId: str(o.puzzleId),
+    fen,
+    moves,
+    rating,
+    themes,
+    playedMove: str(o.playedMove, MAX_PLAYED_MOVE_LEN),
+    failedAtMove,
+    timeMs,
+  };
+}
+
 /**
  * POST /api/workout/finish
  *
@@ -91,8 +145,12 @@ export async function POST(request: NextRequest) {
   );
   // Best single-round score (scoring v2) — feeds the daily leaderboard.
   const bestRoundPoints = Math.min(Math.max(0, toInt(body.bestRoundPoints)), MAX_BEST_ROUND_POINTS);
+  // missed_puzzles is client-supplied JSONB — store only a whitelisted shape.
   const missedPuzzles = Array.isArray(body.missedPuzzles)
-    ? body.missedPuzzles.slice(0, MAX_MISSED)
+    ? body.missedPuzzles.slice(0, MAX_MISSED).flatMap((item) => {
+        const m = sanitizeMissedPuzzle(item);
+        return m ? [m] : [];
+      })
     : [];
 
   // Every puzzle shown this session (solved + missed). Recorded so future

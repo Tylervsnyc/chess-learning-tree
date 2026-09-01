@@ -139,12 +139,12 @@ export interface ThemeSkill {
 export async function getSkillProfile(
   client: SupabaseClient,
   userId: string,
-): Promise<{ themes: ThemeSkill[]; weakest: ThemeSkill[]; strongest: ThemeSkill[] }> {
+): Promise<{ themes: ThemeSkill[]; weakest: ThemeSkill[]; strongest: ThemeSkill[]; userLevel: number | null }> {
   const { data, error } = await client
     .from('user_skill')
     .select('theme, attempts, correct, miss_rating_sum, solve_rating_sum, solve_time_ms, last_seen')
     .eq('user_id', userId);
-  if (error || !data) return { themes: [], weakest: [], strongest: [] };
+  if (error || !data) return { themes: [], weakest: [], strongest: [], userLevel: null };
   const rows = data as SkillRow[];
 
   const totalCorrect = rows.reduce((s, r) => s + r.correct, 0);
@@ -169,5 +169,6 @@ export async function getSkillProfile(
   const signal = themes.filter((t) => t.attempts >= MIN_ATTEMPTS_FOR_SIGNAL);
   const weakest = [...signal].sort((a, b) => b.weakness - a.weakness).filter((t) => t.weakness > 0).slice(0, 3);
   const strongest = [...signal].sort((a, b) => b.accuracy - a.accuracy).slice(0, 3);
-  return { themes, weakest, strongest };
+  // userLevel = avg rating of solved puzzles; null when nothing solved yet.
+  return { themes, weakest, strongest, userLevel: totalCorrect > 0 ? Math.round(userLevel) : null };
 }

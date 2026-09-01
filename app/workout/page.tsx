@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { useRouter, useSearchParams } from 'next/navigation';
 import nextDynamic from 'next/dynamic';
 import { Chess, type Square } from 'chess.js';
-import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/WorkoutPuzzle';
+import { WorkoutPuzzle, type WorkoutPuzzleData, type WrongMoveDetail } from '@/components/workout/WorkoutPuzzle';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
@@ -1647,16 +1647,19 @@ function WorkoutPageInner() {
     setPuzzlePos((p) => p + 1);
   }, [currentPuzzle, highWaterElo, firedUp, segIndex, recordResult]);
 
-  const handleWrong = useCallback(() => {
+  const handleWrong = useCallback((detail?: WrongMoveDetail) => {
     const seenId = currentPuzzle?.puzzleId || currentPuzzle?.id;
     if (seenId) seenIdsRef.current.push(seenId);
     pinnedIdRef.current = null; // answered — free the board for the next pick
+    // Same clock recordResult uses — read it BEFORE recordResult resets it.
+    const timeMs = puzzleShownAtRef.current ? Date.now() - puzzleShownAtRef.current : 0;
     recordResult(false);
     // Wrong = 0 points; the cost is losing the combo back to ×1.
     comboRef.current = 0;
     setCombo(0);
     setWrong((w) => w + 1);
-    // Stash the missed puzzle (replay data) so the user can revisit it later.
+    // Stash the missed puzzle (replay data) so the user can revisit it later,
+    // plus what was actually played so the Fix-It set can target the miss.
     if (currentPuzzle) {
       missedRef.current.push({
         puzzleId: currentPuzzle.puzzleId,
@@ -1664,6 +1667,10 @@ function WorkoutPageInner() {
         fen: currentPuzzle.fen,
         moves: currentPuzzle.moves,
         rating: currentPuzzle.rating,
+        themes: currentPuzzle.themes,
+        playedMove: detail?.playedUci ?? null,
+        failedAtMove: detail?.failedAtIndex ?? null,
+        timeMs,
       });
     }
     // Ease off: drop the target so the next puzzle is easier, not harder.
@@ -2014,6 +2021,12 @@ function WorkoutPageInner() {
           onDone={() => router.push('/profile')}
           sharing={sharing}
           onShare={finishResult.toughestSolved ? shareToughest : undefined}
+          onReview={
+            FEATURE_FLAGS.WORKOUT_FIXIT && finishResult.wrong > 0
+              ? () => router.push('/workout/fixit')
+              : undefined
+          }
+          reviewLabel="Train your misses"
           nextMedal={finishResult.nextMedal}
         />
       </div>

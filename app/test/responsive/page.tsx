@@ -40,6 +40,7 @@ const ROUTES: Route[] = [
   { label: 'Lesson', url: '/lesson/1.1', group: 'Primary' },
   { label: 'Chess Box (Today)', url: '/box?boxapp=frame', group: 'Primary', note: 'native-shell home; ?boxapp=1 shows the tab bar' },
   { label: 'Workout', url: '/workout', group: 'Primary' },
+  { label: 'Fix-It workout', url: '/workout/fixit', group: 'Primary', note: 'untimed remedial set built from the last workout; needs sign-in + one workout' },
   { label: 'Bout vs Rookie', url: '/box/bout', group: 'Primary', note: 'Bout mode pre-fight; the bout owns the viewport (no tab bar)' },
   { label: 'Box Play (gym)', url: '/play?boxapp=frame', group: 'Primary', note: 'Play setup inside the shell — GymBackdrop + hittable bags' },
   { label: 'Box onboarding', url: '/box/onboarding?boxapp=frame', group: 'Primary', note: 'first-launch flow; no tab bar' },
