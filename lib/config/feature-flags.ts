@@ -29,6 +29,8 @@ export const FEATURE_FLAGS = {
   SKILL_PROFILE: true,
   /** Fix-It workout (learn-from-mistakes layer 3): /workout/fixit + /api/workout/fixit, 10 remedial puzzles built from the last workout's misses + skill profile. */
   WORKOUT_FIXIT: true,
+  /** Post-workout report: /workout/report/[sessionId] — step through each miss on a board (red = yours, green = the answer, line auto-plays, Rookie explains), then the common pattern, then "why these 10" → Fix-It. */
+  WORKOUT_REPORT: true,
   /**
    * CHE-390 — webview-safe auth. Inside social in-app browsers (Instagram,
    * Facebook, TikTok), Google blocks OAuth outright (`disallowed_useragent`) —

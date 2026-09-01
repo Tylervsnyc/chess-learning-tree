@@ -39,6 +39,8 @@ const FILE_THEMES = new Set([
 export interface FixitSlot {
   /** Short, plain-words reason shown in the UI ("Forks that finish"). */
   label: string;
+  /** Why this slot exists for THIS user, tied to their misses/profile. */
+  reason: string;
   /** File theme to draw from (must be in FILE_THEMES). */
   theme: string;
   /** Extra tags the puzzle must ALSO carry (e.g. 'long'). Empty = any. */
@@ -52,7 +54,7 @@ export interface FixitInput {
   /** From getSkillProfile(); may be empty for a new user. */
   weakest: ThemeSkill[];
   /** Last workout's missed puzzles (themes optional — older rows lack them). */
-  lastMisses: { themes?: string[]; rating?: number }[];
+  lastMisses: { puzzleId?: string; themes?: string[]; rating?: number }[];
   /** Rating the user reliably solves at. Falls back to the misses' median. */
   userLevel?: number;
 }
@@ -90,6 +92,20 @@ export function buildFixitRecipe(input: FixitInput): FixitSlot[] {
 
   const weak = input.weakest.map((w) => w.theme).filter(trainable);
   const fromMisses = missThemes(input.lastMisses);
+  const stat = (theme: string) => input.weakest.find((w) => w.theme === theme);
+  const missIds = (theme: string) =>
+    input.lastMisses.filter((m) => m.puzzleId && (m.themes ?? []).includes(theme)).map((m) => m.puzzleId as string);
+  const pct = (t: ThemeSkill) => `${Math.round(t.accuracy * 100)}% over ${t.attempts} tries`;
+  /** "you're 77% on forks over 39 tries" / "NJO1s and HmXaY broke on forks". */
+  const why = (theme: string): string => {
+    const parts: string[] = [];
+    const ids = missIds(theme);
+    if (ids.length) parts.push(`${ids.join(' and ')} broke on ${pretty(theme).toLowerCase()}`);
+    const st = stat(theme);
+    if (st) parts.push(`you're ${pct(st)}`);
+    return parts.join(', and ') || `${pretty(theme).toLowerCase()} showed up in what you missed`;
+  };
+  const longMisses = input.lastMisses.filter((m) => (m.themes ?? []).some((t) => t === 'long' || t === 'veryLong')).length;
   // Ordered pool of target themes: skill-profile weaknesses first (they have
   // sample size), then whatever the last workout exposed, then a safe default.
   const targets = Array.from(new Set([...weak, ...fromMisses, 'fork', 'pin', 'skewer']));
@@ -102,6 +118,7 @@ export function buildFixitRecipe(input: FixitInput): FixitSlot[] {
   return [
     {
       label: 'Warm-up: find the forcing move',
+      reason: 'Two short mates to get you asking "what does this check force?" before anything else.',
       theme: 'mateIn2',
       requireAny: ['short'],
       minRating: clamp(level - 250),
@@ -110,6 +127,7 @@ export function buildFixitRecipe(input: FixitInput): FixitSlot[] {
     },
     {
       label: `${pretty(core)} that finish the job`,
+      reason: `${why(core).charAt(0).toUpperCase()}${why(core).slice(1)}. These are long lines${longMisses ? ` — ${longMisses} of your misses were 3+ moves deep` : ''}.`,
       theme: core,
       requireAny: ['long', 'veryLong'],
       minRating: clamp(level - 100),
@@ -118,6 +136,7 @@ export function buildFixitRecipe(input: FixitInput): FixitSlot[] {
     },
     {
       label: `${pretty(bridge)} from your last workout`,
+      reason: `${why(bridge).charAt(0).toUpperCase()}${why(bridge).slice(1)}.`,
       theme: bridge,
       minRating: clamp(level - 50),
       maxRating: clamp(level + 200),
@@ -125,6 +144,9 @@ export function buildFixitRecipe(input: FixitInput): FixitSlot[] {
     },
     {
       label: 'Keep what you won: the quiet move',
+      reason: stat('defensiveMove')
+        ? `You're ${pct(stat('defensiveMove')!)} on defensive moves — the puzzle isn't over when you win the piece.`
+        : "The combination isn't over when you win material — one quiet move keeps it.",
       theme: 'defensiveMove',
       minRating: clamp(level - 150),
       maxRating: clamp(level + 100),
@@ -132,6 +154,7 @@ export function buildFixitRecipe(input: FixitInput): FixitSlot[] {
     },
     {
       label: `Closer: ${pretty(closer)}, full length`,
+      reason: `One ${pretty(closer).toLowerCase().replace(/s$/, '')} at the top of your band (${clamp(level + 50)}–${clamp(level + 250)}), calculated to the end.`,
       theme: closer,
       requireAny: ['long', 'veryLong'],
       minRating: clamp(level + 50),
@@ -166,6 +189,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 export interface FixitPick extends CleanPuzzle {
   slotLabel: string;
+  slotReason: string;
 }
 
 /**
@@ -205,7 +229,7 @@ export function fillFixitRecipe(slots: FixitSlot[], exclude: Set<string>): Fixit
       taken.add(cand.puzzleId);
       picks.push(cand);
     }
-    out.push(...picks.map((p) => ({ ...p, slotLabel: slot.label })));
+    out.push(...picks.map((p) => ({ ...p, slotLabel: slot.label, slotReason: slot.reason })));
   }
   return out.slice(0, FIXIT_SIZE);
 }

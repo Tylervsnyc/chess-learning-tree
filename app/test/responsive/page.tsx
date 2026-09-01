@@ -41,6 +41,7 @@ const ROUTES: Route[] = [
   { label: 'Chess Box (Today)', url: '/box?boxapp=frame', group: 'Primary', note: 'native-shell home; ?boxapp=1 shows the tab bar' },
   { label: 'Workout', url: '/workout', group: 'Primary' },
   { label: 'Fix-It workout', url: '/workout/fixit', group: 'Primary', note: 'untimed remedial set built from the last workout; needs sign-in + one workout' },
+  { label: 'Workout report', url: '/workout/report/09071a4e-4470-4d92-92c2-6cf5ece81865', group: 'Primary', note: 'post-workout miss report (red = yours, green = answer); needs sign-in as the session owner' },
   { label: 'Bout vs Rookie', url: '/box/bout', group: 'Primary', note: 'Bout mode pre-fight; the bout owns the viewport (no tab bar)' },
   { label: 'Box Play (gym)', url: '/play?boxapp=frame', group: 'Primary', note: 'Play setup inside the shell — GymBackdrop + hittable bags' },
   { label: 'Box onboarding', url: '/box/onboarding?boxapp=frame', group: 'Primary', note: 'first-launch flow; no tab bar' },

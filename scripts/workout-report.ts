@@ -30,6 +30,7 @@ import { getSkillProfile, type ThemeSkill } from '@/lib/skill-profile';
 import { buildFixitRecipe, fillFixitRecipe, type FixitPick } from '@/lib/workout/fixit-recipe';
 import { loadPuzzleFile, listAvailableThemes } from '@/lib/puzzle-file-loader';
 import { levelForRating } from '@/lib/workout/fixit-recipe';
+import { ROOKIE_REPORT_SYSTEM, ROOKIE_REPORT_MODEL } from '@/lib/workout/report-voice';
 
 // ─── args ────────────────────────────────────────────────────────────────────
 
@@ -233,8 +234,6 @@ function lookupThemes(id: string, rating?: number): string[] {
 
 // ─── Claude ──────────────────────────────────────────────────────────────────
 
-const ROOKIE_SYSTEM = `You are Rookie, the chess coach in The Chess Path. You are unreasonably invested in this player's chess. Voice: warm, short, specific, never cruel, no emojis, no exclamation marks. Max 2 sentences per item. Talk TO the player ("you"), about the move, never about your own feelings. Chess terms are fine; the player solves 1500-1900 puzzles.`;
-
 interface Commentary { perMiss: string[]; diagnosis: string; fixitIntro: string }
 
 async function askRookie(misses: MissAnalysis[], profile: ThemeSkill[], trend: string): Promise<Commentary> {
@@ -258,9 +257,9 @@ async function askRookie(misses: MissAnalysis[], profile: ThemeSkill[], trend: s
   const prompt = `Today's misses:\n${missText}\n\nTheme accuracy (worst first): ${weak}\nRecent trend: ${trend}\n\nReturn JSON only: {"perMiss": [one line per miss, in order — say what the tempting/played move was TRYING to do and why the answer beats it], "diagnosis": "one sentence naming the single habit behind these misses", "fixitIntro": "one sentence introducing the 10-puzzle Fix-It set built to train that habit"}`;
 
   const res = await client.messages.create({
-    model: 'claude-opus-5',
+    model: ROOKIE_REPORT_MODEL,
     max_tokens: 2000,
-    system: ROOKIE_SYSTEM,
+    system: ROOKIE_REPORT_SYSTEM,
     output_config: { effort: 'medium' },
     messages: [{ role: 'user', content: prompt }],
   });
@@ -339,7 +338,7 @@ function renderReport(
   if (c.fixitIntro) L.push(c.fixitIntro);
   let lastLabel = '';
   fixit.forEach((p, i) => {
-    if (p.slotLabel !== lastLabel) { L.push(`  ${p.slotLabel}`); lastLabel = p.slotLabel; }
+    if (p.slotLabel !== lastLabel) { L.push(`  ${p.slotLabel}`); L.push(`    (${p.slotReason})`); lastLabel = p.slotLabel; }
     L.push(`   ${String(i + 1).padStart(2)}. ${p.puzzleId} (${p.rating}) https://lichess.org/training/${p.puzzleId}`);
   });
   L.push('');
@@ -400,7 +399,7 @@ async function postToSlack(text: string) {
   for (const m of misses) exclude.add(m.puzzleId);
   const slots = buildFixitRecipe({
     weakest,
-    lastMisses: misses.map((m) => ({ themes: m.themes, rating: m.rating })),
+    lastMisses: misses.map((m) => ({ puzzleId: m.puzzleId, themes: m.themes, rating: m.rating })),
     userLevel: userLevel ?? undefined,
   });
   const fixit = fillFixitRecipe(slots, exclude);

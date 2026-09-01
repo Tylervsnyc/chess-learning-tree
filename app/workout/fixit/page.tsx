@@ -43,6 +43,8 @@ const ICONS = {
 
 interface FixitPuzzle extends WorkoutPuzzleData {
   slotLabel: string;
+  /** Why this slot is in the set ("You missed 2 forks today") — from /api/workout/fixit. */
+  slotReason?: string;
 }
 
 interface FixitResponse {
@@ -276,6 +278,9 @@ export default function WorkoutFixitPage() {
         <div className="max-w-md md:max-w-2xl mx-auto w-full px-4 py-5 flex flex-col gap-4">
           <div className="text-center">
             <p className="text-base font-black text-chess-text">{current?.slotLabel}</p>
+            {current?.slotReason && (
+              <p className="text-xs text-chess-text-muted">{current.slotReason}</p>
+            )}
             <p className="text-xs font-semibold text-chess-text-muted">
               Find the best move — no timer, no score.
             </p>

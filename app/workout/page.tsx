@@ -425,6 +425,8 @@ interface FinishResult {
   achievements: AchievementUnlock[];
   /** Closest in-progress medal — one teaser line on the result card. */
   nextMedal: NextMedal | null;
+  /** The saved workout_sessions row — drives /workout/report/[id]. null when unsaved (401/offline). */
+  sessionId: string | null;
 }
 
 export default function WorkoutPage() {
@@ -1031,6 +1033,7 @@ function WorkoutPageInner() {
     let needsSignIn = false;
     let achievements: AchievementUnlock[] = [];
     let nextMedal: NextMedal | null = null;
+    let sessionId: string | null = null;
     const rookieLine = pickWorkoutFinishLine();
     const finishPayload = {
       points: sessionPoints,
@@ -1071,6 +1074,7 @@ function WorkoutPageInner() {
         }
         if (Array.isArray(data?.newAchievements)) achievements = data.newAchievements;
         if (data?.nextMedal && typeof data.nextMedal.name === 'string') nextMedal = data.nextMedal;
+        if (typeof data?.sessionId === 'string') sessionId = data.sessionId;
       }
     } catch {
       // Network/auth failure — still show the session summary.
@@ -1110,6 +1114,7 @@ function WorkoutPageInner() {
       needsSignIn,
       achievements,
       nextMedal,
+      sessionId,
     });
     setPhase('done');
   }, [score, right, wrong, minutes, isFight, freezeFight, bankFightSegment]);
@@ -1366,6 +1371,7 @@ function WorkoutPageInner() {
         needsSignIn: false,
         achievements: [],
         nextMedal: { id: 'training-thousand-fists', name: 'Thousand Fists', icon: '👊', progress: 412, target: 1000 },
+        sessionId: null,
       });
       setPhase('done');
       return;
@@ -2022,11 +2028,17 @@ function WorkoutPageInner() {
           sharing={sharing}
           onShare={finishResult.toughestSolved ? shareToughest : undefined}
           onReview={
-            FEATURE_FLAGS.WORKOUT_FIXIT && finishResult.wrong > 0
-              ? () => router.push('/workout/fixit')
-              : undefined
+            FEATURE_FLAGS.WORKOUT_REPORT && finishResult.sessionId && finishResult.wrong > 0
+              ? () => router.push(`/workout/report/${finishResult.sessionId}`)
+              : FEATURE_FLAGS.WORKOUT_FIXIT && finishResult.wrong > 0
+                ? () => router.push('/workout/fixit')
+                : undefined
           }
-          reviewLabel="Train your misses"
+          reviewLabel={
+            FEATURE_FLAGS.WORKOUT_REPORT && finishResult.sessionId && finishResult.wrong > 0
+              ? 'See your report'
+              : 'Train your misses'
+          }
           nextMedal={finishResult.nextMedal}
         />
       </div>

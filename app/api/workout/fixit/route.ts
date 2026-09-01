@@ -104,6 +104,7 @@ export async function GET() {
   const slots = buildFixitRecipe({
     weakest,
     lastMisses: misses.map((m) => ({
+      puzzleId: typeof m.puzzleId === 'string' ? m.puzzleId : typeof m.id === 'string' ? m.id : undefined,
       themes: Array.isArray(m.themes) ? m.themes : undefined,
       rating: typeof m.rating === 'number' ? m.rating : undefined,
     })),
@@ -112,6 +113,7 @@ export async function GET() {
   const picks = fillFixitRecipe(slots, exclude);
 
   const targets = Array.from(new Set(picks.map((p) => p.slotLabel)));
+  const slotList = slots.map((s) => ({ label: s.label, reason: s.reason, count: s.count }));
 
   const puzzles = picks.map((p) => ({
     id: p.puzzleId,
@@ -123,7 +125,8 @@ export async function GET() {
     theme: p.theme,
     url: `https://lichess.org/training/${p.puzzleId}`,
     slotLabel: p.slotLabel,
+    slotReason: p.slotReason,
   }));
 
-  return NextResponse.json({ sessionId: session.id, targets, puzzles });
+  return NextResponse.json({ sessionId: session.id, targets, slots: slotList, puzzles });
 }

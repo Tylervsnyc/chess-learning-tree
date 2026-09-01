@@ -1,7 +1,7 @@
 {
   "sessionId": "09071a4e-4470-4d92-92c2-6cf5ece81865",
   "userId": "3990eeb1-6c54-49b2-a0a7-07a7af41b5b6",
-  "generatedAt": "2026-09-01T12:17:47.804Z",
+  "generatedAt": "2026-09-01T14:10:01.684Z",
   "misses": [
     {
       "puzzleId": "GjTnf",
@@ -420,63 +420,62 @@
   ],
   "commentary": {
     "perMiss": [
-      "Rxf7 grabs a pawn and hits the king, but Rd7+ ignores material and herds the king to e8 where Ra8 is mate — count the escape squares before you count the pawns.",
-      "a4 and Qxc5 are safe, useful-looking moves, but Ne4 offers the knight to deflect the queen off the f6 defender, and after Qxd5 Nxf6+ forks king and queen back with interest.",
-      "Bg6+ checks on the same diagonal but hits nothing behind it; Bg8+ drags the king to e7 so the bishop can swing to b3 and win the rook, and only then does the quiet Rd3 hold everything together.",
-      "Check the checks first: in each of these the forcing move looked like it gave something away."
+      "Rxf7 grabs a pawn and looks active, but it lets the king slip while Rd7+ forces Ke8 into a mating net so Ra8 finishes it a move faster than any material grab.",
+      "a4 and Qxc5 play for slow queenside pressure, but Ne4 exploits the pin on d5 to fork material and force a won endgame right now.",
+      "Bg6+ and Rb8 chase checks or activity without solving the real problem, while Bg8+ wins the tempo needed to scoop the b3 pawn and set up the skewer with Rd3."
     ],
-    "diagnosis": "You reach for the safe capture or generic check instead of calculating the forcing line where you give material back to reach the point.",
-    "fixitIntro": "Here are 10 puzzles where the winning idea starts with an offer or a check that looks wrong until you see move two."
+    "diagnosis": "You're drawn to the move that grabs material or gives an immediate check, instead of scanning first for the forcing line that actually nets the point.",
+    "fixitIntro": "This 10-puzzle set puts a loud, tempting first move next to a quieter forcing shot, training you to check the forcing line before you grab."
   },
   "fixit": [
     {
-      "puzzleId": "bGHGb",
-      "rating": 1533,
+      "puzzleId": "5YRhV",
+      "rating": 1451,
       "slot": "Warm-up: find the forcing move"
     },
     {
-      "puzzleId": "2Du38",
-      "rating": 1430,
+      "puzzleId": "Fg3Uy",
+      "rating": 1576,
       "slot": "Warm-up: find the forcing move"
     },
     {
-      "puzzleId": "UftBZ",
-      "rating": 1608,
+      "puzzleId": "gIbuy",
+      "rating": 1572,
       "slot": "Forks that finish the job"
     },
     {
-      "puzzleId": "DV5IF",
-      "rating": 1634,
+      "puzzleId": "RzuBm",
+      "rating": 1644,
       "slot": "Forks that finish the job"
     },
     {
-      "puzzleId": "QsyT4",
-      "rating": 1697,
+      "puzzleId": "QEkS6",
+      "rating": 1620,
       "slot": "Forks that finish the job"
     },
     {
-      "puzzleId": "KWkjh",
-      "rating": 1615,
+      "puzzleId": "Xv30O",
+      "rating": 1614,
       "slot": "Skewers from your last workout"
     },
     {
-      "puzzleId": "HEVn2",
-      "rating": 1645,
+      "puzzleId": "13aWd",
+      "rating": 1835,
       "slot": "Skewers from your last workout"
     },
     {
-      "puzzleId": "4lQsA",
-      "rating": 1528,
+      "puzzleId": "xtylT",
+      "rating": 1705,
       "slot": "Keep what you won: the quiet move"
     },
     {
-      "puzzleId": "3YoAI",
+      "puzzleId": "VJJjX",
       "rating": 1666,
       "slot": "Keep what you won: the quiet move"
     },
     {
-      "puzzleId": "gfMe1",
-      "rating": 1877,
+      "puzzleId": "01H66",
+      "rating": 1817,
       "slot": "Closer: Pins, full length"
     }
   ]

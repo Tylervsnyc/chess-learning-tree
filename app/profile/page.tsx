@@ -10,6 +10,7 @@ import { ActionButton } from '@/components/ui/ActionButton';
 import { PatronModal } from '@/components/subscription/PatronModal';
 import { useIsNativeApp } from '@/lib/native-app';
 import { IS_CHESSPATH_APP } from '@/lib/config/offline';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
 import { StreakHero } from '@/components/shared/StreakHero';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
@@ -188,12 +189,22 @@ function SessionRow({ session }: { session: WorkoutSession }) {
 
   if (reviewable) {
     return (
-      <Link
-        href={`/workout/review/${session.id}`}
-        className="block active:bg-chess-page transition-colors"
-      >
-        {inner}
-      </Link>
+      <div>
+        <Link
+          href={`/workout/review/${session.id}`}
+          className="block active:bg-chess-page transition-colors"
+        >
+          {inner}
+        </Link>
+        {FEATURE_FLAGS.WORKOUT_REPORT && (
+          <Link
+            href={`/workout/report/${session.id}`}
+            className="flex items-center min-h-[44px] px-4 -mt-1 pb-2 text-xs font-bold text-chess-blue hover:text-chess-blue-dark"
+          >
+            Report — see what you played vs. the answer →
+          </Link>
+        )}
+      </div>
     );
   }
   return <div>{inner}</div>;
