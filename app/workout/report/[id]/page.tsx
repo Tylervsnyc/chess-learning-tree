@@ -78,6 +78,9 @@ export default function WorkoutReportPage() {
   const id = params?.id ?? null;
 
   const [status, setStatus] = useState<Status>('loading');
+  // Why we landed on the empty screen — shown in faint text so a report of
+  // "nothing to report" is diagnosable from a screenshot.
+  const [reason, setReason] = useState<string>('');
   const [session, setSession] = useState<SessionReview | null>(null);
   const [screen, setScreen] = useState<Screen>({ kind: 'miss', index: 0 });
 
@@ -87,6 +90,7 @@ export default function WorkoutReportPage() {
 
   useEffect(() => {
     if (!id) {
+      setReason('no session id in the URL');
       setStatus('error');
       return;
     }
@@ -95,10 +99,16 @@ export default function WorkoutReportPage() {
       .then(async (r) => {
         if (r.status === 401) return 'signin' as const;
         if (r.status === 404) return 'notfound' as const;
-        if (!r.ok) return null;
+        if (!r.ok) {
+          setReason(`session API returned ${r.status}`);
+          return null;
+        }
         return (await r.json()) as SessionReview;
       })
-      .catch(() => null)
+      .catch((e: unknown) => {
+        setReason(`session fetch failed: ${e instanceof Error ? e.message : String(e)}`);
+        return null;
+      })
       .then((data) => {
         if (cancelled) return;
         if (data === 'signin') {
@@ -111,6 +121,7 @@ export default function WorkoutReportPage() {
         }
         const missed = Array.isArray(data?.missedPuzzles) ? data.missedPuzzles : [];
         if (!data || missed.length === 0) {
+          if (data) setReason('session has no missed puzzles');
           setStatus('error');
           return;
         }
@@ -215,6 +226,11 @@ export default function WorkoutReportPage() {
           <h1 className="text-2xl font-black text-chess-text">
             {signin ? 'Sign in to see your report' : notfound ? 'Not your workout' : 'Nothing to report'}
           </h1>
+          {!signin && !notfound && (
+            <p className="text-[11px] text-chess-text-faint">
+              {reason || (report.status === 'error' ? 'could not rebuild the missed positions' : '')}
+            </p>
+          )}
           <p className="text-sm text-chess-text-muted max-w-xs">
             {signin
               ? 'Your report is built from your own workout, so we need to know who you are.'

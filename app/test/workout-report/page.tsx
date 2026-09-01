@@ -11,9 +11,9 @@ import { MissReplay } from '@/components/workout/MissReplay';
 import { useMissAnalysis } from '@/hooks/useMissAnalysis';
 
 const MISSES = [
-  { id: 'GjTnf', puzzleId: 'GjTnf', fen: '3k4/R4p2/4p3/2Np4/3P3p/1KP4q/4p1r1/R7 b - - 3 41', moves: ['g2g3', 'a7d7', 'd8e8', 'a1a8'], rating: 1530, themes: ['endgame', 'mate', 'mateIn2', 'short'], playedMove: 'a7f7', failedAtMove: 0 },
-  { id: 'NJO1s', puzzleId: 'NJO1s', fen: '3r2k1/2q2p2/3p1bp1/p2Q3p/1pP5/1P1R3P/P2N2P1/7K b - - 4 31', moves: ['c7c5', 'd2e4', 'c5d5', 'e4f6', 'g8g7', 'f6d5'], rating: 1867, themes: ['advantage', 'endgame', 'fork', 'long', 'sacrifice'], playedMove: 'd5c5', failedAtMove: 0 },
-  { id: 'HmXaY', puzzleId: 'HmXaY', fen: '3R1k2/7B/1p3p2/pPp2P2/8/1b6/r4P1P/6K1 b - - 7 41', moves: ['f8f7', 'h7g8', 'f7e7', 'g8b3', 'a2b2', 'd8d3'], rating: 1844, themes: ['advantage', 'defensiveMove', 'endgame', 'long', 'master', 'skewer'], playedMove: null, failedAtMove: null },
+  { id: 'GjTnf', fen: '3k4/R4p2/4p3/2Np4/3P3p/1KP4q/4p1r1/R7 b - - 3 41', moves: ['g2g3', 'a7d7', 'd8e8', 'a1a8'], rating: 1530, puzzleId: 'GjTnf' },
+  { id: 'NJO1s', fen: '3r2k1/2q2p2/3p1bp1/p2Q3p/1pP5/1P1R3P/P2N2P1/7K b - - 4 31', moves: ['c7c5', 'd2e4', 'c5d5', 'e4f6', 'g8g7', 'f6d5'], rating: 1867, puzzleId: 'NJO1s' },
+  { id: 'HmXaY', fen: '3R1k2/7B/1p3p2/pPp2P2/8/1b6/r4P1P/6K1 b - - 7 41', moves: ['f8f7', 'h7g8', 'f7e7', 'g8b3', 'a2b2', 'd8d3'], rating: 1844, puzzleId: 'HmXaY' },
 ];
 
 export default function TestWorkoutReport() {
