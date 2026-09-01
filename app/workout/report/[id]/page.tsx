@@ -58,7 +58,7 @@ interface FixitSlot {
   count: number;
 }
 
-type Status = 'loading' | 'signin' | 'error' | 'ready';
+type Status = 'loading' | 'signin' | 'notfound' | 'error' | 'ready';
 type Screen = { kind: 'miss'; index: number } | { kind: 'pattern' } | { kind: 'why' };
 
 /** "hangingPiece" → "Hanging piece", "mateIn2" → "Mate in 2". */
@@ -94,6 +94,7 @@ export default function WorkoutReportPage() {
     fetch(`/api/workout/sessions/${id}`, { cache: 'no-store' })
       .then(async (r) => {
         if (r.status === 401) return 'signin' as const;
+        if (r.status === 404) return 'notfound' as const;
         if (!r.ok) return null;
         return (await r.json()) as SessionReview;
       })
@@ -102,6 +103,10 @@ export default function WorkoutReportPage() {
         if (cancelled) return;
         if (data === 'signin') {
           setStatus('signin');
+          return;
+        }
+        if (data === 'notfound') {
+          setStatus('notfound');
           return;
         }
         const missed = Array.isArray(data?.missedPuzzles) ? data.missedPuzzles : [];
@@ -193,19 +198,29 @@ export default function WorkoutReportPage() {
   }
 
   // ── Sign in / nothing to report ──────────────────────────────────────────────
-  if (status === 'signin' || status === 'error' || (status === 'ready' && report.status === 'error')) {
+  if (
+    status === 'signin' ||
+    status === 'notfound' ||
+    status === 'error' ||
+    (status === 'ready' && report.status === 'error' && analyses.length === 0)
+  ) {
     const signin = status === 'signin';
+    const notfound = status === 'notfound';
     return (
       <div className="h-full overflow-auto bg-chess-page">
         <div className="max-w-md mx-auto w-full px-5 py-16 flex flex-col items-center text-center gap-5">
           <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${signin ? 'bg-chess-blue/15' : 'bg-chess-green/15'}`}>
             <Icon path={signin ? ICONS.chart : ICONS.check} className={`w-9 h-9 ${signin ? 'text-chess-blue' : 'text-chess-green'}`} />
           </div>
-          <h1 className="text-2xl font-black text-chess-text">{signin ? 'Sign in to see your report' : 'Nothing to report'}</h1>
+          <h1 className="text-2xl font-black text-chess-text">
+            {signin ? 'Sign in to see your report' : notfound ? 'Not your workout' : 'Nothing to report'}
+          </h1>
           <p className="text-sm text-chess-text-muted max-w-xs">
             {signin
               ? 'Your report is built from your own workout, so we need to know who you are.'
-              : 'There are no missed puzzles for this workout — nice and clean.'}
+              : notfound
+                ? "This workout was saved on a different account than the one you're signed in with. Switch accounts, or open the report from your profile."
+                : 'There are no missed puzzles for this workout — nice and clean.'}
           </p>
           {signin ? (
             <Link href={`/auth/login?redirect=/workout/report/${id ?? ''}`} className="w-full max-w-xs">
