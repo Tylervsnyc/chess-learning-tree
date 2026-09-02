@@ -16,7 +16,7 @@ import { isSoundEnabled, playBoxingBell, playButtonClick } from '@/lib/sounds';
  *
  * Step through each miss on a board (red = what you played, green = the
  * answer, the line auto-plays, Rookie explains), then "what these have in
- * common", then "why these 10" — which hands into /workout/fixit.
+ * common", then the Focused Workout button — which hands into /workout/fixit.
  *
  * Chess Boxing feature → ALWAYS the dark box shell (arena backdrop, white
  * text, one fixed window, no page scroll). Web users get the same screen.
@@ -97,14 +97,8 @@ interface SessionReview {
   createdAt: string;
 }
 
-interface FixitSlot {
-  label: string;
-  reason: string;
-  count: number;
-}
-
 type Status = 'loading' | 'signin' | 'notfound' | 'error' | 'ready';
-type Screen = { kind: 'miss'; index: number } | { kind: 'pattern' } | { kind: 'why' };
+type Screen = { kind: 'miss'; index: number } | { kind: 'pattern' };
 
 /** "hangingPiece" → "Hanging piece", "mateIn2" → "Mate in 2". */
 function prettyTheme(theme: string): string {
@@ -128,10 +122,6 @@ export default function WorkoutReportPage() {
   const [reason, setReason] = useState<string>('');
   const [session, setSession] = useState<SessionReview | null>(null);
   const [screen, setScreen] = useState<Screen>({ kind: 'miss', index: 0 });
-
-  // Fix-It slots for the "why these 10" screen — fetched lazily once needed.
-  const [slots, setSlots] = useState<FixitSlot[] | null>(null);
-  const [slotsStatus, setSlotsStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
 
   useEffect(() => {
     if (!id) {
@@ -184,48 +174,12 @@ export default function WorkoutReportPage() {
   const { analyses, lines, diagnosis, profile } = report;
   const lineLoading = report.status === 'engine' || report.status === 'rookie';
 
-  // "Why these 10" needs the Fix-It set — pull it when the user gets there.
-  useEffect(() => {
-    if (screen.kind !== 'why' || slotsStatus !== 'idle') return;
-    let cancelled = false;
-    setSlotsStatus('loading');
-    fetch('/api/workout/fixit', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((data) => {
-        if (cancelled) return;
-        if (!data) {
-          setSlotsStatus('error');
-          return;
-        }
-        if (Array.isArray(data.slots)) {
-          setSlots(
-            data.slots.map((s: Partial<FixitSlot>) => ({
-              label: String(s?.label ?? ''),
-              reason: String(s?.reason ?? ''),
-              count: typeof s?.count === 'number' ? s.count : 0,
-            })),
-          );
-        } else if (Array.isArray(data.targets)) {
-          // Race with the slots rollout — fall back to bare labels.
-          setSlots(data.targets.map((t: string) => ({ label: String(t), reason: '', count: 0 })));
-        } else {
-          setSlots([]);
-        }
-        setSlotsStatus('done');
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [screen.kind, slotsStatus]);
-
   const total = analyses.length;
 
   const next = useCallback(() => {
     sfx(playButtonClick);
     setScreen((s) => {
       if (s.kind === 'miss') return s.index + 1 < total ? { kind: 'miss', index: s.index + 1 } : { kind: 'pattern' };
-      if (s.kind === 'pattern') return { kind: 'why' };
       return s;
     });
   }, [total]);
@@ -234,8 +188,7 @@ export default function WorkoutReportPage() {
     sfx(playButtonClick);
     setScreen((s) => {
       if (s.kind === 'miss') return s.index > 0 ? { kind: 'miss', index: s.index - 1 } : s;
-      if (s.kind === 'pattern') return { kind: 'miss', index: Math.max(0, total - 1) };
-      return { kind: 'pattern' };
+      return { kind: 'miss', index: Math.max(0, total - 1) };
     });
   }, [total]);
 
@@ -322,7 +275,7 @@ export default function WorkoutReportPage() {
 
   // ── Header pieces ────────────────────────────────────────────────────────────
   const stepTitle =
-    screen.kind === 'miss' ? `Miss ${screen.index + 1} of ${total}` : screen.kind === 'pattern' ? 'The pattern' : 'Fix-It';
+    screen.kind === 'miss' ? `Miss ${screen.index + 1} of ${total}` : 'The pattern';
   const enginePct = Math.round(report.progress * 100);
 
   const dots = (
@@ -341,8 +294,6 @@ export default function WorkoutReportPage() {
       })}
       <span className="mx-1 text-white/40 text-xs">·</span>
       <span className={`text-[11px] font-black ${screen.kind === 'pattern' ? 'text-chess-blue' : 'text-white/45'}`}>Pattern</span>
-      <span className="mx-1 text-white/40 text-xs">·</span>
-      <span className={`text-[11px] font-black ${screen.kind === 'why' ? 'text-chess-blue' : 'text-white/45'}`}>Fix-It</span>
     </div>
   );
 
@@ -419,63 +370,13 @@ export default function WorkoutReportPage() {
           )}
         </div>
 
-        <div className="flex gap-3 shrink-0">
-          <button onClick={back} className={BTN_SECONDARY}>
-            Back
-          </button>
-          <button onClick={next} className={BTN_PRIMARY}>
-            Why these 10 →
-          </button>
-        </div>
-      </>
-    );
-  } else {
-    body = (
-      <>
-        <div className="flex-1 min-h-0 overflow-y-auto ring-scroll flex flex-col gap-4">
-          <div className="text-center">
-            <h1 className="text-2xl font-black text-white leading-tight">Why these 10</h1>
-            <p className="text-xs font-semibold text-white/60 mt-1">
-              Your Fix-It set is built from today’s misses and your blind spots.
-            </p>
-          </div>
-
-          {slotsStatus === 'loading' || slotsStatus === 'idle' ? (
-            <div className="space-y-2" aria-label="Building your set…">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className={`h-16 ${CARD} animate-pulse`} />
-              ))}
-            </div>
-          ) : slots && slots.length > 0 ? (
-            <div className="flex flex-col gap-2">
-              {slots.map((s, i) => (
-                <div key={`${s.label}-${i}`} className={`${CARD} px-4 py-3 flex items-start gap-3`}>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-white leading-tight">{s.label}</p>
-                    {s.reason && <p className="text-xs text-white/60 mt-0.5 leading-snug">{s.reason}</p>}
-                  </div>
-                  {s.count > 0 && (
-                    <span className="shrink-0 text-xs font-black text-chess-blue bg-chess-blue/20 rounded-full px-2 py-0.5 tabular-nums">
-                      ×{s.count}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-sm text-white/60">
-              Your set is ready — 10 puzzles aimed at what you missed today.
-            </p>
-          )}
-        </div>
-
         <div className="shrink-0 flex flex-col gap-2">
           <button
             onClick={startFixit}
             className="w-full min-h-[44px] rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-xl py-4 shadow-[0_4px_0_0_#3d8c01] active:translate-y-[2px] active:shadow-none transition inline-flex items-center justify-center gap-2"
           >
             <Icon path={ICONS.wrench} className="w-5 h-5" />
-            Start Fix-It
+            Focused Workout
           </button>
           <div className="flex items-center justify-between">
             <button onClick={back} className="min-h-[44px] px-2 text-sm font-bold text-white/60 hover:text-white underline underline-offset-2">
