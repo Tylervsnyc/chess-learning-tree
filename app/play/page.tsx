@@ -5,6 +5,7 @@ import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
 import { EvalGraph } from '@/components/shared/EvalGraph';
+import { ActionButton } from '@/components/ui/ActionButton';
 import { MusicMenu } from '@/components/shared/MusicMenu';
 import { startMusicIfEnabled, getMusicPrefs, setMusicTrack, subscribeMusic } from '@/lib/music';
 import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
@@ -2320,17 +2321,21 @@ export default function PlayRookiePage() {
   // Trying a line: the label keeps the latest moves visible (clipped from the
   // front, see branchLabelClipped). Bounded so a very long line stays cheap.
   const branchLabel = branch.lineSan.length > 80 ? branch.lineSan.slice(-80) : branch.lineSan;
+  // Big 3D step buttons (the Let's Play style) — the review's main controls
+  // should feel like the rest of the app, not a media player.
+  const stepBtn = 'flex-1 min-w-0 h-14 !text-2xl leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 select-none touch-manipulation';
   const reviewNav = (
-    <div className="flex items-center justify-center gap-2 py-1">
-      <button
-        type="button"
+    <div className="flex items-center justify-center gap-2 py-2">
+      <ActionButton
+        color="white"
+        size="md"
         aria-label="Previous move"
         onClick={reviewPrev}
         disabled={!inBranch && atStart}
-        className={reviewBtn}
+        className={stepBtn}
       >
-        &#9665;
-      </button>
+        &#9664;
+      </ActionButton>
       {inBranch ? (
         <span
           ref={branchLabelRef}
@@ -2345,7 +2350,7 @@ export default function PlayRookiePage() {
           </span>
         </span>
       ) : (
-      <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono inline-flex items-center justify-center gap-1">
+      <span className="text-sm text-chess-text font-bold min-w-[92px] text-center font-mono inline-flex items-center justify-center gap-1">
         {reviewMoveIndex < 0 ? 'Start' : (() => {
           const m = moveLogRef.current[reviewMoveIndex];
           if (!m) return 'Start';
@@ -2367,15 +2372,16 @@ export default function PlayRookiePage() {
         )}
       </span>
       )}
-      <button
-        type="button"
+      <ActionButton
+        color="green"
+        size="md"
         aria-label="Next move"
         onClick={reviewNext}
         disabled={inBranch ? branch.atTip : atEnd}
-        className={reviewBtn}
+        className={stepBtn}
       >
-        &#9655;
-      </button>
+        &#9654;
+      </ActionButton>
       {inBranch ? (
         <button
           type="button"
@@ -2796,7 +2802,7 @@ export default function PlayRookiePage() {
 
           {/* Chess board */}
           {/* In review the graph + controls + pinned Play Again need ~8rem more below the board */}
-          <div className={`w-full max-w-[min(92vw,440px)] mx-auto aspect-square ${isReview ? 'md:max-w-[min(40rem,calc(100dvh-30rem))]' : 'md:max-w-[min(40rem,calc(100dvh-19rem))]'}`}>
+          <div className={`w-full max-w-[min(92vw,440px)] mx-auto aspect-square ${isReview ? 'md:max-w-[min(40rem,calc(100dvh-26rem))]' : 'md:max-w-[min(40rem,calc(100dvh-19rem))]'}`}>
           <ChessPathBoard
             options={{
               position: fen,
