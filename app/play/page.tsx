@@ -2436,7 +2436,7 @@ export default function PlayRookiePage() {
       <div className="h-2 flex-shrink-0" />
 
       {/* Board area */}
-      <div className="flex-1 flex items-start justify-center px-4 md:px-6 pt-2 min-h-0">
+      <div className={`flex-1 flex items-start justify-center px-4 md:px-6 pt-2 min-h-0 ${isReview ? 'overflow-y-auto' : ''}`}>
         <div className="w-full max-w-md md:max-w-[40rem] mx-auto">
 
           {/* Above board: Rookie always in same spot, content changes by phase */}
@@ -2618,7 +2618,8 @@ export default function PlayRookiePage() {
           </div>
 
           {/* Chess board */}
-          <div className="w-full max-w-[min(92vw,440px)] md:max-w-[min(40rem,calc(100dvh-19rem))] mx-auto aspect-square">
+          {/* In review the graph + controls + pinned Play Again need ~8rem more below the board */}
+          <div className={`w-full max-w-[min(92vw,440px)] mx-auto aspect-square ${isReview ? 'md:max-w-[min(40rem,calc(100dvh-30rem))]' : 'md:max-w-[min(40rem,calc(100dvh-19rem))]'}`}>
           <ChessPathBoard
             options={{
               position: fen,
