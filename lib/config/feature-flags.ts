@@ -211,6 +211,14 @@ export const FEATURE_FLAGS = {
    * nothing after a game.
    */
   POSTGAME_BANTER: false,
+  /**
+   * Native App Store rating sheet (2026-09-02, Tyler). Both iOS shells ask
+   * iOS for SKStoreReviewController after a finished unit — Chess Boxing on
+   * the fight result card, Chess Path iOS on ActivityComplete — via
+   * lib/native/review.ts. Gate: 2nd finished session or later, once per 30
+   * days per device; iOS then applies its own 3-per-year cap. Web = no-op.
+   */
+  NATIVE_REVIEW_PROMPT: true,
 } as const;
 
 /**

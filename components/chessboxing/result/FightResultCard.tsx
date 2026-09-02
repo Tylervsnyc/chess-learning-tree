@@ -17,6 +17,7 @@
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useEffect, type ReactNode } from 'react';
 import { StreakComplete } from '@/components/shared/StreakComplete';
+import { maybeRequestReview } from '@/lib/native/review';
 import { playBoxingBell, playButtonClick } from '@/lib/sounds';
 import { CardRaysHero, HERO_DONE_MS } from './CardRaysHero';
 import type { NextMedal } from '@/lib/achievements/types';
@@ -93,6 +94,14 @@ export function FightResultCard(p: Props) {
   const d = HERO_DONE_MS / 1000;
 
   useEffect(() => { void playBoxingBell(); }, []);
+  // App Store rating sheet — asked once the card has fully landed (hero +
+  // streak), never on a loss. lib/native/review.ts owns the 2nd-session gate.
+  useEffect(() => {
+    if (!won || draw) return;
+    const t = setTimeout(() => { void maybeRequestReview(); }, HERO_DONE_MS + 2500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const ribbon =
     data.kind === 'workout'

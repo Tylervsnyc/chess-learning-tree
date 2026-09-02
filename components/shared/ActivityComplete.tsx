@@ -24,6 +24,7 @@ import { FirstRatingReveal } from '@/components/shared/FirstRatingReveal'
 import { shareWorkoutStreak } from '@/lib/daily-workout/share'
 import type { PendingShareGif } from '@/lib/share/share-gif'
 import { EloEvents } from '@/lib/analytics/posthog'
+import { maybeRequestReview } from '@/lib/native/review'
 import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
 import { chessPathEloSeries, chessPathToday, chessPathSessionSeries, chessPathSession, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
 
@@ -354,6 +355,17 @@ export function ActivityComplete({
       EloEvents.revealed('daily', { rating: eloToday.current, gained: eloToday.gainedToday })
     }
   }, [streakPhase, firstReveal, anonChart, hasChart, anonRating, sessionNow, eloToday])
+
+  // ─── App Store rating sheet (Chess Path iOS) ───
+  // Asked once the main popup is up after a finished unit, never on fail.
+  // lib/native/review.ts owns the 2nd-session gate; web is a no-op.
+  const reviewAskedRef = useRef(false)
+  useEffect(() => {
+    if (streakPhase !== 'main' || didFail || reviewAskedRef.current) return
+    reviewAskedRef.current = true
+    const t = setTimeout(() => { void maybeRequestReview() }, 2500)
+    return () => clearTimeout(t)
+  }, [streakPhase, didFail])
 
   // ─── Confetti + sound (fires when the popup itself appears) ───
   const celebratedRef = useRef(false)
