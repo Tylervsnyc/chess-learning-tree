@@ -164,7 +164,7 @@ export const ROOT_FILES = [
  * boxing-only UI (see lib/config/offline.ts).
  */
 const CHESSPATH_ROUTE_DROP = new Set([
-  'box', 'box/settings', 'box/onboarding', 'workout', 'leaderboard',
+  'box', 'box/settings', 'box/onboarding', 'box/bout', 'workout', 'leaderboard',
 ]);
 
 export const APP_TARGETS = {
