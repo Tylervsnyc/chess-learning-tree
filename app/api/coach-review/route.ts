@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { Chess } from 'chess.js';
 
-// Allow up to 30s for Claude to generate commentary
-export const maxDuration = 30;
+// The model writes ~30 comments in one shot with thinking on; give it room.
+export const maxDuration = 60;
 
 const anthropic = new Anthropic();
 
@@ -22,8 +22,13 @@ export interface MoveAnalysis {
   mateAfter: number | null;
   /** Stockfish best move for this position (UCI) */
   bestMove: string | null;
+  /** Engine principal variation from this position (UCI), best move first. */
+  bestLine?: string[];
   /** Opponent's best response after this move = "threat" (UCI) */
   threat: string | null;
+  /** Engine line after this move (UCI) — what the opponent should do next. */
+  threatLine?: string[];
+  depth?: number | null;
   /** Move classification based on eval swing */
   classification: 'brilliant' | 'great' | 'good' | 'inaccuracy' | 'mistake' | 'blunder' | null;
 }
@@ -34,62 +39,87 @@ interface ReviewRequest {
   playerElo: number;
   result: string;
   openingName?: string;
+  playerName?: string;
+  /** 'instant' = quick in-game evals (be fast); 'deep' = depth-18 evals (think harder). */
+  pass?: 'instant' | 'deep';
 }
 
-const SYSTEM_PROMPT = `You are Rookie, a chess coach. You're still you — warm personality, occasionally wry — but when coaching you're professional, clear, and instructive. No quirky quips or gimmicks. Think of a supportive coach who genuinely wants the student to improve.
+const SYSTEM_PROMPT = `You are Rookie, the chess coach inside The Chess Path. You just PLAYED this game against the student, and now you are reviewing it with them. Warm, direct, occasionally wry, never cruel. When coaching you are clear and instructive — no gimmicks, no quips.
 
-TASK: Write a short commentary for EVERY move in this game. You have Stockfish evaluations (centipawns, from white's perspective) and, for each move, the engine's preferred move in that position, already written in standard notation.
+WHO IS WHO
+- "student" = the human you are coaching. Their moves are the ones that matter; teach on those.
+- "Rookie" = you. For your own moves, speak in first person ("I develop the knight", "I missed that"). Keep those short — one clause is fine.
+- Address the student as "you".
 
-For each move, write 1-2 concise sentences explaining:
-- For good/great/brilliant moves: what made it strong (development, tactic, control)
-- For mistakes/blunders: what went wrong and what the better idea was, in plain language
-- For normal moves: brief positional context (developing, castling, etc.)
+WHAT YOU ARE GIVEN
+For every move: the move in standard notation, the engine's evaluation before and after FROM THE STUDENT'S POINT OF VIEW (+ means the student is better; in pawns; "M3" means mate in 3 for the student, "M-3" means mate against them), the engine's preferred move in that position with its short line, the opponent's best reply, and a label when the move was notable. For notable moves you also get the exact board.
 
-HARD RULES ABOUT MOVES:
-- You cannot see the board. The ONLY moves you may name are: the move that was played, and the "best:" move given for that line. Never invent, guess, or "improve" a move name.
-- When a move was a mistake, recommend the "best:" move exactly as written (e.g. "Nxf6+ was stronger"). If no "best:" is given, describe the idea without naming a move.
-- Do not name the opponent's reply unless it is the next move in the list.
-- Square names (e5, f7) are fine when describing ideas.
+HOW TO READ THE BOARD DIAGRAMS
+Uppercase = white pieces, lowercase = black, "." = empty. Rank 8 is the top row, files a-h left to right. Use them to say WHAT the tactic is: what hangs, what fork/pin/discovery exists, which square is weak. Do not guess about pieces that are not on the diagram.
 
-Other rules:
-- Be direct. "This develops the knight toward the center" not "Interesting choice here..."
-- Explain WHY a move is good or bad, don't just label it
-- Never use Maia percentages or "X% of players" language
-- Keep it educational — the goal is the player learns something
+WHAT GOOD COMMENTARY LOOKS LIKE
+- Mistakes/blunders (student): one sentence on the concrete problem (what it hangs, what it allows, which reply hurts), then the engine's move as the fix. "Ng5 walks into ...h6 and the knight has no safe squares; Nxf6+ trades into a calm position instead."
+- Good/great/brilliant (student): what made it work, concretely. Praise once, with a reason, not with adjectives.
+- Ordinary moves: brief positional context (development, center, king safety). One clause is enough.
+- Forced recaptures / only-moves: say so in a few words.
+- Rookie's own moves: first person, short, occasionally admitting your own errors ("I hung the bishop here").
+- Explain WHY, never just label. Reference squares and pieces.
+- Match the student's level (their rating is given): plain language, name the pattern (fork, pin, back rank, hanging piece) rather than engine jargon.
 
-FORMAT: Return a valid JSON object with this shape:
-{
-  "summary": "1-2 sentence game overview",
-  "moves": {
-    "1w": "commentary for move 1 white",
-    "1b": "commentary for move 1 black",
-    "2w": "commentary for move 2 white",
-    ...
+HARD RULES ABOUT MOVE NAMES — the ONLY moves you may write in notation are the ones printed in the data for that line: the move played, the "best" move and its line, the "reply" line, and the next move in the game. Never invent, guess, or "improve" a move. If you want to describe an idea whose move is not printed, describe it in words (squares are fine).
+- Recommend the "best" move exactly as printed. If "best" says "same", the student found the engine's move — say so.
+- Never mention percentages, engine depth, centipawns, or "Stockfish". Say "the engine" if you must.
+- No emojis. No exclamation marks in a row. No "Interesting choice here…" filler.
+
+OUTPUT: JSON with "summary" (2 sentences: the story of the game), "moves" (an array with one entry for EVERY move, in order, each {"key": "{moveNumber}w" or "{moveNumber}b", "text": ONE sentence, at most 120 characters}), and "takeaway" (the single most useful lesson from THIS game for THIS student, one or two sentences, concrete).`;
+
+const OUTPUT_SCHEMA = {
+  type: 'object',
+  properties: {
+    summary: { type: 'string' },
+    moves: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          key: { type: 'string', description: 'e.g. "5w" or "12b"' },
+          text: { type: 'string' },
+        },
+        required: ['key', 'text'],
+        additionalProperties: false,
+      },
+    },
+    takeaway: { type: 'string' },
   },
-  "takeaway": "One key lesson from this game"
-}
-
-Keys in "moves" are "{moveNumber}w" or "{moveNumber}b". Include EVERY move. Keep each comment to ONE short sentence, max 100 characters. Be punchy, not wordy. Return ONLY the JSON.`;
+  required: ['summary', 'moves', 'takeaway'],
+  additionalProperties: false,
+} as const;
 
 /** Strip check/mate marks and annotation glyphs so "Nxf6+" == "Nxf6". */
 function normSan(s: string): string {
   return s.replace(/[+#!?]/g, '');
 }
 
-/** Convert an engine UCI move (e2e4, e7e8q) to SAN in the given position. Null if illegal/unparseable. */
-function uciToSan(fen: string, uci: string | null): string | null {
-  if (!uci || uci.length < 4) return null;
+/** Convert an engine UCI line to SAN moves in the given position. Stops at the first illegal move. */
+function uciLineToSan(fen: string, line: string[] | null | undefined, max = 6): string[] {
+  if (!line?.length) return [];
+  const out: string[] = [];
   try {
     const board = new Chess(fen);
-    const mv = board.move({
-      from: uci.slice(0, 2),
-      to: uci.slice(2, 4),
-      promotion: uci.length > 4 ? uci[4] : undefined,
-    });
-    return mv?.san ?? null;
+    for (const uci of line.slice(0, max)) {
+      if (!uci || uci.length < 4) break;
+      const mv = board.move({
+        from: uci.slice(0, 2),
+        to: uci.slice(2, 4),
+        promotion: uci.length > 4 ? uci[4] : undefined,
+      });
+      if (!mv) break;
+      out.push(mv.san);
+    }
   } catch {
-    return null;
+    /* partial line is fine */
   }
+  return out;
 }
 
 function legalSans(fen: string): Set<string> {
@@ -100,6 +130,41 @@ function legalSans(fen: string): Set<string> {
   }
 }
 
+/** ASCII diagram of a FEN, rank 8 at the top, for the model to "see" a notable position. */
+function asciiBoard(fen: string): string {
+  try {
+    return new Chess(fen).ascii();
+  } catch {
+    return '';
+  }
+}
+
+/** Format a line of SAN moves with move numbers, starting from the given FEN. */
+function fmtLine(fen: string, sans: string[]): string {
+  if (!sans.length) return '';
+  const parts = fen.split(' ');
+  let moveNo = parseInt(parts[5] || '1', 10);
+  let white = (parts[1] || 'w') === 'w';
+  const out: string[] = [];
+  for (const [i, s] of sans.entries()) {
+    if (white) out.push(`${moveNo}.${s}`);
+    else out.push(i === 0 ? `${moveNo}...${s}` : s);
+    if (!white) moveNo++;
+    white = !white;
+  }
+  return out.join(' ');
+}
+
+/** Eval as text from the student's point of view. */
+function fmtEval(cp: number | null, mate: number | null, sign: 1 | -1): string {
+  if (mate !== null) return `M${mate * sign}`;
+  if (cp !== null) {
+    const v = (cp * sign) / 100;
+    return `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+  }
+  return '?';
+}
+
 /**
  * Move-shaped tokens in prose: castling, or anything with a piece letter,
  * capture, or promotion. Bare pawn pushes ("e5") are deliberately NOT matched —
@@ -107,27 +172,21 @@ function legalSans(fen: string): Set<string> {
  */
 const MOVE_TOKEN = /\b(O-O(?:-O)?|[A-Z][a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?|[a-h]x[a-h][1-8](?:=[QRBN])?|[a-h][1-8]=[QRBN])[+#]?/g;
 
-/**
- * Every move name in a comment must be a real move: the played move, the
- * engine's best move, the next move in the game, or at least a legal move in
- * the position before or after this move. Returns null when the comment is clean,
- * otherwise the first offending token.
- */
-function findIllegalMoveName(
-  comment: string,
-  allowed: Set<string>,
-): string | null {
+/** First move-shaped token in the comment that is not in the allowed set, or null. */
+function findIllegalMoveName(comment: string, allowed: Set<string>): string | null {
   for (const match of comment.matchAll(MOVE_TOKEN)) {
-    const token = normSan(match[1]);
-    if (!allowed.has(token)) return match[0];
+    if (!allowed.has(normSan(match[1]))) return match[0];
   }
   return null;
 }
 
+const NOTABLE = new Set(['brilliant', 'great', 'inaccuracy', 'mistake', 'blunder']);
+const MAX_DIAGRAMS = 10;
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as ReviewRequest;
-    const { moves, playerColor, playerElo, result, openingName } = body;
+    const { moves, playerColor, playerElo, result, openingName, playerName, pass = 'deep' } = body;
 
     if (!moves || !playerColor || !result) {
       return NextResponse.json({
@@ -136,65 +195,89 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Resolve the engine's best move into real notation for each position.
+    const sign: 1 | -1 = playerColor === 'white' ? 1 : -1;
+
+    // Resolve everything the engine said into real notation on the real board.
     // The model never sees a board, so it must never have to turn "e4f6" into
     // a move name itself — that produced hallucinated moves like "Exf6".
     const enriched = moves.map((m, i) => {
-      const bestSan = m.fen ? uciToSan(m.fen, m.bestMove) : null;
       const fenAfter = moves[i + 1]?.fen ?? null;
+      const bestLine = m.fen
+        ? uciLineToSan(m.fen, m.bestLine?.length ? m.bestLine : (m.bestMove ? [m.bestMove] : []))
+        : [];
+      const replyLine = fenAfter
+        ? uciLineToSan(fenAfter, m.threatLine?.length ? m.threatLine : (m.threat ? [m.threat] : []), 4)
+        : [];
+      const bestSan = bestLine[0] ?? null;
       const allowed = new Set<string>([
         normSan(m.san),
-        ...(bestSan ? [normSan(bestSan)] : []),
+        ...bestLine.map(normSan),
+        ...replyLine.map(normSan),
         ...(moves[i + 1] ? [normSan(moves[i + 1].san)] : []),
         ...(m.fen ? legalSans(m.fen) : []),
         ...(fenAfter ? legalSans(fenAfter) : []),
       ]);
-      return { ...m, bestSan, allowed };
+      const isStudent = m.color === playerColor;
+      return { ...m, bestSan, bestLine, replyLine, fenAfter, allowed, isStudent };
     });
 
-    // Build compact game data — every move with eval
-    const fmtEval = (cp: number | null, mate: number | null): string => {
-      if (mate !== null) return `M${mate}`;
-      if (cp !== null) return (cp / 100).toFixed(1);
-      return '?';
-    };
-    const moveLines = enriched.map(m => {
-      const evalBefore = fmtEval(m.evalBefore, m.mateBefore);
-      const evalAfter = fmtEval(m.evalAfter, m.mateAfter);
+    // Diagrams for the notable moves (student's first, then Rookie's), capped.
+    const diagramIdx = new Set<number>();
+    const notable = enriched
+      .map((m, i) => ({ m, i }))
+      .filter(({ m }) => m.classification && NOTABLE.has(m.classification))
+      .sort((a, b) => Number(b.m.isStudent) - Number(a.m.isStudent));
+    for (const { i } of notable.slice(0, MAX_DIAGRAMS)) diagramIdx.add(i);
+
+    const moveLines = enriched.map((m, i) => {
+      const who = m.isStudent ? 'student' : 'Rookie';
+      const evalBefore = fmtEval(m.evalBefore, m.mateBefore, sign);
+      const evalAfter = fmtEval(m.evalAfter, m.mateAfter, sign);
       const playedBest = m.bestSan && normSan(m.bestSan) === normSan(m.san);
-      const best = m.bestSan ? (playedBest ? ' best:same' : ` best:${m.bestSan}`) : '';
-      const cls = m.classification && m.classification !== 'good' ? ` [${m.classification}]` : '';
-      return `${m.moveNumber}${m.color === 'white' ? '.' : '...'} ${m.san} (${evalBefore}→${evalAfter}${best})${cls}`;
+      const best = m.bestSan
+        ? (playedBest ? ' | best: same' : ` | best: ${fmtLine(m.fen, m.bestLine)}`)
+        : '';
+      const reply = m.replyLine.length && m.fenAfter ? ` | reply: ${fmtLine(m.fenAfter, m.replyLine)}` : '';
+      const cls = m.classification && m.classification !== 'good' ? ` [${m.classification.toUpperCase()}]` : '';
+      const head = `${m.moveNumber}${m.color === 'white' ? '.' : '...'} ${m.san} (${who}) eval ${evalBefore} -> ${evalAfter}${best}${reply}${cls}`;
+      if (!diagramIdx.has(i) || !m.fen) return head;
+      return `${head}\nBoard before this move (${m.color} to move):\n${asciiBoard(m.fen)}`;
     }).join('\n');
 
+    const student = playerName ? `${playerName} (the student)` : 'the student';
     const gameContext = `
-GAME: ${playerColor} (~${playerElo}) vs opponent. Result: ${result}.${openingName ? ` Opening: ${openingName}.` : ''}
+GAME: ${student} played ${playerColor} (rating about ${playerElo}) against Rookie (you). Result for the student: ${result}.${openingName ? ` Opening: ${openingName}.` : ''}
 
-MOVES (eval in pawns from white's perspective; best = the engine's preferred move in that position, in standard notation; "same" = the played move was the engine's choice):
+Evals are from the STUDENT's point of view (+ = student better). "best" is the engine's preferred move in that position with its line; "reply" is the engine's expected continuation after the move actually played.
+
+MOVES:
 ${moveLines}
 `.trim();
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-5',
-      max_tokens: 6000,
-      output_config: { effort: 'low' },
-      system: SYSTEM_PROMPT,
+      model: 'claude-opus-5',
+      max_tokens: 8000,
+      thinking: { type: 'adaptive' },
+      output_config: { effort: pass === 'instant' ? 'low' : 'medium', format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
+      system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: gameContext }],
     });
-    console.log('[coach-review] Claude response received, tokens:', response.usage);
+    console.log('[coach-review] Claude response received, tokens:', response.usage, 'stop:', response.stop_reason);
 
     const text = response.content.find(b => b.type === 'text')?.text ?? '';
-
-    // Parse JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: 'Failed to parse review', raw: text }, { status: 500 });
     }
-
-    const review = JSON.parse(jsonMatch[0]) as {
+    const parsed = JSON.parse(jsonMatch[0]) as {
       summary?: string;
-      moves?: Record<string, string>;
+      moves?: { key: string; text: string }[];
       takeaway?: string;
+    };
+    const review = {
+      summary: parsed.summary,
+      takeaway: parsed.takeaway,
+      moves: Object.fromEntries((parsed.moves ?? []).map(e => [e.key, e.text])) as Record<string, string>,
     };
 
     // Validate every move name the model wrote against the real position. A
@@ -208,20 +291,28 @@ ${moveLines}
       if (typeof comment !== 'string' || !comment.trim()) continue;
       const bad = findIllegalMoveName(comment, m.allowed);
       if (!bad) {
-        outMoves[key] = comment;
+        outMoves[key] = comment.trim();
         continue;
       }
       rejected++;
       console.warn(`[coach-review] rejected ${key} "${comment}" — "${bad}" is not a move here`);
       if (m.bestSan && normSan(m.bestSan) !== normSan(m.san) && m.classification && m.classification !== 'good') {
-        outMoves[key] = `${m.san} gave ground here. The engine preferred ${m.bestSan}.`;
+        outMoves[key] = m.isStudent
+          ? `${m.san} gave ground here. The engine preferred ${m.bestSan}.`
+          : `I played ${m.san}; ${m.bestSan} was the better move.`;
       }
-      // Otherwise leave it out — the client falls back to the plain move.
     }
     if (rejected) console.warn(`[coach-review] ${rejected} comment(s) rejected for illegal move names`);
 
+    // The summary and takeaway may name moves too — hold them to the same rule
+    // against the union of every move that was ever legal in this game.
+    const everything = new Set<string>();
+    for (const m of enriched) for (const s of m.allowed) everything.add(s);
+    const clean = (s: string | undefined) =>
+      s && !findIllegalMoveName(s, everything) ? s.trim() : null;
+
     return NextResponse.json({
-      review: { summary: review.summary ?? null, moves: outMoves, takeaway: review.takeaway ?? null },
+      review: { summary: clean(review.summary), moves: outMoves, takeaway: clean(review.takeaway) },
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);

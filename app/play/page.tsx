@@ -504,7 +504,9 @@ export default function PlayRookiePage() {
   const coachCommentaryRef = useRef<Record<string, string>>({}); // "1w" -> text, "1b" -> text
   const coachSummaryRef = useRef<string | null>(null);
   const coachTakeawayRef = useRef<string | null>(null);
-  const [coachReady, setCoachReady] = useState(false);
+  // Bumps each time commentary lands (instant pass, then the deep pass replaces it).
+  const [coachReady, setCoachReady] = useState(0);
+  const coachStageRef = useRef<'none' | 'instant' | 'deep'>('none');
 
   // Post-game analysis
   const postGame = usePostGameAnalysis();
@@ -1180,12 +1182,34 @@ export default function PlayRookiePage() {
 
       // Show instant analysis immediately, then kick off deep analysis (depth 18)
       postGame.setInstantAnalysis(analysis);
-      postGame.analyze(moves, playerColor).then((deepAnalysis) => {
-        if (deepAnalysis) {
-          // Update key moments with deeper eval
-          const deepMoveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
-          setKeyMoments(extractKeyMoments(deepAnalysis, deepMoveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
-        }
+      postGame.analyze(moves, playerColor).then((deep) => {
+        if (!deep) return;
+        // Update key moments with deeper eval
+        const deepMoveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
+        setKeyMoments(extractKeyMoments(deep.analysis, deepMoveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
+
+        // Second commentary pass on the deep evals — the words should match the
+        // arrows and key moments, which now come from depth 18, not the quick
+        // in-game reads. Replaces the instant commentary when it lands.
+        void fetchCoachReview({
+          analysis: deep.analysis,
+          evals: deep.evals,
+          moves,
+          playerColor,
+          playerElo: getLevelElo(rookieLevel),
+          result: result || 'loss',
+          startFen: START_FEN,
+          playerName: playerName || undefined,
+          pass: 'deep',
+        }).then((review) => {
+          if (!review) return;
+          coachStageRef.current = 'deep';
+          coachCommentaryRef.current = review.moves;
+          coachSummaryRef.current = review.summary;
+          coachTakeawayRef.current = review.takeaway;
+          setCoachReady(v => v + 1);
+          console.log('[coach-review] deep pass ready, moves:', Object.keys(review.moves).length);
+        });
       });
 
       // Generate coaching script with analysis data. coaching-prompt is
@@ -1221,12 +1245,16 @@ export default function PlayRookiePage() {
         playerElo: getLevelElo(rookieLevel),
         result: result || 'loss',
         startFen: START_FEN,
+        playerName: playerName || undefined,
+        pass: 'instant',
       }).then((review) => {
         if (!review) return;
+        if (coachStageRef.current === 'deep') return; // deep pass already landed
+        coachStageRef.current = 'instant';
         coachCommentaryRef.current = review.moves;
         coachSummaryRef.current = review.summary;
         coachTakeawayRef.current = review.takeaway;
-        setCoachReady(true);
+        setCoachReady(v => v + 1);
         console.log('[coach-review] ready, moves:', Object.keys(review.moves).length);
       });
 
@@ -1719,7 +1747,7 @@ export default function PlayRookiePage() {
 
   // Re-render current review position when Claude commentary arrives
   useEffect(() => {
-    if (coachReady && phase === 'review') {
+    if (coachReady > 0 && phase === 'review') {
       console.log('[coach-review] coachReady fired, re-navigating to move', reviewMoveIndex);
       navigateToMove(reviewMoveIndex);
     }
@@ -1805,7 +1833,8 @@ export default function PlayRookiePage() {
     coachCommentaryRef.current = {};
     coachSummaryRef.current = null;
     coachTakeawayRef.current = null;
-    setCoachReady(false);
+    setCoachReady(0);
+    coachStageRef.current = 'none';
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
@@ -1860,7 +1889,8 @@ export default function PlayRookiePage() {
     coachCommentaryRef.current = {};
     coachSummaryRef.current = null;
     coachTakeawayRef.current = null;
-    setCoachReady(false);
+    setCoachReady(0);
+    coachStageRef.current = 'none';
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);

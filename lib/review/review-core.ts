@@ -76,6 +76,9 @@ export async function fetchCoachReview(args: {
   playerElo: number;
   result: string;
   startFen?: string;
+  playerName?: string;
+  /** Which evals these are — the route thinks harder on the deep pass. */
+  pass?: 'instant' | 'deep';
 }): Promise<CoachReview | null> {
   const { analysis, evals, moves, playerColor } = args;
   const coachMoves = analysis.moves.map((mv, i) => ({
@@ -91,7 +94,10 @@ export async function fetchCoachReview(args: {
     mateBefore: evals[i]?.mate ?? null,
     mateAfter: evals[i + 1]?.mate ?? null,
     bestMove: evals[i]?.bestMove ?? null,
+    bestLine: evals[i]?.bestLine ?? [],
     threat: evals[i + 1]?.bestMove ?? null,
+    threatLine: evals[i + 1]?.bestLine ?? [],
+    depth: evals[i]?.depth ?? null,
     classification: mv.classification as
       | 'brilliant' | 'great' | 'good' | 'inaccuracy' | 'mistake' | 'blunder'
       | null,
@@ -106,6 +112,8 @@ export async function fetchCoachReview(args: {
         playerColor,
         playerElo: args.playerElo,
         result: args.result,
+        playerName: args.playerName,
+        pass: args.pass ?? 'deep',
       }),
     });
     const data = await res.json();

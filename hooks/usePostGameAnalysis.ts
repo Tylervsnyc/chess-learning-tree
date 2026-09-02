@@ -49,7 +49,7 @@ export function usePostGameAnalysis() {
     moves: MoveRecord[],
     playerColor: 'white' | 'black',
     startFen?: string,
-  ): Promise<GameAnalysis | null> => {
+  ): Promise<{ analysis: GameAnalysis; evals: PositionEval[] } | null> => {
     if (moves.length === 0) return null;
 
     cancelledRef.current = false;
@@ -72,7 +72,7 @@ export function usePostGameAnalysis() {
           cp: result?.cp ?? null,
           mate: result?.mate ?? null,
           bestMove: result?.bestMove ?? null,
-          bestLine: [],
+          bestLine: result?.bestLine ?? [],
           depth: DEEP_ANALYSIS_DEPTH,
         });
 
@@ -89,7 +89,7 @@ export function usePostGameAnalysis() {
       );
 
       setState({ analysis, isAnalyzing: false, progress: 100, error: null });
-      return analysis;
+      return { analysis, evals };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Analysis failed';
       setState(prev => ({ ...prev, isAnalyzing: false, error: message }));

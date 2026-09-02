@@ -261,13 +261,15 @@ class StockfishEngine {
    * the worker errored, or no score line was ever seen. Callers must treat
    * null as "ungradable", never as "equal".
    */
-  getFullEval(fen: string, depth = 12): Promise<{ cp: number | null; mate: number | null; bestMove: string | null } | null> {
+  getFullEval(fen: string, depth = 12): Promise<{ cp: number | null; mate: number | null; bestMove: string | null; bestLine: string[] } | null> {
     const sideToMove = fen.split(' ')[1] || 'w';
     const flip = sideToMove === 'b' ? -1 : 1;
 
     return this.enqueue((resolve) => {
       let lastCp: number | null = null;
       let lastMate: number | null = null;
+      // Principal variation (UCI moves) from the deepest info line seen.
+      let lastPv: string[] = [];
 
       this.pendingCallback = (result) => {
         // Cancelled/errored search — a depth-2 partial score is not a real
@@ -280,6 +282,7 @@ class StockfishEngine {
           cp: lastCp !== null ? lastCp * flip : null,
           mate: lastMate !== null ? lastMate * flip : null,
           bestMove: result.bestMove,
+          bestLine: lastPv,
         });
       };
 
@@ -303,6 +306,8 @@ class StockfishEngine {
           lastMate = parseInt(mateMatch[1], 10);
           lastCp = null;
         }
+        const pvMatch = line.match(/ pv (.+)$/);
+        if (pvMatch) lastPv = pvMatch[1].trim().split(/\s+/).slice(0, 8);
       };
 
       // UCI options persist on this shared worker — Rookie's move picker sets
