@@ -144,15 +144,17 @@ export function FightResultCard(p: Props) {
 
           {/* actions */}
           <Land delay={d + 0.7} className="mt-3 grid gap-2" >
-            <div className={`grid gap-2 ${p.onRematch ? 'grid-cols-[44px_1fr_1fr]' : 'grid-cols-[44px_1fr]'}`}>
-              {p.onShare ? (
-                <Btn aria-label="Share" onClick={p.onShare} disabled={p.sharing}><ShareIcon /></Btn>
-              ) : <span />}
-              {p.onReview ? (
-                <Btn onClick={p.onReview}>{p.reviewLabel ?? 'Review'}</Btn>
-              ) : p.onRematch ? <span /> : null}
-              {p.onRematch && <Btn onClick={p.onRematch} primary>Rematch</Btn>}
-            </div>
+            {p.onShare && (
+              <Btn onClick={p.onShare} disabled={p.sharing} primary>
+                <span className="inline-flex items-center gap-2"><ShareIcon />{p.sharing ? 'Making your clip…' : 'Share the fight'}</span>
+              </Btn>
+            )}
+            {(p.onReview || p.onRematch) && (
+              <div className={`grid gap-2 ${p.onReview && p.onRematch ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                {p.onReview && <Btn onClick={p.onReview}>{p.reviewLabel ?? 'Review'}</Btn>}
+                {p.onRematch && <Btn onClick={p.onRematch} primary={!p.onShare} blue={!!p.onShare}>Rematch</Btn>}
+              </div>
+            )}
             {p.needsSignIn ? (
               <>
                 <Btn onClick={p.onSignIn} green>Sign in to save this fight</Btn>

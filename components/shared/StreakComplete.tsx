@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import RookieCampfire from './RookieCampfire';
 import { useUser } from '@/hooks/useUser';
 import { pickCelebrationLine } from '@/lib/daily-workout/celebration-lines';
-import { shareWorkoutStreak } from '@/lib/daily-workout/share';
 import { claimStreakToday } from '@/lib/streak-client';
 
 type Phase =
@@ -81,7 +80,7 @@ function blazeFor(streak: number) {
   return Math.max(0.5, Math.min(1, streak / 60));
 }
 
-/** Full inline celebration: campfire, number tick-up, Rookie line, share. */
+/** Full inline celebration: campfire, number tick-up, Rookie line. */
 function StreakEarned({ streak }: { streak: number }) {
   const line = useRef(pickCelebrationLine(streak)).current;
   const [display, setDisplay] = useState(Math.max(0, streak - 1));
@@ -140,17 +139,6 @@ function StreakEarned({ streak }: { streak: number }) {
       {line.sub && (
         <div className="text-xs text-chess-text-muted mt-1 leading-snug">{line.sub}</div>
       )}
-
-      <button
-        onClick={() => shareWorkoutStreak(streak)}
-        className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black text-xs text-white bg-chess-blue shadow-[0_2px_0_0_var(--color-chess-blue-shadow)] active:translate-y-[1px] transition-all"
-      >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
-          <line x1="8.6" y1="10.5" x2="15.4" y2="6.5" /><line x1="8.6" y1="13.5" x2="15.4" y2="17.5" />
-        </svg>
-        Share
-      </button>
     </div>
   );
 }
