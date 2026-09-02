@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
+import { MusicMenu } from '@/components/shared/MusicMenu';
+import { startMusicIfEnabled } from '@/lib/music';
 import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
 
 // Orange-and-blue rook body during the Knicks Finals window; undefined otherwise.
@@ -2487,7 +2489,8 @@ export default function PlayRookiePage() {
               color={playerIsWhite ? 'black' : 'white'}
               name="Rookie"
             />
-            <div className="relative">
+            <div className="relative flex items-center gap-1">
+              <MusicMenu />
               <button
                 onClick={() => setShowSettings(s => !s)}
                 className="p-2 rounded-lg text-chess-text-muted hover:text-chess-text hover:bg-chess-surface-subtle transition-colors"
@@ -2607,10 +2610,11 @@ export default function PlayRookiePage() {
                 // Dragging on Rookie's turn sets a premove instead. It returns
                 // false on purpose: the piece snaps back and the premove
                 // highlight is the only thing that says a move is queued.
+                startMusicIfEnabled(); // a board touch is the browser's audio-unlock gesture
                 if (rookieThinking || !isMyTurn) return onPremoveDrop(from, to);
                 return doPlayerMove(from, to);
               }) as any,
-              onSquareClick: isReview ? undefined : ((args: any) => onClickSquare(args.square as Square)) as any,
+              onSquareClick: isReview ? undefined : ((args: any) => { startMusicIfEnabled(); onClickSquare(args.square as Square); }) as any,
               squareStyles: sqStyles,
               animationDurationInMs: ANIM_MS,
               ...(isReview && reviewArrows.length > 0 ? { arrows: reviewArrows } : {}),
