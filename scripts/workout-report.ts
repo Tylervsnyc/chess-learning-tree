@@ -342,7 +342,7 @@ function renderReport(
     L.push(`   ${String(i + 1).padStart(2)}. ${p.puzzleId} (${p.rating}) https://lichess.org/training/${p.puzzleId}`);
   });
   L.push('');
-  L.push(`Play it: https://chesspath.app/workout/fixit   ·   Replay today's misses: https://chesspath.app/workout/review/${s.id}`);
+  L.push(`Play it: https://chesspath.app/workout/fixit   ·   Replay today's misses: https://chesspath.app/workout/report/${s.id}`);
   return L.join('\n');
 }
 

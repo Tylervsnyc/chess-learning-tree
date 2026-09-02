@@ -16,7 +16,8 @@ export type EmailType =
   | 'cb_weekly_report'
   | 'cb_comeback'
   | 'cb_highscore'
-  | 'cb_launch_party';
+  | 'cb_launch_party'
+  | 'cb_workout_report';
 
 export interface EmailPreferences {
   user_id: string;
@@ -152,4 +153,26 @@ export interface BoxingHighScoreProps {
   score: number;
   /** The record it beat, when one existed. */
   previousBest?: number;
+}
+
+export interface BoxingWorkoutReportProps {
+  displayName?: string;
+  appUrl: string;
+  unsubscribeUrl: string;
+  /** workout_sessions.id — the report and Fix-It links hang off it. */
+  sessionId: string;
+  score: number;
+  correct: number;
+  wrong: number;
+  /** Camera-counted punches, when the punch cam was on. */
+  punches?: number;
+  /** Best single round (scoring v2). */
+  bestRound?: number;
+  /** Set when this score beat every prior workout. */
+  isPersonalBest?: boolean;
+  previousBest?: number;
+  /** Streak in days AFTER this workout landed (already counts today). */
+  currentStreak?: number;
+  /** Hardest puzzle solved: position after the setup move + which way up. */
+  hardest?: { fen: string; rating: number; orient: 'white' | 'black' };
 }

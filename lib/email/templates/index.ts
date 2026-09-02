@@ -10,5 +10,6 @@ export { BoxingWelcome } from './BoxingWelcome';
 export { BoxingWeeklyReport } from './BoxingWeeklyReport';
 export { BoxingComeback } from './BoxingComeback';
 export { BoxingHighScore } from './BoxingHighScore';
+export { BoxingWorkoutReport } from './BoxingWorkoutReport';
 export { RatingReveal } from './RatingReveal';
 export { StreakScience } from './StreakScience';

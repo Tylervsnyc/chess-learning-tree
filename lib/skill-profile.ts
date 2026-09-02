@@ -18,6 +18,10 @@ export interface PuzzleResult {
   correct: boolean;
   /** Time from puzzle shown to answer, ms (client-measured). */
   timeMs?: number;
+  /** Start position (before the setup move) — only used to picture a solve. */
+  fen?: string;
+  /** Solution line, UCI, moves[0] = opponent's setup move. */
+  moves?: string[];
 }
 
 // Lichess meta-tags that say nothing about a skill.
@@ -78,6 +82,10 @@ export function parsePuzzleResults(raw: unknown): PuzzleResult[] {
       rating: typeof o.rating === 'number' ? o.rating : undefined,
       correct: o.correct,
       timeMs: typeof o.timeMs === 'number' ? o.timeMs : undefined,
+      fen: typeof o.fen === 'string' && o.fen.length > 0 && o.fen.length <= 100 ? o.fen : undefined,
+      moves: Array.isArray(o.moves)
+        ? o.moves.filter((m): m is string => typeof m === 'string' && m.length <= 8).slice(0, 40)
+        : undefined,
     });
   }
   return out;

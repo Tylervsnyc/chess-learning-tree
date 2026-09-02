@@ -515,7 +515,7 @@ function WorkoutPageInner() {
   // future workouts can exclude them and stay fresh.
   const seenIdsRef = useRef<string[]>([]);
   // Per-puzzle results (theme + rating + time) for the skill profile.
-  const resultsRef = useRef<{ puzzleId?: string; themes?: string[]; rating?: number; correct: boolean; timeMs: number }[]>([]);
+  const resultsRef = useRef<{ puzzleId?: string; themes?: string[]; rating?: number; correct: boolean; timeMs: number; fen?: string; moves?: string[] }[]>([]);
   const puzzleShownAtRef = useRef<number>(0);
   // Id of the puzzle currently on the board — see the pin note in currentPuzzle.
   const pinnedIdRef = useRef<string | null>(null);
@@ -1618,6 +1618,12 @@ function WorkoutPageInner() {
       rating: currentPuzzle.rating,
       correct,
       timeMs: puzzleShownAtRef.current ? Date.now() - puzzleShownAtRef.current : 0,
+      // Position + line, so the post-workout email can show the hardest one
+      // they solved on a board.
+      fen: currentPuzzle.fen,
+      moves: Array.isArray(currentPuzzle.moves)
+        ? currentPuzzle.moves
+        : String(currentPuzzle.moves || '').split(' ').filter(Boolean),
     });
     puzzleShownAtRef.current = Date.now();
   }, [currentPuzzle]);

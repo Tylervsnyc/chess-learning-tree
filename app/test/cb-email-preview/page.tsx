@@ -5,6 +5,7 @@ import { BoxingWelcome } from '@/lib/email/templates/BoxingWelcome';
 import { BoxingWeeklyReport } from '@/lib/email/templates/BoxingWeeklyReport';
 import { BoxingComeback } from '@/lib/email/templates/BoxingComeback';
 import { BoxingHighScore } from '@/lib/email/templates/BoxingHighScore';
+import { BoxingWorkoutReport } from '@/lib/email/templates/BoxingWorkoutReport';
 
 // Preview-only. NEVER queries real users — all data below is fake sample data.
 const SAMPLE = {
@@ -15,6 +16,47 @@ const SAMPLE = {
 
 export default async function CbEmailPreviewPage() {
   const previews: { label: string; angle: string; html: string }[] = [
+    {
+      label: 'cb_workout_report — sent the moment a workout lands (misses → report link, hardest solve on a board)',
+      angle:
+        'Fired from /api/workout/finish via after(). The card for THIS workout, Rookie\'s line, then the one button: /workout/report/[id] (red = what you played, green = the answer → Fix-It). Web-only report, so this is how a phone user reaches it. Dedupe: one per session id in email_log. Gate: WORKOUT_REPORT_EMAIL flag + CB_EMAIL_LIFECYCLE_ENABLED.',
+      html: await render(
+        BoxingWorkoutReport({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          sessionId: '00000000-0000-0000-0000-000000000000',
+          score: 212,
+          correct: 14,
+          wrong: 3,
+          punches: 187,
+          bestRound: 96,
+          isPersonalBest: true,
+          previousBest: 180,
+          currentStreak: 4,
+          hardest: { fen: 'r1bq1rk1/pp2bppp/2n1pn2/3p4/2PP4/2N1PN2/PP3PPP/R2QKB1R w KQ - 0 1', rating: 1840, orient: 'white' },
+        }),
+      ),
+    },
+    {
+      label: 'cb_workout_report — clean card (no misses → Fix-It link instead)',
+      angle:
+        'Same email when there is nothing to replay: the button goes to /workout/fixit, which the skill profile can always build.',
+      html: await render(
+        BoxingWorkoutReport({
+          displayName: SAMPLE.displayName,
+          appUrl: SAMPLE.appUrl,
+          unsubscribeUrl: SAMPLE.unsubscribeUrl,
+          sessionId: '00000000-0000-0000-0000-000000000000',
+          score: 160,
+          correct: 12,
+          wrong: 0,
+          bestRound: 88,
+          currentStreak: 1,
+          hardest: { fen: '6k1/5ppp/8/8/8/8/5PPP/3R2K1 b - - 0 1', rating: 1210, orient: 'black' },
+        }),
+      ),
+    },
     {
       label: 'cb_welcome — the day after their FIRST ever bout or workout',
       angle:

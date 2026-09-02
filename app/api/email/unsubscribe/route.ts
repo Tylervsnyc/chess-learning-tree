@@ -29,6 +29,7 @@ function getPreferenceColumn(emailType: EmailType | undefined): string | null {
     case 'cb_comeback':
     case 'cb_highscore':
     case 'cb_launch_party':
+    case 'cb_workout_report':
       return 'marketing';
     default:
       return null; // Will unsubscribe from all

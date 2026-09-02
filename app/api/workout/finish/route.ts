@@ -1,9 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { processAchievementEvent } from '@/lib/achievements/server';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { parsePuzzleResults, recordSkillResults } from '@/lib/skill-profile';
+import { sendWorkoutReportEmail } from '@/lib/email/workout-report-email';
+import { pickHardestSolve } from '@/lib/workout/hardest-solve';
 
 // Cap stored missed puzzles to bound the row size.
 const MAX_MISSED = 30;
@@ -259,6 +261,10 @@ export async function POST(request: NextRequest) {
     sessionId = existing?.id ?? null;
   }
 
+  // Per-puzzle results (themes, rating, correct, fen) — feeds the skill
+  // profile and the "hardest one you solved" board in the email.
+  const puzzleResults = parsePuzzleResults(body.puzzleResults);
+
   // Award points + record seen puzzles exactly once per logical session.
   let nextTotal = current;
   if (!replayed) {
@@ -287,7 +293,7 @@ export async function POST(request: NextRequest) {
     // Skill profile: fold every puzzle result into user_skill by theme.
     // Non-fatal, service-role (no user write policy on the table).
     if (FEATURE_FLAGS.SKILL_PROFILE) {
-      const results = parsePuzzleResults(body.puzzleResults);
+      const results = puzzleResults;
       if (results.length > 0) {
         await recordSkillResults(createServiceClient(), user.id, results).catch((e) =>
           console.error('skill profile write failed', e),
@@ -323,6 +329,34 @@ export async function POST(request: NextRequest) {
       },
       body.tz,
     );
+  }
+
+  // Post-workout email: the card + the link to the interactive report (or
+  // Fix-It on a clean card). Runs AFTER the response is sent so the result
+  // card never waits on Resend; a replay must never mail twice.
+  if (!replayed && sessionId) {
+    const emailInput = {
+      userId: user.id,
+      sessionId,
+      score: sessionStored,
+      correct: Math.max(0, correct),
+      wrong: Math.max(0, wrong),
+      punches: punches > 0 ? punches : undefined,
+      bestRound: bestRoundPoints > 0 ? bestRoundPoints : undefined,
+      isPersonalBest,
+      previousBest: previousBest > 0 ? previousBest : undefined,
+      hardest: pickHardestSolve(puzzleResults),
+      tz: body.tz,
+    };
+    after(async () => {
+      try {
+        const r = await sendWorkoutReportEmail(emailInput);
+        if (r.status === 'failed') console.error('[workout finish] report email failed', r.error);
+        else console.log(`[workout finish] report email ${r.status}`, 'reason' in r ? r.reason : '');
+      } catch (e) {
+        console.error('[workout finish] report email threw', e);
+      }
+    });
   }
 
   return NextResponse.json({

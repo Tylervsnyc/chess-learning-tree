@@ -32,6 +32,13 @@ export const FEATURE_FLAGS = {
   /** Post-workout report: /workout/report/[sessionId] — step through each miss on a board (red = yours, green = the answer, line auto-plays, Rookie explains), then the common pattern, then "why these 10" → Fix-It. */
   WORKOUT_REPORT: true,
   /**
+   * Post-workout email (cb_workout_report): fired from /api/workout/finish the
+   * moment a fresh session lands — the card, Rookie's line, and the link to
+   * /workout/report/[id] (or Fix-It on a clean card). Also needs
+   * CB_EMAIL_LIFECYCLE_ENABLED=true on the server; see lib/email/workout-report-email.ts.
+   */
+  WORKOUT_REPORT_EMAIL: true,
+  /**
    * CHE-390 — webview-safe auth. Inside social in-app browsers (Instagram,
    * Facebook, TikTok), Google blocks OAuth outright (`disallowed_useragent`) —
    * during the 2026-06 paid IG probe every webview OAuth tap died. When ON,
