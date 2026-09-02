@@ -2373,7 +2373,7 @@ export default function PlayRookiePage() {
       </span>
       )}
       <ActionButton
-        color="green"
+        color="blue"
         size="md"
         aria-label="Next move"
         onClick={reviewNext}
