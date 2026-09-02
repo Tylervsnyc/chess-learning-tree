@@ -13,10 +13,13 @@ import { stockfish } from '@/lib/stockfish/stockfish-adapter';
  * engine's best move for whoever is to move at every position in it.
  *
  * Engine sequencing: the shared Stockfish adapter runs one `go` at a time from
- * a FIFO queue, and the deep post-game pass awaits each position before
- * enqueuing the next. A branch eval queued mid-pass therefore runs right after
- * the deep search that's in flight and never cancels it — it just delays the
- * next deep position by ~1s (depth 12). Nothing here calls `stockfish.cancel()`.
+ * a FIFO queue, and every deep post-game pass in the app awaits each position
+ * before enqueuing the next (usePostGameAnalysis on /play, useGameReview for
+ * GameReview — the bout and /review surfaces). A branch eval queued mid-pass
+ * therefore runs right after the deep search that's in flight and never
+ * cancels it — it just delays the next deep position by ~1s (depth 12).
+ * Nothing here calls `stockfish.cancel()`. Surface-agnostic: the only input is
+ * `getMainline`.
  */
 
 export interface BranchMove {

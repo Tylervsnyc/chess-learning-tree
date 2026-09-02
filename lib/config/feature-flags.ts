@@ -225,10 +225,10 @@ export const FEATURE_FLAGS = {
    * keep playing the line (you move both sides), see the engine's best-move
    * arrow at every position, then "Back to game". Gates ONLY the ability to
    * start a branch (hooks/useReviewBranch.ts) — stepping through the game is
-   * unchanged. ON in dev; set NEXT_PUBLIC_REVIEW_VARIATIONS=1 (or flip to
-   * `true`) to turn it on in production.
+   * unchanged. ON everywhere since 2026-09-02 (web + both iOS bundles); it
+   * also lives in components/shared/GameReview.tsx (bout review, /review).
    */
-  REVIEW_VARIATIONS: process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_REVIEW_VARIATIONS === '1',
+  REVIEW_VARIATIONS: true,
 } as const;
 
 /**

@@ -32,6 +32,7 @@ export const ROUTE_ALLOWLIST = [
   'box',                    // Chess Boxing
   'box/settings',
   'box/onboarding',
+  'box/bout',               // Fight — RingHome links here; was missing from the bundle
   'workout',
   'level-test/[transition]',
   'profile',
