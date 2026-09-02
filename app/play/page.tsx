@@ -57,6 +57,7 @@ import { useDailyStreak } from '@/hooks/useDailyStreak';
 import { classifyOpening } from '@/lib/opening-classifier';
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
+import { useReviewBranch } from '@/hooks/useReviewBranch';
 import { usePremove } from '@/hooks/usePremove';
 import { premoveDests, premoveSquareStyles } from '@/lib/chess/premove';
 import { SignupPrompt } from '@/components/onboarding/SignupPrompt';
@@ -1694,6 +1695,24 @@ export default function PlayRookiePage() {
     setEvalPct(evalToWhitePercent(ev.cp, ev.mate));
   }, []);
 
+  // "Try it" variations — one optional line branched off the mainline
+  // (hooks/useReviewBranch.ts). The root is derived from reviewMoveIndex, not
+  // the displayed `fen`, so it stays the mainline position even mid-branch.
+  const reviewEvalsRef = useRef(reviewEvals);
+  reviewEvalsRef.current = reviewEvals;
+  const reviewMoveIndexRef = useRef(reviewMoveIndex);
+  reviewMoveIndexRef.current = reviewMoveIndex;
+  const branch = useReviewBranch({
+    getMainline: () => {
+      const ply = reviewMoveIndexRef.current;
+      const move = ply >= 0 ? moveLogRef.current[ply] : null;
+      const evals = reviewEvalsRef.current ?? positionEvalsRef.current;
+      return { ply: move ? ply : -1, fen: move ? move.fenAfter : START_FEN, eval: evals[(move ? ply : -1) + 1] ?? null };
+    },
+  });
+  const branchInRef = useRef(branch.inBranch);
+  branchInRef.current = branch.inBranch;
+
   const navigateToMove = useCallback((index: number) => {
     const moves = moveLogRef.current;
     if (index < 0) {
@@ -1788,12 +1807,122 @@ export default function PlayRookiePage() {
 
   // Re-render current review position when Claude commentary arrives
   useEffect(() => {
-    if (coachReady > 0 && phase === 'review') {
+    if (coachReady > 0 && phase === 'review' && !branchInRef.current) {
       console.log('[coach-review] coachReady fired, re-navigating to move', reviewMoveIndex);
       navigateToMove(reviewMoveIndex);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coachReady]);
+
+  // ── Review branch ("Try it") wiring ──
+  const canBranch = FEATURE_FLAGS.REVIEW_VARIATIONS;
+
+  // Leaving review (Play Again, navigating away) clears the branch; entering
+  // review therefore always starts without one.
+  const branchExit = branch.exit;
+  useEffect(() => {
+    if (phase !== 'review') branchExit();
+  }, [phase, branchExit]);
+
+  // The board follows the branch cursor. Exiting is handled by exitBranch
+  // below (this effect only runs while a branch exists).
+  useEffect(() => {
+    if (phase !== 'review' || !branch.inBranch || !branch.currentFen) return;
+    setFen(branch.currentFen);
+    setLastMv(branch.currentMove ? { from: branch.currentMove.from as Square, to: branch.currentMove.to as Square } : null);
+    setSelected(null);
+  }, [phase, branch.inBranch, branch.currentFen, branch.currentMove]);
+
+  const exitBranch = useCallback(() => {
+    const root = branch.rootPly;
+    branch.exit();
+    setSelected(null);
+    navigateToMove(root);
+  }, [branch, navigateToMove]);
+
+  const reviewPrev = useCallback(() => {
+    if (branch.inBranch) {
+      if (branch.cursor < 0) exitBranch();
+      else branch.back();
+      return;
+    }
+    navigateToMove(reviewMoveIndex - 1);
+  }, [branch, exitBranch, navigateToMove, reviewMoveIndex]);
+
+  const reviewNext = useCallback(() => {
+    if (branch.inBranch) { branch.forward(); return; }
+    navigateToMove(reviewMoveIndex + 1);
+  }, [branch, navigateToMove, reviewMoveIndex]);
+
+  // Tapping the graph always returns to the mainline.
+  const selectGraphMove = useCallback((index: number) => {
+    if (branch.inBranch) { branch.exit(); setSelected(null); }
+    navigateToMove(index);
+  }, [branch, navigateToMove]);
+
+  /** Board drop in review: start or extend the branch (queen promotion). */
+  const onReviewDrop = useCallback((from: Square, to: Square): boolean => {
+    if (!canBranch) return false;
+    return branch.startOrExtend(from, to);
+  }, [canBranch, branch]);
+
+  /** Tap-to-move in review: the side to move owns the pieces (both sides are the user). */
+  const onReviewSquareClick = useCallback((square: Square) => {
+    if (!canBranch) return;
+    const turn = game.turn();
+    const piece = game.get(square);
+    if (!selected) {
+      if (piece && piece.color === turn) setSelected(square);
+      return;
+    }
+    if (selected === square) { setSelected(null); return; }
+    const legal = game.moves({ square: selected, verbose: true }).some(m => m.to === square);
+    if (legal) {
+      branch.startOrExtend(selected, square);
+      setSelected(null);
+      return;
+    }
+    setSelected(piece && piece.color === turn ? square : null);
+  }, [canBranch, game, selected, branch]);
+
+  // Keyboard: ArrowLeft/ArrowRight step the review (branch-aware). Registered
+  // only in the review phase; ignored while typing in a field.
+  const reviewKeysRef = useRef({ prev: reviewPrev, next: reviewNext });
+  reviewKeysRef.current = { prev: reviewPrev, next: reviewNext };
+  useEffect(() => {
+    if (phase !== 'review') return;
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); reviewKeysRef.current.prev(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); reviewKeysRef.current.next(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase]);
+
+  // The branch label keeps its TAIL visible (latest moves) and shows a leading
+  // ellipsis only when the line really overflows the space it has.
+  const branchLabelRef = useRef<HTMLSpanElement | null>(null);
+  const branchLabelTextRef = useRef<HTMLSpanElement | null>(null);
+  const [branchLabelClipped, setBranchLabelClipped] = useState(false);
+  useEffect(() => {
+    const outer = branchLabelRef.current;
+    const inner = branchLabelTextRef.current;
+    if (!outer || !inner) { setBranchLabelClipped(false); return; }
+    const measure = () => setBranchLabelClipped(inner.offsetWidth > outer.clientWidth + 1);
+    measure();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(outer);
+    return () => ro?.disconnect();
+  }, [branch.lineSan]);
+
+  // Best-move arrow for the branch position (instant PV hint, then depth 12).
+  const branchArrows = useMemo(() => {
+    if (!branch.inBranch || !showBestArrow || !branch.bestMoveForCurrent) return [];
+    const uci = branch.bestMoveForCurrent;
+    return [{ startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: ARROW_BEST }];
+  }, [branch.inBranch, branch.bestMoveForCurrent, showBestArrow]);
 
   // ════════════════════════════════
   // SQUARE STYLES
@@ -1803,13 +1932,13 @@ export default function PlayRookiePage() {
   // navigation can't recompute all 64 square styles during live play — in
   // play/gameover this stays null, so sqStyles only depends on the position.
   const reviewClassification = useMemo(() => {
-    if (phase !== 'review' || reviewMoveIndex < 0) return null;
+    if (phase !== 'review' || reviewMoveIndex < 0 || branch.inBranch) return null;
     const move = moveLogRef.current[reviewMoveIndex];
     if (!move || !postGame.analysis) return null;
     const cls = postGame.analysis.moves[reviewMoveIndex]?.classification ?? null;
     return cls === 'unknown' ? null : cls; // ungradable move — no badge
 
-  }, [phase, reviewMoveIndex, postGame.analysis]);
+  }, [phase, reviewMoveIndex, postGame.analysis, branch.inBranch]);
 
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
@@ -1841,7 +1970,7 @@ export default function PlayRookiePage() {
     if (selected) {
       s[selected] = { ...s[selected], background: 'rgba(20, 85, 200, 0.5)' };
       // On our turn: real legal moves. On Rookie's turn: relaxed premove targets.
-      const onOurTurn = isMyTurn;
+      const onOurTurn = isMyTurn || phase === 'review';
       const dests = onOurTurn
         ? game.moves({ square: selected, verbose: true }).map(m => m.to as Square)
         : premoveEnabled ? premoveDests(fen, selected, playerColor === 'white' ? 'w' : 'b') : [];
@@ -1860,7 +1989,7 @@ export default function PlayRookiePage() {
       s[sq] = { ...s[sq], ...style };
     }
     return s;
-  }, [game, fen, lastMv, selected, reviewClassification, isMyTurn, premove, premoveEnabled, playerColor]);
+  }, [game, fen, lastMv, selected, reviewClassification, isMyTurn, premove, premoveEnabled, playerColor, phase]);
 
   const resetToSetup = useCallback(() => {
     PlayEvents.playAgainClicked(lastResultForTrackingRef.current, rookieLevel);
@@ -2187,17 +2316,35 @@ export default function PlayRookiePage() {
   const atEnd = reviewMoveIndex >= reviewTotalMoves - 1;
   const reviewBtn =
     'w-11 h-11 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-transform select-none touch-manipulation';
+  const inBranch = branch.inBranch;
+  // Trying a line: the label keeps the latest moves visible (clipped from the
+  // front, see branchLabelClipped). Bounded so a very long line stays cheap.
+  const branchLabel = branch.lineSan.length > 80 ? branch.lineSan.slice(-80) : branch.lineSan;
   const reviewNav = (
     <div className="flex items-center justify-center gap-2 py-1">
       <button
         type="button"
         aria-label="Previous move"
-        onClick={() => navigateToMove(reviewMoveIndex - 1)}
-        disabled={atStart}
+        onClick={reviewPrev}
+        disabled={!inBranch && atStart}
         className={reviewBtn}
       >
         &#9665;
       </button>
+      {inBranch ? (
+        <span
+          ref={branchLabelRef}
+          className="relative flex-1 min-w-0 max-w-[16rem] h-11 flex items-center justify-end overflow-hidden text-[11px] font-mono font-semibold text-amber-700"
+          title={branch.lineSan}
+        >
+          {branchLabelClipped && (
+            <span aria-hidden className="absolute left-0 top-0 h-full flex items-center pr-1 bg-chess-page">&#8230;</span>
+          )}
+          <span ref={branchLabelTextRef} className="whitespace-nowrap flex-shrink-0">
+            Trying: {branchLabel}
+          </span>
+        </span>
+      ) : (
       <span className="text-xs text-chess-text-muted font-medium min-w-[56px] text-center font-mono inline-flex items-center justify-center gap-1">
         {reviewMoveIndex < 0 ? 'Start' : (() => {
           const m = moveLogRef.current[reviewMoveIndex];
@@ -2219,15 +2366,26 @@ export default function PlayRookiePage() {
           </span>
         )}
       </span>
+      )}
       <button
         type="button"
         aria-label="Next move"
-        onClick={() => navigateToMove(reviewMoveIndex + 1)}
-        disabled={atEnd}
+        onClick={reviewNext}
+        disabled={inBranch ? branch.atTip : atEnd}
         className={reviewBtn}
       >
         &#9655;
       </button>
+      {inBranch ? (
+        <button
+          type="button"
+          aria-label="Back to game"
+          onClick={exitBranch}
+          className="ml-2 min-h-[44px] px-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 text-[11px] font-bold whitespace-nowrap flex items-center justify-center active:scale-95 transition-transform select-none touch-manipulation"
+        >
+          Back to game
+        </button>
+      ) : (
       <button
         type="button"
         aria-label="Jump to end"
@@ -2237,24 +2395,8 @@ export default function PlayRookiePage() {
       >
         &#9655;|
       </button>
+      )}
     </div>
-  );
-  const bestArrowToggle = (
-    <label className="flex items-center justify-center gap-2 text-[11px] font-semibold text-chess-text-muted select-none cursor-pointer min-h-[44px]">
-      <input
-        type="checkbox"
-        checked={showBestArrow}
-        onChange={(e) => {
-          const on = e.target.checked;
-          setShowBestArrow(on);
-          showBestArrowRef.current = on;
-          try { localStorage.setItem(BEST_ARROW_KEY, on ? 'on' : 'off'); } catch { /* private mode */ }
-          navigateToMove(reviewMoveIndex);
-        }}
-        className="w-4 h-4 accent-chess-green"
-      />
-      Show best-move arrow
-    </label>
   );
 
   // ════════════════════════════════
@@ -2443,6 +2585,21 @@ export default function PlayRookiePage() {
           {isReview ? (
             <div className="mb-2">
               <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] flex items-center gap-2.5">
+                {branch.inBranch ? (
+                  <p className="text-[13px] leading-snug font-medium text-chess-text-muted">
+                    Trying a line. Tap Back to game to return.
+                    {branch.currentEval && (branch.currentEval.cp !== null || branch.currentEval.mate !== null) && (
+                      <span className="ml-2 font-mono text-[11px] text-amber-700">
+                        {branch.currentEval.mate !== null
+                          ? `M${Math.abs(branch.currentEval.mate)}`
+                          : (() => {
+                              const v = Math.round((branch.currentEval.cp ?? 0) / 10) / 10 || 0; // no "-0.0"
+                              return `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+                            })()}
+                      </span>
+                    )}
+                  </p>
+                ) : (<>
                 {!coachReady && (
                   <div className="flex-shrink-0">
                     <BreathingRook size="xs" animation="think" />
@@ -2454,6 +2611,7 @@ export default function PlayRookiePage() {
                 }`}>
                   {!coachReady ? 'Rookie is reviewing your game...' : (reviewText || 'Use the arrows to step through the game.')}
                 </p>
+                </>)}
               </div>
             </div>
           ) : (
@@ -2549,6 +2707,24 @@ export default function PlayRookiePage() {
                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${soundsOn ? 'translate-x-4' : ''}`} />
                       </button>
                     </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-chess-text">Best-move arrow</p>
+                        <p className="text-[10px] text-chess-text-faint">Engine&apos;s reply, shown in review</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const on = !showBestArrow;
+                          setShowBestArrow(on);
+                          showBestArrowRef.current = on;
+                          try { localStorage.setItem(BEST_ARROW_KEY, on ? 'on' : 'off'); } catch { /* private mode */ }
+                          if (phase === 'review') navigateToMove(reviewMoveIndex);
+                        }}
+                        className={`relative w-10 h-6 rounded-full transition-colors ${showBestArrow ? 'bg-chess-green' : 'bg-chess-disabled'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${showBestArrow ? 'translate-x-4' : ''}`} />
+                      </button>
+                    </div>
                     <div>
                       <p className="text-xs font-bold text-chess-text">Rookie&apos;s mood</p>
                       <input
@@ -2624,7 +2800,9 @@ export default function PlayRookiePage() {
             options={{
               position: fen,
               boardOrientation: playerColor,
-              onPieceDrop: isReview ? undefined : ((args: any) => {
+              onPieceDrop: isReview
+                ? (canBranch ? ((args: any) => onReviewDrop(args.sourceSquare as Square, args.targetSquare as Square)) as any : undefined)
+                : ((args: any) => {
                 const from = args.sourceSquare as Square;
                 const to = args.targetSquare as Square;
                 // Dragging on Rookie's turn sets a premove instead. It returns
@@ -2634,10 +2812,14 @@ export default function PlayRookiePage() {
                 if (rookieThinking || !isMyTurn) return onPremoveDrop(from, to);
                 return doPlayerMove(from, to);
               }) as any,
-              onSquareClick: isReview ? undefined : ((args: any) => { startMusicIfEnabled(); onClickSquare(args.square as Square); }) as any,
+              onSquareClick: isReview
+                ? (canBranch ? ((args: any) => onReviewSquareClick(args.square as Square)) as any : undefined)
+                : ((args: any) => { startMusicIfEnabled(); onClickSquare(args.square as Square); }) as any,
               squareStyles: sqStyles,
               animationDurationInMs: ANIM_MS,
-              ...(isReview && reviewArrows.length > 0 ? { arrows: reviewArrows } : {}),
+              ...(isReview && (branch.inBranch ? branchArrows : reviewArrows).length > 0
+                ? { arrows: branch.inBranch ? branchArrows : reviewArrows }
+                : {}),
             }}
           />
           </div>
@@ -2654,15 +2836,17 @@ export default function PlayRookiePage() {
 
             {/* Eval graph — the whole game, board-width; tap/drag to seek */}
             {phase === 'review' && (
-              <EvalGraph
-                evals={reviewEvals ?? positionEvalsRef.current}
-                moves={moveLogRef.current.map((m, i) => ({
-                  movedBy: m.movedBy,
-                  classification: postGame.analysis?.moves[i]?.classification ?? null,
-                }))}
-                currentMoveIndex={reviewMoveIndex}
-                onSelectMove={navigateToMove}
-              />
+              <div className={branch.inBranch ? 'opacity-50 transition-opacity' : 'transition-opacity'}>
+                <EvalGraph
+                  evals={reviewEvals ?? positionEvalsRef.current}
+                  moves={moveLogRef.current.map((m, i) => ({
+                    movedBy: m.movedBy,
+                    classification: postGame.analysis?.moves[i]?.classification ?? null,
+                  }))}
+                  currentMoveIndex={branch.inBranch ? branch.rootPly : reviewMoveIndex}
+                  onSelectMove={selectGraphMove}
+                />
+              </div>
             )}
 
             {/* Phase-specific content */}
@@ -2733,10 +2917,7 @@ export default function PlayRookiePage() {
                 </div>
               </div>
             ) : phase === 'review' ? (
-              <div className="space-y-1">
-                {reviewNav}
-                {bestArrowToggle}
-              </div>
+              reviewNav
             ) : (
               <div className="h-5" />
             )}
@@ -2750,7 +2931,7 @@ export default function PlayRookiePage() {
           <div className="w-full max-w-md md:max-w-[40rem] mx-auto">
             <button
               onClick={() => resetToSetup()}
-              className="w-full min-h-[44px] py-2.5 bg-chess-green text-white font-bold rounded-xl text-sm"
+              className="block mx-auto w-full max-w-[240px] min-h-[44px] py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
             >
               Play Again
             </button>
