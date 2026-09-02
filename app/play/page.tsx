@@ -4,8 +4,9 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
+import { EvalGraph } from '@/components/shared/EvalGraph';
 import { MusicMenu } from '@/components/shared/MusicMenu';
-import { startMusicIfEnabled } from '@/lib/music';
+import { startMusicIfEnabled, getMusicPrefs, setMusicTrack, subscribeMusic } from '@/lib/music';
 import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
 
 // Orange-and-blue rook body during the Knicks Finals window; undefined otherwise.
@@ -501,6 +502,16 @@ export default function PlayRookiePage() {
   const [reviewMoveIndex, setReviewMoveIndex] = useState(0);
   const [reviewText, setReviewText] = useState<string | null>(null);
   const [reviewArrows, setReviewArrows] = useState<{ startSquare: string; endSquare: string; color: string }[]>([]);
+  // Depth-18 evals from the post-game pass — drives the eval graph once they
+  // land (the graph shows the quick in-game evals until then).
+  const [reviewEvals, setReviewEvals] = useState<PositionEval[] | null>(null);
+  // Review setting: golden "engine's best reply" arrow on/off (per device).
+  const BEST_ARROW_KEY = 'cp_review_best_arrow';
+  const [showBestArrow, setShowBestArrow] = useState<boolean>(() => {
+    try { return localStorage.getItem(BEST_ARROW_KEY) !== 'off'; } catch { return true; }
+  });
+  const showBestArrowRef = useRef(showBestArrow);
+  showBestArrowRef.current = showBestArrow;
 
   // Claude coaching commentary (per-move, fetched at game end)
   const coachCommentaryRef = useRef<Record<string, string>>({}); // "1w" -> text, "1b" -> text
@@ -746,6 +757,19 @@ export default function PlayRookiePage() {
   // AUDIO (with real-time amplitude for talk animation)
   // ════════════════════════════════
   const { speakQuip, talkIntensity, isTalking, isTalkingRef, stopAudio } = useRookieVoice(audioOn);
+
+  // Music and Rookie's voice are either/or: picking a track silences her
+  // (voice off, current line cut), and turning her voice back on stops the music.
+  useEffect(() => {
+    const sync = () => {
+      if (getMusicPrefs().track !== null) {
+        setAudioOn(false);
+        stopAudio();
+      }
+    };
+    sync();
+    return subscribeMusic(sync);
+  }, [stopAudio]);
 
   // ── Speech system (replaces getRookieQuip + getMoodShiftQuip) ──
   // No opening line — Rookie stays quiet until the game gives her something
@@ -1198,6 +1222,7 @@ export default function PlayRookiePage() {
       postGame.setInstantAnalysis(analysis);
       postGame.analyze(moves, playerColor).then((deep) => {
         if (!deep) return;
+        setReviewEvals(deep.evals);
         // Update key moments with deeper eval
         const deepMoveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
         setKeyMoments(extractKeyMoments(deep.analysis, deepMoveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
@@ -1733,7 +1758,7 @@ export default function PlayRookiePage() {
     // Best move arrow (golden) — show opponent's best response from this position
     const evals = positionEvalsRef.current;
     const posEval = evals[index + 1]; // eval after this move
-    if (posEval?.bestMove) {
+    if (posEval?.bestMove && showBestArrowRef.current) {
       const from = posEval.bestMove.slice(0, 2);
       const to = posEval.bestMove.slice(2, 4);
       setReviewArrows([{ startSquare: from, endSquare: to, color: ARROW_BEST }]);
@@ -1851,6 +1876,7 @@ export default function PlayRookiePage() {
     coachTakeawayRef.current = null;
     setCoachReady(0);
     coachStageRef.current = 'none';
+    setReviewEvals(null);
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
@@ -1907,6 +1933,7 @@ export default function PlayRookiePage() {
     coachTakeawayRef.current = null;
     setCoachReady(0);
     coachStageRef.current = 'none';
+    setReviewEvals(null);
     setFen(START_FEN);
     setLastMv(null);
     setSelected(null);
@@ -2146,39 +2173,6 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // EVAL BAR (Candidates video style — horizontal with eval number inside)
   // ════════════════════════════════
-  const EvalBar = () => {
-    const cp = evalCp.current;
-    const mate = evalMate.current;
-    const isWhiteAdvantage = mate !== null ? mate > 0 : cp >= 0;
-    const displayEval = mate !== null
-      ? 'M' + Math.abs(mate)
-      : (Math.abs(cp) / 100).toFixed(1);
-    const showEval = mate !== null || Math.abs(cp) > 10;
-
-    return (
-      <div className="flex h-4 w-full items-stretch overflow-hidden rounded">
-        {/* White section */}
-        <div
-          className="relative flex items-center justify-end pr-1.5 transition-all duration-500 ease-out"
-          style={{ width: `${evalPct}%`, backgroundColor: '#e8e8e8' }}
-        >
-          {isWhiteAdvantage && showEval && (
-            <span className="text-[8px] font-bold text-neutral-800">+{displayEval}</span>
-          )}
-        </div>
-        {/* Black section */}
-        <div
-          className="relative flex items-center pl-1.5 transition-all duration-500 ease-out"
-          style={{ width: `${100 - evalPct}%`, backgroundColor: '#2A3C45' }}
-        >
-          {!isWhiteAdvantage && showEval && (
-            <span className="text-[8px] font-bold text-white">+{displayEval}</span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   // ════════════════════════════════
   // REVIEW NAVIGATION
   // ════════════════════════════════
@@ -2195,15 +2189,6 @@ export default function PlayRookiePage() {
     'w-11 h-11 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-transform select-none touch-manipulation';
   const reviewNav = (
     <div className="flex items-center justify-center gap-2 py-1">
-      <button
-        type="button"
-        aria-label="Jump to start"
-        onClick={() => navigateToMove(-1)}
-        disabled={atStart}
-        className={reviewBtn}
-      >
-        |&#9665;
-      </button>
       <button
         type="button"
         aria-label="Previous move"
@@ -2248,11 +2233,28 @@ export default function PlayRookiePage() {
         aria-label="Jump to end"
         onClick={() => navigateToMove(reviewTotalMoves - 1)}
         disabled={atEnd}
-        className={reviewBtn}
+        className={`${reviewBtn} ml-4 !w-9 !h-9 text-xs text-chess-text-faint`}
       >
         &#9655;|
       </button>
     </div>
+  );
+  const bestArrowToggle = (
+    <label className="flex items-center justify-center gap-2 text-[11px] font-semibold text-chess-text-muted select-none cursor-pointer min-h-[44px]">
+      <input
+        type="checkbox"
+        checked={showBestArrow}
+        onChange={(e) => {
+          const on = e.target.checked;
+          setShowBestArrow(on);
+          showBestArrowRef.current = on;
+          try { localStorage.setItem(BEST_ARROW_KEY, on ? 'on' : 'off'); } catch { /* private mode */ }
+          navigateToMove(reviewMoveIndex);
+        }}
+        className="w-4 h-4 accent-chess-green"
+      />
+      Show best-move arrow
+    </label>
   );
 
   // ════════════════════════════════
@@ -2523,10 +2525,13 @@ export default function PlayRookiePage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-bold text-chess-text">Rookie commentary</p>
-                        <p className="text-[10px] text-chess-text-faint">Voice and speech bubbles</p>
+                        <p className="text-[10px] text-chess-text-faint">Voice and speech bubbles. Turns music off.</p>
                       </div>
                       <button
-                        onClick={() => setAudioOn(v => !v)}
+                        onClick={() => {
+                          if (!audioOn) setMusicTrack(null); // voice on = music off
+                          setAudioOn(v => !v);
+                        }}
                         className={`relative w-10 h-6 rounded-full transition-colors ${audioOn ? 'bg-chess-green' : 'bg-chess-disabled'}`}
                       >
                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${audioOn ? 'translate-x-4' : ''}`} />
@@ -2646,8 +2651,18 @@ export default function PlayRookiePage() {
               />
             </div>
 
-            {/* Eval bar — only visible during review (eval still runs during play for Rookie mood) */}
-            {phase === 'review' && <EvalBar />}
+            {/* Eval graph — the whole game, board-width; tap/drag to seek */}
+            {phase === 'review' && (
+              <EvalGraph
+                evals={reviewEvals ?? positionEvalsRef.current}
+                moves={moveLogRef.current.map((m, i) => ({
+                  movedBy: m.movedBy,
+                  classification: postGame.analysis?.moves[i]?.classification ?? null,
+                }))}
+                currentMoveIndex={reviewMoveIndex}
+                onSelectMove={navigateToMove}
+              />
+            )}
 
             {/* Phase-specific content */}
             {phase === 'playing' && isMyTurn && !rookieThinking ? (
@@ -2717,14 +2732,9 @@ export default function PlayRookiePage() {
                 </div>
               </div>
             ) : phase === 'review' ? (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {reviewNav}
-                <button
-                  onClick={() => resetToSetup()}
-                  className="w-full py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
-                >
-                  Play Again
-                </button>
+                {bestArrowToggle}
               </div>
             ) : (
               <div className="h-5" />
@@ -2732,6 +2742,20 @@ export default function PlayRookiePage() {
           </div>
         </div>
       </div>
+
+      {/* Review: Play Again pinned to the bottom, clear of the move controls */}
+      {isReview && (
+        <div className="flex-shrink-0 px-4 md:px-6 pt-2 pb-3">
+          <div className="w-full max-w-md md:max-w-[40rem] mx-auto">
+            <button
+              onClick={() => resetToSetup()}
+              className="w-full min-h-[44px] py-2.5 bg-chess-green text-white font-bold rounded-xl text-sm"
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="pb-[env(safe-area-inset-bottom)] flex-shrink-0" />
 
