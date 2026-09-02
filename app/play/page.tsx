@@ -586,6 +586,18 @@ export default function PlayRookiePage() {
   const moveStartRef = useRef<number>(Date.now());
   // Local move log — always tracks moves for review, even without login
   const moveLogRef = useRef<MoveRecord[]>([]);
+  // Threefold repetition. Every move rebuilds the board from a FEN string, so
+  // chess.js has no history and its own isDraw() can never see a repetition —
+  // count it from the move log instead (called AFTER the move is recorded).
+  const positionKey = (f: string) => f.split(' ').slice(0, 4).join(' ');
+  const isThreefoldRepetition = () => {
+    const log = moveLogRef.current;
+    if (log.length < 8) return false;
+    const key = positionKey(log[log.length - 1].fenAfter);
+    let n = positionKey(START_FEN) === key ? 1 : 0;
+    for (const m of log) if (positionKey(m.fenAfter) === key) n++;
+    return n >= 3;
+  };
   // Wall clock for the game, for the share card's TIME tile.
   const gameStartRef = useRef<number>(Date.now());
   // Fight Night share GIF, rendered on-device the moment the game ends so
@@ -1440,10 +1452,11 @@ export default function PlayRookiePage() {
       // Run 6-layer narrative engine (async, non-blocking)
       processNarrative(g, result, 'rookie', newFen).catch(() => {});
 
-      if (g.isGameOver()) {
+      const byRepetition = !g.isGameOver() && isThreefoldRepetition();
+      if (g.isGameOver() || byRepetition) {
         const resultText = g.isCheckmate()
           ? ((g.turn() === 'w' && playerColor === 'white') || (g.turn() === 'b' && playerColor === 'black') ? 'Rookie wins by checkmate' : 'Player wins by checkmate')
-          : g.isStalemate() ? 'Stalemate' : 'Draw';
+          : g.isStalemate() ? 'Stalemate' : byRepetition ? 'Draw by repetition' : 'Draw';
         log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: resultText, details: {} });
         if (g.isCheckmate()) {
           const loser = g.turn();
@@ -1451,9 +1464,9 @@ export default function PlayRookiePage() {
           setGameResult(iLost ? 'Rookie wins!' : 'You win!');
           if (!iLost && soundsOnRef.current) playCelebrationSound();
         } else {
-          setGameResult(g.isStalemate() ? 'Stalemate!' : 'Draw!');
+          setGameResult(g.isStalemate() ? 'Stalemate!' : byRepetition ? 'Draw by repetition!' : 'Draw!');
         }
-        endSession(g);
+        endSession(g, byRepetition ? { result: 'draw' } : undefined);
         setPhase('gameover');
         setShowActivityComplete(true);
       }
@@ -1580,10 +1593,11 @@ export default function PlayRookiePage() {
       // Run 6-layer narrative engine (async, non-blocking for authored quips)
       processNarrative(g, result, 'player', newFen).catch(() => {});
 
-      if (g.isGameOver()) {
+      const byRepetition = !g.isGameOver() && isThreefoldRepetition();
+      if (g.isGameOver() || byRepetition) {
         const resultText = g.isCheckmate()
           ? ((g.turn() === 'w' && playerColor === 'white') || (g.turn() === 'b' && playerColor === 'black') ? 'Rookie wins by checkmate' : 'Player wins by checkmate')
-          : g.isStalemate() ? 'Stalemate' : 'Draw';
+          : g.isStalemate() ? 'Stalemate' : byRepetition ? 'Draw by repetition' : 'Draw';
         log({ moveNum: moveNumRef.current, type: 'game-event', who: 'system', summary: resultText, details: {} });
         if (g.isCheckmate()) {
           const loser = g.turn();
@@ -1591,9 +1605,9 @@ export default function PlayRookiePage() {
           setGameResult(iLost ? 'Rookie wins!' : 'You win!');
           if (!iLost && soundsOnRef.current) playCelebrationSound();
         } else {
-          setGameResult(g.isStalemate() ? 'Stalemate!' : 'Draw!');
+          setGameResult(g.isStalemate() ? 'Stalemate!' : byRepetition ? 'Draw by repetition!' : 'Draw!');
         }
-        endSession(g);
+        endSession(g, byRepetition ? { result: 'draw' } : undefined);
         setPhase('gameover');
         setShowActivityComplete(true);
         return true;
