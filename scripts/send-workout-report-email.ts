@@ -21,6 +21,46 @@ import { BoxingWorkoutReport } from '../lib/email/templates/BoxingWorkoutReport'
 import { sendWorkoutReportEmail } from '../lib/email/workout-report-email';
 import { getUnsubscribeUrl, getAppUrl } from '../lib/email/send';
 import { getResendClient, CB_EMAIL_FROM } from '../lib/email/resend';
+import { pickHardestSolve, type HardestSolve } from '../lib/workout/hardest-solve';
+import { readFileSync, readdirSync } from 'fs';
+
+/**
+ * Sessions finished before 2026-09-02 never sent fen/moves per result, so the
+ * "hardest one you solved" has to be rebuilt: puzzles seen in the session
+ * window minus the misses, rated via data/puzzle-rating-index.json, position
+ * looked up in data/clean-puzzles-v2.
+ */
+async function rebuildHardest(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  createdAt: string,
+  missedIds: Set<string>,
+): Promise<HardestSolve | null> {
+  const end = new Date(createdAt);
+  const start = new Date(end.getTime() - 45 * 60 * 1000);
+  const { data: seen } = await supabase
+    .from('workout_seen_puzzles')
+    .select('puzzle_id')
+    .eq('user_id', userId)
+    .gte('seen_at', start.toISOString())
+    .lte('seen_at', new Date(end.getTime() + 60_000).toISOString());
+  const ids = (seen ?? []).map((r) => String(r.puzzle_id)).filter((id) => !missedIds.has(id));
+  if (ids.length === 0) return null;
+  const ratings: Record<string, number> = JSON.parse(readFileSync('data/puzzle-rating-index.json', 'utf8'));
+  const ranked = ids.filter((id) => ratings[id]).sort((a, b) => ratings[b] - ratings[a]);
+  for (const id of ranked) {
+    for (const f of readdirSync('data/clean-puzzles-v2')) {
+      if (!f.endsWith('.json')) continue;
+      const raw = readFileSync(`data/clean-puzzles-v2/${f}`, 'utf8');
+      if (!raw.includes(`"${id}"`)) continue;
+      const file = JSON.parse(raw) as { puzzles: { puzzleId: string; fen: string; moves: string; rating: number }[] };
+      const pz = file.puzzles.find((x) => x.puzzleId === id);
+      if (!pz) continue;
+      return pickHardestSolve([{ correct: true, rating: pz.rating, fen: pz.fen, moves: pz.moves.split(' ') }]);
+    }
+  }
+  return null;
+}
 
 const arg = (k: string) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 const flag = (k: string) => process.argv.includes(`--${k}`);
@@ -53,7 +93,7 @@ async function main() {
 
   const { data: row, error } = await supabase
     .from('workout_sessions')
-    .select('id, user_id, points, correct_count, wrong_count, punches, best_round_points, created_at')
+    .select('id, user_id, points, correct_count, wrong_count, punches, best_round_points, created_at, missed_puzzles')
     .eq('id', sessionId!)
     .maybeSingle();
   if (error || !row) throw new Error(`session ${sessionId} not found: ${error?.message ?? ''}`);
@@ -79,8 +119,14 @@ async function main() {
     previousBest: previousBest > 0 ? previousBest : undefined,
     tz: 'America/New_York',
   };
+  const missedIds = new Set<string>(
+    (Array.isArray(row.missed_puzzles) ? row.missed_puzzles : [])
+      .map((m: { puzzleId?: string | null; id?: string | null }) => m.puzzleId || m.id || '')
+      .filter(Boolean),
+  );
+  const hardest = await rebuildHardest(supabase, userId!, row.created_at, missedIds);
   console.log('session', row.id, 'created', row.created_at);
-  console.log(input);
+  console.log({ ...input, hardest });
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -100,6 +146,7 @@ async function main() {
     bestRound: input.bestRound,
     isPersonalBest: input.isPersonalBest,
     previousBest: input.previousBest,
+    hardest: hardest ?? undefined,
   });
 
   if (flag('preview')) {
@@ -130,7 +177,7 @@ async function main() {
     process.env.CB_EMAIL_LIFECYCLE_ENABLED = 'false';
     console.log('(dry run — pass --send to really send)');
   }
-  const result = await sendWorkoutReportEmail(input);
+  const result = await sendWorkoutReportEmail({ ...input, hardest });
   console.log(result);
 }
 
