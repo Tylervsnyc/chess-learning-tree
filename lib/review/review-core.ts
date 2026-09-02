@@ -88,6 +88,8 @@ export async function fetchCoachReview(args: {
     fen: i > 0 ? moves[i - 1].fenAfter : (args.startFen ?? START_FEN),
     evalBefore: evals[i]?.cp ?? null,
     evalAfter: evals[i + 1]?.cp ?? null,
+    mateBefore: evals[i]?.mate ?? null,
+    mateAfter: evals[i + 1]?.mate ?? null,
     bestMove: evals[i]?.bestMove ?? null,
     threat: evals[i + 1]?.bestMove ?? null,
     classification: mv.classification as
