@@ -99,6 +99,7 @@ export const PUBLIC_ALLOWLIST = [
   'fonts',
   'sounds',
   'audio/combo-coach',    // the workout's Rookie voice clips (rookies-run-theme.mp3 is Run's, 2.7 MB)
+  'music',                // /play background music playlist, 3 tracks (~13 MB)
   'rookie-sfx',
   'achievements',
   'boxing',

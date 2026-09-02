@@ -68,6 +68,14 @@ function ensureAudio(): HTMLAudioElement | null {
     audio.loop = false; // the playlist advances on 'ended' instead of looping one track
     audio.preload = 'auto';
     audio.addEventListener('ended', playNextTrack);
+    // Stop when the app is closed or sent to the background (tab hidden, phone
+    // locked, app switcher), and pick back up when it returns. Without this
+    // the track keeps playing behind whatever the user switched to.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') audio?.pause();
+      else apply();
+    });
+    window.addEventListener('pagehide', () => audio?.pause());
     if (process.env.NODE_ENV !== 'production') {
       (window as unknown as { __cpMusic?: HTMLAudioElement }).__cpMusic = audio;
     }
