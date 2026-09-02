@@ -106,7 +106,6 @@ export default function WorkoutFixitPage() {
   const router = useRouter();
 
   const [status, setStatus] = useState<Status>('loading');
-  const [targets, setTargets] = useState<string[]>([]);
   const [puzzles, setPuzzles] = useState<FixitPuzzle[]>([]);
   const [index, setIndex] = useState(0);
   const [right, setRight] = useState(0);
@@ -137,7 +136,6 @@ export default function WorkoutFixitPage() {
           return;
         }
         setPuzzles(list);
-        setTargets(Array.isArray(data.targets) ? data.targets : []);
         setIndex(0);
         setRight(0);
         setWrong(0);
@@ -274,30 +272,15 @@ export default function WorkoutFixitPage() {
   return (
     <Shell>
       <CloseButton />
-      {/* Header: title + targets + progress (the X lives in the arena back-button slot) */}
+      {/* Header: title + one-line progress. The current theme lives with the
+          board below, so the header stays two lines and the board sits higher. */}
       <div className="relative z-10 shrink-0 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="max-w-md mx-auto w-full px-16 min-h-[44px] flex flex-col items-center justify-center">
-          <span className="text-sm font-bold text-white leading-tight">Fix-It workout</span>
+          <span className="text-sm font-bold text-white leading-tight">Focused Workout</span>
           <span className="text-xs font-semibold text-white/60">
-            Built from your last workout · {index + 1} of {total}
+            {index + 1} of {total} · no timer, no score
           </span>
         </div>
-        {targets.length > 0 && (
-          <div className="max-w-md mx-auto px-4 pt-2 flex flex-wrap justify-center gap-1.5">
-            {targets.map((t) => (
-              <span
-                key={t}
-                className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
-                  current?.slotLabel === t
-                    ? 'bg-chess-blue text-white border-chess-blue'
-                    : 'bg-white/[0.07] text-white/60 border-white/15'
-                }`}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        )}
         <div className="mt-2 mx-4 h-1.5 rounded-full bg-white/10 overflow-hidden">
           <div
             className="h-full bg-chess-blue transition-[width] duration-300 ease-out"
@@ -308,15 +291,15 @@ export default function WorkoutFixitPage() {
 
       {/* Body: one window; the puzzle column scrolls only if it must. */}
       <div className="flex-1 min-h-0 relative z-10 flex flex-col overflow-y-auto ring-scroll">
-        <div className="max-w-md md:max-w-2xl mx-auto w-full px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-3">
+        <div className="max-w-md md:max-w-2xl mx-auto w-full flex-1 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col justify-center gap-3">
+          {/* The current theme only — one chip, one reason. */}
           <div className="text-center">
-            <p className="text-base font-black text-white">{current?.slotLabel}</p>
+            <span className="inline-block text-xs font-black uppercase tracking-wide px-3 py-1 rounded-full bg-chess-blue text-white">
+              {current?.slotLabel}
+            </span>
             {current?.slotReason && (
-              <p className="text-xs text-white/60">{current.slotReason}</p>
+              <p className="text-xs text-white/60 mt-1">{current.slotReason}</p>
             )}
-            <p className="text-xs font-semibold text-white/60">
-              Find the best move — no timer, no score.
-            </p>
           </div>
           {current && (
             <WorkoutPuzzle
