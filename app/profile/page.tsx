@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
+import { MusicSettingsCard } from '@/components/shared/MusicSettingsCard';
 import { useProfileData } from '@/hooks/useProfileData';
 import type { WorkoutSessionSummary as WorkoutSession } from '@/lib/workout/sessions';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -622,6 +623,10 @@ export default function ProfilePage() {
           >
             Create an account
           </Link>
+          {/* Music started on /play keeps playing; give logged-out users the off switch too. */}
+          <div className="w-full max-w-xs text-left">
+            <MusicSettingsCard />
+          </div>
         </div>
       </div>
     );
@@ -776,6 +781,7 @@ export default function ProfilePage() {
         </div>
         </>)}
 
+        <MusicSettingsCard />
         <SignOutButton />
         <DeleteAccount />
       </div>

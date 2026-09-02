@@ -132,7 +132,7 @@ export function MusicMenu() {
   );
 }
 
-function TrackRow({
+export function TrackRow({
   label,
   selected,
   onSelect,
