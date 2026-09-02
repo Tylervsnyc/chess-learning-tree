@@ -219,6 +219,16 @@ export const FEATURE_FLAGS = {
    * days per device; iOS then applies its own 3-per-year cap. Web = no-op.
    */
   NATIVE_REVIEW_PROMPT: true,
+  /**
+   * "Try it" variations in the /play post-game review (2026-09-02). Unlocks
+   * the board in the review phase: drag or tap a move that didn't happen,
+   * keep playing the line (you move both sides), see the engine's best-move
+   * arrow at every position, then "Back to game". Gates ONLY the ability to
+   * start a branch (hooks/useReviewBranch.ts) — stepping through the game is
+   * unchanged. ON in dev; set NEXT_PUBLIC_REVIEW_VARIATIONS=1 (or flip to
+   * `true`) to turn it on in production.
+   */
+  REVIEW_VARIATIONS: process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_REVIEW_VARIATIONS === '1',
 } as const;
 
 /**

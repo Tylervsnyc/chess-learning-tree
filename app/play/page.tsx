@@ -2718,7 +2718,8 @@ export default function PlayRookiePage() {
                           setShowBestArrow(on);
                           showBestArrowRef.current = on;
                           try { localStorage.setItem(BEST_ARROW_KEY, on ? 'on' : 'off'); } catch { /* private mode */ }
-                          if (phase === 'review') navigateToMove(reviewMoveIndex);
+                          // In a branch the arrow derives from state; re-navigating would yank the board to the mainline.
+                          if (phase === 'review' && !branch.inBranch) navigateToMove(reviewMoveIndex);
                         }}
                         className={`relative w-10 h-6 rounded-full transition-colors ${showBestArrow ? 'bg-chess-green' : 'bg-chess-disabled'}`}
                       >
