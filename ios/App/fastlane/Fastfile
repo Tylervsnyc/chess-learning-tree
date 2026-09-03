@@ -53,16 +53,19 @@ platform :ios do
     profile_name = get_provisioning_profile(
       api_key: api_key,
       app_identifier: APP_ID,
-      readonly: false,
+      force: true,
       output_path: "/tmp/chessbox_certs"
     )
 
-    # 4. Manual signing on the project
+    # 4. Manual signing on the project — pin the exact cert by SHA-1 (two
+    #    "Apple Distribution" identities live in the keychain; the name is ambiguous)
+    cert_sha = `openssl x509 -inform der -in /tmp/chessbox_certs/#{lane_context[SharedValues::CERT_CERTIFICATE_ID]}.cer -noout -fingerprint -sha1`.split("=").last.delete(":").strip
+    UI.message("Signing with cert #{lane_context[SharedValues::CERT_CERTIFICATE_ID]} sha1=#{cert_sha}")
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "App.xcodeproj",
       team_id: TEAM_ID,
-      code_sign_identity: "Apple Distribution",
+      code_sign_identity: cert_sha,
       bundle_identifier: APP_ID,
       profile_name: lane_context[SharedValues::SIGH_NAME],
       targets: ["App"]
@@ -79,6 +82,7 @@ platform :ios do
       export_options: {
         method: "app-store",
         signingStyle: "manual",
+        signingCertificate: cert_sha,
         provisioningProfiles: { APP_ID => lane_context[SharedValues::SIGH_NAME] }
       }
     )
