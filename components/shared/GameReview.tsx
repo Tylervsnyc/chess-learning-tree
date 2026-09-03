@@ -5,8 +5,10 @@
  * feature-for-feature: move-by-move navigation (|< < label > >|), Claude
  * coach commentary per move + summary at the start + takeaway on the last
  * move, key-moment descriptions with red/green arrows, the golden
- * best-response arrow on regular moves, blunder/mistake square tinting, the
- * check highlight, the horizontal eval bar, and (behind REVIEW_VARIATIONS)
+ * best-response arrow on regular moves (toggle shared with /play's settings
+ * menu), blunder/mistake square tinting, the check highlight, the whole-game
+ * eval graph (tap to seek), the shared ReviewNav controls, the exit button
+ * pinned to the bottom, and (behind REVIEW_VARIATIONS)
  * "Try it" variations: move either side from any reviewed position, the
  * engine's best-move arrow follows whoever is to move, amber "Trying:" label,
  * "Back to game" returns to the mainline (hooks/useReviewBranch.ts).
@@ -21,7 +23,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Chess, type Square } from 'chess.js';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { BreathingRook } from '@/components/ui/BreathingRook';
-import { evalToWinPercent } from '@/lib/game-eval';
+import { EvalGraph } from '@/components/shared/EvalGraph';
+import { ReviewNav } from '@/components/shared/ReviewNav';
+import { useBestArrowSetting } from '@/hooks/useBestArrowSetting';
 import {
   ARROW_BEST,
   commentaryKey,
@@ -31,6 +35,7 @@ import {
 } from '@/lib/review/review-core';
 import type { GameReviewData } from '@/hooks/useGameReview';
 import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
+import type { MoveClassification } from '@/lib/game-eval';
 import { useReviewBranch } from '@/hooks/useReviewBranch';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
@@ -70,6 +75,8 @@ export function GameReview({
   // Mirror for the data-arrival effect below — navigate() must not depend on
   // moveIndex or every tap would rebuild it.
   const moveIndexRef = useRef(-1);
+  // Golden best-reply arrow on/off — same per-device key as /play's settings menu.
+  const { showBestArrow, showBestArrowRef, setShowBestArrow } = useBestArrowSetting();
 
   const {
     analysis, isAnalyzing, progress, keyMoments, positionEvals,
@@ -147,7 +154,7 @@ export function GameReview({
 
     // Best move arrow (golden) — the engine's best response from this position
     const posEval = positionEvals[index + 1];
-    if (posEval?.bestMove) {
+    if (posEval?.bestMove && showBestArrowRef.current) {
       setArrows([{
         startSquare: posEval.bestMove.slice(0, 2),
         endSquare: posEval.bestMove.slice(2, 4),
@@ -156,7 +163,7 @@ export function GameReview({
     } else {
       setArrows([]);
     }
-  }, [moves, playerColor, playerName, startFen, coachMoves, coachSummary, coachTakeaway, keyMoments, positionEvals]);
+  }, [moves, playerColor, playerName, startFen, coachMoves, coachSummary, coachTakeaway, keyMoments, positionEvals, showBestArrowRef]);
 
   // Initial position, and re-render the current position whenever analysis /
   // key moments / Claude commentary land (navigate's identity tracks the data).
@@ -202,6 +209,12 @@ export function GameReview({
     navigate(moveIndex + 1);
   }, [branch, navigate, moveIndex]);
 
+  // Tapping the graph always returns to the mainline.
+  const selectGraphMove = useCallback((index: number) => {
+    if (branch.inBranch) { branch.exit(); setSelected(null); }
+    navigate(index);
+  }, [branch, navigate]);
+
   /** Board drop: start or extend the branch (queen promotion). */
   const onReviewDrop = useCallback((from: Square, to: Square): boolean => {
     if (!canBranch) return false;
@@ -227,43 +240,12 @@ export function GameReview({
     setSelected(piece && piece.color === turn ? square : null);
   }, [game, selected, branch]);
 
-  // Keyboard: ArrowLeft/ArrowRight step the review (branch-aware); ignored
-  // while typing in a field.
-  const reviewKeysRef = useRef({ prev: reviewPrev, next: reviewNext });
-  reviewKeysRef.current = { prev: reviewPrev, next: reviewNext };
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); reviewKeysRef.current.prev(); }
-      else if (e.key === 'ArrowRight') { e.preventDefault(); reviewKeysRef.current.next(); }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  // The branch label keeps its TAIL visible (latest moves) and shows a leading
-  // ellipsis only when the line really overflows the space it has.
-  const branchLabelRef = useRef<HTMLSpanElement | null>(null);
-  const branchLabelTextRef = useRef<HTMLSpanElement | null>(null);
-  const [branchLabelClipped, setBranchLabelClipped] = useState(false);
-  useEffect(() => {
-    const outer = branchLabelRef.current;
-    const inner = branchLabelTextRef.current;
-    if (!outer || !inner) { setBranchLabelClipped(false); return; }
-    const measure = () => setBranchLabelClipped(inner.offsetWidth > outer.clientWidth + 1);
-    measure();
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
-    ro?.observe(outer);
-    return () => ro?.disconnect();
-  }, [branch.lineSan]);
-
   // Best-move arrow for the branch position (instant PV hint, then depth 12).
   const branchArrows = useMemo<ReviewArrow[]>(() => {
-    if (!branch.inBranch || !branch.bestMoveForCurrent) return [];
+    if (!branch.inBranch || !showBestArrow || !branch.bestMoveForCurrent) return [];
     const uci = branch.bestMoveForCurrent;
     return [{ startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: ARROW_BEST }];
-  }, [branch.inBranch, branch.bestMoveForCurrent]);
+  }, [branch.inBranch, branch.bestMoveForCurrent, showBestArrow]);
   const shownArrows = inBranch ? branchArrows : arrows;
 
   // Leaving the review clears the branch.
@@ -272,18 +254,6 @@ export function GameReview({
     branchExit();
     onExit();
   }, [branchExit, onExit]);
-
-  // ── Eval bar — stored per-position evals; in a branch, the branch eval when
-  // it has landed, else the root's value dimmed.
-  const rootEval = positionEvals[moveIndex + 1] ?? null;
-  const branchEval = inBranch ? branch.currentEval : null;
-  const posEval = inBranch ? (branchEval ?? rootEval) : rootEval;
-  const evalDimmed = inBranch && !branchEval;
-  const evalCp = posEval?.cp ?? 0;
-  const evalMate = posEval?.mate ?? null;
-  const evalPct = posEval
-    ? Math.max(5, Math.min(95, evalToWinPercent(posEval.cp, posEval.mate)))
-    : 50;
 
   // ── Square styles: classification badge + tint on the move played ────────
   const currentClassification = useMemo(() => {
@@ -338,11 +308,6 @@ export function GameReview({
   const totalMoves = moves.length;
   const atStart = moveIndex <= -1;
   const atEnd = moveIndex >= totalMoves - 1;
-  const navBtn =
-    'w-11 h-11 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-transform select-none touch-manipulation';
-  // Trying a line: the label keeps the latest moves visible (clipped from the
-  // front, see branchLabelClipped). Bounded so a very long line stays cheap.
-  const branchLabel = branch.lineSan.length > 80 ? branch.lineSan.slice(-80) : branch.lineSan;
 
   const moveLabel = (() => {
     if (moveIndex < 0) return 'Start';
@@ -366,17 +331,27 @@ export function GameReview({
     </div>
   );
 
-  const isWhiteAdvantage = evalMate !== null ? evalMate > 0 : evalCp >= 0;
-  const displayEval = evalMate !== null
-    ? 'M' + Math.abs(evalMate)
-    : (Math.abs(evalCp) / 100).toFixed(1);
-  const showEval = posEval !== null && (evalMate !== null || Math.abs(evalCp) > 10);
+  const graphMoves = useMemo(
+    () => moves.map((m, i) => ({
+      movedBy: m.movedBy,
+      classification: (analysis?.moves[i]?.classification ?? null) as MoveClassification | null,
+    })),
+    [moves, analysis],
+  );
+
+  const toggleBestArrow = () => {
+    const on = !showBestArrow;
+    setShowBestArrow(on);
+    // In a branch the arrow derives from state; re-navigating would yank the board to the mainline.
+    if (!inBranch) navigate(moveIndexRef.current);
+  };
 
   return (
-    <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-auto">
+    <div className="h-full bg-chess-page text-chess-text flex flex-col">
       <div className="h-2 flex-shrink-0" />
-      <div className="flex-1 flex items-start justify-center px-4 md:px-6 pt-2 min-h-0">
-        <div className="w-full max-w-md md:max-w-lg mx-auto">
+      {/* The review column scrolls if a device is too short; the exit button stays pinned below. */}
+      <div className="flex-1 flex items-start justify-center px-4 md:px-6 pt-2 min-h-0 overflow-y-auto">
+        <div className="w-full max-w-md md:max-w-[40rem] mx-auto">
           {/* Coach commentary panel */}
           <div className="mb-2">
             <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] flex items-center gap-2.5">
@@ -418,7 +393,8 @@ export function GameReview({
           </div>
 
           {/* Board — read-only unless "Try it" variations are on */}
-          <div className="w-full max-w-[min(92vw,440px)] md:max-w-[520px] mx-auto aspect-square">
+          {/* The graph + controls + pinned exit need ~8rem more below the board (same as /play) */}
+          <div className="w-full max-w-[min(92vw,440px)] mx-auto aspect-square md:max-w-[min(40rem,calc(100dvh-26rem))]">
             <ChessPathBoard
               options={{
                 position: shownFen,
@@ -437,30 +413,33 @@ export function GameReview({
           </div>
 
           {/* Below board */}
-          <div className="mt-0.5 space-y-1 pb-4">
-            {/* Bottom player (us) */}
+          <div className="mt-0.5 space-y-1">
+            {/* Bottom player (us) + best-move arrow toggle (no settings menu here) */}
             <div className="flex justify-between items-center">
               {playerLabel(playerIsWhite ? 'white' : 'black', displayName)}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={showBestArrow}
+                aria-label="Show best-move arrow"
+                onClick={toggleBestArrow}
+                className="flex items-center gap-2 min-h-[44px] pl-2 -mr-1 pr-1 select-none touch-manipulation"
+              >
+                <span className="text-[10px] font-bold text-chess-text-muted">Best-move arrow</span>
+                <span className={`relative inline-block w-10 h-6 rounded-full transition-colors ${showBestArrow ? 'bg-chess-green' : 'bg-chess-disabled'}`}>
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${showBestArrow ? 'translate-x-4' : ''}`} />
+                </span>
+              </button>
             </div>
 
-            {/* Eval bar */}
-            <div className={`flex h-4 w-full items-stretch overflow-hidden rounded transition-opacity ${evalDimmed ? 'opacity-50' : ''}`}>
-              <div
-                className="relative flex items-center justify-end pr-1.5 transition-all duration-500 ease-out"
-                style={{ width: `${evalPct}%`, backgroundColor: '#e8e8e8' }}
-              >
-                {isWhiteAdvantage && showEval && (
-                  <span className="text-[8px] font-bold text-neutral-800">+{displayEval}</span>
-                )}
-              </div>
-              <div
-                className="relative flex items-center pl-1.5 transition-all duration-500 ease-out"
-                style={{ width: `${100 - evalPct}%`, backgroundColor: '#2A3C45' }}
-              >
-                {!isWhiteAdvantage && showEval && (
-                  <span className="text-[8px] font-bold text-white">+{displayEval}</span>
-                )}
-              </div>
+            {/* Eval graph — the whole game, board-width; tap/drag to seek */}
+            <div className={inBranch ? 'opacity-50 transition-opacity' : 'transition-opacity'}>
+              <EvalGraph
+                evals={positionEvals}
+                moves={graphMoves}
+                currentMoveIndex={inBranch ? branch.rootPly : moveIndex}
+                onSelectMove={selectGraphMove}
+              />
             </div>
 
             {/* Analysis still running — thin progress bar, review stays usable */}
@@ -478,99 +457,33 @@ export function GameReview({
               </div>
             )}
 
-            {/* Move navigation */}
-            <div className="flex items-center justify-center gap-2 py-1">
-              {!inBranch && (
-                <button
-                  type="button"
-                  aria-label="Jump to start"
-                  onClick={() => navigate(-1)}
-                  disabled={atStart}
-                  className={navBtn}
-                >
-                  |&#9665;
-                </button>
-              )}
-              <button
-                type="button"
-                aria-label="Previous move"
-                onClick={reviewPrev}
-                disabled={!inBranch && atStart}
-                className={navBtn}
-              >
-                &#9665;
-              </button>
-              {inBranch ? (
-                <span
-                  ref={branchLabelRef}
-                  className="relative flex-1 min-w-0 max-w-[16rem] h-11 flex items-center justify-end overflow-hidden text-[11px] font-mono font-semibold text-amber-700"
-                  title={branch.lineSan}
-                >
-                  {branchLabelClipped && (
-                    <span aria-hidden className="absolute left-0 top-0 h-full flex items-center pr-1 bg-chess-page">&#8230;</span>
-                  )}
-                  <span ref={branchLabelTextRef} className="whitespace-nowrap flex-shrink-0">
-                    Trying: {branchLabel}
-                  </span>
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-1 min-w-[56px]">
-                  <span className="text-xs text-chess-text-muted font-medium text-center font-mono">
-                    {moveLabel}
-                  </span>
-                  {currentClassification && (
-                    <span
-                      className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-black leading-none whitespace-nowrap"
-                      style={{
-                        backgroundColor: BADGE_SPECS[currentClassification].circle,
-                        color: BADGE_SPECS[currentClassification].text,
-                      }}
-                      title={BADGE_SPECS[currentClassification].label}
-                    >
-                      {BADGE_SPECS[currentClassification].glyph}
-                    </span>
-                  )}
-                </span>
-              )}
-              <button
-                type="button"
-                aria-label="Next move"
-                onClick={reviewNext}
-                disabled={inBranch ? branch.atTip : atEnd}
-                className={navBtn}
-              >
-                &#9655;
-              </button>
-              {inBranch ? (
-                <button
-                  type="button"
-                  aria-label="Back to game"
-                  onClick={exitBranch}
-                  className="ml-2 min-h-[44px] px-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 text-[11px] font-bold whitespace-nowrap flex items-center justify-center active:scale-95 transition-transform select-none touch-manipulation"
-                >
-                  Back to game
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  aria-label="Jump to end"
-                  onClick={() => navigate(totalMoves - 1)}
-                  disabled={atEnd}
-                  className={navBtn}
-                >
-                  &#9655;|
-                </button>
-              )}
-            </div>
-
-            {/* Exit */}
-            <button
-              onClick={handleExit}
-              className="w-full py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
-            >
-              {exitLabel}
-            </button>
+            {/* Move navigation — shared with /play */}
+            <ReviewNav
+              moveLabel={moveLabel}
+              classification={currentClassification}
+              atStart={atStart}
+              atEnd={atEnd}
+              inBranch={inBranch}
+              branchLineSan={branch.lineSan}
+              branchAtTip={branch.atTip}
+              onPrev={reviewPrev}
+              onNext={reviewNext}
+              onJumpToEnd={() => navigate(totalMoves - 1)}
+              onExitBranch={exitBranch}
+            />
           </div>
+        </div>
+      </div>
+
+      {/* Exit pinned to the bottom, clear of the move controls (same sizing as /play's Play Again) */}
+      <div className="flex-shrink-0 px-4 md:px-6 pt-2 pb-3">
+        <div className="w-full max-w-md md:max-w-[40rem] mx-auto">
+          <button
+            onClick={handleExit}
+            className="block mx-auto w-full max-w-[240px] min-h-[44px] py-2 bg-chess-green text-white font-bold rounded-xl text-sm"
+          >
+            {exitLabel}
+          </button>
         </div>
       </div>
       <div className="pb-[env(safe-area-inset-bottom)] flex-shrink-0" />

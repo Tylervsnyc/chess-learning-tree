@@ -19,7 +19,11 @@ const fail = (msg) => { console.error('[smoke] FAIL:', msg); process.exitCode = 
 const sq = (s) => p.locator(`[data-square="${s}"]`).first();
 const tap = async (s) => { await sq(s).scrollIntoViewIfNeeded(); await sq(s).tap({ force: true }); await p.waitForTimeout(150); };
 const label = () => p.locator('span:has-text("Trying:")').first();
-const mainLabel = () => p.locator('span.font-mono').first();
+// The mainline label nests the classification badge (shared ReviewNav, same as
+// /play) — read only the move text, not the badge glyph.
+const mainLabel = () => ({
+  innerText: () => p.locator('span.font-mono').first().evaluate((el) => (el.firstChild?.textContent || '').trim()),
+});
 const boardArrows = async () => p.evaluate(() => document.querySelectorAll('svg polygon, svg line, svg path[stroke]').length);
 const noOverflow = async (tag) => {
   const w = await p.evaluate(() => document.documentElement.scrollWidth);

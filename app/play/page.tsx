@@ -5,7 +5,8 @@ import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { Chess, Square } from 'chess.js';
 import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
 import { EvalGraph } from '@/components/shared/EvalGraph';
-import { ActionButton } from '@/components/ui/ActionButton';
+import { ReviewNav } from '@/components/shared/ReviewNav';
+import { useBestArrowSetting } from '@/hooks/useBestArrowSetting';
 import { MusicMenu } from '@/components/shared/MusicMenu';
 import { startMusicIfEnabled, getMusicPrefs, setMusicTrack, subscribeMusic } from '@/lib/music';
 import { isKnicksTime, KNICKS_ROOK_BLOCKS } from '@/lib/knicks-finals';
@@ -507,13 +508,9 @@ export default function PlayRookiePage() {
   // Depth-18 evals from the post-game pass — drives the eval graph once they
   // land (the graph shows the quick in-game evals until then).
   const [reviewEvals, setReviewEvals] = useState<PositionEval[] | null>(null);
-  // Review setting: golden "engine's best reply" arrow on/off (per device).
-  const BEST_ARROW_KEY = 'cp_review_best_arrow';
-  const [showBestArrow, setShowBestArrow] = useState<boolean>(() => {
-    try { return localStorage.getItem(BEST_ARROW_KEY) !== 'off'; } catch { return true; }
-  });
-  const showBestArrowRef = useRef(showBestArrow);
-  showBestArrowRef.current = showBestArrow;
+  // Review setting: golden "engine's best reply" arrow on/off (per device,
+  // shared with GameReview via hooks/useBestArrowSetting).
+  const { showBestArrow, showBestArrowRef, setShowBestArrow } = useBestArrowSetting();
 
   // Claude coaching commentary (per-move, fetched at game end)
   const coachCommentaryRef = useRef<Record<string, string>>({}); // "1w" -> text, "1b" -> text
@@ -1785,7 +1782,7 @@ export default function PlayRookiePage() {
     } else {
       setReviewArrows([]);
     }
-  }, [keyMoments, playerName, playerColor, updateEvalBarForPosition]);
+  }, [keyMoments, playerName, playerColor, updateEvalBarForPosition, showBestArrowRef]);
 
   const jumpToMoment = useCallback((moment: KeyMoment, momentIdx: number) => {
     setReviewMomentIndex(momentIdx);
@@ -1885,38 +1882,6 @@ export default function PlayRookiePage() {
     }
     setSelected(piece && piece.color === turn ? square : null);
   }, [canBranch, game, selected, branch]);
-
-  // Keyboard: ArrowLeft/ArrowRight step the review (branch-aware). Registered
-  // only in the review phase; ignored while typing in a field.
-  const reviewKeysRef = useRef({ prev: reviewPrev, next: reviewNext });
-  reviewKeysRef.current = { prev: reviewPrev, next: reviewNext };
-  useEffect(() => {
-    if (phase !== 'review') return;
-    const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); reviewKeysRef.current.prev(); }
-      else if (e.key === 'ArrowRight') { e.preventDefault(); reviewKeysRef.current.next(); }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [phase]);
-
-  // The branch label keeps its TAIL visible (latest moves) and shows a leading
-  // ellipsis only when the line really overflows the space it has.
-  const branchLabelRef = useRef<HTMLSpanElement | null>(null);
-  const branchLabelTextRef = useRef<HTMLSpanElement | null>(null);
-  const [branchLabelClipped, setBranchLabelClipped] = useState(false);
-  useEffect(() => {
-    const outer = branchLabelRef.current;
-    const inner = branchLabelTextRef.current;
-    if (!outer || !inner) { setBranchLabelClipped(false); return; }
-    const measure = () => setBranchLabelClipped(inner.offsetWidth > outer.clientWidth + 1);
-    measure();
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
-    ro?.observe(outer);
-    return () => ro?.disconnect();
-  }, [branch.lineSan]);
 
   // Best-move arrow for the branch position (instant PV hint, then depth 12).
   const branchArrows = useMemo(() => {
@@ -2301,108 +2266,33 @@ export default function PlayRookiePage() {
   );
 
   // ════════════════════════════════
-  // EVAL BAR (Candidates video style — horizontal with eval number inside)
+  // REVIEW NAVIGATION — components/shared/ReviewNav (shared with GameReview)
   // ════════════════════════════════
-  // ════════════════════════════════
-  // REVIEW NAVIGATION
-  // ════════════════════════════════
-  // NOTE: This is an inline JSX value, NOT a nested <Component/>. Defining a
-  // component inside the parent render and mounting it as <ReviewNav/> gives it
-  // a fresh identity on every parent re-render, so React unmounts+remounts the
-  // whole button subtree each time an arrow is tapped. That tear-down swallowed
-  // taps and made the arrows feel dead (the #1 rage-clicked element on the site).
-  // Rendering inline reconciles the buttons in place.
   const reviewTotalMoves = moveLogRef.current.length;
   const atStart = reviewMoveIndex <= -1;
   const atEnd = reviewMoveIndex >= reviewTotalMoves - 1;
-  const reviewBtn =
-    'w-11 h-11 rounded-xl bg-chess-surface border border-chess-disabled text-chess-text font-bold text-sm flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-transform select-none touch-manipulation';
-  const inBranch = branch.inBranch;
-  // Trying a line: the label keeps the latest moves visible (clipped from the
-  // front, see branchLabelClipped). Bounded so a very long line stays cheap.
-  const branchLabel = branch.lineSan.length > 80 ? branch.lineSan.slice(-80) : branch.lineSan;
-  // Big 3D step buttons (the Let's Play style) — the review's main controls
-  // should feel like the rest of the app, not a media player.
-  const stepBtn = 'flex-1 min-w-0 h-14 !text-2xl leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 select-none touch-manipulation';
+  const reviewMoveLabel = (() => {
+    if (reviewMoveIndex < 0) return 'Start';
+    const m = moveLogRef.current[reviewMoveIndex];
+    if (!m) return 'Start';
+    const chessMoveNum = Math.ceil((reviewMoveIndex + 1) / 2);
+    const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
+    return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
+  })();
   const reviewNav = (
-    <div className="flex items-center justify-center gap-2 py-2">
-      <ActionButton
-        color="white"
-        size="md"
-        aria-label="Previous move"
-        onClick={reviewPrev}
-        disabled={!inBranch && atStart}
-        className={stepBtn}
-      >
-        &#9664;
-      </ActionButton>
-      {inBranch ? (
-        <span
-          ref={branchLabelRef}
-          className="relative flex-1 min-w-0 max-w-[16rem] h-11 flex items-center justify-end overflow-hidden text-[11px] font-mono font-semibold text-amber-700"
-          title={branch.lineSan}
-        >
-          {branchLabelClipped && (
-            <span aria-hidden className="absolute left-0 top-0 h-full flex items-center pr-1 bg-chess-page">&#8230;</span>
-          )}
-          <span ref={branchLabelTextRef} className="whitespace-nowrap flex-shrink-0">
-            Trying: {branchLabel}
-          </span>
-        </span>
-      ) : (
-      <span className="text-sm text-chess-text font-bold min-w-[92px] text-center font-mono inline-flex items-center justify-center gap-1">
-        {reviewMoveIndex < 0 ? 'Start' : (() => {
-          const m = moveLogRef.current[reviewMoveIndex];
-          if (!m) return 'Start';
-          const chessMoveNum = Math.ceil((reviewMoveIndex + 1) / 2);
-          const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
-          return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
-        })()}
-        {reviewClassification && (
-          <span
-            className="inline-flex items-center justify-center rounded-full px-1.5 h-4 text-[9px] font-black not-italic"
-            style={{
-              backgroundColor: BADGE_SPECS[reviewClassification].circle,
-              color: BADGE_SPECS[reviewClassification].text,
-            }}
-            title={BADGE_SPECS[reviewClassification].label}
-          >
-            {BADGE_SPECS[reviewClassification].glyph}
-          </span>
-        )}
-      </span>
-      )}
-      <ActionButton
-        color="blue"
-        size="md"
-        aria-label="Next move"
-        onClick={reviewNext}
-        disabled={inBranch ? branch.atTip : atEnd}
-        className={stepBtn}
-      >
-        &#9654;
-      </ActionButton>
-      {inBranch ? (
-        <button
-          type="button"
-          aria-label="Back to game"
-          onClick={exitBranch}
-          className="ml-2 min-h-[44px] px-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 text-[11px] font-bold whitespace-nowrap flex items-center justify-center active:scale-95 transition-transform select-none touch-manipulation"
-        >
-          Back to game
-        </button>
-      ) : (
-      <button
-        type="button"
-        aria-label="Jump to end"
-        onClick={() => navigateToMove(reviewTotalMoves - 1)}
-        disabled={atEnd}
-        className={`${reviewBtn} ml-4 !w-9 !h-9 text-xs text-chess-text-faint`}
-      >
-        &#9655;|
-      </button>
-      )}
-    </div>
+    <ReviewNav
+      moveLabel={reviewMoveLabel}
+      classification={reviewClassification}
+      atStart={atStart}
+      atEnd={atEnd}
+      inBranch={branch.inBranch}
+      branchLineSan={branch.lineSan}
+      branchAtTip={branch.atTip}
+      onPrev={reviewPrev}
+      onNext={reviewNext}
+      onJumpToEnd={() => navigateToMove(reviewTotalMoves - 1)}
+      onExitBranch={exitBranch}
+    />
   );
 
   // ════════════════════════════════
@@ -2722,8 +2612,6 @@ export default function PlayRookiePage() {
                         onClick={() => {
                           const on = !showBestArrow;
                           setShowBestArrow(on);
-                          showBestArrowRef.current = on;
-                          try { localStorage.setItem(BEST_ARROW_KEY, on ? 'on' : 'off'); } catch { /* private mode */ }
                           // In a branch the arrow derives from state; re-navigating would yank the board to the mainline.
                           if (phase === 'review' && !branch.inBranch) navigateToMove(reviewMoveIndex);
                         }}
