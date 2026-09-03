@@ -1,13 +1,17 @@
 'use client';
 
 /**
- * MissReplay — one missed puzzle on a board, told in three beats:
+ * MissReplay — one missed puzzle on a board, stepped through by hand:
  *
  *   yours   → board at the miss, RED arrow on what you played (soft error beat)
- *   playing → GREEN arrow on the right move, then the rest of the solution
- *             auto-plays (300ms a move, green arrow on each solver move,
- *             move/capture sound per move, the correct chime on the last one)
+ *   answer  → GREEN arrow on the right move, board still at the miss
+ *   step k  → "Next move" advances the solution ONE move at a time (green
+ *             arrow on each solver move, move/capture sound per move, the
+ *             correct chime on the last one). "Previous move" walks back.
  *   done    → eval chips (yours vs. right) + Rookie's one-liner
+ *
+ * The line never auto-plays — 300ms a move was too fast to follow, so the
+ * user taps through it at their own pace (2026-09-03).
  *
  * Read-only board. No playedMove (older sessions) → we skip "yours" and lead
  * with "here's the answer".
@@ -17,7 +21,7 @@
  * (the report page's no-scroll window) everything BELOW the board scrolls.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Chess } from 'chess.js';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { ARROW_GREEN, ARROW_RED } from '@/lib/review/review-core';
@@ -35,13 +39,10 @@ import {
 } from '@/lib/sounds';
 import type { MissAnalysis } from '@/hooks/useMissAnalysis';
 
-type Phase = 'yours' | 'playing' | 'done';
 type Arrow = { startSquare: string; endSquare: string; color: string };
-type Step = { fen: string; arrow: Arrow | null; captured: boolean; sound: 'move' | 'capture' | 'correct' | 'mate' };
+type Step = { fen: string; san: string; arrow: Arrow | null; sound: 'move' | 'capture' | 'correct' | 'mate' };
 
 const MOVE_MS = 300;
-/** Pause after the green arrow lands before the line starts running. */
-const LEAD_IN_MS = 700;
 
 interface Props {
   analysis: MissAnalysis;
@@ -66,104 +67,115 @@ function sfx(fn: () => unknown) {
   }
 }
 
+/** The rest of the solution from the miss onward, one board state per move. */
+function buildSteps(analysis: MissAnalysis): Step[] {
+  const chess = new Chess(analysis.fenAtMiss);
+  const steps: Step[] = [];
+  for (let i = analysis.failedAtMove; i < analysis.solutionMoves.length; i++) {
+    const uci = analysis.solutionMoves[i];
+    let san = uci;
+    let captured = false;
+    try {
+      const mv = chess.move(parseUciMove(uci));
+      captured = !!mv?.captured;
+      san = mv?.san ?? uci;
+    } catch {
+      break;
+    }
+    const isSolver = (i - analysis.failedAtMove) % 2 === 0;
+    steps.push({
+      fen: chess.fen(),
+      san,
+      arrow: isSolver ? { startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: ARROW_GREEN } : null,
+      sound: captured ? 'capture' : 'move',
+    });
+  }
+  // The last solver move gets the "correct" chime (or the celebration on mate).
+  for (let i = steps.length - 1; i >= 0; i--) {
+    if (steps[i].arrow) {
+      steps[i].sound = chess.isCheckmate() && i === steps.length - 1 ? 'mate' : 'correct';
+      break;
+    }
+  }
+  return steps;
+}
+
+function playStepSound(step: Step) {
+  if (step.sound === 'mate') sfx(() => playCelebrationSound());
+  else if (step.sound === 'correct') sfx(() => playCorrectSound(0, 0));
+  else if (step.sound === 'capture') sfx(playCaptureSound);
+  else sfx(playMoveSound);
+}
+
 export function MissReplay({ analysis, line, lineLoading }: Props) {
   const hasPlayed = !!analysis.playedUci;
-  const [phase, setPhase] = useState<Phase>(hasPlayed ? 'yours' : 'playing');
-  const [started, setStarted] = useState(false);
-  const [fen, setFen] = useState(analysis.fenAtMiss);
-  const [arrows, setArrows] = useState<Arrow[]>([]);
-  const timersRef = useRef<number[]>([]);
+  const steps = useMemo(() => buildSteps(analysis), [analysis]);
+  // null = intro (your move / "we didn't catch it"); 0 = answer arrow on the
+  // miss position; k = after solution move k has been played.
+  const [idx, setIdx] = useState<number | null>(null);
   // Which analysis already got its "wrong one" beat — once per miss, not per render.
   const errorBeatRef = useRef<MissAnalysis | null>(null);
 
-  const clearTimers = useCallback(() => {
-    for (const t of timersRef.current) window.clearTimeout(t);
-    timersRef.current = [];
-  }, []);
-
   // Reset when the analysis changes (Next → new miss).
   useEffect(() => {
-    clearTimers();
-    setPhase(hasPlayed ? 'yours' : 'playing');
-    setStarted(false);
-    setFen(analysis.fenAtMiss);
-    setArrows(
-      hasPlayed && analysis.playedUci
-        ? [{ startSquare: analysis.playedUci.slice(0, 2), endSquare: analysis.playedUci.slice(2, 4), color: ARROW_RED }]
-        : [],
-    );
+    setIdx(null);
     if (hasPlayed && errorBeatRef.current !== analysis) {
       errorBeatRef.current = analysis;
       sfx(playErrorSound);
       vibrateOnError();
     }
-    return clearTimers;
-  }, [analysis, hasPlayed, clearTimers]);
+  }, [analysis, hasPlayed]);
 
-  const play = useCallback(() => {
-    clearTimers();
-    sfx(playButtonClick);
-    setStarted(true);
-    setPhase('playing');
-    setFen(analysis.fenAtMiss);
+  const done = idx !== null && idx >= steps.length;
+  const answerArrow: Arrow = {
+    startSquare: analysis.correctUci.slice(0, 2),
+    endSquare: analysis.correctUci.slice(2, 4),
+    color: ARROW_GREEN,
+  };
 
-    const chess = new Chess(analysis.fenAtMiss);
-    const steps: Step[] = [];
-    for (let i = analysis.failedAtMove; i < analysis.solutionMoves.length; i++) {
-      const uci = analysis.solutionMoves[i];
-      let captured = false;
-      try {
-        const mv = chess.move(parseUciMove(uci));
-        captured = !!mv?.captured;
-      } catch {
-        break;
-      }
-      const isSolver = (i - analysis.failedAtMove) % 2 === 0;
-      steps.push({
-        fen: chess.fen(),
-        arrow: isSolver ? { startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: ARROW_GREEN } : null,
-        captured,
-        sound: captured ? 'capture' : 'move',
-      });
+  const fen = idx === null || idx === 0 ? analysis.fenAtMiss : steps[idx - 1].fen;
+  const arrows: Arrow[] = (() => {
+    if (idx === null) {
+      return hasPlayed && analysis.playedUci
+        ? [{ startSquare: analysis.playedUci.slice(0, 2), endSquare: analysis.playedUci.slice(2, 4), color: ARROW_RED }]
+        : [];
     }
-    // The last solver move gets the "correct" chime (or the celebration on mate).
-    for (let i = steps.length - 1; i >= 0; i--) {
-      if (steps[i].arrow) {
-        steps[i].sound = chess.isCheckmate() && i === steps.length - 1 ? 'mate' : 'correct';
-        break;
-      }
-    }
-
-    // Beat 1: green arrow on the right move, board still at the miss.
-    setArrows([{ startSquare: analysis.correctUci.slice(0, 2), endSquare: analysis.correctUci.slice(2, 4), color: ARROW_GREEN }]);
-
-    steps.forEach((step, idx) => {
-      const t = window.setTimeout(() => {
-        setFen(step.fen);
-        setArrows(step.arrow ? [step.arrow] : []);
-        if (step.sound === 'mate') sfx(() => playCelebrationSound());
-        else if (step.sound === 'correct') sfx(() => playCorrectSound(0, 0));
-        else if (step.sound === 'capture') sfx(playCaptureSound);
-        else sfx(playMoveSound);
-      }, LEAD_IN_MS + idx * MOVE_MS);
-      timersRef.current.push(t);
-    });
-    const tDone = window.setTimeout(() => setPhase('done'), LEAD_IN_MS + steps.length * MOVE_MS + 200);
-    timersRef.current.push(tDone);
-  }, [analysis, clearTimers]);
-
-  const playedTo = analysis.playedUci?.slice(2, 4);
-  const squareStyles =
-    phase === 'yours' && playedTo ? { [playedTo]: badgeSquareStyle('blunder') } : undefined;
-
-  const caption = (() => {
-    if (phase === 'yours') return `You played ${analysis.playedSan ?? analysis.playedUci}`;
-    if (!hasPlayed && !started) return 'We didn’t catch your move on this one — here’s the answer.';
-    if (phase === 'playing') return `The move was ${analysis.correctSan}`;
-    return `The move was ${analysis.correctSan}`;
+    if (idx === 0) return [answerArrow];
+    const a = steps[idx - 1].arrow;
+    return a ? [a] : [];
   })();
 
-  const showButton = phase === 'yours' || (!hasPlayed && !started);
+  const start = useCallback(() => {
+    sfx(playButtonClick);
+    setIdx(0);
+  }, []);
+
+  const nextMove = useCallback(() => {
+    const n = (idx ?? 0) + 1;
+    if (n > steps.length) return;
+    playStepSound(steps[n - 1]);
+    setIdx(n);
+  }, [idx, steps]);
+
+  const prevMove = useCallback(() => {
+    if (idx === null || idx <= 0) return;
+    sfx(playMoveSound);
+    setIdx(idx - 1);
+  }, [idx]);
+
+  const playedTo = analysis.playedUci?.slice(2, 4);
+  const squareStyles = idx === null && playedTo ? { [playedTo]: badgeSquareStyle('blunder') } : undefined;
+
+  const caption = (() => {
+    if (idx === null) {
+      return hasPlayed
+        ? `You played ${analysis.playedSan ?? analysis.playedUci}`
+        : 'We didn’t catch your move on this one — here’s the answer.';
+    }
+    if (idx === 0) return `The move was ${analysis.correctSan}`;
+    const step = steps[idx - 1];
+    return step.arrow ? step.san : `Then ${step.san}`;
+  })();
 
   return (
     <div className="flex flex-col gap-3 min-h-0 flex-1">
@@ -186,16 +198,35 @@ export function MissReplay({ analysis, line, lineLoading }: Props) {
       <div className="flex flex-col gap-3 min-h-0 flex-1 overflow-y-auto ring-scroll">
         <p className="text-center text-sm font-bold text-white min-h-[20px]">{caption}</p>
 
-        {showButton && (
+        {idx === null && (
           <button
-            onClick={play}
+            onClick={start}
             className="w-full min-h-[44px] rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-lg py-3.5 shadow-[0_4px_0_0_#3d8c01] active:translate-y-[2px] active:shadow-none transition"
           >
             Show me
           </button>
         )}
 
-        {phase === 'done' && (
+        {idx !== null && !done && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={prevMove}
+              disabled={idx === 0}
+              aria-label="Previous move"
+              className="min-h-[44px] min-w-[44px] rounded-2xl bg-white/10 border border-white/15 text-white font-black text-lg disabled:opacity-30 transition"
+            >
+              ‹
+            </button>
+            <button
+              onClick={nextMove}
+              className="flex-1 min-h-[44px] rounded-2xl bg-chess-green hover:bg-chess-green-dark text-white font-black text-lg py-3.5 shadow-[0_4px_0_0_#3d8c01] active:translate-y-[2px] active:shadow-none transition"
+            >
+              {steps.length === 0 ? 'Got it' : `Next move (${idx}/${steps.length})`}
+            </button>
+          </div>
+        )}
+
+        {done && (
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap justify-center gap-2">
               {hasPlayed && (
@@ -222,12 +253,22 @@ export function MissReplay({ analysis, line, lineLoading }: Props) {
               )}
             </div>
 
-            <button
-              onClick={play}
-              className="self-center min-h-[44px] px-4 text-sm font-bold text-white/70 hover:text-white underline underline-offset-2"
-            >
-              Replay
-            </button>
+            <div className="flex items-center justify-center gap-4">
+              {steps.length > 0 && (
+                <button
+                  onClick={prevMove}
+                  className="min-h-[44px] px-4 text-sm font-bold text-white/70 hover:text-white underline underline-offset-2"
+                >
+                  ‹ Previous move
+                </button>
+              )}
+              <button
+                onClick={start}
+                className="min-h-[44px] px-4 text-sm font-bold text-white/70 hover:text-white underline underline-offset-2"
+              >
+                Replay
+              </button>
+            </div>
           </div>
         )}
       </div>
