@@ -8,6 +8,8 @@ import { trackEvent, SubscriptionEvents, identifyUser } from '@/lib/analytics/po
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
 import { NativeNoSaleGuard } from '@/components/subscription/NativeNoSaleGuard';
+import { isInAppWebview, hideAppleOAuth } from '@/lib/auth/webview';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 // CHE-387: OAuth callback URL carrying first-touch attribution through the
 // IG in-app -> system browser handoff (where cookies don't survive).
@@ -27,6 +29,16 @@ function PremiumSignupContent() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  // CHE-390: same OAuth gating as /auth/signup — Google is dead in in-app
+  // webviews, Apple is dead there too (and pointless on Android).
+  const [inWebview, setInWebview] = useState(false);
+  const [hideApple, setHideApple] = useState(false);
+  useEffect(() => {
+    if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) {
+      setInWebview(isInAppWebview());
+      setHideApple(hideAppleOAuth());
+    }
+  }, []);
 
   // Track premium signup page view for funnel analysis
   useEffect(() => {
@@ -180,6 +192,7 @@ function PremiumSignupContent() {
             </div>
           )}
 
+          {!inWebview && (
           <button
             type="button"
             onClick={handleGoogleSignup}
@@ -203,7 +216,9 @@ function PremiumSignupContent() {
               </>
             )}
           </button>
+          )}
 
+          {!hideApple && (
           <button
             type="button"
             onClick={handleAppleSignup}
@@ -224,12 +239,15 @@ function PremiumSignupContent() {
               </>
             )}
           </button>
+          )}
 
+          {!inWebview && (
           <div className="flex items-center gap-3 my-2">
             <div className="flex-1 h-px bg-slate-200" />
             <span className="text-chess-text-faint text-xs uppercase">or</span>
             <div className="flex-1 h-px bg-slate-200" />
           </div>
+          )}
 
           <form onSubmit={handleSignupAndCheckout} className="space-y-2.5">
             <div>

@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { trackEvent, identifyUser } from '@/lib/analytics/posthog';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
-import { isInAppWebview, isNativeShell } from '@/lib/auth/webview';
+import { isInAppWebview, hideAppleOAuth } from '@/lib/auth/webview';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function LoginContent() {
@@ -30,11 +30,11 @@ function LoginContent() {
   const [inWebview, setInWebview] = useState(false);
   // Chess Boxing shell: OAuth escapes to Safari and dies (no PKCE verifier
   // there), so Apple must be hidden too — email is the only working flow.
-  const [nativeShell, setNativeShell] = useState(false);
+  const [hideApple, setHideApple] = useState(false);
   useEffect(() => {
     if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) {
       setInWebview(isInAppWebview());
-      setNativeShell(isNativeShell());
+      setHideApple(hideAppleOAuth());
     }
   }, []);
 
@@ -180,9 +180,7 @@ function LoginContent() {
                 point Google-account users at a real browser instead. */}
             {inWebview && (
               <p className="text-chess-text-faint text-xs text-center mb-2">
-                {nativeShell
-                  ? 'Signed up with Google or Apple? Open chesspath.app in Safari to sign in.'
-                  : 'Signed up with Google? Open chesspath.app in your browser to sign in.'}
+                Signed up with Google or Apple? Open chesspath.app in your browser to sign in.
               </p>
             )}
             {!inWebview && (
@@ -211,7 +209,7 @@ function LoginContent() {
             </button>
             )}
 
-            {!nativeShell && (
+            {!hideApple && (
             <button
               type="button"
               onClick={handleAppleLogin}
@@ -234,7 +232,7 @@ function LoginContent() {
             </button>
             )}
 
-            {!nativeShell && (
+            {!inWebview && (
             <div className="flex items-center gap-3 my-3">
               <div className="flex-1 h-px bg-slate-200" />
               <span className="text-chess-text-faint text-xs uppercase">or</span>

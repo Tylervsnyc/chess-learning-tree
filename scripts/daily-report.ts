@@ -14,6 +14,7 @@
 
 import { config } from 'dotenv';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { existsSync, readFileSync } from 'node:fs';
 config({ path: '.env.local' });
 
 const PH_API_KEY = process.env.POSTHOG_PERSONAL_API_KEY!;
@@ -394,9 +395,15 @@ async function getLostIntent(filter: string): Promise<{
       countIf(event = 'onboarding_signup_prompt_oauth_started') AS oauth_started,
       countIf(event = 'elo_signup_clicked') AS elo_clicked,
       countIf(event = 'signup_completed') AS signup_done,
-      countIf(event = '$pageview' AND properties.$pathname = '/auth/callback') AS callback
+      countIf(event = '$pageview' AND properties.$pathname = '/auth/callback') AS callback,
+      countIf(event = 'onboarding_signup_prompt_dismissed') AS dismissed
     FROM events
     WHERE ${filter} AND properties.$session_id IS NOT NULL AND toString(properties.$session_id) != ''
+      -- Not Tyler: localhost dev sessions and his identified account used to
+      -- show up as "DEAD CTA?" (2026-09-04 replay review).
+      AND NOT startsWith(toString(properties.$host), 'localhost')
+      AND NOT startsWith(toString(properties.$host), '127.0.0.1')
+      AND (person.properties.email IS NULL OR person.properties.email NOT ILIKE '%@learnthroughstories.com')
     GROUP BY sid
     HAVING (prompt_shown > 0 OR oauth_started > 0 OR elo_clicked > 0 OR cta_clicked > 0)
        AND signup_done = 0 AND callback = 0
@@ -422,13 +429,16 @@ async function getLostIntent(filter: string): Promise<{
     const eloClicked = num(row[11]);
     const promptShown = num(row[8]);
     const engaged = num(row[7]);
+    const dismissed = num(row[14]);
 
     // Classify by how far the intent got. High-signal subset only.
     let kind: LostSession['kind'] | null = null;
     if (oauthStarted > 0) kind = 'OAUTH STALLED';
     else if (ctaClicked > 0 || eloClicked > 0) kind = 'FORM LEFT';
-    else if (promptShown > 0 && engaged > 0) kind = 'DEAD CTA?';
-    else { bouncedAtPrompt++; continue; } // saw prompt, not engaged, no tap — low signal, count only
+    // An explicit X / "Maybe later" is a choice, not a dead button — the
+    // 2026-09-04 Android "DEAD CTA?" had dismissed the prompt and gone on to a lesson.
+    else if (promptShown > 0 && engaged > 0 && dismissed === 0) kind = 'DEAD CTA?';
+    else { bouncedAtPrompt++; continue; } // saw prompt, not engaged / dismissed on purpose — low signal, count only
 
     const sid = String(row[0]);
     sessions.push({
@@ -912,6 +922,58 @@ async function getProMetrics(filter: string, dateStr: string, days: number) {
   return out;
 }
 
+// ---------------------------------------------------------------------------
+// Rookie's Revenge content pipeline — reads the sibling repo's registry from
+// disk (this report runs locally via crontab). Stages: idea → built →
+// testing → approved → live (+ retired). See rookies-run/docs/content-pipeline.md.
+// ---------------------------------------------------------------------------
+const REVENGE_PIPELINE_PATH = '/Users/tyler.schwartz/rookies-run/data/content/pipeline.json';
+
+interface RevengeContentItem {
+  id: string;
+  kind: 'ability' | 'run';
+  name: string;
+  stage: 'idea' | 'built' | 'testing' | 'approved' | 'live' | 'retired';
+  testing?: { lastRun: string; verdict: 'READY' | 'HOLD'; summary: string };
+  live?: { at: string };
+}
+
+function getRevengeContent(): { available: boolean; items: RevengeContentItem[] } {
+  if (!existsSync(REVENGE_PIPELINE_PATH)) return { available: false, items: [] };
+  try {
+    const reg = JSON.parse(readFileSync(REVENGE_PIPELINE_PATH, 'utf8')) as { items?: RevengeContentItem[] };
+    return { available: Array.isArray(reg.items), items: reg.items ?? [] };
+  } catch {
+    return { available: false, items: [] };
+  }
+}
+
+function printRevengeContent(dateStr: string) {
+  const { available, items } = getRevengeContent();
+  if (!available) {
+    console.log(`  (registry not found at ${REVENGE_PIPELINE_PATH})`);
+    return;
+  }
+  const stages = ['idea', 'built', 'testing', 'approved', 'live', 'retired'] as const;
+  const count = (s: string) => items.filter(i => i.stage === s).length;
+  console.log(`  ${stages.map(s => `${s} ${count(s)}`).join(' · ')}`);
+  const testing = items.filter(i => i.stage === 'testing');
+  const ready = testing.filter(i => i.testing?.verdict === 'READY');
+  const hold = testing.filter(i => i.testing?.verdict !== 'READY');
+  const firstReason = (i: RevengeContentItem) => {
+    if (!i.testing) return 'not graded yet';
+    const r = i.testing.summary.split(';')[0].trim();
+    return r.length > 70 ? r.slice(0, 69) + '…' : r;
+  };
+  console.log(`  Waiting on you: ${ready.length} READY${ready.length ? ` (${ready.map(i => i.id).join(', ')})` : ''}, ${hold.length} HOLD`);
+  for (const i of hold.slice(0, 6)) console.log(`    HOLD  ${i.id.padEnd(14)} ${firstReason(i)}`);
+  const cutoff = new Date(dateStr + 'T00:00:00Z'); cutoff.setUTCDate(cutoff.getUTCDate() - 7);
+  const wentLive = items.filter(i => i.stage === 'live' && i.live?.at && i.live.at >= cutoff.toISOString().slice(0, 10) && i.live.at <= dateStr);
+  const approved = items.filter(i => i.stage === 'approved');
+  console.log(`  Went live last 7d: ${wentLive.length ? wentLive.map(i => `${i.id} (${i.live?.at})`).join(', ') : 'none'}${approved.length ? `  ·  approved, awaiting deploy: ${approved.map(i => i.id).join(', ')}` : ''}`);
+  console.log(`  Ideas backlog: ${count('idea')}  ·  approve: npx tsx scripts/pipeline.ts approve <id> (in ~/rookies-run)`);
+}
+
 async function main() {
   if (!PH_API_KEY) {
     console.error('  Missing POSTHOG_PERSONAL_API_KEY in .env.local');
@@ -1214,6 +1276,9 @@ async function main() {
   for (const p of topPages) {
     console.log(`  ${p.page.padEnd(35)} ${p.views} views`);
   }
+
+  console.log(section("ROOKIE'S REVENGE CONTENT (idea → built → testing → approved → live)"));
+  printRevengeContent(targetDate);
 
   console.log(`\n  ${line}`);
   console.log(`  Report complete.\n`);

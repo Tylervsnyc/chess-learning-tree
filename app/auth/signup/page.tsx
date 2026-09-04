@@ -9,7 +9,7 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { humanizeAuthError } from '@/lib/auth-utils';
 import { signUpWithEmail } from '@/lib/auth/signup';
 import { appendFirstTouchParam } from '@/lib/growth/first-touch';
-import { isInAppWebview, isNativeShell } from '@/lib/auth/webview';
+import { isInAppWebview, hideAppleOAuth } from '@/lib/auth/webview';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 function SignupContent() {
@@ -31,11 +31,11 @@ function SignupContent() {
   const [inWebview, setInWebview] = useState(false);
   // Chess Boxing shell: OAuth escapes to Safari and dies (no PKCE verifier
   // there), so Apple must be hidden too — email is the only working flow.
-  const [nativeShell, setNativeShell] = useState(false);
+  const [hideApple, setHideApple] = useState(false);
   useEffect(() => {
     if (FEATURE_FLAGS.WEBVIEW_SAFE_AUTH) {
       setInWebview(isInAppWebview());
-      setNativeShell(isNativeShell());
+      setHideApple(hideAppleOAuth());
     }
   }, []);
 
@@ -233,7 +233,7 @@ function SignupContent() {
                 Webview (Google hidden): email leads — no top OAuth, no divider here. */}
             {!inWebview && (
               <>
-                <div className="mt-2">{appleButton}</div>
+                {!hideApple && <div className="mt-2">{appleButton}</div>}
                 <div className="flex items-center gap-3 my-4">
                   <div className="flex-1 h-px bg-slate-200" />
                   <span className="text-chess-text-faint text-xs uppercase">or use email</span>
@@ -296,18 +296,8 @@ function SignupContent() {
               </button>
             </form>
 
-            {/* Social webview only: Apple offered below email as a secondary
-                option. Hidden in the native shell where it can't complete. */}
-            {inWebview && !nativeShell && (
-              <>
-                <div className="flex items-center gap-3 my-4">
-                  <div className="flex-1 h-px bg-slate-200" />
-                  <span className="text-chess-text-faint text-xs uppercase">or</span>
-                  <div className="flex-1 h-px bg-slate-200" />
-                </div>
-                {appleButton}
-              </>
-            )}
+            {/* Webviews get no Apple fallback either: the 2026-09-04 IG replay
+                showed the tap stalling on "Redirecting..." — email only there. */}
           </div>
 
           <p className="text-center text-chess-text-muted text-sm pt-4">

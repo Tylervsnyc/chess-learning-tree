@@ -36,3 +36,20 @@ export function isInAppWebview(): boolean {
   // UA. Android webviews also carry the "; wv)" token.
   return /Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|BytedanceWebview/i.test(ua) || /;\s?wv\)/.test(ua);
 }
+
+/** Android device, any browser. */
+export function isAndroid(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /Android/i.test(navigator.userAgent || '');
+}
+
+/** True when the "Continue with Apple" button must be hidden:
+ *  - any in-app webview / the native shell — the 2026-09-04 IG replay showed
+ *    an iOS visitor tap Apple and sit on "Redirecting..." forever (Google was
+ *    already hidden there; Apple was the only OAuth left and it was dead too);
+ *  - Android — no Apple ID in practice, and the same replay week showed an
+ *    Android visitor being offered Apple as their only OAuth option.
+ *  Email is the flow that works everywhere. */
+export function hideAppleOAuth(): boolean {
+  return isInAppWebview() || isAndroid();
+}
