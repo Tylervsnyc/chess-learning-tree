@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProGate } from '@/hooks/useProGate';
 import { ArenaScene, GymSign } from '@/components/chessboxing/Arena';
+import { ShellColor } from '@/components/chessboxing/ShellColor';
+import { SHELL_ARENA } from '@/components/chessboxing/ShellChrome';
 import { useBoxShell } from '@/hooks/useBoxShell';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import type { LeaderboardPeriod } from '@/lib/leaderboard/period';
@@ -138,7 +140,11 @@ export function RingHome() {
   const { gate, paywall } = useProGate();
 
   return (
-    <div className="h-full text-white relative overflow-hidden bg-[#131a2e]">
+    <div className="h-full text-white relative overflow-hidden bg-box-arena">
+      {/* Paints the status-bar strip arena navy. Not gated on the shell: it is
+          the correct colour for this page on the web too, and it lands in the
+          first frame, before useBoxShell has flipped. */}
+      <ShellColor value={SHELL_ARENA} />
       {/* The arena is FULL-BLEED; only the content column is capped. Same
           composition as /box/bout's pre-fight window. Nesting the scene inside
           the capped column left the crowd and floor as a phone-width strip

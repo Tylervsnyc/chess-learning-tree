@@ -86,6 +86,8 @@ import { FEATURE_FLAGS, IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { getArrowColor, ARROW_BEST, fetchCoachReview } from '@/lib/review/review-core';
 import { applyBookMoves } from '@/lib/review/book-moves';
 import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
+import { ShellColor } from '@/components/chessboxing/ShellColor';
+import { SHELL_GYM } from '@/components/chessboxing/ShellChrome';
 
 // CHE-381: post-game-only UI — code-split so the coaching drawer (and the
 // coaching-prompt lib it pulls in) never loads on the play-page boot path.
@@ -2303,10 +2305,13 @@ export default function PlayRookiePage() {
 
     return (
       <div
-        className={`h-full ${inBoxShell ? 'relative bg-[#10162a] text-white' : 'bg-chess-page text-chess-text'} flex flex-col overflow-auto`}
+        className={`h-full ${inBoxShell ? 'relative bg-box-gym text-white' : 'bg-chess-page text-chess-text'} flex flex-col overflow-auto`}
         onPointerDown={speakSetupGreeting}
       >
         {inBoxShell && <FullBleedShell />}
+        {/* Setup is the gym navy; the game screen below is light, which is
+            /play's route default. */}
+        {inBoxShell && <ShellColor value={SHELL_GYM} />}
         {inBoxShell && <GymBackdrop />}
         {/* Top: Level progress bar */}
         <div className="relative z-10 px-4 md:px-6 pt-4 pb-2 flex-shrink-0 w-full max-w-md md:max-w-lg mx-auto pointer-events-none">

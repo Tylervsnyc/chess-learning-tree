@@ -76,7 +76,17 @@ export function BoxTabBar() {
       )}
       <nav
         aria-label="Chess Boxing tabs"
-        className="fixed bottom-0 inset-x-0 z-40 bg-chess-surface border-t border-slate-200 pb-[env(safe-area-inset-bottom)]"
+        /* Dark FLOATING island, not an edge-to-edge bar (Tyler 2026-09-04:
+           "darker so the whole app looks more cohesive").
+           Why it floats: with ios.contentInset 'always' the web view has ONE
+           canvas colour and it paints the strip behind the status bar AND the
+           strip at the home indicator. The top strip has to match the page, so
+           the bottom strip does too — an edge-to-edge dark bar would sit above
+           a ~34pt page-coloured sliver and read as broken. Floating it means
+           the canvas is one continuous colour top to bottom and the bar is
+           deliberately lifted off the edge. On the arena screens the navy
+           island sits on navy and disappears. */
+        className="fixed bottom-1.5 left-2.5 right-2.5 z-40 rounded-[20px] bg-box-bar border border-white/10 shadow-[0_6px_20px_rgba(9,13,26,0.30)]"
       >
         {trainOpen && (
           <div className="absolute bottom-full inset-x-0 pb-2 px-4">
@@ -117,16 +127,19 @@ export function BoxTabBar() {
               (href === null && trainOpen);
             /* Chess Path button language (NavHeader): every tab is a filled
                colored button. Active = solid fill, white text, hard 3D
-               bottom shadow; inactive = its own tint, colored text. */
+               bottom shadow — that reads well on the dark island as-is.
+               Inactive used to be a 12% brand tint over white plus 0.85
+               opacity; both were tuned for a white bar and go muddy and dim on
+               navy, so inactive is now one neutral chip at full opacity and
+               keeps only its brand hue for identity. */
             const face = (
               <span
                 className="flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-xl border-2 transition-all active:translate-y-[2px]"
                 style={{
-                  background: active ? color : tint,
-                  borderColor: active ? shadow : 'transparent',
+                  background: active ? color : 'rgba(255,255,255,0.06)',
+                  borderColor: active ? shadow : 'rgba(255,255,255,0.08)',
                   boxShadow: active ? `0 3px 0 0 ${shadow}` : 'none',
                   color: active ? '#fff' : color,
-                  opacity: active ? 1 : 0.85,
                 }}
               >
                 <Icon />

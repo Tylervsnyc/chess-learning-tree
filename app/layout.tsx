@@ -9,7 +9,7 @@ import { SilentErrorBoundary } from '@/components/ui/SilentErrorBoundary';
 import { OfflineBridge } from '@/components/providers/OfflineBridge';
 import { NativeSplash } from '@/components/chessboxing/NativeSplash';
 import { BoxTabBar } from '@/components/chessboxing/BoxTabBar';
-import { StatusBarSync } from '@/components/chessboxing/StatusBarSync';
+import { ShellChrome } from '@/components/chessboxing/ShellChrome';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/seo/structured-data';
 
 export const metadata: Metadata = {
@@ -128,7 +128,9 @@ export default function RootLayout({
               {/* Boxing-only chrome: the Chess Path app navigates with the
                   regular NavHeader instead (see NavHeader's shell check). */}
               {process.env.NEXT_PUBLIC_APP_TARGET !== 'chesspath' && <BoxTabBar />}
-              <StatusBarSync />
+              {/* Paints the status-bar strip to match each screen. See
+                  ShellChrome for why no page can do this itself. */}
+              <ShellChrome />
             </SilentErrorBoundary>
           </PostHogProvider>
         </Suspense>

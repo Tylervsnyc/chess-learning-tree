@@ -8,6 +8,8 @@ import { ROOK_FRACTION, ROOK_W, ROOK_H, SPLASH_BG } from '@/lib/brand/rook-mark'
 import { isNativeApp } from '@/lib/native-app';
 import { IS_CHESSPATH_APP } from '@/lib/config/offline';
 import { markAppReady, onAppReady } from '@/lib/native-splash';
+import { ShellColor } from '@/components/chessboxing/ShellColor';
+import { SHELL_DEEP } from '@/components/chessboxing/ShellChrome';
 
 /**
  * NativeSplash — the cold-start screen inside a Capacitor native shell. Web
@@ -135,6 +137,11 @@ export function NativeSplash() {
 
   if (!IS_CHESSPATH_APP) {
     return (
+      <>
+      {/* The splash is `fixed inset-0`, which inside the natively-inset web
+          view stops BELOW the status bar — so the navy splash used to show a
+          pale band above it on every cold start. This paints the strip too. */}
+      <ShellColor value={SHELL_DEEP} />
       <div
         aria-hidden
         style={{
@@ -152,6 +159,7 @@ export function NativeSplash() {
       >
         <BoxingLogoLoader size={140} />
       </div>
+      </>
     );
   }
 

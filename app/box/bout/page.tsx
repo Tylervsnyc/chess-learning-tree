@@ -64,6 +64,8 @@ import {
   playCaptureSound,
   playCelebrationSound,
 } from '@/lib/sounds';
+import { ShellColor } from '@/components/chessboxing/ShellColor';
+import { SHELL_ARENA } from '@/components/chessboxing/ShellChrome';
 import {
   buildSegments,
   bankSeconds,
@@ -1058,7 +1060,10 @@ export default function BoutPage() {
   // pre-fight card stack fits a 375×667 window (tab bar hidden on this route).
   if (phase === 'prefight') {
     return (
-      <div className="h-full overflow-hidden bg-[#131a2e] flex flex-col relative">
+      <div className="h-full overflow-hidden bg-box-arena flex flex-col relative">
+        {/* Only the pre-fight is dark; the live bout and the result card are
+            light, so /box/bout's route default is light and this declares. */}
+        <ShellColor value={SHELL_ARENA} />
         <ArenaScene />
         <ArenaBackButton />
         {/* The hanging sign — same slot as RingHome so it never moves between windows. */}

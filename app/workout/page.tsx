@@ -71,6 +71,8 @@ import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import type { FightStats } from '@/lib/box/fight-stats';
+import { ShellColor } from '@/components/chessboxing/ShellColor';
+import { SHELL_ARENA } from '@/components/chessboxing/ShellChrome';
 
 // Quadrant Fight (beta) — opt-in camera game for boxing segments. Lazy so the
 // TF.js/game code is code-split and never loads unless the user turns it on.
@@ -1714,8 +1716,11 @@ function WorkoutPageInner() {
   // ── SETUP ─────────────────────────────────────────────────────────────────
   if (phase === 'setup') {
     return (
-      <div className={`h-full ${fromBox ? 'relative overflow-hidden bg-[#131a2e] flex flex-col' : 'overflow-auto bg-chess-page'}`}>
+      <div className={`h-full ${fromBox ? 'relative overflow-hidden bg-box-arena flex flex-col' : 'overflow-auto bg-chess-page'}`}>
         {fromBox && <FullBleedShell />}
+        {/* Only the setup window is dark; running and done are light, which is
+            /workout's route default. */}
+        {fromBox && <ShellColor value={SHELL_ARENA} />}
         {fromBox && <ArenaScene />}
         {fromBox && <ArenaBackButton />}
         {/* The hanging sign — same slot as RingHome so it never moves between windows. */}

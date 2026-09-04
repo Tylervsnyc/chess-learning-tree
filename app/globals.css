@@ -48,6 +48,14 @@
   --color-chess-text-faint: #94a3b8;
   --color-chess-text-light: #A3B8C2;
 
+  /* === Chess Boxing shell (the navies the app is built out of) ===
+     These were loose hex literals in six files. ShellChrome drives the page
+     shell from them so the strip behind the status bar matches each screen. */
+  --color-box-arena: #131a2e;   /* RingHome, bout pre-fight, workout setup */
+  --color-box-deep: #10162a;    /* Play's gym setup screen */
+  --color-box-splash: #101a33;  /* cold-start splash / native launch image */
+  --color-box-bar: #1a2440;     /* the floating tab-bar island */
+
   /* === Animations === */
   --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
   --animate-bounce-subtle: bounce-subtle 1s ease-in-out infinite;
@@ -255,8 +263,13 @@
   transform: scale(0.97);
 }
 
+/* --shell-bg is set per screen inside the Chess Boxing app (see
+   components/chessboxing/ShellColor.tsx). It paints the strips behind the
+   status bar and the home indicator, which no page can reach because
+   ios.contentInset is 'always'. Undeclared everywhere else, so the web and the
+   Chess Path app compute exactly the old value. */
 html {
-  background-color: var(--color-chess-page);
+  background-color: var(--shell-bg, var(--color-chess-page));
   height: 100dvh; /* Use dynamic viewport height for mobile */
 }
 
@@ -264,13 +277,14 @@ html {
    BoxTabBar toggles this class; body is the flex column, so padding here
    shrinks every page's internal scroll container above the bar. */
 html.has-box-tabbar body {
-  /* BoxTabBar: 48px buttons + 6px top/bottom padding */
-  padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  /* BoxTabBar: 48px buttons + 6px top/bottom padding + the 6px the floating
+     island is lifted off the bottom edge. */
+  padding-bottom: calc(66px + env(safe-area-inset-bottom));
 }
 
 body {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background-color: var(--color-chess-page);
+  background-color: var(--shell-bg, var(--color-chess-page));
   color: var(--color-chess-text);
   height: 100%;
   display: flex;
