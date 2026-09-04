@@ -71,7 +71,7 @@ HARD RULES ABOUT MOVE NAMES — the ONLY moves you may write in notation are the
 - Never mention percentages, engine depth, centipawns, or "Stockfish". Say "the engine" if you must.
 - No emojis. No exclamation marks in a row. No "Interesting choice here…" filler.
 
-OUTPUT: JSON with "summary" (2 sentences: the story of the game), "moves" (an array with one entry for EVERY move, in order, each {"key": "{moveNumber}w" or "{moveNumber}b", "text": ONE sentence, at most 120 characters}), and "takeaway" (the single most useful lesson from THIS game for THIS student, one or two sentences, concrete).`;
+OUTPUT: JSON with "summary" (ONE short sentence, at most 110 characters: the story of the game), "moves" (an array with one entry for EVERY move, in order, each {"key": "{moveNumber}w" or "{moveNumber}b", "text": ONE sentence, at most 120 characters}), and "takeaway" (the single most useful lesson from THIS game for THIS student, ONE sentence, at most 110 characters, concrete).`;
 
 const OUTPUT_SCHEMA = {
   type: 'object',
@@ -308,8 +308,16 @@ ${moveLines}
     // against the union of every move that was ever legal in this game.
     const everything = new Set<string>();
     for (const m of enriched) for (const s of m.allowed) everything.add(s);
+    // Hard cap: the coach panel is two short lines. Keep the first sentence if
+    // the model runs long; never ship text the panel can't show.
+    const shorten = (s: string) => {
+      const t = s.trim();
+      if (t.length <= 120) return t;
+      const first = t.match(/^[^.!?]*[.!?]/)?.[0]?.trim();
+      return first && first.length <= 120 ? first : t.slice(0, 117).replace(/\s+\S*$/, '') + '...';
+    };
     const clean = (s: string | undefined) =>
-      s && !findIllegalMoveName(s, everything) ? s.trim() : null;
+      s && !findIllegalMoveName(s, everything) ? shorten(s) : null;
 
     return NextResponse.json({
       review: { summary: clean(review.summary), moves: outMoves, takeaway: clean(review.takeaway) },

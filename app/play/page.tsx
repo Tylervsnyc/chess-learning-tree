@@ -2480,7 +2480,7 @@ export default function PlayRookiePage() {
           {/* Above board: Rookie always in same spot, content changes by phase */}
           {isReview ? (
             <div className="mb-2">
-              <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] flex items-center gap-2.5">
+              <div className="bg-chess-surface rounded-2xl px-3.5 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[52px] flex items-center gap-2 overflow-hidden">
                 {branch.inBranch ? (
                   <p className="text-[13px] leading-snug font-medium text-chess-text-muted">
                     Trying a line. Tap Back to game to return.
@@ -2502,8 +2502,8 @@ export default function PlayRookiePage() {
                   </div>
                 )}
                 <p className={`text-chess-text leading-snug font-medium ${
-                  (reviewText?.length ?? 0) > 120 ? 'text-[11px]' :
-                  (reviewText?.length ?? 0) > 80 ? 'text-[12px]' : 'text-[13px]'
+                  (reviewText?.length ?? 0) > 100 ? 'text-[11px]' :
+                  (reviewText?.length ?? 0) > 70 ? 'text-[12px]' : 'text-[13px]'
                 }`}>
                   {!coachReady ? 'Rookie is reviewing your game...' : (reviewText || 'Use the arrows to step through the game.')}
                 </p>

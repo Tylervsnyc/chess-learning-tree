@@ -354,7 +354,7 @@ export function GameReview({
         <div className="w-full max-w-md md:max-w-[40rem] mx-auto">
           {/* Coach commentary panel */}
           <div className="mb-2">
-            <div className="bg-chess-surface rounded-2xl px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[72px] flex items-center gap-2.5">
+            <div className="bg-chess-surface rounded-2xl px-3.5 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] h-[52px] flex items-center gap-2 overflow-hidden">
               {inBranch ? (
                 <p className="text-[13px] leading-snug font-medium text-chess-text-muted">
                   Trying a line. Tap Back to game to return.
@@ -376,8 +376,8 @@ export function GameReview({
                   </div>
                 )}
                 <p className={`text-chess-text leading-snug font-medium ${
-                  (reviewText?.length ?? 0) > 120 ? 'text-[11px]' :
-                  (reviewText?.length ?? 0) > 80 ? 'text-[12px]' : 'text-[13px]'
+                  (reviewText?.length ?? 0) > 100 ? 'text-[11px]' :
+                  (reviewText?.length ?? 0) > 70 ? 'text-[12px]' : 'text-[13px]'
                 }`}>
                   {!coachReady
                     ? (reviewText || 'Rookie is reviewing your game...')
