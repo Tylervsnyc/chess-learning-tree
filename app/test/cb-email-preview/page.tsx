@@ -6,6 +6,7 @@ import { BoxingWeeklyReport } from '@/lib/email/templates/BoxingWeeklyReport';
 import { BoxingComeback } from '@/lib/email/templates/BoxingComeback';
 import { BoxingHighScore } from '@/lib/email/templates/BoxingHighScore';
 import { BoxingWorkoutReport } from '@/lib/email/templates/BoxingWorkoutReport';
+import { BoxingWeeklyTop10 } from '@/lib/email/templates/BoxingWeeklyTop10';
 
 // Preview-only. NEVER queries real users — all data below is fake sample data.
 const SAMPLE = {
@@ -14,8 +15,75 @@ const SAMPLE = {
   unsubscribeUrl: 'https://chesspath.app/api/email/unsubscribe?preview=1',
 };
 
+// Weekly Top 10 sample: ten fake fighters, one perfect session. The card images
+// hit the real OG routes with these same fake rows so the preview is honest.
+const TOP10_WEEK = '2026-08-31';
+const TOP10_ROWS = [
+  ['Los_tiki', 1240, 812], ['ironjaw', 1105, 640], ['queenside_q', 980, 555],
+  ['rook_ruth', 902, 480], ['tempo_tom', 855, 501], ['bishop_b', 790, 300],
+  ['jab_and_mate', 744, 610], ['castle_kat', 701, 220], ['en_passant_ed', 660, 415],
+  ['zugzwang_z', 612, 390],
+].map(([username, points, punches], i) => ({
+  rank: i + 1,
+  userId: `user-${i + 1}`,
+  username: String(username),
+  points: Number(points),
+  punches: Number(punches),
+}));
+const TOP10_SOW = { username: 'queenside_q', points: 214, correct: 15, wrong: 0, accuracyPct: 100, perfect: true };
+const TOP10_TOTAL = 27;
+const top10CardUrl = (() => {
+  const q = new URLSearchParams({
+    ws: TOP10_WEEK,
+    rows: TOP10_ROWS.map((r) => `${r.username}:${r.points}`).join(','),
+    total: String(TOP10_TOTAL),
+    sow: `${TOP10_SOW.username}:${TOP10_SOW.points}:${TOP10_SOW.accuracyPct}`,
+    perfect: '1',
+  });
+  return `/api/og/leaderboard-week?${q.toString()}`;
+})();
+const top10Recap = { weekStart: TOP10_WEEK, top: TOP10_ROWS, sessionOfWeek: TOP10_SOW, totalCompetitors: TOP10_TOTAL };
+const top10Common = {
+  recap: top10Recap,
+  cardUrl: top10CardUrl,
+  leaderboardUrl: 'https://chesspath.app/leaderboard?period=weekly',
+  unsubscribeUrl: SAMPLE.unsubscribeUrl,
+};
+
 export default async function CbEmailPreviewPage() {
   const previews: { label: string; angle: string; html: string }[] = [
+    {
+      label: 'cb_weekly_top10 — Puzzle Boxing High Scores, Monday to the whole list (reader is #3)',
+      angle:
+        'Styled like the app\'s own leaderboard widget (RingHome) — no date, no slogans. Same board for everyone; only the bottom line changes per reader. Reader in the Top 10 -> their row is gold + YOU tag + a link to their own rank card. Sent by /api/cron/weekly-top10 (Mon 12:00 UTC), gated by CB_WEEKLY_TOP10_EMAIL. Card image: ' +
+        top10CardUrl,
+      html: await render(
+        BoxingWeeklyTop10({
+          ...top10Common,
+          recipient: { displayName: 'Tyler', rank: 3, points: 980, isTop10: true },
+        }),
+      ),
+    },
+    {
+      label: 'cb_weekly_top10 — reader finished #14 (off the board)',
+      angle: '"You finished #14 with 310 points. The board resets Monday." No gold row.',
+      html: await render(
+        BoxingWeeklyTop10({
+          ...top10Common,
+          recipient: { displayName: 'Tyler', rank: 14, points: 310, isTop10: false },
+        }),
+      ),
+    },
+    {
+      label: 'cb_weekly_top10 — reader did not compete (most of the list)',
+      angle: '"You weren\'t on the board this week. One workout puts you on it." This is the version 90% of the list receives.',
+      html: await render(
+        BoxingWeeklyTop10({
+          ...top10Common,
+          recipient: { displayName: undefined, rank: null, points: null, isTop10: false },
+        }),
+      ),
+    },
     {
       label: 'cb_workout_report — sent the moment a workout lands (misses → report link, hardest solve on a board)',
       angle:

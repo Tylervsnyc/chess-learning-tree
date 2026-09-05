@@ -11,5 +11,6 @@ export { BoxingWeeklyReport } from './BoxingWeeklyReport';
 export { BoxingComeback } from './BoxingComeback';
 export { BoxingHighScore } from './BoxingHighScore';
 export { BoxingWorkoutReport } from './BoxingWorkoutReport';
+export { BoxingWeeklyTop10 } from './BoxingWeeklyTop10';
 export { RatingReveal } from './RatingReveal';
 export { StreakScience } from './StreakScience';

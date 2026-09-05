@@ -17,7 +17,8 @@ export type EmailType =
   | 'cb_comeback'
   | 'cb_highscore'
   | 'cb_launch_party'
-  | 'cb_workout_report';
+  | 'cb_workout_report'
+  | 'cb_weekly_top10';
 
 export interface EmailPreferences {
   user_id: string;
@@ -175,4 +176,40 @@ export interface BoxingWorkoutReportProps {
   currentStreak?: number;
   /** Hardest puzzle solved: position after the setup move + which way up. */
   hardest?: { fen: string; rating: number; orient: 'white' | 'black' };
+}
+
+// --- Chess Boxing Weekly Top 10 (cb_weekly_top10) ---
+// Sent to the WHOLE list every Monday; see app/api/cron/weekly-top10/route.ts.
+
+export interface WeeklyTop10Recap {
+  /** Monday, YYYY-MM-DD. */
+  weekStart: string;
+  top: { rank: number; userId: string; username: string; points: number; punches: number }[];
+  sessionOfWeek: {
+    username: string;
+    points: number;
+    correct: number;
+    wrong: number;
+    accuracyPct: number;
+    perfect: boolean;
+  } | null;
+  totalCompetitors: number;
+}
+
+export interface WeeklyTop10Recipient {
+  displayName?: string;
+  /** Their finishing rank last week, or null if they did not compete. */
+  rank: number | null;
+  points: number | null;
+  isTop10: boolean;
+}
+
+export interface BoxingWeeklyTop10Props {
+  recap: WeeklyTop10Recap;
+  recipient: WeeklyTop10Recipient;
+  /** Absolute URL of the shareable Top 10 board card (1080x1920). */
+  cardUrl: string;
+  /** Absolute URL of the recipient's own rank card, when they ranked. */
+  leaderboardUrl: string;
+  unsubscribeUrl: string;
 }

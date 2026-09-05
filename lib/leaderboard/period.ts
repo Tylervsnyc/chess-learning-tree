@@ -69,3 +69,56 @@ export function periodStartISO(period: LeaderboardPeriod): string {
   // monthly
   return midnightEtToUtc(y, m, 1).toISOString();
 }
+
+// ---------------------------------------------------------------------------
+// Completed-week windows (the Monday Top 10 recap).
+// ---------------------------------------------------------------------------
+
+export interface WeekWindow {
+  /** Monday 00:00 ET as ISO (UTC). */
+  startISO: string;
+  /** The following Monday 00:00 ET as ISO (UTC) — exclusive. */
+  endISO: string;
+  /** Monday's calendar date, YYYY-MM-DD. */
+  weekStart: string;
+}
+
+const DAY_MS = 24 * 3600 * 1000;
+
+function ymd(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+/** The week that begins on the given Monday (YYYY-MM-DD). */
+export function weekWindowFrom(mondayYmd: string): WeekWindow {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(mondayYmd);
+  if (!m) throw new Error(`weekWindowFrom: bad date ${mondayYmd}`);
+  const start = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 5, 0, 0, 0));
+  const end = new Date(start.getTime() + 7 * DAY_MS);
+  return { startISO: start.toISOString(), endISO: end.toISOString(), weekStart: ymd(start) };
+}
+
+/**
+ * The most recent COMPLETED week: from the Monday before the current week's
+ * Monday, up to (not including) this week's Monday. Run on a Monday morning
+ * this is "last week".
+ */
+export function previousWeekWindow(): WeekWindow {
+  const thisMonday = new Date(periodStartISO('weekly'));
+  const lastMonday = new Date(thisMonday.getTime() - 7 * DAY_MS);
+  return {
+    startISO: lastMonday.toISOString(),
+    endISO: thisMonday.toISOString(),
+    weekStart: ymd(lastMonday),
+  };
+}
+
+/** "Sep 1" style label for a YYYY-MM-DD, without timezone drift. */
+export function weekLabel(weekStart: string): string {
+  const [y, mo, d] = weekStart.split('-').map(Number);
+  return new Date(Date.UTC(y, mo - 1, d, 12)).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}

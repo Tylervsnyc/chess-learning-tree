@@ -1210,6 +1210,7 @@ The raw `Chessboard` component ships with default piece styling and no board col
 | `SHOW_SHARING` | `lib/config/feature-flags.ts` | `true` | Share buttons/cards on lesson complete and daily challenge |
 | `SHOW_BLOCK_INTROS` | `lib/config/feature-flags.ts` | `false` | Block intro popups at section boundaries |
 | `SHOW_OPENINGS` | `lib/config/feature-flags.ts` | `true` | Openings feature in Learn dropdown |
+| `CB_WEEKLY_TOP10_EMAIL` | `lib/config/feature-flags.ts` | env `CB_WEEKLY_TOP10_EMAIL=true` (default off) | Monday Chess Boxing Top 10 email (`cb_weekly_top10`) to the whole list. Off = `/api/cron/weekly-top10` dry-runs (counts, no sends). |
 | `ACHIEVEMENTS` | `lib/config/feature-flags.ts` | `true` | Chess Boxing achievements: trophy case on /profile + /box/profile, unlock animations on bout/workout result screens, server-side detection in the finish routes. Plan: docs/chess-boxing-achievements-plan.md |
 
 ### Permissions & Limits (not feature flags)
@@ -2046,6 +2047,7 @@ All crons are defined in `vercel.json` and protected with `CRON_SECRET` Bearer t
 | `/api/cron/report/content` | Daily 07:00 | Puzzle content report |
 | `/api/cron/report/growth` | Daily 07:00 | Funnel/growth report |
 | `/api/cron/morning-brief` | Daily 07:30 | Reads the 4 stored reports, posts one prioritized brief to Slack (`SLACK_WEBHOOK_URL`), stores as `morning_brief` |
+| `/api/cron/weekly-top10` | Monday 12:00 (8am ET) | Chess Boxing Weekly Top 10 email (`cb_weekly_top10`) to every profile with an email: last week's global board (`lib/leaderboard/weekly-recap.ts`, same scoring as `/api/leaderboard`), shareable card `/api/og/leaderboard-week`, Session of the Week, reader's own rank. Gated by `CB_WEEKLY_TOP10_EMAIL` (off = dry run); `?dry=1` forces dry run, `?to=email` sends one test, `?ws=YYYY-MM-DD` picks a week; skips with <3 competitors; dedupe one per user per week via `email_log.metadata.weekStart`. Preview: `/test/cb-email-preview`. |
 
 **Planned (not yet built):** streak-check, re-engagement, dunning, weekly-digest, ux-report.
 

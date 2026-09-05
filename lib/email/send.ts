@@ -51,6 +51,7 @@ function shouldSendEmail(
     case 'cb_highscore':
     case 'cb_launch_party':
     case 'cb_workout_report':
+    case 'cb_weekly_top10':
       return preferences.marketing;
     default:
       return true;

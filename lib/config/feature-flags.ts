@@ -229,6 +229,16 @@ export const FEATURE_FLAGS = {
    * also lives in components/shared/GameReview.tsx (bout review, /review).
    */
   REVIEW_VARIATIONS: true,
+  /**
+   * Chess Boxing Weekly Top 10 email (cb_weekly_top10, 2026-09-04). Every
+   * Monday 12:00 UTC /api/cron/weekly-top10 mails the WHOLE Chess Path list
+   * last week's global Top 10 board (shareable 1080x1920 card from
+   * /api/og/leaderboard-week), the Session of the Week, and where the reader
+   * finished. Env-driven: set CB_WEEKLY_TOP10_EMAIL=true on the server to send;
+   * anything else = DRY RUN (the cron computes + logs counts, sends nothing).
+   * Skips entirely with fewer than 3 competitors.
+   */
+  CB_WEEKLY_TOP10_EMAIL: process.env.CB_WEEKLY_TOP10_EMAIL === 'true',
 } as const;
 
 /**

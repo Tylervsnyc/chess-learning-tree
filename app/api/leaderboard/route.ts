@@ -3,7 +3,12 @@ import { isPremiumSubscription, type SubscriptionStatus } from '@/lib/subscripti
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { periodStartISO, isPeriod, type LeaderboardPeriod } from '@/lib/leaderboard/period';
-import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import {
+  fetchWindowScores,
+  scoreFor as scoreForMetric,
+  compareEntries,
+  type WindowScores,
+} from '@/lib/leaderboard/scoring';
 
 /**
  * GET /api/leaderboard?scope=global|crew&period=daily|weekly|monthly&crewId=
@@ -85,129 +90,20 @@ export async function GET(request: NextRequest) {
   }
 
   // ── Score per user within the window ───────────────────────────────────────
-  // Daily = best single round; weekly/monthly = total points. The
-  // best_round_points column may not be migrated yet — retry the read without
-  // it and fall back to per-session points.
-  type SessionRow = {
-    user_id: string;
-    points: number | null;
-    created_at?: string | null;
-    punches?: number | null;
-    best_round_points?: number | null;
-  };
-  let sessions: SessionRow[] | null = null;
-  const first = await svc
-    .from('workout_sessions')
-    .select('user_id, points, created_at, punches, best_round_points')
-    .gte('created_at', startISO);
-  let error = first.error;
-  sessions = (first.data ?? null) as SessionRow[] | null;
-  if (error && /best_round_points/.test(error.message ?? '')) {
-    const retry = await svc
-      .from('workout_sessions')
-      .select('user_id, points, created_at, punches')
-      .gte('created_at', startISO);
-    error = retry.error;
-    sessions = (retry.data ?? null) as SessionRow[] | null;
-  }
-
-  if (error) {
-    console.error('leaderboard sessions read failed', error);
+  // Shared with the Monday Top 10 email (lib/leaderboard/scoring.ts) so the
+  // board and the recap can never disagree. Daily = best single effort;
+  // weekly/monthly = sum of daily slots (LEADERBOARD_DAILY_SLOT) or raw totals.
+  let scores: WindowScores;
+  try {
+    scores = await fetchWindowScores(svc, { startISO, memberIds });
+  } catch (err) {
+    console.error('leaderboard sessions read failed', err);
     return NextResponse.json({ error: 'read failed' }, { status: 500 });
   }
-
-  // Chess Boxing bouts pay into the SAME windows (Bout v2) — a bout is a
-  // finished unit like a workout. Read best-effort: bout_sessions is created
-  // by hand on the live DB, so a missing table just means no bout points yet.
-  type BoutRow = {
-    user_id: string;
-    points: number | null;
-    punches: number | null;
-    created_at?: string | null;
-  };
-  let bouts: BoutRow[] = [];
-  const boutRead = await svc
-    .from('bout_sessions')
-    .select('user_id, points, punches, created_at')
-    .gte('created_at', startISO);
-  if (boutRead.error) {
-    if (!/bout_sessions/.test(boutRead.error.message ?? '')) {
-      console.error('leaderboard bout read failed', boutRead.error);
-    }
-  } else {
-    bouts = (boutRead.data ?? []) as BoutRow[];
-  }
+  const { totals, punchTotals } = scores;
 
   const metric: 'best_round' | 'total' = period === 'daily' ? 'best_round' : 'total';
-
-  const dailySlot = FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT;
-
-  const totals = new Map<string, number>();
-  const punchTotals = new Map<string, number>();
-  // Daily fallback for users with only legacy rows (no best_round_points):
-  // their best single-session points still puts them on the board.
-  const bestRounds = new Map<string, number>();
-  const bestSessions = new Map<string, number>();
-  // Best single BOUT in the window — competes with the best workout round for
-  // the daily crown (see scoreFor).
-  const bestBouts = new Map<string, number>();
-  // Daily-slot scoring: per user, per UTC day, the best single effort that
-  // day (best workout round, legacy session points, or bout points). The
-  // weekly/monthly score is the sum of these slots.
-  const daySlots = new Map<string, Map<string, number>>();
-  const bumpSlot = (uid: string, createdAt: string | null | undefined, val: number) => {
-    const day = (createdAt ?? '').slice(0, 10) || 'unknown';
-    let days = daySlots.get(uid);
-    if (!days) daySlots.set(uid, (days = new Map()));
-    days.set(day, Math.max(days.get(day) ?? 0, val));
-  };
-
-  for (const row of sessions ?? []) {
-    const uid = row.user_id as string;
-    if (memberIds && !memberIds.has(uid)) continue;
-    const pts = (row.points as number) ?? 0;
-    totals.set(uid, (totals.get(uid) ?? 0) + pts);
-    punchTotals.set(uid, (punchTotals.get(uid) ?? 0) + ((row.punches as number) ?? 0));
-    const br = (row as { best_round_points?: number | null }).best_round_points;
-    if (typeof br === 'number') {
-      bestRounds.set(uid, Math.max(bestRounds.get(uid) ?? 0, br));
-    }
-    bestSessions.set(uid, Math.max(bestSessions.get(uid) ?? 0, pts));
-    // Slot value: best round if this row has one, else the legacy session
-    // total — a fixed 3-minute unit either way, so time can't buy the slot.
-    bumpSlot(uid, row.created_at, typeof br === 'number' ? br : pts);
-  }
-
-  // A bout stands as a single "session": it competes for the daily
-  // best-single crown, fills its day's ranked slot, and (flag off) adds to
-  // the raw weekly/monthly total.
-  for (const row of bouts) {
-    const uid = row.user_id;
-    if (memberIds && !memberIds.has(uid)) continue;
-    const pts = row.points ?? 0;
-    totals.set(uid, (totals.get(uid) ?? 0) + pts);
-    punchTotals.set(uid, (punchTotals.get(uid) ?? 0) + (row.punches ?? 0));
-    bestBouts.set(uid, Math.max(bestBouts.get(uid) ?? 0, pts));
-    bumpSlot(uid, row.created_at, pts);
-  }
-
-  // Daily-slot mode replaces raw totals with the sum of each day's best
-  // effort — one scoring slot per day, consistency beats grinding.
-  if (dailySlot) {
-    for (const [uid, days] of daySlots) {
-      let sum = 0;
-      for (const v of days.values()) sum += v;
-      totals.set(uid, sum);
-    }
-  }
-
-  const scoreFor = (uid: string): number => {
-    if (metric === 'total') return totals.get(uid) ?? 0;
-    const br = bestRounds.get(uid);
-    const workoutBest = br !== undefined ? br : bestSessions.get(uid) ?? 0;
-    // Daily crown goes to the single best effort of either discipline.
-    return Math.max(workoutBest, bestBouts.get(uid) ?? 0);
-  };
+  const scoreFor = (uid: string): number => scoreForMetric(scores, metric, uid);
 
   // Handles + opt-in for the candidate users.
   const uids = [...totals.keys()];
@@ -247,7 +143,7 @@ export async function GET(request: NextRequest) {
       isPro: h.isPro,
     });
   }
-  eligible.sort((a, b) => b.points - a.points || a.username.localeCompare(b.username));
+  eligible.sort(compareEntries);
 
   const ranked = eligible.map((e, i) => ({
     rank: i + 1,
