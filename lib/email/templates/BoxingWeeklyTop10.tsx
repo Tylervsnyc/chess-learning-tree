@@ -16,9 +16,31 @@ import {
 } from './components/BoxingEmailLayout';
 import type { BoxingWeeklyTop10Props } from '@/types/email';
 
-/** Subject line. No date — the board speaks for itself. */
-export function weeklyTop10Subject(_weekStart?: string): string {
-  return 'Puzzle Boxing High Scores';
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/**
+ * "Sep 1-7", or "Aug 25 - Sep 7" when the week crosses a month.
+ * `weekStart` is the Monday (YYYY-MM-DD); the week runs Monday..Sunday, so the
+ * label ends 6 days later. Parsed as UTC — a local-time parse would shift the
+ * date by one for readers west of Greenwich.
+ */
+function weekRangeLabel(weekStart: string): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(weekStart);
+  if (!m) return null;
+  const start = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  if (Number.isNaN(start.getTime())) return null;
+  const end = new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000);
+  const sMon = MONTHS[start.getUTCMonth()];
+  const eMon = MONTHS[end.getUTCMonth()];
+  return sMon === eMon
+    ? `${sMon} ${start.getUTCDate()}-${end.getUTCDate()}`
+    : `${sMon} ${start.getUTCDate()} - ${eMon} ${end.getUTCDate()}`;
+}
+
+/** Subject line. Names the week the board covers (Tyler, 2026-09-07). */
+export function weeklyTop10Subject(weekStart?: string): string {
+  const range = weekStart ? weekRangeLabel(weekStart) : null;
+  return range ? `Top Ten Chess Boxing Scores: ${range}` : 'Top Ten Chess Boxing Scores';
 }
 
 /**
