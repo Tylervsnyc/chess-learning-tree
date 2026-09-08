@@ -11,6 +11,8 @@ export const STAGE_COUNTDOWN_FRAMES = 120; // 4s
 // 5s — the celebrate card now carries the explanation of WHY the solution
 // works, which is the teaching beat. 3s was not enough time to read it.
 export const STAGE_CELEBRATE_FRAMES = 150; // 5s
+// 6s — the end card: both iOS apps fly in and the App Store badge lands.
+export const STAGE_APPS_FRAMES = 180; // 6s
 
 // Per-move duration in solution stage
 export const FRAMES_PER_MOVE = 36; // 1.2s
@@ -23,7 +25,13 @@ export const COUNTDOWN_INTERVAL_FRAMES = 30; // 1s per number
  */
 export function totalFrames(numSolutionMoves: number): number {
   const solutionFrames = numSolutionMoves * FRAMES_PER_MOVE;
-  return STAGE_INITIAL_FRAMES + STAGE_COUNTDOWN_FRAMES + solutionFrames + STAGE_CELEBRATE_FRAMES;
+  return (
+    STAGE_INITIAL_FRAMES +
+    STAGE_COUNTDOWN_FRAMES +
+    solutionFrames +
+    STAGE_CELEBRATE_FRAMES +
+    STAGE_APPS_FRAMES
+  );
 }
 
 // ── Duolingo Ad Reel — Medium (12s = 360 frames) ──

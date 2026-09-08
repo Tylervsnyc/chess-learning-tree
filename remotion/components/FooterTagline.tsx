@@ -1,15 +1,24 @@
 import React from 'react';
 import { loadFont } from '@remotion/google-fonts/DMSans';
+import { AppStoreBadge } from './AppStoreBadge';
 
 const { fontFamily } = loadFont();
 
 /**
- * "chesspath.app" footer — every stage.
- * 4x scale: 11px → 44px.
+ * Footer row — "chesspath.app" plus the App Store badge, on every stage.
+ * The badge lives here (not only on the end card) so a viewer who bails
+ * mid-reel has still seen that the apps exist on iOS.
  */
 export const FooterTagline: React.FC = () => {
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 32,
+      }}
+    >
       <p
         style={{
           fontFamily,
@@ -22,6 +31,7 @@ export const FooterTagline: React.FC = () => {
       >
         chesspath.app
       </p>
+      <AppStoreBadge height={64} />
     </div>
   );
 };

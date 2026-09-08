@@ -21,6 +21,7 @@ import {
 import { RookMultiplication, MULTIPLICATION_FRAMES } from './RookMultiplication';
 import { RookFullStory, FULL_STORY_FRAMES } from './RookFullStory';
 import { PuzzleExplainerReel, PUZZLE_EXPLAINER_TOTAL } from './PuzzleExplainerReel';
+import { AppsLaunchReel, APPS_LAUNCH_TOTAL } from './AppsLaunchReel';
 import { OperaGameReel, OPERA_GAME_TOTAL } from './OperaGameReel';
 import {
   SaavedraReel,
@@ -108,6 +109,14 @@ export const Root: React.FC = () => {
           const moves = p.rawMoves.length - 1;
           return { durationInFrames: totalFrames(moves) };
         }}
+      />
+      <Composition
+        id="AppsLaunchReel"
+        component={AppsLaunchReel}
+        durationInFrames={APPS_LAUNCH_TOTAL}
+        fps={FPS}
+        width={FRAME_W}
+        height={FRAME_H}
       />
       <Composition
         id="OperaGameReel"

@@ -27,7 +27,7 @@ import { execSync } from 'child_process';
 import { loadQueue, saveQueue } from '../lib/ig-queue';
 import { uploadToBlob, stripEmojis } from '../lib/instagram';
 
-const CURRENT_FORMAT = 2;
+const CURRENT_FORMAT = 5; // 5 = final end card (slow fly-in + squash landing, badge lands last)
 
 const arg = (n: string) => process.argv.find(a => a.startsWith(`--${n}=`))?.split('=')[1];
 const flag = (n: string) => process.argv.includes(`--${n}`);

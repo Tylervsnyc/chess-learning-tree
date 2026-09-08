@@ -9,12 +9,14 @@ import {
   STAGE_INITIAL_FRAMES,
   STAGE_COUNTDOWN_FRAMES,
   STAGE_CELEBRATE_FRAMES,
+  STAGE_APPS_FRAMES,
   FRAMES_PER_MOVE,
 } from './lib/timing';
 import { StageInitial } from './stages/StageInitial';
 import { StageCountdown } from './stages/StageCountdown';
 import { StageSolution } from './stages/StageSolution';
 import { StageCelebrate } from './stages/StageCelebrate';
+import { StageApps } from './stages/StageApps';
 
 export interface DailyPuzzleVideoProps {
   puzzleId: string;
@@ -162,6 +164,14 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           lastMoveTo={puzzle.lastMoveTo}
           difficult={difficult}
         />
+      </Sequence>
+
+      {/* Stage 5: App Store end card */}
+      <Sequence
+        from={(offset += STAGE_CELEBRATE_FRAMES)}
+        durationInFrames={STAGE_APPS_FRAMES}
+      >
+        <StageApps />
       </Sequence>
     </div>
   );
