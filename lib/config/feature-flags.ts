@@ -210,7 +210,7 @@ export const FEATURE_FLAGS = {
    * the 1.0.6 offline build (the slim bundle drops the learning routes the
    * Train chooser points at — see scripts/offline-build.config.mjs).
    */
-  BOX_CLOCK_TAB: false,
+  BOX_CLOCK_TAB: true,
   /**
    * "Your Chess" family strip (2026-09-08, One Family plan §1.1). One row on
    * the profile screens — streak, rating, and a tile for each OTHER app in the
