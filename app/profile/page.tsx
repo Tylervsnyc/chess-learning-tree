@@ -12,9 +12,11 @@ import { PatronModal } from '@/components/subscription/PatronModal';
 import { useIsNativeApp } from '@/lib/native-app';
 import { IS_CHESSPATH_APP } from '@/lib/config/offline';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { workoutReportHref } from '@/components/workout/WorkoutReport';
 import { RookieRatingCard } from '@/components/profile/RookieRatingCard';
 import { ReviewGames } from '@/components/profile/ReviewGames';
 import { StreakHero } from '@/components/shared/StreakHero';
+import { FamilyStrip } from '@/components/shared/FamilyStrip';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
 import { TrophyCase } from '@/components/achievements/TrophyCase';
 
@@ -155,8 +157,6 @@ function PatronBadge() {
 }
 
 function SessionRow({ session }: { session: WorkoutSession }) {
-  // /workout/report isn't in the offline iOS bundle — hide the link there.
-  const native = useIsNativeApp();
   const total = session.correct + session.wrong;
   const reviewable = session.missedCount > 0;
 
@@ -200,9 +200,9 @@ function SessionRow({ session }: { session: WorkoutSession }) {
         >
           {inner}
         </Link>
-        {FEATURE_FLAGS.WORKOUT_REPORT && !native && (
+        {FEATURE_FLAGS.WORKOUT_REPORT && (
           <Link
-            href={`/workout/report/${session.id}`}
+            href={workoutReportHref(session.id)}
             className="flex items-center min-h-[44px] px-4 -mt-1 pb-2 text-xs font-bold text-chess-blue hover:text-chess-blue-dark"
           >
             Report — see what you played vs. the answer →
@@ -242,7 +242,7 @@ function FightRecord({ record }: { record: BoutRecord | null }) {
         <div className="flex justify-center gap-6 pt-2 border-t border-slate-100">
           <div className="text-center">
             <div className="text-lg font-black text-chess-text tabular-nums">{record.total}</div>
-            <div className="text-[11px] font-semibold text-chess-text-muted">bouts</div>
+            <div className="text-[11px] font-semibold text-chess-text-muted">{record.total === 1 ? 'session' : 'sessions'}</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-black text-chess-text tabular-nums">{record.kos}</div>
@@ -559,8 +559,10 @@ export default function ProfilePage() {
         </header>
 
         {/* Become a Patron — big, fun gold CTA. Hidden once gold. Gated on
-            profileReady so it never flashes in then out for gold users. */}
-        {profileReady && user && !isGold && !nativeApp && (
+            profileReady so it never flashes in then out for gold users.
+            Folded into Pro once FEATURE_FLAGS.PRO is on (one paid SKU; the
+            is_patron gold + webhook stay for existing patrons). */}
+        {!FEATURE_FLAGS.PRO && profileReady && user && !isGold && !nativeApp && (
           <button
             onClick={() => setPatronOpen(true)}
             className="group w-full rounded-3xl p-5 flex items-center gap-4 text-left active:scale-[0.99] transition-transform"
@@ -612,6 +614,17 @@ export default function ProfilePage() {
             <StatTile kind="great" label="Great moves" value={stats?.greatMoves ?? 0} loading={dataLoading} />
           </div>
         </div>
+
+        {/* ── Your chess across the family — same streak/rating the page
+               already holds, plus a tile per other app (FAMILY_STRIP) ──── */}
+        {FEATURE_FLAGS.FAMILY_STRIP && (
+          <FamilyStrip
+            streak={streak}
+            elo={elo && elo.events > 0 ? elo.current : null}
+            loading={dataLoading}
+            signedIn={!!user}
+          />
+        )}
 
         {/* ── Boxing surfaces — hidden in the Chess Path app (no /workout,
                no bouts there; the section's CTAs would 404) ─────────────── */}

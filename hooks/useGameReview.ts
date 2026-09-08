@@ -49,6 +49,8 @@ export interface GameReviewData {
   coachMoves: Record<string, string>;
   coachSummary: string | null;
   coachTakeaway: string | null;
+  /** Pro (Gate B): comments past the free window were withheld by the server. */
+  coachLocked: boolean;
 }
 
 export interface StartGameReviewArgs {
@@ -70,6 +72,7 @@ const EMPTY: GameReviewData = {
   coachMoves: {},
   coachSummary: null,
   coachTakeaway: null,
+  coachLocked: false,
 };
 
 export function useGameReview(): GameReviewData & {
@@ -169,6 +172,7 @@ export function useGameReview(): GameReviewData & {
           coachMoves: review.moves,
           coachSummary: review.summary,
           coachTakeaway: review.takeaway,
+          coachLocked: review.locked,
           coachReady: true,
         }));
       } catch (err) {

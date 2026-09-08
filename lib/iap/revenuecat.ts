@@ -1,29 +1,46 @@
 'use client';
 
 /**
- * RevenueCat (StoreKit) plumbing for Chess Boxing Pro — iOS shell ONLY.
+ * RevenueCat (StoreKit) plumbing for Pro — iOS shells ONLY (Chess Boxing and
+ * Chess Path; one Pro across both, plus Rookie's Revenge).
  *
  * Apple forbids linking out for digital goods, so inside the Capacitor app the
  * paywall must buy through StoreKit. RevenueCat wraps that and posts a webhook
  * (/api/iap/revenuecat-webhook) which writes the SAME `profiles.subscription_status`
- * the Stripe webhook sets — one entitlement, two storefronts.
+ * the Stripe webhook sets — one entitlement, three storefronts.
  *
  * On the web (non-native) every function here is a no-op that reports
  * `{ native: false }` so the paywall falls through to the Stripe checkout in
  * hooks/useSubscription.ts. The plugin is imported lazily so it never ships to
  * web bundles that don't need it.
  *
- * Product IDs (App Store Connect): chessboxing_pro_monthly, chessboxing_pro_yearly.
- * Entitlement: `pro`. Offering: `default`. Setup: docs/chess-boxing-pro-setup.md.
+ * Per-target (build-time, lib/config/offline.ts): each iOS app is its own
+ * App Store Connect record, so it has its own products and its own RevenueCat
+ * public key. Both apps sit in ONE RevenueCat project, attach their products
+ * to ONE entitlement `pro`, and identify the customer by the Supabase uid —
+ * that is what makes a purchase in one app unlock the other.
+ *   Chess Boxing: chessboxing_pro_monthly / chessboxing_pro_yearly,
+ *                 NEXT_PUBLIC_REVENUECAT_IOS_KEY
+ *   Chess Path:   chesspath_pro_monthly / chesspath_pro_yearly,
+ *                 NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH
+ * Offering: `default`. Setup: docs/chess-boxing-pro-setup.md.
  */
 
 import type { PurchasesPackage } from '@revenuecat/purchases-capacitor';
+import { IS_CHESSPATH_APP } from '@/lib/config/offline';
 
 export const RC_ENTITLEMENT = 'pro';
-export const RC_PRODUCTS = {
-  monthly: 'chessboxing_pro_monthly',
-  yearly: 'chessboxing_pro_yearly',
-} as const;
+export const RC_PRODUCTS = IS_CHESSPATH_APP
+  ? ({ monthly: 'chesspath_pro_monthly', yearly: 'chesspath_pro_yearly' } as const)
+  : ({ monthly: 'chessboxing_pro_monthly', yearly: 'chessboxing_pro_yearly' } as const);
+/** Which env var carries this bundle's RevenueCat Apple public SDK key. */
+export const RC_KEY_ENV = IS_CHESSPATH_APP
+  ? 'NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH'
+  : 'NEXT_PUBLIC_REVENUECAT_IOS_KEY';
+// Both branches must be literal `process.env.X` reads so Next can inline them.
+const RC_API_KEY = IS_CHESSPATH_APP
+  ? process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH
+  : process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY;
 
 export interface ProOffering {
   monthly: PurchasesPackage | null;
@@ -59,9 +76,9 @@ async function plugin() {
  */
 export async function initRevenueCat(userId: string | null): Promise<boolean> {
   if (!(await isNativeIap())) return false;
-  const apiKey = process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY;
+  const apiKey = RC_API_KEY;
   if (!apiKey) {
-    console.warn('[revenuecat] NEXT_PUBLIC_REVENUECAT_IOS_KEY missing — IAP disabled');
+    console.warn(`[revenuecat] ${RC_KEY_ENV} missing — IAP disabled`);
     return false;
   }
   try {
@@ -127,13 +144,22 @@ export async function purchasePro(pkg: PurchasesPackage): Promise<{ ok: boolean;
   }
 }
 
-/** Restore purchases (Apple requires this button on every paywall). */
+/**
+ * Restore purchases (Apple requires this button on every paywall).
+ *
+ * After the restore call, re-read customer info ONCE: a purchase made in the
+ * other app (same Supabase uid, same entitlement) can land on the customer a
+ * beat after `restorePurchases` resolves, and the first response sometimes
+ * still shows the pre-restore snapshot.
+ */
 export async function restorePro(): Promise<boolean> {
   if (!(await isNativeIap())) return false;
   try {
     const Purchases = await plugin();
     const { customerInfo } = await Purchases.restorePurchases();
-    return !!customerInfo.entitlements.active[RC_ENTITLEMENT];
+    if (customerInfo.entitlements.active[RC_ENTITLEMENT]) return true;
+    const fresh = await Purchases.getCustomerInfo();
+    return !!fresh.customerInfo.entitlements.active[RC_ENTITLEMENT];
   } catch (err) {
     console.error('[revenuecat] restore failed', err);
     return false;

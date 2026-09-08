@@ -4,12 +4,13 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { ProEvents, type ProLimitKind } from '@/lib/analytics/posthog';
 import { getTz } from '@/lib/streak-client';
-import { ProPaywall } from '@/components/chessboxing/ProPaywall';
+import { ProPaywall } from '@/components/pro/ProPaywall';
 import { useUser } from '@/hooks/useUser';
 
 /**
- * useProGate — the ONE way a Chess Boxing surface asks "may this free user
- * start another bout / workout?" or "is this a Pro feature?" (CHESSBOXING_PRO).
+ * useProGate — the ONE way any surface (Chess Boxing, Chess Path, web) asks
+ * "may this free user start another Chess Boxing / workout?" or "is this a
+ * Pro feature?" (FEATURE_FLAGS.PRO — one Pro across the family).
  *
  *   const { gate, requirePro, paywall, isPro } = useProGate();
  *   gate('bout', () => router.push('/box/bout'));   // daily-limit check, then go
@@ -17,12 +18,37 @@ import { useUser } from '@/hooks/useUser';
  *   …
  *   {paywall}                                        // render once in the tree
  *
+ * `requirePro(feature)` fires `pro_gate_hit {feature, app}` when a free user
+ * bumps into a Pro feature, then opens the paywall with that feature as the
+ * trigger — so daily-report.ts can read which gate converts, per app.
+ *
  * Flag OFF: `gate` and `requirePro` run the action immediately, `paywall` is
  * null, `isPro` is true — zero behaviour change. Limits come fresh from
  * /api/pro/limits on every gate call (two HEAD counts) so the truth is always
  * the DB, never a client counter. If the endpoint fails, the action runs —
  * never block a fight over a stat line.
  */
+
+/**
+ * Every Pro-only feature a surface can gate on. Add here first — the union is
+ * what keeps `pro_gate_hit.feature` a closed, reportable set.
+ *   Chess Path: lesson_level (Level 3+), level_test_pass ("Go to Level N"),
+ *               review / variations ("Try it") / report / fixit (Rookie's words)
+ *   Chess Boxing: custom_rounds, history, settings, profile, bout, workout
+ */
+export type ProGateFeature =
+  | 'lesson_level'
+  | 'level_test_pass'
+  | 'review'
+  | 'variations'
+  | 'report'
+  | 'fixit'
+  | 'custom_rounds'
+  | 'history'
+  | 'settings'
+  | 'profile'
+  | 'bout'
+  | 'workout';
 
 export interface ProLimitsState {
   isPro: boolean;
@@ -67,7 +93,7 @@ export async function fetchProLimits(): Promise<ProLimitsState> {
 }
 
 export function useProGate() {
-  const enabled = FEATURE_FLAGS.CHESSBOXING_PRO;
+  const enabled = FEATURE_FLAGS.PRO;
   const { user } = useUser();
   const [limits, setLimits] = useState<ProLimitsState>(OPEN);
   const [trigger, setTrigger] = useState<string | null>(null);
@@ -115,13 +141,14 @@ export function useProGate() {
     [enabled, refresh, openPaywall],
   );
 
-  /** Pro-feature gate: run if Pro, else show the paywall (and run on unlock). */
+  /** Pro-feature gate: run if Pro, else log the gate hit + show the paywall (and run on unlock). */
   const requirePro = useCallback(
-    (feature: string, action: () => void) => {
+    (feature: ProGateFeature, action: () => void) => {
       if (!enabled || limits.isPro) {
         action();
         return;
       }
+      ProEvents.gateHit(feature);
       openPaywall(feature, action);
     },
     [enabled, limits.isPro, openPaywall],

@@ -38,6 +38,8 @@ interface RcEvent {
   app_user_id?: string;
   original_app_user_id?: string;
   product_id?: string;
+  /** Which App Store record it came from (Chess Boxing vs Chess Path) — one entitlement, two apps. */
+  app_id?: string;
   entitlement_ids?: string[];
   expiration_at_ms?: number | null;
   purchased_at_ms?: number;
@@ -69,7 +71,7 @@ export async function POST(request: NextRequest) {
   if (!ev?.type) return NextResponse.json({ error: 'no event' }, { status: 400 });
 
   const userId = [ev.app_user_id, ev.original_app_user_id].find((id) => id && UUID_RE.test(id));
-  const tag = `[rc-webhook] ${ev.type} id=${ev.id ?? '?'} env=${ev.environment ?? '?'} product=${ev.product_id ?? '?'} period=${ev.period_type ?? '?'}`;
+  const tag = `[rc-webhook] ${ev.type} id=${ev.id ?? '?'} env=${ev.environment ?? '?'} app=${ev.app_id ?? '?'} product=${ev.product_id ?? '?'} period=${ev.period_type ?? '?'}`;
 
   if (!userId) {
     console.log(`${tag} — no Supabase user id (app_user_id=${ev.app_user_id}); ignored`);

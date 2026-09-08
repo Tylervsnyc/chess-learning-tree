@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { RookMark } from '@/components/brand/RookMark';
+import { FAMILY_APPS } from '@/lib/family/apps';
 
-const APP_STORE_CHESS_BOXING =
-  'https://apps.apple.com/us/app/chess-boxing-by-chess-path/id6796812770';
-const REVENGE_URL = 'https://run.chesspath.app';
+// One source of truth for store/web links: lib/family/apps.ts.
+const APP_STORE_CHESS_BOXING = FAMILY_APPS.chessboxing.storeUrl!;
+const REVENGE_URL = FAMILY_APPS.revenge.webUrl;
 
 /**
  * The chesspath.app front door: the whole product family on one

@@ -7,6 +7,8 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 import { NativeNoSaleGuard } from '@/components/subscription/NativeNoSaleGuard';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { PRO_BENEFITS, PRO_SHARED_LINE } from '@/lib/pro/benefits';
 
 type PricingVariant = 'control' | 'low' | 'high';
 
@@ -165,13 +167,18 @@ function PricingContent() {
             </div>
           </div>
 
-          {/* Features — compact grid */}
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm mb-3 divide-y divide-slate-100">
-            <FeatureRow icon="♞" title="Unlimited lessons" free="2/day" />
-            <FeatureRow icon="♜" title="All levels unlocked" free="Current only" />
-            <FeatureRow icon="♛" title="Unlimited puzzles" free="15/day" />
-            <FeatureRow icon="♚" title="Daily challenges" free="—" />
-          </div>
+          {/* Features — PRO: the one free-vs-Pro table (lib/pro/benefits.ts);
+              otherwise the legacy compact grid, untouched. */}
+          {FEATURE_FLAGS.PRO ? (
+            <ProBenefitsTable />
+          ) : (
+            <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm mb-3 divide-y divide-slate-100">
+              <FeatureRow icon="♞" title="Unlimited lessons" free="2/day" />
+              <FeatureRow icon="♜" title="All levels unlocked" free="Current only" />
+              <FeatureRow icon="♛" title="Unlimited puzzles" free="15/day" />
+              <FeatureRow icon="♚" title="Daily challenges" free="—" />
+            </div>
+          )}
 
           {/* Checkout — pushed to bottom */}
           <div className="mt-auto">
@@ -222,6 +229,29 @@ function PricingContent() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* PRO: free vs Pro per app, one row per benefit — the same list the paywall renders. */
+function ProBenefitsTable() {
+  return (
+    <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm mb-3 overflow-hidden">
+      <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 px-4 py-2 bg-slate-50 text-[10px] font-black uppercase tracking-widest text-chess-text-muted">
+        <span>What you get</span>
+        <span className="w-24 text-right">Free</span>
+        <span className="w-24 text-right text-chess-gold-dark">Pro</span>
+      </div>
+      <div className="divide-y divide-slate-100">
+        {PRO_BENEFITS.map((b) => (
+          <div key={b.id} className="grid grid-cols-[1fr_auto_auto] gap-x-3 items-start px-4 py-2.5">
+            <span className="text-chess-text text-sm font-semibold leading-snug">{b.title}</span>
+            <span className="w-24 text-right text-chess-text-faint text-xs leading-snug">{b.free}</span>
+            <span className="w-24 text-right text-chess-text text-xs font-bold leading-snug">{b.pro}</span>
+          </div>
+        ))}
+      </div>
+      <p className="px-4 py-2 text-center text-[11px] font-bold text-chess-text-muted bg-slate-50">{PRO_SHARED_LINE}</p>
     </div>
   );
 }

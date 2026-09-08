@@ -179,17 +179,24 @@ export const FEATURE_FLAGS = {
    */
   PREMOVE: true,
   /**
-   * Chess Boxing Pro (2026-08-24, docs/chess-boxing-monetization-and-exit-plan.md).
+   * Pro — ONE subscription across Chess Path, Chess Boxing and Rookie's
+   * Revenge (2026-09-08; was CHESSBOXING_PRO, 2026-08-24, see
+   * docs/chess-boxing-monetization-and-exit-plan.md + docs/chess-boxing-pro-setup.md).
    * ONE paid SKU: $5.99/mo · $39.99/yr, 7-day trial. "Pro" IS the existing
    * premium entitlement (`profiles.subscription_status`, lib/subscription.ts)
-   * — Stripe on web, RevenueCat/StoreKit in the iOS shell (lib/iap/revenuecat.ts
-   * + /api/iap/revenuecat-webhook). When ON and the user is NOT premium:
-   * 1 bout + 1 workout per local day (enforced at the launch points via
-   * hooks/useProGate + /api/pro/limits), custom bout round configs, bout
-   * history, punch-log history, and a gold name on leaderboards/profile are Pro.
-   * OFF = the app behaves exactly as before: no limits, no paywall, no IAP UI.
+   * — Stripe on web, RevenueCat/StoreKit in BOTH iOS shells (lib/iap/revenuecat.ts
+   * picks the per-app products + key; one RevenueCat entitlement `pro`, keyed by
+   * the Supabase uid, so buying in one app unlocks the other). Perks per app live
+   * in lib/pro/benefits.ts (paywall, /pricing, locked-level card all read it).
+   * When ON and the user is NOT premium: 1 Chess Boxing + 1 workout per local
+   * day (hooks/useProGate + /api/pro/limits), custom round cards, history,
+   * punch log, gold name on leaderboards/profile are Pro; the Patron CTA folds
+   * away on /profile + /pricing (the is_patron gold stays). Supersedes the
+   * legacy `MONETIZATION_ENABLED` (lib/feature-flags.ts), which stays off as
+   * the old premium-UI switch — every NEW paid surface gates on this flag only.
+   * OFF = the apps behave exactly as before: no limits, no paywall, no IAP UI.
    */
-  CHESSBOXING_PRO: false,
+  PRO: false,
   /**
    * Chess clock tab in the Chess Boxing app (2026-08-31, Tyler). Replaces the
    * Train tab (Tactics/Openings drop-up) in BoxTabBar with a Clock tab →
@@ -197,10 +204,23 @@ export const FEATURE_FLAGS = {
    * (presets + custom, Fischer increment, bell on flag, offline, no account).
    * Learning moves to chesspath.app — the app becomes the sport's companion.
    * The /box/clock ROUTE is always reachable; this flag only swaps the tab.
-   * OFF until the current App Store review (build 3) resolves — the shipped
-   * shell loads the live site, so flipping this changes the in-review app.
+   * /box/clock now has two modes: Chess Clock and Boxing Timer (the full
+   * chess boxing round format for two real people).
+   * OFF for now: Chess Boxing 1.0.5 is live with the Train tab. Flips ON for
+   * the 1.0.6 offline build (the slim bundle drops the learning routes the
+   * Train chooser points at — see scripts/offline-build.config.mjs).
    */
   BOX_CLOCK_TAB: false,
+  /**
+   * "Your Chess" family strip (2026-09-08, One Family plan §1.1). One row on
+   * the profile screens — streak, rating, and a tile for each OTHER app in the
+   * family (Chess Path / Chess Boxing / Rookie's Revenge) that opens its store
+   * page (in a shell) or web URL (on the web) via lib/family/apps.ts. Also
+   * gates the moment-based cross-promo links (e.g. "Drill this in Chess
+   * Boxing" on a review mistake). Props-driven, no new fetches. OFF until
+   * Tyler flips; both iOS bundles need a rebuild to pick it up.
+   */
+  FAMILY_STRIP: false,
   /**
    * Rookie's post-game banter on /play (2026-08-31, Tyler: "has got to go").
    * Gates BOTH post-game speech paths: the spoken game summary right after a

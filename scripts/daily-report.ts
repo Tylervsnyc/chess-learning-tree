@@ -837,6 +837,15 @@ async function getProMetrics(filter: string, dateStr: string, days: number) {
     purchaseStartedIos: 0,
     purchaseStartedWeb: 0,
     purchaseCompleted: 0,
+    purchaseFailed: 0,
+    restoreOk: 0,
+    restoreFail: 0,
+    paywallDismissed: 0,
+    // PRO (one Pro across the family): where free users bump into Pro, by
+    // feature (ProGateFeature) and by app ('chessboxing' | 'chesspath' | 'web').
+    gateHits: [] as Array<{ feature: string; app: string; count: number; people: number }>,
+    // Paywall shown → purchase started, per app.
+    byApp: [] as Array<{ app: string; shown: number; started: number; completed: number }>,
   };
 
   const sb = makeServiceClient();
@@ -919,6 +928,50 @@ async function getProMetrics(filter: string, dateStr: string, days: number) {
   out.purchaseStartedIos = num(row[6]);
   out.purchaseStartedWeb = num(row[7]);
   out.purchaseCompleted = num(row[8]);
+
+  // Pro gate hits by feature + app (pro_gate_hit fires from useProGate.requirePro).
+  const gates = await hogql(`
+    SELECT
+      properties.feature as feature,
+      coalesce(properties.app, 'web') as app,
+      count() as n,
+      uniq(person_id) as people
+    FROM events
+    WHERE ${filter} AND event = 'pro_gate_hit'
+    GROUP BY feature, app
+    ORDER BY n DESC
+    LIMIT 40
+  `, 'pro-gates');
+  out.gateHits = gates.results.map((g) => ({
+    feature: String(g[0] ?? '?'),
+    app: String(g[1] ?? 'web'),
+    count: num(g[2]),
+    people: num(g[3]),
+  }));
+
+  // Paywall → purchase, per app; plus failures / restores / dismissals.
+  const apps = await hogql(`
+    SELECT
+      coalesce(properties.app, 'web') as app,
+      countIf(event = 'pro_paywall_shown') as shown,
+      countIf(event = 'pro_purchase_started') as started,
+      countIf(event = 'pro_purchase_completed') as completed,
+      countIf(event = 'pro_purchase_failed') as failed,
+      countIf(event = 'pro_restore_result' AND properties.ok = true) as restore_ok,
+      countIf(event = 'pro_restore_result' AND properties.ok = false) as restore_fail,
+      countIf(event = 'pro_paywall_dismissed') as dismissed
+    FROM events
+    WHERE ${filter} AND event IN ('pro_paywall_shown', 'pro_purchase_started', 'pro_purchase_completed', 'pro_purchase_failed', 'pro_restore_result', 'pro_paywall_dismissed')
+    GROUP BY app
+    ORDER BY shown DESC
+  `, 'pro-by-app');
+  for (const a of apps.results) {
+    out.byApp.push({ app: String(a[0] ?? 'web'), shown: num(a[1]), started: num(a[2]), completed: num(a[3]) });
+    out.purchaseFailed += num(a[4]);
+    out.restoreOk += num(a[5]);
+    out.restoreFail += num(a[6]);
+    out.paywallDismissed += num(a[7]);
+  }
   return out;
 }
 
@@ -1032,7 +1085,7 @@ async function main() {
   // LOST INTENT watchdog — sessions where signup intent fired but failed.
   const lost = await getLostIntent(f);
 
-  // Chess Boxing Pro — buyer metrics (CHESSBOXING_PRO flag).
+  // Pro — buyer metrics (PRO flag; one Pro across Chess Path, Chess Boxing, Revenge).
   const proM = await getProMetrics(f, targetDate, rangeDays);
 
   // ---------------------------------------------------------------------------
@@ -1048,7 +1101,7 @@ async function main() {
   console.log(`  Mobile/Desktop:   ${devices.mobile}/${devices.desktop}  (${pct(devices.mobile, devices.total)} mobile)`);
   console.log(`  Returning users:  ${returning}  (${pct(returning, overview.users)} of total)`);
 
-  console.log(section('CHESS BOXING PRO (CHESSBOXING_PRO — buyer metrics)'));
+  console.log(section('PRO (one Pro across the family — buyer metrics)'));
   if (!proM.dbAvailable) {
     console.log('  (DB unavailable — no SUPABASE_SERVICE_ROLE_KEY)');
   } else {
@@ -1060,13 +1113,26 @@ async function main() {
   } else {
     console.log('  Stripe: no STRIPE_SECRET_KEY — trial/churn skipped');
   }
-  if (proM.paywallShown === 0 && proM.limitHitBout + proM.limitHitWorkout === 0) {
-    console.log('  Paywall funnel: no pro_* events in window (flag off, or nobody hit a limit).');
+  if (proM.paywallShown === 0 && proM.limitHitBout + proM.limitHitWorkout === 0 && proM.gateHits.length === 0) {
+    console.log('  Paywall funnel: no pro_* events in window (flag off, or nobody hit a limit/gate).');
   } else {
-    console.log(`  Free users who hit the daily limit: ${proM.limitHitPeople} people  (bout ${proM.limitHitBout} · workout ${proM.limitHitWorkout})`);
-    console.log(`  Paywall shown:      ${proM.paywallShown}  (${proM.paywallPeople} people)`);
+    console.log(`  Free users who hit the daily limit: ${proM.limitHitPeople} people  (Chess Boxing ${proM.limitHitBout} · workout ${proM.limitHitWorkout})`);
+    console.log(`  Paywall shown:      ${proM.paywallShown}  (${proM.paywallPeople} people) · dismissed ${proM.paywallDismissed}`);
     console.log(`  Purchase started:   ${proM.purchaseStarted}  (ios ${proM.purchaseStartedIos} · web ${proM.purchaseStartedWeb})  ${pct(proM.purchaseStarted, proM.paywallShown)} of paywalls`);
-    console.log(`  Purchase completed: ${proM.purchaseCompleted}  (client-side; DB active count above is truth)`);
+    console.log(`  Purchase completed: ${proM.purchaseCompleted}  · failed ${proM.purchaseFailed}  (client-side; DB active count above is truth)`);
+    console.log(`  Restore:            ok ${proM.restoreOk} · not found ${proM.restoreFail}`);
+    if (proM.byApp.length > 0) {
+      console.log('  By app (paywall shown → started → completed):');
+      for (const a of proM.byApp) {
+        console.log(`    ${a.app.padEnd(12)} ${String(a.shown).padStart(4)} → ${String(a.started).padStart(4)} → ${String(a.completed).padStart(4)}`);
+      }
+    }
+    if (proM.gateHits.length > 0) {
+      console.log('  Pro gates hit (feature · app · hits · people) — which lock is doing the selling:');
+      for (const g of proM.gateHits) {
+        console.log(`    ${g.feature.padEnd(16)} ${g.app.padEnd(12)} ${String(g.count).padStart(4)}  ${String(g.people).padStart(4)}`);
+      }
+    }
   }
 
   console.log(section('SOCIAL — INSTAGRAM (@chesspath.app, last 5 days)'));

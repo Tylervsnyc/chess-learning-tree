@@ -89,13 +89,13 @@ export function ChessBoxingLaunch({
       />
 
       <Feature
-        name="The Bout"
+        name="Chess Boxing"
         tagline="Official 11-round format. Chess, punches, chess."
         body="Alternating rounds, same as the real sport. Solve under a clock while your arms are still shaking, which turns out to be the entire point. Or build a custom card if eleven rounds sounds like a lot. It does. It is."
         photo={`${CB_IMG}/photo-boards.jpg`}
         alt="A row of boards and a clock set up on tables at the gym"
         href={storeHref}
-        cta="Fight a bout"
+        cta="Start Chess Boxing"
       />
 
       <Feature

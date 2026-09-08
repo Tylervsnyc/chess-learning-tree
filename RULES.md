@@ -105,8 +105,11 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 | Completed | Gold, checkmark sparkles | Navigate to lesson (replay) |
 | Current | Colored, pulsing ring | Navigate to lesson |
 | Completed + Current | Gold, checkmark sparkles, pulsing ring | Navigate to lesson (replay) |
+| Pro-locked level | Gold lock card, "Pro" pill, no lesson nodes | Tap "Unlock with Pro" → paywall (`requirePro('lesson_level')`) |
 
 **Note:** The pulsing ring always shows on `currentPosition`, even if that lesson is completed. This indicates "you are here" in the curriculum.
+
+**Pro (Gate C, only while `FEATURE_FLAGS.PRO` is on):** Levels 1–2 are free (`PRO_FREE_LIMITS.FREE_LESSON_LEVELS` in `lib/subscription.ts`); Level 3+ is Pro. Progression unlocking (above) is untouched — a level can be progression-unlocked AND Pro-locked, and the gold card renders either way (users who passed Level 2 before the flag see it too). One gate: `hooks/usePermissions.ts` → `isLevelProLocked(level)` / `lessonAccess(lessonId)` → `'ok' | 'signup' | 'daily_limit' | 'pro'`. Opening a Pro-locked lesson URL shows `ProPaywall` (trigger `lesson_level`). Premium/admin never locked.
 
 ### Lesson Icon Selection (priority order):
 1. **`pieceFilter`** — If the lesson has an explicit piece filter, use that piece as the icon
@@ -137,6 +140,9 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 
 ### Stored In:
 `profiles.unlocked_levels` (array of integers)
+
+### Pro (separate axis, `FEATURE_FLAGS.PRO` only):
+Levels 1–2 free, 3+ Pro (`PRO_FREE_LIMITS.FREE_LESSON_LEVELS`). Level tests stay free and a pass still records the unlock in `unlocked_levels`; the "Continue to Level N" CTA calls `requirePro('level_test_pass')` when Level N is Pro-locked. Gate: `hooks/usePermissions.ts` → `isLevelProLocked(level)`. See §2.
 
 ---
 
@@ -297,11 +303,13 @@ instead of `transition: none`. The scroll fires 16ms later into a still-animatin
 | Premium | Unlimited | N/A |
 | Admin | Unlimited | N/A |
 
+**Pro level cap (`FEATURE_FLAGS.PRO` only):** in addition to the daily count, free and anonymous users can only open Levels 1–2 (`PRO_FREE_LIMITS.FREE_LESSON_LEVELS`, `lib/subscription.ts`); Level 3+ returns `lessonAccess === 'pro'` → `ProPaywall`. Premium/admin: all levels.
+
 ### Enforced In:
-`/hooks/usePermissions.ts`
+`/hooks/usePermissions.ts` (`lessonAccess(lessonId)` → `'ok' | 'signup' | 'daily_limit' | 'pro'`)
 
 ### Config:
-`/types/permissions.ts` → `LESSON_LIMITS` constant
+`/types/permissions.ts` → `LESSON_LIMITS` constant; `/lib/subscription.ts` → `PRO_FREE_LIMITS`
 
 ---
 
@@ -316,6 +324,11 @@ instead of `transition: none`. The scroll fires 16ms later into a still-animatin
 - **When**: Every 2 lessons for anonymous users
 - **Style**: Dismissible, not blocking
 - **Note**: Users can still subscribe even with limits disabled
+
+### Pro Prompts (`FEATURE_FLAGS.PRO` only):
+- **Where**: gold Pro level card on `/` (Level 3+), the lesson page for a Pro-locked lesson, and the level-test pass screen's "Continue to Level N"
+- **What**: `ProPaywall` via `hooks/useProGate` (`requirePro('lesson_level' | 'level_test_pass')`), which logs `pro_gate_hit` per feature
+- **Copy**: from `lib/pro/benefits.ts` (Lessons row: "Levels 1–2, 4 lessons a day" free / "All 8 levels, unlimited" Pro); never the word "bout"
 
 ---
 

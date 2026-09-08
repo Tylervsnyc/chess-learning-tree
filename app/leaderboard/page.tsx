@@ -15,7 +15,7 @@ interface Row {
   points: number;
   punches: number;
   isSelf: boolean;
-  /** CHESSBOXING_PRO: gold name (premium or patron). */
+  /** PRO: gold name (premium or patron). */
   isPro?: boolean;
 }
 interface RosterMember {
@@ -359,7 +359,7 @@ function RankRow({ row, metric }: { row: Row; metric: 'best_round' | 'total' }) 
       <div className="flex-1 min-w-0">
         <div
           className={`font-bold truncate ${
-            FEATURE_FLAGS.CHESSBOXING_PRO && row.isPro
+            FEATURE_FLAGS.PRO && row.isPro
               ? 'text-chess-gold-dark'
               : row.isSelf
                 ? 'text-chess-green'
@@ -367,7 +367,7 @@ function RankRow({ row, metric }: { row: Row; metric: 'best_round' | 'total' }) 
           }`}
         >
           {row.username}
-          {FEATURE_FLAGS.CHESSBOXING_PRO && row.isPro && (
+          {FEATURE_FLAGS.PRO && row.isPro && (
             <span className="ml-1.5 align-middle rounded-full bg-chess-gold/25 px-1.5 py-px text-[9px] font-black uppercase tracking-widest text-chess-gold-dark">
               Pro
             </span>

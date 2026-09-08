@@ -45,7 +45,7 @@ export function BoxSettings() {
   const [crew, setCrew] = useState<Crew | null>(null);
   const [optIn, setOptIn] = useState<boolean | null>(null);
   const [view, setView] = useState<View>('list');
-  // CHESSBOXING_PRO: the "Go Pro" row + paywall (nothing renders while off).
+  // PRO: the "Go Pro" row + paywall (nothing renders while off).
   const pro = useProGate();
 
   useEffect(() => {
@@ -178,7 +178,7 @@ export function BoxSettings() {
               </section>
             )}
 
-            {FEATURE_FLAGS.CHESSBOXING_PRO && (
+            {FEATURE_FLAGS.PRO && (
               <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 shrink-0">
                 <NavRow
                   title="Chess Boxing Pro"
@@ -245,7 +245,7 @@ function DeletePanel({ onCancel }: { onCancel: () => void }) {
   return (
     <section className="bg-chess-surface rounded-2xl border border-red-200 shadow-sm p-4 flex flex-col gap-3 shrink-0">
       <p className="text-sm text-chess-text">
-        This permanently deletes your account, streak, rating, bouts and
+        This permanently deletes your account, streak, rating, Chess Boxing history and
         leaderboard entries. Type <strong>DELETE</strong> to confirm.
       </p>
       <input

@@ -33,8 +33,8 @@ export default function SupportPage() {
                 <p>Only Quadrant Fight uses the camera, and it is optional. Video is processed on your device to detect punches and dodges. Nothing is recorded or uploaded, ever.</p>
               </div>
               <div>
-                <h3 className="font-semibold text-chess-text">How do bouts and the streak work?</h3>
-                <p>A bout is one chess-plus-exercise session. Finish a bout, lesson, game, or opening lesson and today counts toward your streak. Your streak is calculated from what you actually finish, in your local timezone.</p>
+                <h3 className="font-semibold text-chess-text">How do Chess Boxing and the streak work?</h3>
+                <p>A Chess Boxing session is one chess-plus-exercise session. Finish a Chess Boxing session, lesson, game, or opening lesson and today counts toward your streak. Your streak is calculated from what you actually finish, in your local timezone.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-chess-text">Subscription and billing</h3>

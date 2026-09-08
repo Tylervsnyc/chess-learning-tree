@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import type { StreakData } from '@/lib/streak-client';
 import { StreakHero } from '@/components/shared/StreakHero';
+import { FamilyStrip } from '@/components/shared/FamilyStrip';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { rookieRating, type EloSeriesPoint } from '@/lib/elo/rookie-rating';
 
 /**
@@ -119,6 +121,21 @@ export function CornerRoom({ name, streak, record, elo, loading, week }: CornerR
         <div className="shrink-0 mt-2.5">
           <RatingCard elo={elo} loading={loading} />
         </div>
+
+        {/* Your chess across the family (FAMILY_STRIP). Dark tone — a white
+            card here would glare against the wood. This screen only renders
+            behind a session, so it's always signed in. */}
+        {FEATURE_FLAGS.FAMILY_STRIP && (
+          <div className="shrink-0 mt-2.5">
+            <FamilyStrip
+              streak={streak}
+              elo={elo && elo.events > 0 ? elo.current : null}
+              loading={loading}
+              signedIn
+              tone="dark"
+            />
+          </div>
+        )}
 
         {/* Streak / record / KOs. None of these repeat the chart below — an
             earlier pass had a "this week" tile sitting directly on top of a

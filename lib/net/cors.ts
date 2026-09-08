@@ -15,6 +15,7 @@ const ALLOWED_ORIGINS = new Set([
   'capacitor://localhost', // iOS
   'http://localhost',      // Android
   'ionic://localhost',     // older Capacitor iOS shells
+  'https://run.chesspath.app', // Rookie's Revenge reads the family streak/rating with a bearer token
 ]);
 
 export function isAllowedAppOrigin(origin: string | null): origin is string {

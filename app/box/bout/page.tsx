@@ -180,7 +180,7 @@ export default function BoutPage() {
   // Format picks the LENGTH; the structure is built, never chosen. Only
   // RANKED_FORMAT pays points (and only once a day) — see /api/bout/finish.
   const [format, setFormat] = useState<BoutFormat>(RANKED_FORMAT);
-  // CHESSBOXING_PRO: a custom card (round count + bell lengths) or the official
+  // PRO: a custom card (round count + bell lengths) or the official
   // 11-round preset. null = the stock format above. Always unranked.
   const [customCard, setCustomCard] = useState<BoutCard | null>(null);
   const [showCustom, setShowCustom] = useState(false);
@@ -1050,7 +1050,7 @@ export default function BoutPage() {
   if (!FEATURE_FLAGS.BOUT_MODE) {
     return (
       <div className="h-full overflow-auto bg-chess-page flex items-center justify-center p-6 text-center">
-        <p className="text-chess-text-muted font-semibold">Bout mode is coming soon.</p>
+        <p className="text-chess-text-muted font-semibold">Chess Boxing is coming soon.</p>
       </div>
     );
   }
@@ -1072,7 +1072,7 @@ export default function BoutPage() {
         </div>
         <div className="max-w-md md:max-w-lg mx-auto w-full px-4 md:px-6 py-2.5 my-auto flex flex-col gap-2 min-h-0 relative z-10">
           <div className="text-center shrink-0">
-            <h1 className="text-lg font-black text-white tracking-tight">Bout vs Rookie</h1>
+            <h1 className="text-lg font-black text-white tracking-tight">Chess Boxing vs Rookie</h1>
             <p className="text-[11px] font-bold text-white/60 mt-0.5">
               One game. The bell always wins.
             </p>
@@ -1081,7 +1081,7 @@ export default function BoutPage() {
           {/* Format — the ONLY thing that varies. Structure is always
               chess · break · boxing · break · chess. */}
           <div className="shrink-0">
-            <div className="flex gap-1.5" role="group" aria-label="Bout length">
+            <div className="flex gap-1.5" role="group" aria-label="Chess Boxing length">
               {BOUT_FORMAT_ORDER.map((id) => {
                 const spec = BOUT_FORMATS[id];
                 const active = format === id;
@@ -1115,7 +1115,7 @@ export default function BoutPage() {
                 );
               })}
             </div>
-            {FEATURE_FLAGS.CHESSBOXING_PRO && (
+            {FEATURE_FLAGS.PRO && (
               <div className="flex gap-1.5 mt-1.5" role="group" aria-label="Pro round cards">
                 <button
                   onClick={() => {
@@ -1155,7 +1155,7 @@ export default function BoutPage() {
                 </button>
               </div>
             )}
-            {FEATURE_FLAGS.CHESSBOXING_PRO && showCustom && customCard && customCard !== OFFICIAL_CARD && (
+            {FEATURE_FLAGS.PRO && showCustom && customCard && customCard !== OFFICIAL_CARD && (
               <div className="mt-1.5 rounded-xl bg-white/[0.06] border border-white/10 p-2 flex flex-col gap-1.5">
                 <Dial
                   label="Chess rounds"
@@ -1184,7 +1184,7 @@ export default function BoutPage() {
               {customCard
                 ? `${Math.round(boutDurationSeconds(format, customCard) / 60)} min. Your card — not ranked, still counts for your streak.`
                 : format === RANKED_FORMAT && rankedLeft === 0
-                  ? "Today's ranked bout is spent — this one's an exhibition. Still counts for your streak."
+                  ? "Today's ranked card is spent — this one's an exhibition. Still counts for your streak."
                   : BOUT_FORMATS[format].blurb}
             </p>
           </div>
@@ -1329,7 +1329,7 @@ export default function BoutPage() {
 
       try {
         if (shareGifRef.current) {
-          await shareOrSave(await shareGifRef.current.promise, 'chess-boxing-bout.gif');
+          await shareOrSave(await shareGifRef.current.promise, 'chess-boxing.gif');
           setSharing(false);
           return;
         }
@@ -1343,7 +1343,7 @@ export default function BoutPage() {
       try {
         const res = await fetch(pngUrl);
         if (!res.ok) throw new Error('og/bout failed');
-        await shareOrSave(await res.blob(), 'chess-boxing-bout.png');
+        await shareOrSave(await res.blob(), 'chess-boxing.png');
       } catch (e) {
         if ((e as Error)?.name !== 'AbortError') window.open(pngUrl, '_blank');
       } finally {
@@ -1358,7 +1358,7 @@ export default function BoutPage() {
     const exhibitionNote =
       wasRanked === false
         ? format === RANKED_FORMAT
-          ? "Exhibition — today's ranked bout was already in the books. It still counts for your streak."
+          ? "Exhibition — today's ranked card was already in the books. It still counts for your streak."
           : `Exhibition — only the ${BOUT_FORMATS[RANKED_FORMAT].label} card is ranked. It still counts for your streak.`
         : null;
     return (
@@ -1634,7 +1634,7 @@ export default function BoutPage() {
           {towelConfirm ? (
             <>
               <span className="text-xs font-bold text-chess-text leading-snug text-left">
-                Quit the bout? Today&apos;s ranked card is spent.
+                Quit Chess Boxing? Today&apos;s ranked card is spent.
               </span>
               <button
                 onClick={() => {
@@ -1731,7 +1731,7 @@ export default function BoutPage() {
   );
 }
 
-/* ── Chess Boxing Pro round-card helpers (CHESSBOXING_PRO) ─────────────── */
+/* ── Chess Boxing Pro round-card helpers (PRO) ─────────────── */
 
 function ProPill() {
   return (

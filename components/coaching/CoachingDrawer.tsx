@@ -4,10 +4,26 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { BreathingRook, RookieMood } from '@/components/ui/BreathingRook';
 import { CoachingScript, CoachingMessage } from '@/lib/coaching-prompt';
 import { useRouter } from 'next/navigation';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { currentApp, openFamilyApp } from '@/lib/family/apps';
+import { ProLockedLine } from '@/components/pro/ProLockedLine';
+
+/**
+ * Cross-promo moment (One Family plan): a mistake in the review is the one
+ * place a "Drill this in Chess Boxing" link earns its spot. One line under
+ * the improvement bubble, never a banner. Hidden inside the Chess Boxing app
+ * itself (you're already there).
+ */
+const SHOW_DRILL_LINK = FEATURE_FLAGS.FAMILY_STRIP && currentApp() !== 'chessboxing';
 
 interface CoachingDrawerProps {
   script: CoachingScript;
   onClose: () => void;
+  /**
+   * Pro (Gate B): the caller sets `script.isPremium = !locked` from the coach
+   * review and passes `() => requirePro('review')` here. The teaser row only
+   * renders when both say "locked" — so nothing shows while PRO is off.
+   */
   onPremiumUpsell?: () => void;
   playerName?: string;
 }
@@ -117,22 +133,11 @@ export function CoachingDrawer({ script, onClose, onPremiumUpsell, playerName }:
               />
             ))}
 
-            {/* Premium upsell teaser */}
+            {/* Pro teaser — Rookie's remaining notes are locked (Gate B) */}
             {!script.isPremium && allShown && onPremiumUpsell && (
-              <div
-                className="coaching-bubble-enter mt-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onPremiumUpsell();
-                }}
-              >
-                <div className="bg-chess-surface/50 rounded-2xl px-4 py-3 border border-dashed border-chess-disabled cursor-pointer hover:border-chess-green/50 transition-colors">
-                  <p className="text-chess-text-muted text-[13px] leading-relaxed">
-                    Rookie has more to say about your game...
-                  </p>
-                  <p className="text-chess-green text-xs font-semibold mt-1">
-                    Unlock full coaching
-                  </p>
+              <div className="coaching-bubble-enter mt-2">
+                <div className="bg-chess-surface/50 rounded-2xl px-4 py-1.5 border border-dashed border-chess-disabled hover:border-chess-gold/60 transition-colors">
+                  <ProLockedLine onTap={onPremiumUpsell} />
                 </div>
               </div>
             )}
@@ -234,6 +239,21 @@ function CoachingBubble({
         <p className="text-chess-text text-[14px] leading-relaxed">
           {message.text}
         </p>
+        {isImprovement && SHOW_DRILL_LINK && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              openFamilyApp('chessboxing');
+            }}
+            className="mt-1.5 -mx-2 min-h-[44px] px-2 inline-flex items-center gap-1 text-xs font-bold text-chess-blue hover:text-chess-blue-dark"
+          >
+            Drill this in Chess Boxing
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   );

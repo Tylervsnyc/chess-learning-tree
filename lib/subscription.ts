@@ -41,10 +41,15 @@ export function isPremiumSubscription(
  */
 export const isProSubscription = isPremiumSubscription;
 
-/** Free-tier Chess Boxing limits (only enforced when CHESSBOXING_PRO is on). */
+/**
+ * Free-tier limits across the family (only enforced when FEATURE_FLAGS.PRO is on).
+ * FREE_LESSON_LEVELS: Chess Path levels 1..N are free; N+1 and up are Pro
+ * (Gate C — the gate lives in hooks/usePermissions.ts `isLevelProLocked`).
+ */
 export const PRO_FREE_LIMITS = {
   BOUTS_PER_DAY: 1,
   WORKOUTS_PER_DAY: 1,
+  FREE_LESSON_LEVELS: 2,
 } as const;
 
 /**

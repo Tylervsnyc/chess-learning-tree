@@ -122,7 +122,7 @@ export function FightResultCard(p: Props) {
           icon={data.kind === 'workout' && !data.fightSummary ? PUZZLE_ICON : PLAY_ICON}
           points={points}
           won={won && !draw}
-          kicker={data.kind === 'workout' ? (data.fightSummary ? 'Fight rounds' : 'Workout') : 'Bout'}
+          kicker={data.kind === 'workout' ? (data.fightSummary ? 'Fight rounds' : 'Workout') : 'Chess Boxing'}
           word={draw ? 'Draw' : won ? 'Winner' : 'Lost'}
           height={data.kind === 'bout' ? 200 : 230}
         />

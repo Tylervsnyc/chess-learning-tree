@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useBoxShell } from '@/hooks/useBoxShell';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 
 /**
  * BoxTabBar — the Chess Boxing app's bottom tab bar. Renders ONLY inside the
@@ -20,24 +21,43 @@ import { useBoxShell } from '@/hooks/useBoxShell';
  */
 
 /** Routes where the bar must not cover an immersive full-screen activity. */
-const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding'];
+const HIDDEN_ROUTES = ['/workout', '/box/bout', '/box/onboarding', '/box/clock'];
 /** Exceptions under a hidden prefix: the post-workout report + Fix-It are
  *  regular app screens (dark shell, no timer) and keep the tabs. */
 const SHOWN_ROUTES = ['/workout/report', '/workout/fixit'];
 
-/**
- * The four tabs. `match` lists the extra routes a tab claims as "active" —
- * Train's chooser fans out to the shared activity pages, and those still
- * belong to the Train tab.
- */
-const TABS = [
-  { href: '/box', label: 'Chess Box', icon: BellIcon, match: [] as string[], color: '#FF4B4B', shadow: '#CC3939', tint: 'rgba(255,75,75,0.12)' },
-  { href: null, label: 'Train', icon: TargetIcon, match: ['/path', '/openings', '/lesson', '/solve'], color: '#CE82FF', shadow: '#a855f7', tint: 'rgba(206,130,255,0.14)' },
-  { href: '/play', label: 'Play', icon: PawnIcon, match: [] as string[], color: '#58CC02', shadow: '#3d8c01', tint: 'rgba(88,204,2,0.12)' },
-  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'], color: '#1CB0F6', shadow: '#0d7ec4', tint: 'rgba(28,176,246,0.12)' },
-] as const;
+type Tab = {
+  /** null = the Train chooser button (opens the drop-up instead of navigating) */
+  href: string | null;
+  label: string;
+  icon: () => React.JSX.Element;
+  /** extra routes this tab claims as "active" */
+  match: string[];
+  color: string;
+  shadow: string;
+  tint: string;
+};
 
-/** The Train drop-up: tap the tab, pick where to train. */
+/**
+ * The second tab is one of two, by flag (BOX_CLOCK_TAB):
+ *   Train — the chooser drop-up fanning out to the shared learning pages
+ *           (those still belong to the Train tab while it exists).
+ *   Clock — /box/clock: Chess Clock + Boxing Timer. Learning moves to the
+ *           Chess Path app; this app becomes the sport's companion.
+ */
+const TRAIN_TAB: Tab = { href: null, label: 'Train', icon: TargetIcon, match: ['/path', '/openings', '/lesson', '/solve'], color: '#CE82FF', shadow: '#a855f7', tint: 'rgba(206,130,255,0.14)' };
+const CLOCK_TAB: Tab = { href: '/box/clock', label: 'Clock', icon: ClockIcon, match: [], color: '#CE82FF', shadow: '#a855f7', tint: 'rgba(206,130,255,0.14)' };
+
+/** The four tabs. */
+const TABS: Tab[] = [
+  { href: '/box', label: 'Chess Box', icon: BellIcon, match: [], color: '#FF4B4B', shadow: '#CC3939', tint: 'rgba(255,75,75,0.12)' },
+  FEATURE_FLAGS.BOX_CLOCK_TAB ? CLOCK_TAB : TRAIN_TAB,
+  { href: '/play', label: 'Play', icon: PawnIcon, match: [], color: '#58CC02', shadow: '#3d8c01', tint: 'rgba(88,204,2,0.12)' },
+  { href: '/box/profile', label: 'Profile', icon: PersonIcon, match: ['/profile'], color: '#1CB0F6', shadow: '#0d7ec4', tint: 'rgba(28,176,246,0.12)' },
+];
+
+/** The Train drop-up: tap the tab, pick where to train. Only reachable while
+ *  the Train tab is in TABS (BOX_CLOCK_TAB off) — nothing else opens it. */
 const TRAIN_OPTIONS = [
   { href: '/path', title: 'Tactics', sub: 'Forks, pins, mates', icon: SwordsIcon, accent: '#CE82FF', shadow: '#a855f7' },
   { href: '/openings', title: 'Openings', sub: 'First moves, cold', icon: BookIcon, accent: '#1CB0F6', shadow: '#0d7ec4' },
@@ -182,6 +202,17 @@ function BellIcon() {
       <path d="M12 4a7 7 0 0 1 7 7v4H5v-4a7 7 0 0 1 7-7Z" />
       <path d="M12 4V2.5M4 18.5h16" />
       <path d="M9 21.5h6" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="13" r="8" />
+      <path d="M12 9v4l2.5 2" />
+      <path d="M9 2.5h6" />
+      <path d="M18.5 6.5l1.5-1.5" />
     </svg>
   );
 }

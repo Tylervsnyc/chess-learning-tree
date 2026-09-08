@@ -59,6 +59,14 @@ export interface CoachReview {
   moves: Record<string, string>;
   summary: string | null;
   takeaway: string | null;
+  /**
+   * Pro (Gate B): the server withheld Rookie's words past the free window
+   * (comments beyond the first few moves + the takeaway). Surfaces render a
+   * locked row for those moves. Always false while FEATURE_FLAGS.PRO is off.
+   */
+  locked: boolean;
+  /** How many move comments were withheld. */
+  lockedCount: number;
 }
 
 /**
@@ -125,6 +133,8 @@ export async function fetchCoachReview(args: {
       moves: data.review.moves || {},
       summary: data.review.summary || null,
       takeaway: data.review.takeaway || null,
+      locked: data.review.locked === true,
+      lockedCount: typeof data.review.lockedCount === 'number' ? data.review.lockedCount : 0,
     };
   } catch (err) {
     console.error('[coach-review] failed:', err);

@@ -66,7 +66,7 @@ export const BOUT_FORMATS: Record<BoutFormat, BoutFormatSpec> = {
     id: 'standard',
     label: 'Standard',
     chessRounds: 3,
-    blurb: 'Three chess, two boxing. The ranked bout.',
+    blurb: 'Three chess, two boxing. The ranked card.',
   },
   championship: {
     id: 'championship',
@@ -93,7 +93,7 @@ export const RANKED_FORMAT: BoutFormat = 'standard';
 export const DAILY_RANKED_BOUT_LIMIT = 1;
 
 /**
- * Custom round card (Chess Boxing Pro, CHESSBOXING_PRO). Same locked structure
+ * Custom round card (Chess Boxing Pro, PRO). Same locked structure
  * (chess · break · boxing · break · … · chess) — Pro users pick how many chess
  * rounds and how long each discipline's bell is. Never ranked: a board where
  * people fought different cards isn't a ranking. OFFICIAL_CARD is the sport's
@@ -391,7 +391,7 @@ export const BOUT_LINES = {
   ],
   koLoss: [
     'Checkmate — but you made me sweat every square of it.',
-    "That's the bout. You fought hard. Next time the position falls your way.",
+    "That's the fight. You fought hard. Next time the position falls your way.",
   ],
   flagLoss: [
     "Flag's down. The clock got you before I did — and honestly, it was close.",

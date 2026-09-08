@@ -78,7 +78,7 @@ async function checkAppActivity(sinceISO: string): Promise<Line[]> {
       const punches = bouts.reduce((n, b) => n + (b.punches ?? 0), 0);
       lines.push({
         emoji: ':boxing_glove:',
-        text: `*${bouts.length} bout${bouts.length === 1 ? '' : 's'}* from ${fighters} fighter${fighters === 1 ? '' : 's'}${punches ? ` · ${punches} punches` : ''}`,
+        text: `*${bouts.length} Chess Boxing session${bouts.length === 1 ? '' : 's'}* from ${fighters} fighter${fighters === 1 ? '' : 's'}${punches ? ` · ${punches} punches` : ''}`,
       });
     }
   } catch {

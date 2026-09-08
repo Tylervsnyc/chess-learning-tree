@@ -10,6 +10,15 @@
  */
 
 /**
+ * Chess Boxing 1.0.6 slim bundle: drop the learning routes (path, lessons,
+ * basics, openings, level tests) from the Chess Boxing app — learning lives in
+ * the Chess Path app; Chess Boxing becomes the sport's companion (Clock tab,
+ * BOX_CLOCK_TAB). Tyler flips this when the in-app links to those routes have
+ * been repointed at Chess Path. false = the bundle is exactly what 1.0.5 shipped.
+ */
+export const SLIM_CHESSBOXING_BUNDLE = false;
+
+/**
  * Routes that ship in the app, relative to `app/`.
  *
  * A route is only eligible if it can render with zero network: no `cookies()`,
@@ -34,7 +43,10 @@ export const ROUTE_ALLOWLIST = [
   'box/onboarding',
   'box/bout',               // Fight — RingHome links here; was missing from the bundle
   'box/profile',            // Profile tab — was missing from the bundle, so the tab did nothing in the app
+  'box/clock',              // Clock tab — Chess Clock + Boxing Timer, fully offline
   'workout',
+  'workout/report',         // post-workout miss report (offline state without a session)
+  'workout/fixit',          // Fix-It workout built from the last workout's misses
   'level-test/[transition]',
   'profile',
   'review',                 // past-game review via ?id= (the [id] form can't export)
@@ -166,13 +178,36 @@ export const ROOT_FILES = [
  * boxing-only UI (see lib/config/offline.ts).
  */
 const CHESSPATH_ROUTE_DROP = new Set([
-  'box', 'box/settings', 'box/onboarding', 'box/bout', 'box/profile', 'workout', 'leaderboard',
+  'box', 'box/settings', 'box/onboarding', 'box/bout', 'box/profile', 'box/clock',
+  'workout', 'workout/report', 'workout/fixit', 'leaderboard',
 ]);
+
+/**
+ * Mirror of CHESSPATH_ROUTE_DROP for the slim Chess Boxing bundle: every
+ * learning route leaves the boxing app. Only applied when
+ * SLIM_CHESSBOXING_BUNDLE is true. The matching app/ directories are purged
+ * outright (not just their page.tsx) so build-offline.mjs's
+ * generateStaticParams injection has nothing to inject into, and the lesson
+ * puzzle pack is skipped — build-offline.mjs derives both from `routes`.
+ */
+const CHESSBOXING_ROUTE_DROP = new Set([
+  'path',
+  'lesson/[lessonId]',
+  'basics',
+  'openings',
+  'openings/[slug]',
+  'openings/[slug]/tree',
+  'openings/[slug]/[lessonId]',
+  'level-test/[transition]',
+]);
+const CHESSBOXING_SLIM_PURGE = ['path', 'lesson', 'basics', 'openings', 'level-test'];
 
 export const APP_TARGETS = {
   chessboxing: {
-    routes: ROUTE_ALLOWLIST,
-    appPurge: APP_PURGE,
+    routes: SLIM_CHESSBOXING_BUNDLE
+      ? ROUTE_ALLOWLIST.filter((r) => !CHESSBOXING_ROUTE_DROP.has(r))
+      : ROUTE_ALLOWLIST,
+    appPurge: SLIM_CHESSBOXING_BUNDLE ? [...APP_PURGE, ...CHESSBOXING_SLIM_PURGE] : APP_PURGE,
     publicAllowlist: PUBLIC_ALLOWLIST,
     overridesDirs: ['offline-overrides'],
     outDir: 'capacitor-shell',

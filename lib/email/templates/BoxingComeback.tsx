@@ -42,7 +42,7 @@ export function BoxingComeback({
   const store = `${CB_APP_STORE}?${UTM}`;
 
   const stats: { label: string; value: string }[] = [];
-  if (typeof bouts === 'number' && bouts > 0) stats.push({ label: 'Bouts', value: String(bouts) });
+  if (typeof bouts === 'number' && bouts > 0) stats.push({ label: 'Chess Boxing', value: String(bouts) });
   if (typeof bestRound === 'number' && bestRound > 0) stats.push({ label: 'Best round', value: String(bestRound) });
   if (typeof punches === 'number' && punches > 0) stats.push({ label: 'Punches', value: String(punches) });
 

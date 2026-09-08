@@ -107,10 +107,10 @@ export function BoxingWelcome({ appUrl, unsubscribeUrl }: BoxingWelcomeProps) {
       <ModeRow
         icon={`${CB_IMG}/corner-play.png`}
         iconWidth={52}
-        name="Bout Mode"
+        name="Chess Boxing"
         line="One game against Rookie, split across the card. The board freezes at the bell whether you like your position or not."
         href={bout}
-        cta="Fight a bout"
+        cta="Start Chess Boxing"
       />
 
       <ModeRow

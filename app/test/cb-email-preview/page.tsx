@@ -87,7 +87,7 @@ export default async function CbEmailPreviewPage() {
     {
       label: 'cb_workout_report — sent the moment a workout lands (misses → report link, hardest solve on a board)',
       angle:
-        'Fired from /api/workout/finish via after(). The card for THIS workout, Rookie\'s line, then the one button: /workout/report/[id] (red = what you played, green = the answer → Fix-It). Web-only report, so this is how a phone user reaches it. Dedupe: one per session id in email_log. Gate: WORKOUT_REPORT_EMAIL flag + CB_EMAIL_LIFECYCLE_ENABLED.',
+        'Fired from /api/workout/finish via after(). The card for THIS workout, Rookie\'s line, then the one button: /workout/report?id= (red = what you played, green = the answer → Fix-It). The report also ships in the Chess Boxing app, so this is the email route to it. Dedupe: one per session id in email_log. Gate: WORKOUT_REPORT_EMAIL flag + CB_EMAIL_LIFECYCLE_ENABLED.',
       html: await render(
         BoxingWorkoutReport({
           displayName: SAMPLE.displayName,

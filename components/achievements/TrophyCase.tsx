@@ -278,7 +278,7 @@ function progressLine(def: AchievementDef, row: AchievementRow | null): string |
   if (def.levelTiered) {
     const tier = row?.tier ?? 0;
     if (tier >= 10) return 'Level 10. There is no Level 11. I checked.';
-    return tier > 0 ? `Next: beat Rookie at Level ${tier + 1}` : 'Win a bout to hang the first belt.';
+    return tier > 0 ? `Next: beat Rookie at Level ${tier + 1}` : 'Win at Chess Boxing to hang the first belt.';
   }
   if (!def.thresholds) return null;
   const progress = row?.progress ?? 0;

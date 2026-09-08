@@ -7,6 +7,9 @@ import { WorkoutPuzzle, type WorkoutPuzzleData } from '@/components/workout/Work
 import { ArenaScene } from '@/components/chessboxing/Arena';
 import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
 import { isSoundEnabled, playButtonClick } from '@/lib/sounds';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { useProGate } from '@/hooks/useProGate';
+import { ProEvents } from '@/lib/analytics/posthog';
 
 /**
  * /workout/fixit — the Fix-It workout (learn-from-mistakes, layer 3).
@@ -100,10 +103,13 @@ interface FixitResponse {
   puzzles: FixitPuzzle[];
 }
 
-type Status = 'loading' | 'signin' | 'empty' | 'error' | 'solving' | 'complete';
+// 'pro' = the server said 403 { error: 'pro' } (Gate B) — the paywall opens
+// over this screen; buying re-fetches the set.
+type Status = 'loading' | 'signin' | 'empty' | 'error' | 'solving' | 'complete' | 'pro';
 
 export default function WorkoutFixitPage() {
   const router = useRouter();
+  const { openPaywall, paywall } = useProGate();
 
   const [status, setStatus] = useState<Status>('loading');
   const [puzzles, setPuzzles] = useState<FixitPuzzle[]>([]);
@@ -120,13 +126,16 @@ export default function WorkoutFixitPage() {
       .then(async (r) => {
         if (r.status === 401) return 'signin' as const;
         if (r.status === 404) return 'empty' as const;
+        // Pro-only (server + client read the same flag, so this only ever
+        // happens with PRO on; a stray 403 otherwise is a plain error).
+        if (r.status === 403 && FEATURE_FLAGS.PRO) return 'pro' as const;
         if (!r.ok) return null;
         return (await r.json()) as FixitResponse;
       })
       .catch(() => null)
       .then((data) => {
         if (cancelled) return;
-        if (data === 'signin' || data === 'empty') {
+        if (data === 'signin' || data === 'empty' || data === 'pro') {
           setStatus(data);
           return;
         }
@@ -178,6 +187,17 @@ export default function WorkoutFixitPage() {
     setRun((n) => n + 1);
   }, []);
 
+  // The server locked the door: log the gate hit and open the paywall over the
+  // "Fix-It is Pro" screen. Unlocking re-fetches the set.
+  const showProPaywall = useCallback(() => {
+    openPaywall('fixit', () => setRun((n) => n + 1));
+  }, [openPaywall]);
+  useEffect(() => {
+    if (status !== 'pro') return;
+    ProEvents.gateHit('fixit');
+    showProPaywall();
+  }, [status, showProPaywall]);
+
   // ── Loading ────────────────────────────────────────────────────────────────
   if (status === 'loading') {
     return (
@@ -191,13 +211,15 @@ export default function WorkoutFixitPage() {
   }
 
   // ── Sign in / nothing yet / error ─────────────────────────────────────────────
-  if (status === 'signin' || status === 'empty' || status === 'error') {
+  if (status === 'signin' || status === 'empty' || status === 'error' || status === 'pro') {
     const copy =
       status === 'signin'
         ? { title: 'Sign in to fix it', body: 'The Fix-It workout is built from your last workout, so we need to know who you are.' }
         : status === 'empty'
           ? { title: 'No workout yet', body: 'Do one Puzzle Boxing workout first. Fix-It builds itself from what you missed.' }
-          : { title: 'Could not build your set', body: 'Something went wrong on our side. Give it another go in a moment.' };
+          : status === 'pro'
+            ? { title: 'Fix-It is a Pro workout', body: 'I build it from exactly what you missed. Go Pro and I will have your set ready.' }
+            : { title: 'Could not build your set', body: 'Something went wrong on our side. Give it another go in a moment.' };
     return (
       <Shell>
         <CloseButton />
@@ -216,6 +238,10 @@ export default function WorkoutFixitPage() {
               <Link href="/workout?from=box" className="w-full max-w-xs">
                 <button className={BTN_PRIMARY}>Start a workout</button>
               </Link>
+            ) : status === 'pro' ? (
+              <button onClick={showProPaywall} className={`max-w-xs ${BTN_PRIMARY}`}>
+                See Pro
+              </button>
             ) : (
               <button onClick={runAgain} className={`max-w-xs ${BTN_PRIMARY}`}>
                 Try again
@@ -226,6 +252,7 @@ export default function WorkoutFixitPage() {
             </Link>
           </div>
         </div>
+        {paywall}
       </Shell>
     );
   }

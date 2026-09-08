@@ -8,7 +8,7 @@ import { buildLimits, countToday } from '@/lib/pro/limits';
  *
  * { boutsToday, workoutsToday, boutLimit, workoutLimit, isPro, canBout, canWorkout }
  *
- * Read-only truth for the Chess Boxing Pro free limits (CHESSBOXING_PRO).
+ * Read-only truth for the Chess Boxing Pro free limits (PRO).
  * The client gate (hooks/useProGate) asks this before launching a bout or a
  * workout. Logged-out users get "unlimited": the limit is a reason to buy Pro,
  * not a reason to bounce a cold visitor before their first fight.
@@ -24,13 +24,16 @@ export async function GET(request: NextRequest) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('subscription_status, subscription_expires_at')
+    .select('subscription_status, subscription_expires_at, is_admin')
     .eq('id', user.id)
     .single();
-  const isPro = isProSubscription(
-    (profile?.subscription_status as SubscriptionStatus | null) ?? 'free',
-    profile?.subscription_expires_at ?? null,
-  );
+  // Admins count as Pro here exactly as they do in the review/report/fixit routes.
+  const isPro =
+    !!profile?.is_admin ||
+    isProSubscription(
+      (profile?.subscription_status as SubscriptionStatus | null) ?? 'free',
+      profile?.subscription_expires_at ?? null,
+    );
   if (isPro) return NextResponse.json({ ...open, authenticated: true });
 
   const tz = request.nextUrl.searchParams.get('tz');

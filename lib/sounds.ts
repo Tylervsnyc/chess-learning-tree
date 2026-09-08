@@ -256,6 +256,25 @@ export async function playWoodClap(): Promise<void> {
   if (clapBuffer) await playBuffer(clapBuffer);
 }
 
+/**
+ * Tab-switch tick — the same recording Rookie's Revenge plays when you change
+ * tabs (public/sounds/tab-switch.mp3). Used by the Chess Clock for "my move
+ * is done" taps: a soft, quick click instead of the boxing claps.
+ */
+/** Tyler: "too loud" at full — 30% (2026-09-08). */
+const TAB_SWITCH_VOLUME = 0.15;
+let tabSwitchBuffer: AudioBuffer | null = null;
+let tabSwitchLoading: Promise<AudioBuffer | null> | null = null;
+
+export async function playTabSwitchSound(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  if (!tabSwitchBuffer) {
+    if (!tabSwitchLoading) tabSwitchLoading = loadBuffer('/sounds/tab-switch.mp3');
+    tabSwitchBuffer = await tabSwitchLoading;
+  }
+  if (tabSwitchBuffer) await playBuffer(tabSwitchBuffer, TAB_SWITCH_VOLUME);
+}
+
 // Celebration sound - bright C Major arpeggio with compressor to prevent clipping
 async function playCelebration(): Promise<void> {
   const ctx = await ensureAudioReady();
@@ -299,7 +318,7 @@ export function playCelebrationSound(_correctCount?: number): void {
 }
 
 // Play a preloaded buffer sound
-async function playBuffer(buffer: AudioBuffer | null): Promise<void> {
+async function playBuffer(buffer: AudioBuffer | null, volume = 1): Promise<void> {
   const ctx = await ensureAudioReady();
   if (!ctx) return;
   if (!buffersLoaded) await preloadSounds();
@@ -307,7 +326,14 @@ async function playBuffer(buffer: AudioBuffer | null): Promise<void> {
 
   const source = ctx.createBufferSource();
   source.buffer = buffer;
-  source.connect(ctx.destination);
+  if (volume < 1) {
+    const gain = ctx.createGain();
+    gain.gain.value = Math.max(0, volume);
+    source.connect(gain);
+    gain.connect(ctx.destination);
+  } else {
+    source.connect(ctx.destination);
+  }
   source.start();
 }
 

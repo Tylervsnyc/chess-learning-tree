@@ -38,6 +38,8 @@ import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
 import type { MoveClassification } from '@/lib/game-eval';
 import { useReviewBranch } from '@/hooks/useReviewBranch';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { useProGate } from '@/hooks/useProGate';
+import { ProLockedLine } from '@/components/pro/ProLockedLine';
 
 interface GameReviewProps {
   moves: ReviewMove[];
@@ -53,8 +55,10 @@ interface GameReviewProps {
 
 type ReviewArrow = { startSquare: string; endSquare: string; color: string };
 
-// "Try it" variations — one implementation, one flag (same as /play).
-const canBranch = FEATURE_FLAGS.REVIEW_VARIATIONS;
+// "Try it" variations — one implementation, one flag (same as /play). Whether
+// THIS user may branch is decided per render below: Pro (Gate B) once
+// FEATURE_FLAGS.PRO is on; a locked board tap opens the paywall instead.
+const variationsOn = FEATURE_FLAGS.REVIEW_VARIATIONS;
 
 export function GameReview({
   moves,
@@ -69,7 +73,12 @@ export function GameReview({
   const [fen, setFen] = useState(startFen);
   const [lastMv, setLastMv] = useState<{ from: Square; to: Square } | null>(null);
   const [reviewText, setReviewText] = useState<string | null>(null);
+  // Pro (Gate B): the current move's commentary was withheld by the server.
+  const [lockedRow, setLockedRow] = useState(false);
   const [arrows, setArrows] = useState<ReviewArrow[]>([]);
+  // Flag off: isPro is true, requirePro runs the action at once, paywall is null.
+  const { isPro, requirePro, paywall } = useProGate();
+  const canBranch = variationsOn && (isPro || !FEATURE_FLAGS.PRO);
   // Tap-to-move selection (branching only).
   const [selected, setSelected] = useState<Square | null>(null);
   // Mirror for the data-arrival effect below — navigate() must not depend on
@@ -80,7 +89,7 @@ export function GameReview({
 
   const {
     analysis, isAnalyzing, progress, keyMoments, positionEvals,
-    coachReady, coachMoves, coachSummary, coachTakeaway,
+    coachReady, coachMoves, coachSummary, coachTakeaway, coachLocked,
   } = review;
 
   // ── "Try it" branch — rooted at the MAINLINE position (moveIndexRef), not
@@ -110,6 +119,7 @@ export function GameReview({
       setFen(startFen);
       setLastMv(null);
       setArrows([]);
+      setLockedRow(false);
       setReviewText(coachSummary || 'Starting position');
       return;
     }
@@ -123,6 +133,9 @@ export function GameReview({
 
     // Claude commentary key: "1w" or "1b" (chess move numbers, not plies)
     const coachText = coachMoves[commentaryKey(index, move.movedBy, playerColor)];
+    // No words for this move because the server withheld them (Pro) — the
+    // arrows/evals below still render; the text box becomes the locked row.
+    setLockedRow(FEATURE_FLAGS.PRO && coachLocked && coachReady && !coachText);
 
     // On last move, append takeaway
     let displayText = coachText || null;
@@ -163,7 +176,7 @@ export function GameReview({
     } else {
       setArrows([]);
     }
-  }, [moves, playerColor, playerName, startFen, coachMoves, coachSummary, coachTakeaway, keyMoments, positionEvals, showBestArrowRef]);
+  }, [moves, playerColor, playerName, startFen, coachMoves, coachSummary, coachTakeaway, coachLocked, coachReady, keyMoments, positionEvals, showBestArrowRef]);
 
   // Initial position, and re-render the current position whenever analysis /
   // key moments / Claude commentary land (navigate's identity tracks the data).
@@ -215,17 +228,30 @@ export function GameReview({
     navigate(index);
   }, [branch, navigate]);
 
+  /** "Try it" is Pro: a locked board touch opens the paywall (fires pro_gate_hit). */
+  const lockedBranchTap = useCallback(() => {
+    requirePro('variations', () => {});
+  }, [requirePro]);
+
   /** Board drop: start or extend the branch (queen promotion). */
   const onReviewDrop = useCallback((from: Square, to: Square): boolean => {
-    if (!canBranch) return false;
+    if (!canBranch) {
+      lockedBranchTap();
+      return false;
+    }
     return branch.startOrExtend(from, to);
-  }, [branch]);
+  }, [canBranch, branch, lockedBranchTap]);
 
   /** Tap-to-move: the side to move owns the pieces (both sides are the user). */
   const onReviewSquareClick = useCallback((square: Square) => {
-    if (!canBranch || !game) return;
+    if (!game) return;
     const turn = game.turn();
     const piece = game.get(square);
+    if (!canBranch) {
+      // Only a touch that would have started a move counts as "trying it".
+      if (piece && piece.color === turn) lockedBranchTap();
+      return;
+    }
     if (!selected) {
       if (piece && piece.color === turn) setSelected(square);
       return;
@@ -238,7 +264,7 @@ export function GameReview({
       return;
     }
     setSelected(piece && piece.color === turn ? square : null);
-  }, [game, selected, branch]);
+  }, [game, selected, branch, canBranch, lockedBranchTap]);
 
   // Best-move arrow for the branch position (instant PV hint, then depth 12).
   const branchArrows = useMemo<ReviewArrow[]>(() => {
@@ -369,6 +395,8 @@ export function GameReview({
                     </span>
                   )}
                 </p>
+              ) : lockedRow ? (
+                <ProLockedLine onTap={() => requirePro('review', () => {})} />
               ) : (<>
                 {!coachReady && (
                   <div className="flex-shrink-0">
@@ -401,7 +429,7 @@ export function GameReview({
                 boardOrientation: playerColor,
                 squareStyles: sqStyles,
                 animationDurationInMs: 300,
-                ...(canBranch
+                ...(variationsOn
                   ? {
                       onPieceDrop: ((args: any) => onReviewDrop(args.sourceSquare as Square, args.targetSquare as Square)) as any,
                       onSquareClick: ((args: any) => onReviewSquareClick(args.square as Square)) as any,
@@ -487,6 +515,7 @@ export function GameReview({
         </div>
       </div>
       <div className="pb-[env(safe-area-inset-bottom)] flex-shrink-0" />
+      {paywall}
     </div>
   );
 }

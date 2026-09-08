@@ -4,6 +4,16 @@
 
 export type UserTier = 'anonymous' | 'free' | 'premium' | 'admin';
 
+/**
+ * Why a lesson is (or isn't) open to this user, in priority order:
+ *   'ok'          — go ahead
+ *   'signup'      — anonymous user out of free lessons (CreateProfileModal)
+ *   'daily_limit' — free user out of today's lessons
+ *   'pro'         — the lesson's level is above PRO_FREE_LIMITS.FREE_LESSON_LEVELS
+ *                   (only while FEATURE_FLAGS.PRO is on → ProPaywall)
+ */
+export type LessonAccess = 'ok' | 'signup' | 'daily_limit' | 'pro';
+
 export interface UserPermissions {
   tier: UserTier;
 
@@ -11,6 +21,8 @@ export interface UserPermissions {
   dailyLessonLimit: number | null; // null = unlimited
   lessonsCompletedToday: number;
   lessonsRemainingToday: number | null; // null = unlimited
+  /** Highest level free users may open; null = every level (Pro/admin, or PRO flag off). */
+  maxFreeLevel: number | null;
 
   // Access flags
   canAccessLesson: boolean;

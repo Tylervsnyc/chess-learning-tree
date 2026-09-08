@@ -62,7 +62,7 @@ Kill / don't do:
 
 ## Next 30 days
 
-1. IAP + RevenueCat behind `CHESSBOXING_PRO` flag; trial 7 days; Stripe monthly → $5.99 to match
+1. IAP + RevenueCat behind `PRO` flag; trial 7 days; Stripe monthly → $5.99 to match
 2. Buyer-metrics section in `daily-report.ts` (trial→paid, D30, churn)
 3. Fold Patron into Pro
 4. First Crew Pack pitch to Chessboxing NYC after App Store approval

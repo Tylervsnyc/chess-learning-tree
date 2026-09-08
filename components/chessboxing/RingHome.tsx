@@ -134,7 +134,7 @@ export function RingHome() {
 
   const current = boards[period] ?? LOADING;
 
-  // CHESSBOXING_PRO: free users get 1 workout + 1 bout per day. The gate is a
+  // PRO: free users get 1 workout + 1 bout per day. The gate is a
   // no-op (plain navigation) while the flag is off.
   const router = useRouter();
   const { gate, paywall } = useProGate();

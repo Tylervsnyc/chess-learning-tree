@@ -8,6 +8,9 @@ import { level1V2 } from '@/data/staging/level1-v2-curriculum';
 import { CURRICULUM_V2_CONFIG } from '@/data/curriculum-v2-config';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
+import { useLevelProLock } from '@/hooks/usePermissions';
+import { useProGate } from '@/hooks/useProGate';
+import { PRO_BENEFITS } from '@/lib/pro/benefits';
 import { EngagementEvents } from '@/lib/analytics/posthog';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -259,7 +262,12 @@ function Sparkles() {
   );
 }
 
+/** The "Lessons" row of PRO_BENEFITS — the one line the Pro level card quotes. */
+const PRO_LESSONS_LINE = PRO_BENEFITS.find(b => b.id === 'lessons')?.pro ?? 'All 8 levels, unlimited';
+
 // Locked Level Card - shows between levels
+// `proLocked` = gold Pro variant (Gate C, FEATURE_FLAGS.PRO): rendered even when the
+// level is progression-unlocked, so users who passed Level 2 before the flag see it too.
 function LockedLevelCard({
   levelNum,
   levelData,
@@ -267,6 +275,8 @@ function LockedLevelCard({
   darkColor,
   isUnlocked,
   prevLevelCompleted,
+  proLocked = false,
+  onUnlockPro,
 }: {
   levelNum: number;
   levelData: typeof level1V2;
@@ -274,6 +284,8 @@ function LockedLevelCard({
   darkColor: string;
   isUnlocked: boolean;
   prevLevelCompleted: boolean;
+  proLocked?: boolean;
+  onUnlockPro?: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const hasFiredRef = useRef(false);
@@ -281,7 +293,7 @@ function LockedLevelCard({
 
   useEffect(() => {
     const el = cardRef.current;
-    if (!el || isUnlocked || hasFiredRef.current) return;
+    if (!el || isUnlocked || proLocked || hasFiredRef.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasFiredRef.current) {
@@ -294,7 +306,76 @@ function LockedLevelCard({
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isUnlocked, levelNum]);
+  }, [isUnlocked, proLocked, levelNum]);
+
+  if (proLocked) {
+    return (
+      <div ref={cardRef} className="my-8">
+        {/* Connector line */}
+        <div className="flex justify-center mb-4">
+          <div className="w-1 h-8 rounded-full" style={{ backgroundColor: 'var(--color-chess-gold)' }} />
+        </div>
+
+        {/* Gold Pro card */}
+        <div
+          className="mx-4 rounded-2xl p-6 text-center relative overflow-hidden border-2"
+          style={{
+            backgroundColor: 'var(--color-chess-surface)',
+            borderColor: 'var(--color-chess-gold)',
+            boxShadow: '0 6px 0 var(--color-chess-gold-dark)',
+          }}
+        >
+          {/* Pro pill */}
+          <div className="absolute top-3 right-3">
+            <span
+              className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide"
+              style={{ backgroundColor: 'var(--color-chess-gold)', color: '#3b2a00' }}
+            >
+              Pro
+            </span>
+          </div>
+
+          <div className="relative">
+            {/* Gold level badge */}
+            <div
+              className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(135deg, var(--color-chess-gold), var(--color-chess-gold-dark))',
+                boxShadow: '0 4px 0 var(--color-chess-gold-dark)',
+              }}
+            >
+              <LockIcon size={32} color="white" />
+            </div>
+
+            {/* Level name */}
+            <h3 className="text-xl font-black text-chess-text mb-1">
+              Level {levelNum}: {levelData.name}
+            </h3>
+            <p className="text-xs text-chess-text-faint mb-3">
+              {levelData.ratingRange} ELO
+            </p>
+
+            <p className="text-sm text-chess-text-muted mb-4">
+              Pro: {PRO_LESSONS_LINE}
+            </p>
+
+            <button
+              type="button"
+              onClick={onUnlockPro}
+              className="inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-xl px-6 py-3 font-bold transition-all hover:scale-105 active:translate-y-[2px]"
+              style={{
+                backgroundColor: 'var(--color-chess-gold)',
+                color: '#3b2a00',
+                boxShadow: '0 4px 0 var(--color-chess-gold-dark)',
+              }}
+            >
+              Unlock with Pro
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isUnlocked) {
     return null; // Don't show card if level is unlocked
@@ -395,6 +476,11 @@ export default function LearnPageContent() {
 
   // Get all lesson IDs for determining current lesson
   const allLessonIds = useMemo(() => getAllLessonIds(), []);
+
+  // Gate C (Chess Path lesson depth, FEATURE_FLAGS.PRO): levels above the free
+  // cap render as a gold Pro card, tap → paywall. Flag off → never locked.
+  const { isLevelProLocked } = useLevelProLock();
+  const { requirePro, paywall } = useProGate();
 
   // "Next lesson" nudge — show after completing 1.1.1 via onboarding pipeline
   // Only shows when user has ONLY completed 1.1.1 (not returning users who've progressed further)
@@ -547,15 +633,21 @@ export default function LearnPageContent() {
         }
       `}</style>
 
+      {/* Pro paywall (Gate C) — null unless FEATURE_FLAGS.PRO and a gate was hit */}
+      {paywall}
+
       {/* Curriculum Path - All Levels */}
       <div className="mx-auto w-full max-w-lg md:max-w-2xl px-4 md:px-6 pt-2 pb-6">
         {LEVELS.map(({ level, data, color, darkColor }) => {
           // Admins have all levels unlocked
           const isLevelUnlocked = isAdmin || unlockedLevels.includes(level);
           const prevLevelCompleted = level === 1 || isLevelCompleted(level - 1, completedLessons);
+          // Pro-locked overrides progression: the gold card shows even if the level was
+          // unlocked before the flag, and none of its lesson nodes render.
+          const proLocked = !isAdmin && isLevelProLocked(level);
 
           // For level 1, always show. For others, show locked card if not unlocked
-          if (level > 1 && !isLevelUnlocked) {
+          if (level > 1 && (!isLevelUnlocked || proLocked)) {
             return (
               <LockedLevelCard
                 key={`locked-${level}`}
@@ -565,6 +657,8 @@ export default function LearnPageContent() {
                 darkColor={darkColor}
                 isUnlocked={isLevelUnlocked}
                 prevLevelCompleted={prevLevelCompleted}
+                proLocked={proLocked}
+                onUnlockPro={() => requirePro('lesson_level', () => {})}
               />
             );
           }

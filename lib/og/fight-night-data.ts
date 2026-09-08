@@ -68,7 +68,7 @@ export function fightNightChrome(bout: FightNightBout): FightNightChrome {
     brandSub: bout.brand?.sub ?? 'FIGHT NIGHT',
     username: bout.username || 'You',
     opponent: bout.opponent || 'Rookie',
-    headline: bout.headline ?? HEADLINES[bout.outcome] ?? { big: 'BOUT', rest: 'complete', win: false },
+    headline: bout.headline ?? HEADLINES[bout.outcome] ?? { big: 'FIGHT', rest: 'complete', win: false },
     stats: bout.stats ?? [
       [String(bout.moves), 'MOVES'],
       [bout.rounds > 0 ? `R${bout.rounds}` : '—', 'ROUND'],

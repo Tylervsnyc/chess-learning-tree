@@ -5,10 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import nextDynamic from 'next/dynamic';
 import { Chess, type Square } from 'chess.js';
 import { WorkoutPuzzle, type WorkoutPuzzleData, type WrongMoveDetail } from '@/components/workout/WorkoutPuzzle';
+import { workoutReportHref } from '@/components/workout/WorkoutReport';
 import { ChessPathBoard } from '@/components/puzzle/ChessPathBoard';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
-import { useIsNativeApp } from '@/lib/native-app';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
 import { usePremove } from '@/hooks/usePremove';
 import { useBoxShell } from '@/hooks/useBoxShell';
@@ -428,7 +428,7 @@ interface FinishResult {
   achievements: AchievementUnlock[];
   /** Closest in-progress medal — one teaser line on the result card. */
   nextMedal: NextMedal | null;
-  /** The saved workout_sessions row — drives /workout/report/[id]. null when unsaved (401/offline). */
+  /** The saved workout_sessions row — drives /workout/report?id=. null when unsaved (401/offline). */
   sessionId: string | null;
 }
 
@@ -446,9 +446,6 @@ function WorkoutPageInner() {
   // Entered from the Chess Boxing ring → setup wears the dark arena look and
   // gets a back button to /box. Reached any other way, nothing changes.
   const fromBox = useSearchParams().get('from') === 'box';
-  // The offline iOS bundle doesn't export /workout/report or /workout/fixit —
-  // keep those buttons off the native result card until the app gets twin routes.
-  const nativeApp = useIsNativeApp();
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [minutes, setMinutes] = useState<number>(16);
@@ -2043,13 +2040,11 @@ function WorkoutPageInner() {
           sharing={sharing}
           onShare={finishResult.toughestSolved ? shareToughest : undefined}
           onReview={
-            nativeApp
-              ? undefined
-              : FEATURE_FLAGS.WORKOUT_REPORT && finishResult.sessionId && finishResult.wrong > 0
-              ? () => router.push(`/workout/report/${finishResult.sessionId}`)
-                : FEATURE_FLAGS.WORKOUT_FIXIT && finishResult.wrong > 0
-                  ? () => router.push('/workout/fixit')
-                  : undefined
+            FEATURE_FLAGS.WORKOUT_REPORT && finishResult.sessionId && finishResult.wrong > 0
+              ? () => router.push(workoutReportHref(finishResult.sessionId!))
+              : FEATURE_FLAGS.WORKOUT_FIXIT && finishResult.wrong > 0
+                ? () => router.push('/workout/fixit')
+                : undefined
           }
           reviewLabel={
             FEATURE_FLAGS.WORKOUT_REPORT && finishResult.sessionId && finishResult.wrong > 0

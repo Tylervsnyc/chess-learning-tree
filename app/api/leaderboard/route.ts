@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
       handleById.set(p.id as string, {
         username: (p.username as string) ?? null,
         optIn: (p.leaderboard_opt_in as boolean) ?? true,
-        // CHESSBOXING_PRO gold name: premium (Stripe or RevenueCat) OR patron.
+        // PRO gold name: premium (Stripe or RevenueCat) OR patron.
         isPro:
           p.is_patron === true ||
           isPremiumSubscription(

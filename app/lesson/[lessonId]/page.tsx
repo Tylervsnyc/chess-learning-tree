@@ -45,6 +45,7 @@ import { IntroMessages } from '@/data/staging/level1-v2-curriculum';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useProGate } from '@/hooks/useProGate';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
 import { LearningEvents, trackEvent } from '@/lib/analytics/posthog';
@@ -163,7 +164,16 @@ export default function LessonPage() {
     lessonsCompletedToday,
     recordLessonComplete,
     loading: permissionsLoading,
+    lessonAccess,
   } = usePermissions();
+
+  // Gate C (FEATURE_FLAGS.PRO): a lesson in a Pro-locked level opens the paywall
+  // instead of the daily-limit screen. Flag off → lessonAccess never returns 'pro'.
+  const { requirePro, paywall: proPaywall } = useProGate();
+  const lessonProLocked = !permissionsLoading && lessonAccess(lessonId) === 'pro';
+  useEffect(() => {
+    if (lessonProLocked) requirePro('lesson_level', () => {});
+  }, [lessonProLocked, requirePro]);
 
   // Session tracking for coaching
   const { startSession, recordPuzzleResult, endSession: endGameSession } = useGameSession('lesson', user?.id);
@@ -1141,7 +1151,8 @@ export default function LessonPage() {
 
   // Permission gate - check if user can access lessons
   // Only show blocked state AFTER permissions have finished loading
-  if (!permissionsLoading && !canAccessLesson) {
+  // Order (hooks/usePermissions lessonAccess): signup → daily limit → Pro level (Gate C)
+  if (!permissionsLoading && (!canAccessLesson || lessonProLocked)) {
     if (shouldPromptSignup) {
       return (
         <CreateProfileModal
@@ -1149,6 +1160,53 @@ export default function LessonPage() {
           onClose={() => router.push('/')}
           context="lesson-gate"
         />
+      );
+    }
+    if (lessonProLocked) {
+      return (
+        <div className="h-full bg-chess-page text-chess-text flex flex-col overflow-hidden">
+          <div className="bg-chess-bg-light border-b border-white/10 px-4 md:px-6 py-3 flex-shrink-0">
+            <div className="mx-auto w-full max-w-md md:max-w-lg flex items-center justify-between">
+              <button
+                onClick={() => router.push('/')}
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center text-chess-text-muted hover:text-white"
+                aria-label="Back to Learn"
+              >
+                ✕
+              </button>
+              <div className="flex-1" />
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-4">
+            <div className="text-center max-w-md">
+              <div className="flex justify-center mb-4"><BreathingRook size="md" /></div>
+              <h1 className="text-2xl font-bold mb-2">This level is Pro</h1>
+              <p className="text-white/60 mb-6">
+                Levels 1 and 2 are free. Pro opens every level.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => requirePro('lesson_level', () => {})}
+                  className="min-h-[48px] px-8 py-3 font-bold rounded-xl transition-colors"
+                  style={{
+                    backgroundColor: 'var(--color-chess-gold)',
+                    color: '#3b2a00',
+                    boxShadow: '0 4px 0 var(--color-chess-gold-dark)',
+                  }}
+                >
+                  Unlock with Pro
+                </button>
+                <button
+                  onClick={() => router.push('/')}
+                  className="min-h-[44px] px-8 py-3 bg-chess-bg-light text-white/70 font-bold rounded-xl border border-white/10 hover:brightness-110 transition-colors"
+                >
+                  Back to Learn
+                </button>
+              </div>
+            </div>
+          </div>
+          {proPaywall}
+        </div>
       );
     }
     return (

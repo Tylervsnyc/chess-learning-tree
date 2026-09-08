@@ -3,6 +3,9 @@
  *
  * MONETIZATION_ENABLED: When false, hides all premium/patron UI
  * (pricing links, paywall modals, upsell cards). All content is free.
+ * LEGACY — superseded by `FEATURE_FLAGS.PRO` in lib/config/feature-flags.ts
+ * (one Pro across Chess Path + Chess Boxing + Rookie's Revenge). Stays off;
+ * new paid surfaces gate on PRO only.
  */
 export const MONETIZATION_ENABLED = false;
 

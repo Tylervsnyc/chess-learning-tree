@@ -41,6 +41,8 @@ import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import { maia } from '@/lib/maia/maia-adapter';
 import { GameSession, MoveRecord, GameResult, ResultMethod } from '@/lib/game-session';
 import { useUser } from '@/hooks/useUser';
+import { useProGate } from '@/hooks/useProGate';
+import { ProLockedLine } from '@/components/pro/ProLockedLine';
 import { selectByCategory } from '@/lib/speech/priority-queue';
 import { getQuipPool } from '@/lib/quips/load-quip-pool';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
@@ -403,6 +405,9 @@ function evalToWhitePercent(cp: number | null, mate: number | null): number {
 
 export default function PlayRookiePage() {
   const { user, attitudeLevel, setAttitudeLevel, talkativenessLevel, setTalkativenessLevel } = useUser();
+  // Pro (Gate B): Rookie's review words + "Try it" are Pro once FEATURE_FLAGS.PRO
+  // is on. Flag off: isPro is true, requirePro runs the action, paywall is null.
+  const proGate = useProGate();
   const { getMyOpenings } = useOpeningProgress();
   const studiedSlugs = useMemo(() => getMyOpenings().map(o => o.slug), [getMyOpenings]);
   const matchedOpeningRef = useRef<{ slug: string; name: string } | null>(null);
@@ -506,6 +511,8 @@ export default function PlayRookiePage() {
   const [reviewMomentIndex, setReviewMomentIndex] = useState(0);
   const [reviewMoveIndex, setReviewMoveIndex] = useState(0);
   const [reviewText, setReviewText] = useState<string | null>(null);
+  // Pro (Gate B): the current review move's commentary was withheld by the server.
+  const [reviewLocked, setReviewLocked] = useState(false);
   const [reviewArrows, setReviewArrows] = useState<{ startSquare: string; endSquare: string; color: string }[]>([]);
   // Depth-18 evals from the post-game pass — drives the eval graph once they
   // land (the graph shows the quick in-game evals until then).
@@ -518,6 +525,8 @@ export default function PlayRookiePage() {
   const coachCommentaryRef = useRef<Record<string, string>>({}); // "1w" -> text, "1b" -> text
   const coachSummaryRef = useRef<string | null>(null);
   const coachTakeawayRef = useRef<string | null>(null);
+  // Pro (Gate B): the server cut the commentary to the free preview.
+  const coachLockedRef = useRef(false);
   // Bumps each time commentary lands (instant pass, then the deep pass replaces it).
   const [coachReady, setCoachReady] = useState(0);
   const coachStageRef = useRef<'none' | 'instant' | 'deep'>('none');
@@ -1247,6 +1256,7 @@ export default function PlayRookiePage() {
           coachCommentaryRef.current = review.moves;
           coachSummaryRef.current = review.summary;
           coachTakeawayRef.current = review.takeaway;
+          coachLockedRef.current = review.locked;
           setCoachReady(v => v + 1);
           console.log('[coach-review] deep pass ready, moves:', Object.keys(review.moves).length);
         });
@@ -1294,6 +1304,7 @@ export default function PlayRookiePage() {
         coachCommentaryRef.current = review.moves;
         coachSummaryRef.current = review.summary;
         coachTakeawayRef.current = review.takeaway;
+        coachLockedRef.current = review.locked;
         setCoachReady(v => v + 1);
         console.log('[coach-review] ready, moves:', Object.keys(review.moves).length);
       });
@@ -1721,6 +1732,7 @@ export default function PlayRookiePage() {
       setFen(START_FEN);
       setLastMv(null);
       setReviewArrows([]);
+      setReviewLocked(false);
       setReviewText(coachSummaryRef.current || 'Starting position');
       updateEvalBarForPosition(0);
       return;
@@ -1742,6 +1754,11 @@ export default function PlayRookiePage() {
       : (playerColor === 'white' ? 'b' : 'w');
     const commentKey = `${chessMoveNum}${colorKey}`;
     const coachText = coachCommentaryRef.current[commentKey];
+    // No words for this move because the server withheld them (Pro) — arrows
+    // and evals below still render; the text box becomes the locked row.
+    setReviewLocked(
+      FEATURE_FLAGS.PRO && coachLockedRef.current && coachStageRef.current !== 'none' && !coachText,
+    );
 
     // On last move, append takeaway
     let displayText = coachText || null;
@@ -1815,7 +1832,15 @@ export default function PlayRookiePage() {
   }, [coachReady]);
 
   // ── Review branch ("Try it") wiring ──
-  const canBranch = FEATURE_FLAGS.REVIEW_VARIATIONS;
+  // The feature exists behind REVIEW_VARIATIONS; whether THIS user may branch
+  // is Pro (Gate B) once FEATURE_FLAGS.PRO is on. A locked board touch opens
+  // the paywall (fires pro_gate_hit) instead of moving.
+  const variationsOn = FEATURE_FLAGS.REVIEW_VARIATIONS;
+  const canBranch = variationsOn && (proGate.isPro || !FEATURE_FLAGS.PRO);
+  const requirePro = proGate.requirePro;
+  const lockedBranchTap = useCallback(() => {
+    requirePro('variations', () => {});
+  }, [requirePro]);
 
   // Leaving review (Play Again, navigating away) clears the branch; entering
   // review therefore always starts without one.
@@ -1862,15 +1887,22 @@ export default function PlayRookiePage() {
 
   /** Board drop in review: start or extend the branch (queen promotion). */
   const onReviewDrop = useCallback((from: Square, to: Square): boolean => {
-    if (!canBranch) return false;
+    if (!canBranch) {
+      lockedBranchTap();
+      return false;
+    }
     return branch.startOrExtend(from, to);
-  }, [canBranch, branch]);
+  }, [canBranch, branch, lockedBranchTap]);
 
   /** Tap-to-move in review: the side to move owns the pieces (both sides are the user). */
   const onReviewSquareClick = useCallback((square: Square) => {
-    if (!canBranch) return;
     const turn = game.turn();
     const piece = game.get(square);
+    if (!canBranch) {
+      // Only a touch that would have started a move counts as "trying it".
+      if (piece && piece.color === turn) lockedBranchTap();
+      return;
+    }
     if (!selected) {
       if (piece && piece.color === turn) setSelected(square);
       return;
@@ -1883,7 +1915,7 @@ export default function PlayRookiePage() {
       return;
     }
     setSelected(piece && piece.color === turn ? square : null);
-  }, [canBranch, game, selected, branch]);
+  }, [canBranch, game, selected, branch, lockedBranchTap]);
 
   // Best-move arrow for the branch position (instant PV hint, then depth 12).
   const branchArrows = useMemo(() => {
@@ -1971,6 +2003,8 @@ export default function PlayRookiePage() {
     coachCommentaryRef.current = {};
     coachSummaryRef.current = null;
     coachTakeawayRef.current = null;
+    coachLockedRef.current = false;
+    setReviewLocked(false);
     setCoachReady(0);
     coachStageRef.current = 'none';
     setReviewEvals(null);
@@ -2028,6 +2062,8 @@ export default function PlayRookiePage() {
     coachCommentaryRef.current = {};
     coachSummaryRef.current = null;
     coachTakeawayRef.current = null;
+    coachLockedRef.current = false;
+    setReviewLocked(false);
     setCoachReady(0);
     coachStageRef.current = 'none';
     setReviewEvals(null);
@@ -2464,6 +2500,8 @@ export default function PlayRookiePage() {
                       </span>
                     )}
                   </p>
+                ) : reviewLocked ? (
+                  <ProLockedLine onTap={() => requirePro('review', () => {})} />
                 ) : (<>
                 {!coachReady && (
                   <div className="flex-shrink-0">
@@ -2665,7 +2703,7 @@ export default function PlayRookiePage() {
               position: fen,
               boardOrientation: playerColor,
               onPieceDrop: isReview
-                ? (canBranch ? ((args: any) => onReviewDrop(args.sourceSquare as Square, args.targetSquare as Square)) as any : undefined)
+                ? (variationsOn ? ((args: any) => onReviewDrop(args.sourceSquare as Square, args.targetSquare as Square)) as any : undefined)
                 : ((args: any) => {
                 const from = args.sourceSquare as Square;
                 const to = args.targetSquare as Square;
@@ -2677,7 +2715,7 @@ export default function PlayRookiePage() {
                 return doPlayerMove(from, to);
               }) as any,
               onSquareClick: isReview
-                ? (canBranch ? ((args: any) => onReviewSquareClick(args.square as Square)) as any : undefined)
+                ? (variationsOn ? ((args: any) => onReviewSquareClick(args.square as Square)) as any : undefined)
                 : ((args: any) => { startMusicIfEnabled(); onClickSquare(args.square as Square); }) as any,
               squareStyles: sqStyles,
               animationDurationInMs: ANIM_MS,
@@ -2828,14 +2866,18 @@ export default function PlayRookiePage() {
         }
       `}</style>
 
-      {/* Coaching Drawer */}
+      {/* Coaching Drawer. Pro (Gate B): isPremium = !locked — the teaser row
+          only appears when the server withheld Rookie's words (never with the
+          flag off), and it opens the paywall via requirePro('review'). */}
       {showCoaching && coachingScript && (
         <CoachingDrawer
-          script={coachingScript}
+          script={{ ...coachingScript, isPremium: !(FEATURE_FLAGS.PRO && coachLockedRef.current) }}
           onClose={() => setShowCoaching(false)}
+          onPremiumUpsell={() => requirePro('review', () => {})}
           playerName={playerName || undefined}
         />
       )}
+      {proGate.paywall}
 
       {/* Post-game transition screen */}
       {phase === 'gameover' && showActivityComplete && (

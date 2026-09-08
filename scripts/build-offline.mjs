@@ -306,7 +306,13 @@ function copyPuzzlePack(src) {
 }
 
 function injectParams() {
-  for (const { route, expectExisting, code } of PARAM_LAYOUTS) {
+  // A dynamic segment the target dropped (CHESSPATH/CHESSBOXING_ROUTE_DROP)
+  // has no directory left to inject into — its page was pruned and its parent
+  // purged. Skipping it here keeps the stale-allowlist check honest: a route
+  // that IS on the list but has no layout still dies below.
+  const layouts = PARAM_LAYOUTS.filter(({ route }) => TARGET.routes.includes(route));
+  const skipped = PARAM_LAYOUTS.length - layouts.length;
+  for (const { route, expectExisting, code } of layouts) {
     const file = path.join(BUILD, 'app', route, 'layout.tsx');
     const exists = fs.existsSync(file);
 
@@ -328,7 +334,7 @@ function injectParams() {
       fs.writeFileSync(file, code);
     }
   }
-  log(`injected generateStaticParams for ${PARAM_LAYOUTS.length} dynamic segments`);
+  log(`injected generateStaticParams for ${layouts.length} dynamic segments${skipped ? ` (${skipped} dropped by this target)` : ''}`);
 }
 
 /* ------------------------------------------------------------ 4b. env vars */
@@ -366,6 +372,17 @@ function writeEnv() {
       `  Building without them produces a bundle that compiles and then throws on\n` +
       `  every screen. Refusing to ship that.`
     );
+  }
+
+  // Pro (FEATURE_FLAGS.PRO): each iOS app has its own RevenueCat public key
+  // (lib/iap/revenuecat.ts picks it by target). Missing = the paywall's IAP
+  // path is disabled in this bundle, which is fine while PRO is off — warn,
+  // don't fail, so a build never blocks on money plumbing.
+  const rcKeyEnv = TARGET_NAME === 'chesspath'
+    ? 'NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH'
+    : 'NEXT_PUBLIC_REVENUECAT_IOS_KEY';
+  if (!vars[rcKeyEnv]) {
+    log(`WARN: .env.local has no ${rcKeyEnv} — RevenueCat IAP will be disabled in this ${TARGET_NAME} bundle (ok while PRO is off)`);
   }
 
   vars.NEXT_PUBLIC_OFFLINE_BUILD = '1';
@@ -458,10 +475,14 @@ function publish() {
 
 copyTree();
 pruneApp();
-const pack = buildPuzzlePack();
+// The puzzle pack exists for lesson/[lessonId] only; a target without lessons
+// (SLIM_CHESSBOXING_BUNDLE) ships no pack.
+const wantsPack = TARGET.routes.includes('lesson/[lessonId]');
+const pack = wantsPack ? buildPuzzlePack() : null;
 filterDir('public', TARGET.publicAllowlist);
 filterDir('data', DATA_ALLOWLIST);
-copyPuzzlePack(pack);
+if (pack) copyPuzzlePack(pack);
+else log('no lesson route in this target — puzzle pack skipped');
 applyOverrides();
 injectParams();
 writeEnv();

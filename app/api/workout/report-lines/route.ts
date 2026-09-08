@@ -6,6 +6,7 @@ import { getSkillProfile, type ThemeSkill } from '@/lib/skill-profile';
 import { stripLeakedPlaceholders } from '@/lib/speech/sanitize';
 import { ROOKIE_REPORT_MODEL, ROOKIE_REPORT_SYSTEM } from '@/lib/workout/report-voice';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { getProStatus, proLockApplies } from '@/lib/pro/server';
 
 export const maxDuration = 30;
 
@@ -20,7 +21,12 @@ export const maxDuration = 30;
  *
  * Body: { sessionId, misses: [{ puzzleId, rating, themes, solutionSan, failedAtMove,
  *         playedSan, evalPlayed, evalCorrect }] }   (evals in pawns, mate = ±100)
- * Returns: { lines: string[], diagnosis, profile: { weakest, strongest, userLevel } }
+ * Returns: { lines: string[], diagnosis, profile: { weakest, strongest, userLevel }, locked }
+ *
+ * Pro (Gate B, FEATURE_FLAGS.PRO): a non-Pro caller gets Rookie's line for the
+ * FIRST miss only — `lines` is still one slot per miss (the rest empty) and
+ * `locked: true`. The model is asked for one line, so the withheld words are
+ * never written. The diagnosis still reads every miss. Flag off → full report.
  *
  * Guarded by aiGuard (auth + body cap + 20/day per user). ~$0.01 per call.
  */
@@ -85,6 +91,8 @@ export async function POST(req: NextRequest) {
   }
 
   const service = createServiceClient();
+  // Same transport aiGuard just authenticated (cookie or bearer); inert while PRO is off.
+  const locked = await proLockApplies(await getProStatus());
 
   // The session must belong to the caller — the facts are client-supplied,
   // but we never write commentary for someone else's workout.
@@ -130,7 +138,10 @@ export async function POST(req: NextRequest) {
     .map(themeLine)
     .join('; ');
 
-  const prompt = `Today's misses:\n${missText}\n\nTheme accuracy (worst first): ${weak || 'not enough data'}\nRecent trend (right/total, oldest first): ${trend || 'first workout'}\n\nReturn JSON only: {"lines": [one line per miss, in order — say what the played move was TRYING to do and why the answer beats it; if the move wasn't recorded, say what makes the answer hard to see], "diagnosis": "one sentence naming the single habit behind these misses"}`;
+  const linesSpec = locked
+    ? 'exactly ONE line, for miss 1 only — say what the played move was TRYING to do and why the answer beats it; if the move wasn\'t recorded, say what makes the answer hard to see'
+    : 'one line per miss, in order — say what the played move was TRYING to do and why the answer beats it; if the move wasn\'t recorded, say what makes the answer hard to see';
+  const prompt = `Today's misses:\n${missText}\n\nTheme accuracy (worst first): ${weak || 'not enough data'}\nRecent trend (right/total, oldest first): ${trend || 'first workout'}\n\nReturn JSON only: {"lines": [${linesSpec}], "diagnosis": "one sentence naming the single habit behind these misses"}`;
 
   try {
     const res = await anthropic.messages.create({
@@ -153,6 +164,9 @@ export async function POST(req: NextRequest) {
     } catch {
       diagnosis = stripLeakedPlaceholders(text.trim().slice(0, 300));
     }
+    // Free preview keeps only the first miss's line; the rest stay empty slots
+    // so the client's one-line-per-miss contract holds either way.
+    if (locked) lines = lines.slice(0, 1);
     while (lines.length < misses.length) lines.push('');
 
     // getSkillProfile needs 12+ attempts per theme for a signal; new users
@@ -166,6 +180,7 @@ export async function POST(req: NextRequest) {
       lines: lines.slice(0, misses.length),
       diagnosis,
       profile: { weakest: weakestOut.map(slim), strongest: strongestOut.map(slim), userLevel },
+      locked,
     });
   } catch (err) {
     console.error('[report-lines] claude call failed', err);

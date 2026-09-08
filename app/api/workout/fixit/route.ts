@@ -4,6 +4,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import { getSkillProfile } from '@/lib/skill-profile';
 import { buildFixitRecipe, fillFixitRecipe } from '@/lib/workout/fixit-recipe';
+import { isProUser } from '@/lib/pro/server';
 
 /**
  * GET /api/workout/fixit
@@ -13,7 +14,8 @@ import { buildFixitRecipe, fillFixitRecipe } from '@/lib/workout/fixit-recipe';
  * Untimed, unscored — the puzzles are served in the same shape as
  * /api/workout/puzzles plus a `slotLabel` ("Forks that finish the job").
  *
- * 401 not signed in · 404 flag off or no workout yet.
+ * 401 not signed in · 403 { error: 'pro' } Pro-only (FEATURE_FLAGS.PRO on and
+ * the caller is not Pro — Gate B) · 404 flag off or no workout yet.
  */
 
 // Same bounded / time-boxed history read as /api/workout/puzzles — the seen
@@ -47,6 +49,14 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
+  // Fix-It is Rookie's words applied — Pro only once the flag is on. The
+  // profile read runs either way (same client, same RLS); only the answer is
+  // gated, so with PRO off nothing changes.
+  const isPro = await isProUser(supabase, user.id);
+  if (FEATURE_FLAGS.PRO && !isPro) {
+    return NextResponse.json({ error: 'pro' }, { status: 403 });
   }
 
   const { data: session, error: sessionError } = await supabase

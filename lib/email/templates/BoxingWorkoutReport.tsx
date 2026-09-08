@@ -47,7 +47,7 @@ export function BoxingWorkoutReport({
   const hasMisses = wrong > 0;
   const total = correct + wrong;
 
-  const reportUrl = `${appUrl}/workout/report/${sessionId}?${UTM}&utm_content=report`;
+  const reportUrl = `${appUrl}/workout/report?id=${encodeURIComponent(sessionId)}&${UTM}&utm_content=report`;
   const fixitUrl = `${appUrl}/workout/fixit?${UTM}&utm_content=fixit`;
   const workoutUrl = `${appUrl}/workout?${UTM}&utm_content=workout`;
 

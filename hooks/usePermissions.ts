@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from './useUser';
-import { UserTier, UserPermissions, LESSON_LIMITS } from '@/types/permissions';
+import { UserTier, UserPermissions, LessonAccess, LESSON_LIMITS } from '@/types/permissions';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { PRO_FREE_LIMITS } from '@/lib/subscription';
+import { getLevelFromLessonId } from '@/lib/curriculum-registry';
 
 const STORAGE_KEY = 'chess_path_lessons';
 
@@ -51,6 +54,33 @@ function saveLessonData(data: LessonTrackingData): void {
   }
 }
 
+/**
+ * Gate C only, with NO network: is a level behind Pro for this user? Use this
+ * on surfaces that don't need the daily-limit machinery (Learn page, level
+ * tests) — `usePermissions()` fetches /api/progress or /api/anonymous-lessons
+ * on mount, which those pages never needed (perf convention: no new requests
+ * per page). Same rule as usePermissions().isLevelProLocked.
+ */
+export function useLevelProLock() {
+  const { user, profile, loading } = useUser();
+  const tier: UserTier = !user
+    ? 'anonymous'
+    : profile?.is_admin
+      ? 'admin'
+      : profile?.subscription_status === 'premium' || profile?.subscription_status === 'trial'
+        ? 'premium'
+        : 'free';
+  const maxFreeLevel: number | null =
+    FEATURE_FLAGS.PRO && !loading && tier !== 'premium' && tier !== 'admin'
+      ? PRO_FREE_LIMITS.FREE_LESSON_LEVELS
+      : null;
+  const isLevelProLocked = useCallback(
+    (level: number): boolean => maxFreeLevel !== null && level > maxFreeLevel,
+    [maxFreeLevel],
+  );
+  return { isLevelProLocked, maxFreeLevel };
+}
+
 export function usePermissions() {
   const { user, profile, loading: userLoading } = useUser();
   const [lessonData, setLessonData] = useState<LessonTrackingData>(getStoredLessonData);
@@ -68,6 +98,14 @@ export function usePermissions() {
   // Combined loading state - true until both local state and user are loaded
   const isLoading = loading || userLoading;
 
+  // Gate C (Chess Path lesson depth): levels 1..FREE_LESSON_LEVELS are free,
+  // the rest are Pro. ONLY while FEATURE_FLAGS.PRO is on; premium/admin never
+  // locked; while loading → permissive (null) so nothing flashes locked.
+  const maxFreeLevel: number | null =
+    FEATURE_FLAGS.PRO && !isLoading && tier !== 'premium' && tier !== 'admin'
+      ? PRO_FREE_LIMITS.FREE_LESSON_LEVELS
+      : null;
+
   // Calculate permissions
   // IMPORTANT: While loading, we default to permissive values to prevent
   // flash of "blocked" content before auth completes
@@ -82,6 +120,7 @@ export function usePermissions() {
         dailyLessonLimit: null,
         lessonsCompletedToday: 0,
         lessonsRemainingToday: null,
+        maxFreeLevel: null,
         canAccessLesson: true, // Don't block while loading!
         canSkipLevels: true,   // Don't block while loading!
         canAccessAllPuzzles: false,
@@ -97,6 +136,7 @@ export function usePermissions() {
       dailyLessonLimit: null,
       lessonsCompletedToday: data.lessonsCompletedToday,
       lessonsRemainingToday: null,
+      maxFreeLevel,
       canAccessLesson: true,
       canSkipLevels: true,
       canAccessAllPuzzles: true,
@@ -220,14 +260,28 @@ export function usePermissions() {
     });
   }, []);
 
-  // Check if user can access a specific lesson (for future use with level gating)
-  const canAccessLessonById = useCallback((lessonId: string): boolean => {
-    // Admin can access anything
-    if (tier === 'admin') return true;
+  // Is this level behind Pro for THIS user? (false with PRO off, for Pro/admin,
+  // and while loading.) Progression unlocking (useProgress) is a separate axis —
+  // a level can be progression-unlocked AND Pro-locked.
+  const isLevelProLocked = useCallback((level: number): boolean => {
+    return maxFreeLevel !== null && level > maxFreeLevel;
+  }, [maxFreeLevel]);
 
-    // Everyone else follows normal permission rules
-    return permissions.canAccessLesson;
-  }, [tier, permissions.canAccessLesson]);
+  // Why a lesson is or isn't open: signup / daily limit first (existing rules),
+  // then the Pro level gate. 'ok' is the only value that lets the lesson render.
+  const lessonAccess = useCallback((lessonId: string): LessonAccess => {
+    if (tier === 'admin') return 'ok';
+    if (!permissions.canAccessLesson) {
+      return permissions.shouldPromptSignup ? 'signup' : 'daily_limit';
+    }
+    if (isLevelProLocked(getLevelFromLessonId(lessonId))) return 'pro';
+    return 'ok';
+  }, [tier, permissions.canAccessLesson, permissions.shouldPromptSignup, isLevelProLocked]);
+
+  // Check if user can access a specific lesson (boolean view of lessonAccess)
+  const canAccessLessonById = useCallback((lessonId: string): boolean => {
+    return lessonAccess(lessonId) === 'ok';
+  }, [lessonAccess]);
 
   return {
     ...permissions,
@@ -235,5 +289,7 @@ export function usePermissions() {
     recordLessonComplete,
     resetDailyCount,
     canAccessLessonById,
+    lessonAccess,
+    isLevelProLocked,
   };
 }

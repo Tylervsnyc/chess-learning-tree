@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { Chess } from 'chess.js';
+import { getProStatus, proLockApplies } from '@/lib/pro/server';
 
 // The model writes ~30 comments in one shot with thinking on; give it room.
 export const maxDuration = 60;
+
+/**
+ * Pro (Gate B, FEATURE_FLAGS.PRO): engine analysis is free, Rookie's WORDS are
+ * paid. A non-Pro caller (anonymous counts as not Pro) gets the summary plus
+ * comments on the first FREE_COMMENTED_MOVES moves; the takeaway and every
+ * other comment are withheld and the response says so (`locked`,
+ * `lockedCount`). The model is told to write only that much, so the withheld
+ * words are never generated. Flag off → everyone gets everything, as today.
+ */
+const FREE_COMMENTED_MOVES = 3;
 
 const anthropic = new Anthropic();
 
@@ -197,6 +208,9 @@ export async function POST(req: NextRequest) {
 
     const sign: 1 | -1 = playerColor === 'white' ? 1 : -1;
 
+    // Who is asking, and do they get the full review? (Inert while PRO is off.)
+    const locked = await proLockApplies(await getProStatus());
+
     // Resolve everything the engine said into real notation on the real board.
     // The model never sees a board, so it must never have to turn "e4f6" into
     // a move name itself — that produced hallucinated moves like "Exf6".
@@ -244,6 +258,12 @@ export async function POST(req: NextRequest) {
       return `${head}\nBoard before this move (${m.color} to move):\n${asciiBoard(m.fen)}`;
     }).join('\n');
 
+    // The keys whose comments a free caller gets to see (game order).
+    const keyOf = (m: { moveNumber: number; color: 'white' | 'black' }) =>
+      `${m.moveNumber}${m.color === 'white' ? 'w' : 'b'}`;
+    const freeKeys = new Set(enriched.slice(0, FREE_COMMENTED_MOVES).map(keyOf));
+    const lockedCount = locked ? Math.max(0, enriched.length - freeKeys.size) : 0;
+
     const student = playerName ? `${playerName} (the student)` : 'the student';
     const gameContext = `
 GAME: ${student} played ${playerColor} (rating about ${playerElo}) against Rookie (you). Result for the student: ${result}.${openingName ? ` Opening: ${openingName}.` : ''}
@@ -252,6 +272,8 @@ Evals are from the STUDENT's point of view (+ = student better). "best" is the e
 
 MOVES:
 ${moveLines}
+${locked ? `
+FREE PREVIEW: this student is on the free plan. Write "moves" entries ONLY for these keys: ${[...freeKeys].join(', ')} — leave every other move out of the array. Still read the whole game for the "summary". Set "takeaway" to an empty string.` : ''}
 `.trim();
 
     const response = await anthropic.messages.create({
@@ -286,7 +308,10 @@ ${moveLines}
     const outMoves: Record<string, string> = {};
     let rejected = 0;
     for (const m of enriched) {
-      const key = `${m.moveNumber}${m.color === 'white' ? 'w' : 'b'}`;
+      const key = keyOf(m);
+      // Free preview: never ship a comment past the free window, even if the
+      // model wrote one anyway.
+      if (locked && !freeKeys.has(key)) continue;
       const comment = review.moves?.[key];
       if (typeof comment !== 'string' || !comment.trim()) continue;
       const bad = findIllegalMoveName(comment, m.allowed);
@@ -320,7 +345,13 @@ ${moveLines}
       s && !findIllegalMoveName(s, everything) ? shorten(s) : null;
 
     return NextResponse.json({
-      review: { summary: clean(review.summary), moves: outMoves, takeaway: clean(review.takeaway) },
+      review: {
+        summary: clean(review.summary),
+        moves: outMoves,
+        takeaway: locked ? null : clean(review.takeaway),
+        locked,
+        lockedCount,
+      },
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);

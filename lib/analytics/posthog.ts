@@ -1,3 +1,5 @@
+import { IS_CHESSBOXING_APP, IS_CHESSPATH_APP } from '@/lib/config/offline';
+
 // Lazy accessor — reuses the singleton after PostHogProvider initializes it.
 // Avoids pulling posthog-js into every page's initial bundle.
 let _posthog: typeof import('posthog-js').default | null = null;
@@ -95,18 +97,37 @@ export const EloEvents = {
     trackEvent('elo_keep_playing', { mode }),
 };
 
-// Chess Boxing Pro (CHESSBOXING_PRO flag) — buyer metrics for daily-report.ts
+// Pro (PRO flag — one Pro across Chess Path, Chess Boxing, Rookie's Revenge)
+// — buyer metrics for daily-report.ts. Every pro_* event carries `app` so the
+// funnel reads per app: 'chessboxing' / 'chesspath' (the two iOS bundles,
+// build-time constants) or 'web'.
 export type ProLimitKind = 'bout' | 'workout';
 export type ProPlan = 'monthly' | 'yearly';
 export type ProPlatform = 'ios' | 'web';
+export type ProEventApp = 'chessboxing' | 'chesspath' | 'web';
+/** Which app this Pro event fired from — dead branches strip on the web. */
+export function proEventApp(): ProEventApp {
+  if (IS_CHESSPATH_APP) return 'chesspath';
+  if (IS_CHESSBOXING_APP) return 'chessboxing';
+  return 'web';
+}
+const proTrack = (event: string, props?: Record<string, unknown>) =>
+  trackEvent(event, { app: proEventApp(), ...props });
 export const ProEvents = {
-  limitHit: (kind: ProLimitKind) => trackEvent('pro_limit_hit', { kind }),
-  paywallShown: (trigger: string) => trackEvent('pro_paywall_shown', { trigger }),
+  limitHit: (kind: ProLimitKind) => proTrack('pro_limit_hit', { kind }),
+  /** A free user tapped a Pro-only feature (hooks/useProGate `requirePro`). */
+  gateHit: (feature: string) => proTrack('pro_gate_hit', { feature }),
+  paywallShown: (trigger: string) => proTrack('pro_paywall_shown', { trigger }),
+  paywallDismissed: (trigger: string) => proTrack('pro_paywall_dismissed', { trigger }),
   purchaseStarted: (plan: ProPlan, platform: ProPlatform, trigger?: string) =>
-    trackEvent('pro_purchase_started', { plan, platform, trigger }),
+    proTrack('pro_purchase_started', { plan, platform, trigger }),
   purchaseCompleted: (plan: ProPlan, platform: ProPlatform) =>
-    trackEvent('pro_purchase_completed', { plan, platform }),
-  restoreTapped: (platform: ProPlatform) => trackEvent('pro_restore_tapped', { platform }),
+    proTrack('pro_purchase_completed', { plan, platform }),
+  purchaseFailed: (platform: ProPlatform, reason: string) =>
+    proTrack('pro_purchase_failed', { platform, reason }),
+  restoreTapped: (platform: ProPlatform) => proTrack('pro_restore_tapped', { platform }),
+  restoreResult: (platform: ProPlatform, ok: boolean) =>
+    proTrack('pro_restore_result', { platform, ok }),
 };
 
 // Subscription funnel
