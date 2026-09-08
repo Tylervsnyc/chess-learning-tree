@@ -213,4 +213,52 @@ platform :ios do
     fresh = Spaceship::ConnectAPI::Build.get(build_id: build.id)
     UI.success("build v#{fresh.version} nonExemptEncryption=#{fresh.uses_non_exempt_encryption.inspect}")
   end
+
+  desc "Create the App Store version, attach a processed build, set What's New, submit for review (VERSION, BUILD, WHATS_NEW env)"
+  lane :release do
+    ver = ENV.fetch("VERSION")
+    build_no = ENV.fetch("BUILD")
+    whats_new = ENV.fetch("WHATS_NEW")
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 10).find { |b| b.version == build_no }
+    UI.user_error!("build #{build_no} not found") unless build
+    UI.message("build #{build.version} state=#{build.processing_state}")
+    if build.uses_non_exempt_encryption.nil?
+      tf = Spaceship::ConnectAPI::TestFlight::Client.new(token: token)
+      tf.patch("v1/builds/#{build.id}", { data: { id: build.id, type: "builds", attributes: { usesNonExemptEncryption: false } } })
+      UI.success("set export compliance on build #{build_no}")
+    end
+
+    version = app.get_app_store_versions(filter: { versionString: ver }).first
+    if version
+      UI.message("version #{ver} exists state=#{version.app_store_state}")
+    else
+      version = Spaceship::ConnectAPI.post_app_store_version(app_id: app.id, attributes: { platform: "IOS", versionString: ver, releaseType: "AFTER_APPROVAL" }).first
+      UI.success("created version #{ver}")
+    end
+
+    loc = version.get_app_store_version_localizations.find { |l| l.locale == "en-US" }
+    if loc
+      loc.update(attributes: { whatsNew: whats_new })
+    else
+      Spaceship::ConnectAPI.post_app_store_version_localization(app_store_version_id: version.id, attributes: { locale: "en-US", whatsNew: whats_new })
+    end
+    UI.success("What's New set")
+
+    version.select_build(build_id: build.id)
+    UI.success("attached build #{build_no} to #{ver}")
+
+    submission = app.get_ready_review_submission(platform: "IOS", includes: "items") || app.create_review_submission(platform: "IOS")
+    submission.add_app_store_version_to_review_items(app_store_version_id: version.id)
+    submission.submit_for_review
+    fresh = app.get_app_store_versions(filter: { versionString: ver }).first
+    UI.success("SUBMITTED #{ver} (build #{build_no}) — state=#{fresh.app_store_state}")
+  end
 end
