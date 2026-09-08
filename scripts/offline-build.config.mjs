@@ -105,6 +105,7 @@ export const PUBLIC_ALLOWLIST = [
   'achievements',
   'boxing',
   'stockfish',
+  'models',               // Quadrant Fight's self-hosted MoveNet (~4.8 MB); without it the app's camera boot dies with Safari's "Load failed"
   'og',
   'manifest.json',
   'sw.js',
@@ -179,7 +180,7 @@ export const APP_TARGETS = {
     routes: ROUTE_ALLOWLIST.filter((r) => !CHESSPATH_ROUTE_DROP.has(r)),
     appPurge: [...APP_PURGE, 'box', 'workout', 'leaderboard'],
     publicAllowlist: PUBLIC_ALLOWLIST.filter(
-      (e) => e !== 'boxing' && e !== 'audio/combo-coach',
+      (e) => e !== 'boxing' && e !== 'audio/combo-coach' && e !== 'models',
     ),
     overridesDirs: ['offline-overrides', 'offline-overrides-chesspath'],
     outDir: 'capacitor-shell-chesspath',

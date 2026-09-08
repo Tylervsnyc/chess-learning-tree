@@ -249,9 +249,20 @@ export default function QuadrantFight({
         det.catch(() => {}); // observed at the await below
 
         setBootMsg('Starting camera…');
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error('This browser can\'t open the camera here. Camera permission + a non-Safari-private window usually fixes it.');
+        }
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false,
+        }).catch((e: unknown) => {
+          const name = e instanceof Error ? e.name : '';
+          const hint = name === 'NotAllowedError'
+            ? 'Camera permission was denied. Allow the camera for Chess Boxing in Settings, then try again.'
+            : name === 'NotFoundError'
+              ? 'No front camera found.'
+              : 'Camera permission + a non-Safari-private window usually fixes it.';
+          throw new Error(`Couldn't start the camera. ${hint}`);
         });
         if (gen !== genRef.current) { stream.getTracks().forEach((t) => t.stop()); return; }
         const video = videoRef.current!;
@@ -260,7 +271,13 @@ export default function QuadrantFight({
         performance.mark('qf-boot-camera');
 
         setBootMsg('Almost ready…');
-        g.detector = await det;
+        // Camera is up, so anything that fails from here is the pose model —
+        // "Load failed" is Safari's wording for a fetch that never got a
+        // response (offline, or the model files missing from the bundle).
+        g.detector = await det.catch((e: unknown) => {
+          const msg = e instanceof Error ? e.message : String(e);
+          throw new Error(`Couldn't load the pose model (${msg}). Check your connection and try again.`);
+        });
         if (gen !== genRef.current) return;
         performance.mark('qf-boot-model');
 
@@ -823,7 +840,7 @@ export default function QuadrantFight({
         )}
         {phase === 'error' && (
           <div className="absolute inset-0 flex items-center justify-center bg-slate-950/90 p-6 text-center min-h-40">
-            <p className="text-red-400 text-sm">{bootMsg}<br />Camera permission + a non-Safari-private window usually fixes it.</p>
+            <p className="text-red-400 text-sm">{bootMsg}</p>
           </div>
         )}
         {phase === 'ready' && (
