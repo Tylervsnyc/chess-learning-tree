@@ -33,6 +33,7 @@ export const ROUTE_ALLOWLIST = [
   'box/settings',
   'box/onboarding',
   'box/bout',               // Fight — RingHome links here; was missing from the bundle
+  'box/profile',            // Profile tab — was missing from the bundle, so the tab did nothing in the app
   'workout',
   'level-test/[transition]',
   'profile',
@@ -165,7 +166,7 @@ export const ROOT_FILES = [
  * boxing-only UI (see lib/config/offline.ts).
  */
 const CHESSPATH_ROUTE_DROP = new Set([
-  'box', 'box/settings', 'box/onboarding', 'box/bout', 'workout', 'leaderboard',
+  'box', 'box/settings', 'box/onboarding', 'box/bout', 'box/profile', 'workout', 'leaderboard',
 ]);
 
 export const APP_TARGETS = {
