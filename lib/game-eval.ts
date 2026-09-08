@@ -328,7 +328,7 @@ export function extractKeyMoments(
     moments.push({
       type: 'best-move',
       moveNumber: m.moveNumber,
-      title: m.classification === 'brilliant' ? 'Brilliant' : 'Great move',
+      title: m.classification === 'brilliant' ? 'Legendary' : 'Great move',
       fenBefore: fenBefore(bestMove.idx),
       fenAfter: rec.fenAfter,
       moveSan: m.san,
@@ -385,9 +385,18 @@ export function extractKeyMoments(
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-const BRILLIANT_MAX_WP_BEFORE = 80;  // already clearly winning → not brilliant
-const BRILLIANT_MIN_WP_AFTER = 50;   // the sac must leave you at least equal
-const SACRIFICE_MIN_LOSS = 2;        // net material given up (> a pawn)
+// Calibrated against 60 real play-rookie games (1,877 graded player moves) by
+// scripts/calibrate-legendary.ts — target: a Legendary move in ~1 game in 4.
+// The old 80/50 pair fired in 2% of games, because against Rookie you're
+// usually already far ahead by the time you find a sacrifice, and the
+// "not already winning" gate threw those out.
+const BRILLIANT_MAX_WP_BEFORE = 92;  // already crushing → not legendary
+const BRILLIANT_MIN_WP_AFTER = 45;   // the sac must leave you roughly equal
+// Legendary tolerates a slightly looser "best move" than "!" does, but stays
+// inside INACCURACY_THRESHOLD (5) — a move can never be Legendary AND an
+// inaccuracy.
+const BRILLIANT_MAX_DELTA = 5;
+const SACRIFICE_MIN_LOSS = 2;        // net material given up (a real piece, not a pawn)
 
 export interface BrilliantInput {
   fenBefore: string;
@@ -415,17 +424,19 @@ function sanToSquare(san: string): string | null {
  *
  * For every legal opponent capture of a mover's NON-pawn piece: material for
  * the mover = (what the move itself captured) − (victim) + (attacker, if the
- * mover can recapture on that square). Sacrifice = the worst case for the
- * mover is at least SACRIFICE_MIN_LOSS below where he stood before the move.
- * A plain equal trade (they take, you take back the same value) is not a sac.
+ * mover can recapture on that square). Returns how far the worst case leaves
+ * the mover BELOW where he stood before the move — so 0 is a clean trade and
+ * 3 means a piece handed over. null = nothing to capture, or an unparseable
+ * position. Callers compare it against SACRIFICE_MIN_LOSS; the calibration
+ * script sweeps that threshold, which is why the raw number is exported.
  */
-export function isSacrifice(fenBefore: string, fenAfter: string): boolean {
+export function sacrificeNetLoss(fenBefore: string, fenAfter: string): number | null {
   let before: Chess, after: Chess;
   try {
     before = new Chess(fenBefore);
     after = new Chess(fenAfter);
   } catch {
-    return false;
+    return null;
   }
   const mover = before.turn();
   const count = (c: Chess, color: 'w' | 'b') =>
@@ -447,8 +458,14 @@ export function isSacrifice(fenBefore: string, fenAfter: string): boolean {
     const net = materialAfterMove - victim + (canRecapture ? attacker : 0);
     worst = Math.min(worst, net);
   }
-  if (worst === Infinity) return false;
-  return materialBefore - worst >= SACRIFICE_MIN_LOSS;
+  if (worst === Infinity) return null;
+  return materialBefore - worst;
+}
+
+/** Did this move give up at least SACRIFICE_MIN_LOSS of material? */
+export function isSacrifice(fenBefore: string, fenAfter: string): boolean {
+  const loss = sacrificeNetLoss(fenBefore, fenAfter);
+  return loss !== null && loss >= SACRIFICE_MIN_LOSS;
 }
 
 /**
@@ -460,7 +477,7 @@ export function isBrilliant(input: BrilliantInput): boolean {
   const { fenBefore, fenAfter, san, winPercentDelta, winPercentBefore, winPercentAfter, evalBefore, prevSan } = input;
 
   // 1. Best or near-best
-  if (winPercentDelta > GREAT_MOVE_THRESHOLD) return false;
+  if (winPercentDelta > BRILLIANT_MAX_DELTA) return false;
 
   // 3. Not already crushing
   if (winPercentBefore >= BRILLIANT_MAX_WP_BEFORE) return false;

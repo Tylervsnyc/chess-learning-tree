@@ -55,7 +55,7 @@ export const BADGE_SPECS: Record<MoveClassification, BadgeSpec> = {
   },
   brilliant: {
     glyph: '!!',
-    label: 'Brilliant',
+    label: 'Legendary',
     circle: '#06b6d4',
     text: '#ffffff',
     tint: 'rgba(6, 182, 212, 0.32)',

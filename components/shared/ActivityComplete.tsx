@@ -27,12 +27,26 @@ import { EloEvents } from '@/lib/analytics/posthog'
 import { maybeRequestReview } from '@/lib/native/review'
 import { ChessPathEloGraph } from '@/components/profile/ChessPathEloGraph'
 import { chessPathEloSeries, chessPathToday, chessPathSessionSeries, chessPathSession, type ChessPathPoint } from '@/lib/elo/chess-path-elo'
+import { BADGE_SPECS } from '@/lib/review/move-badges'
 
 // ═══════════════════════════════════════════
 // ACTIVITY COMPLETE — unified post-activity screen
 // ═══════════════════════════════════════════
 
 export type ActivitySource = 'play' | 'daily' | 'path' | 'opening'
+
+/**
+ * Post-game move breakdown (play only). Only the good stuff — the finish
+ * screen celebrates, the review is where mistakes get looked at.
+ *
+ * The counts come straight off the GameAnalysis /play already builds at game
+ * end from the evals collected during the game — no extra engine pass, so the
+ * reels always have a real number to land on.
+ */
+export interface MoveStats {
+  legendary: number
+  great: number
+}
 
 export interface ActivityCompleteProps {
   source: ActivitySource
@@ -44,6 +58,9 @@ export interface ActivityCompleteProps {
 
   // Outcome (play)
   outcome?: 'win' | 'loss' | 'draw' | 'resign'
+
+  /** Per-classification move counts (play). Renders the chess.com-style tile row. */
+  moveStats?: MoveStats | null
 
   // Context
   activityName?: string
@@ -95,12 +112,168 @@ function createQuipBags() {
   return bags
 }
 
+// ═══════════════════════════════════════════
+// MOVE STAT TILES — the good stuff, on slot-machine reels
+//
+// Two reels spin on arrival and land one at a time, Great first and Legendary
+// last, so the rare one carries the suspense. Glyphs come from BADGE_SPECS so
+// a tile can never disagree with the badge the review board draws on the
+// square; the Legendary tile then gets its own gold treatment on top.
+// ═══════════════════════════════════════════
+
+const DIGIT_H = 46
+const SPIN_EASE = 'cubic-bezier(0.15, 0.9, 0.25, 1)'
+/** Great lands first; Legendary keeps spinning after it. */
+const GREAT_SPIN_MS = 1150
+const LEGENDARY_SPIN_MS = 2000
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
+  return reduced
+}
+
+/**
+ * One reel: a strip of random digits ending on the true value, translated up
+ * with a hard ease-out so it decelerates into its landing like a real reel.
+ */
+function CountReel({
+  value, cells, durationMs, onLand,
+}: { value: number; cells: number; durationMs: number; onLand: () => void }) {
+  const reduced = usePrefersReducedMotion()
+  const [rolled, setRolled] = useState(false)
+  const landRef = useRef(onLand)
+  landRef.current = onLand
+
+  const strip = useMemo(
+    () => [...Array.from({ length: cells }, () => Math.floor(Math.random() * 10)), value],
+    [cells, value],
+  )
+
+  useEffect(() => {
+    if (reduced) {
+      landRef.current()
+      return
+    }
+    // Two frames: the first paints the strip at offset 0, the second flips the
+    // transform so the transition actually runs.
+    let raf2 = 0
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setRolled(true))
+    })
+    const timer = setTimeout(() => landRef.current(), durationMs)
+    return () => {
+      cancelAnimationFrame(raf1)
+      cancelAnimationFrame(raf2)
+      clearTimeout(timer)
+    }
+  }, [reduced, durationMs])
+
+  if (reduced) {
+    return <span className="block tabular-nums" style={{ height: DIGIT_H, lineHeight: `${DIGIT_H}px` }}>{value}</span>
+  }
+
+  return (
+    <span className="block overflow-hidden" style={{ height: DIGIT_H }}>
+      <span
+        className="block"
+        style={{
+          transform: `translateY(-${(rolled ? strip.length - 1 : 0) * DIGIT_H}px)`,
+          transition: `transform ${durationMs}ms ${SPIN_EASE}`,
+        }}
+      >
+        {strip.map((d, i) => (
+          <span key={i} className="block tabular-nums" style={{ height: DIGIT_H, lineHeight: `${DIGIT_H}px` }}>
+            {i === strip.length - 1 ? value : d}
+          </span>
+        ))}
+      </span>
+    </span>
+  )
+}
+
+/**
+ * Legendary's own gold: a metallic ramp with a light top and a deep amber
+ * bottom, deliberately unlike the flat two-stop yellow the Play/Learn buttons
+ * use — the tile shouldn't read as another button.
+ */
+const LEGENDARY_GOLD =
+  'linear-gradient(146deg,#FFFDF0 0%,#FFEDAE 16%,#F8C63F 44%,#DD9709 70%,#FFE08A 100%)'
+
+function StatTile({
+  kind, count, durationMs, cells,
+}: { kind: 'great' | 'legendary'; count: number; durationMs: number; cells: number }) {
+  const [landed, setLanded] = useState(false)
+  const onLand = useCallback(() => setLanded(true), [])
+  const gold = kind === 'legendary'
+  const spec = BADGE_SPECS[gold ? 'brilliant' : 'great']
+  // Only a tile that actually scored lights up — a landed 0 stays quiet.
+  const lit = landed && count > 0
+  const goldLit = gold && lit
+
+  return (
+    <div
+      className={[
+        'relative flex-1 overflow-hidden rounded-2xl transition-colors duration-300',
+        landed ? 'animate-stat-land' : '',
+        goldLit ? 'gold-glow gold-sheen' : '',
+      ].filter(Boolean).join(' ')}
+      style={{ background: goldLit ? LEGENDARY_GOLD : '#f0f4f8' }}
+    >
+      {/* The number owns the tile; the badge and label share one compact row
+          underneath, so there's no dead air in the middle. */}
+      <div className="flex flex-col items-center justify-center px-2 py-3">
+        <div
+          className="font-black leading-none"
+          style={{ fontSize: 42, color: goldLit ? '#5A3A00' : 'var(--color-chess-text)' }}
+        >
+          <CountReel value={count} cells={cells} durationMs={durationMs} onLand={onLand} />
+        </div>
+        <div className="mt-1 flex items-center gap-1.5">
+          <span
+            className="flex shrink-0 items-center justify-center rounded-full text-[9px] font-black leading-none"
+            style={{
+              width: 18,
+              height: 18,
+              backgroundColor: lit ? spec.circle : '#c7d2dd',
+              color: lit ? spec.text : '#ffffff',
+              boxShadow: goldLit ? '0 0 0 1.5px rgba(255,255,255,0.7)' : undefined,
+            }}
+          >
+            {spec.glyph}
+          </span>
+          <span
+            className="text-[10px] font-black uppercase leading-none tracking-wider"
+            style={{ color: goldLit ? '#6B4400' : lit ? spec.circle : '#8a9199' }}
+          >
+            {gold ? 'Legendary' : 'Great'}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MoveStatRow({ stats }: { stats: MoveStats }) {
+  return (
+    <div className="mb-4 flex w-full gap-2">
+      {/* Great settles first so the gold one lands last. */}
+      <StatTile kind="great" count={stats.great} durationMs={GREAT_SPIN_MS} cells={14} />
+      <StatTile kind="legendary" count={stats.legendary} durationMs={LEGENDARY_SPIN_MS} cells={24} />
+    </div>
+  )
+}
+
 export function ActivityComplete({
   source,
   mode,
   correctCount,
   totalCount = 6,
   outcome,
+  moveStats,
   activityName,
   playerName,
   accentColor,
@@ -538,10 +711,13 @@ export function ActivityComplete({
           <div className="flex flex-col items-center">
             <div
               onPointerDown={handleInteraction}
-              className="relative my-1 flex items-center justify-center overflow-hidden"
-              style={{ width: 180, height: 180 }}
+              className="finish-rook relative my-1 flex items-center justify-center overflow-hidden"
             >
-              <InteractiveRook mode={interactiveMode} blockSize={24} />
+              {/* Own wrapper for the scale: InteractiveRook sets its own inline
+                  transform, which an outside stylesheet rule can't beat. */}
+              <div className="finish-rook-scale">
+                <InteractiveRook mode={interactiveMode} blockSize={24} />
+              </div>
             </div>
           </div>
         )}
@@ -566,6 +742,9 @@ export function ActivityComplete({
           </div>
         </div>
         )}
+
+        {/* ─── Move breakdown (play) ─── */}
+        {source === 'play' && moveStats && <MoveStatRow stats={moveStats} />}
 
         {/* ─── Chess Path ELO — the rising "days of effort" line (CHE-370) ─── */}
         {chartIntent && chartLoading && (
@@ -659,6 +838,26 @@ export function ActivityComplete({
               </ActionButton>
             </>
           ) : (
+            source === 'play' && mode === 'dismissible' && onDismiss ? (
+              /* Play: the review IS the payoff (chess.com puts Game Review
+                 first too), so it's the big button and Continue steps down. */
+              <>
+                <ActionButton color="green" size="lg" onClick={onDismiss} className="w-full">
+                  Review Game
+                </ActionButton>
+                {/* Blue, not gold, even on a win: gold now means Legendary,
+                    and the sheen only reads as special if nothing else on the
+                    screen is competing with it. */}
+                <ActionButton
+                  color={accentColor ? 'orange' : 'blue'}
+                  size="md"
+                  onClick={handleContinue}
+                  className="w-full"
+                >
+                  Continue
+                </ActionButton>
+              </>
+            ) : (
             <>
               <ActionButton
                 color={accentColor ? 'orange' : (isPerfect || isWin ? 'gold' : 'green')}
@@ -670,11 +869,12 @@ export function ActivityComplete({
               </ActionButton>
 
               {mode === 'dismissible' && onDismiss && (
-                <ActionButton color={source === 'play' ? 'blue' : source === 'daily' ? 'orange' : 'green'} size="md" onClick={onDismiss} className="w-full">
-                  {source === 'play' ? 'Review Game' : 'Review Puzzles'}
+                <ActionButton color={source === 'daily' ? 'orange' : 'green'} size="md" onClick={onDismiss} className="w-full">
+                  Review Puzzles
                 </ActionButton>
               )}
             </>
+            )
           )}
 
           {/* ─── Daily Workout: 2-part button ─── */}

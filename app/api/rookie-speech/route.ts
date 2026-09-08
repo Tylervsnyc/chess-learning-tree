@@ -108,7 +108,7 @@ BANNED PATTERNS (never use these):
       if (gameSummary) {
         facts.push(`Result: ${gameSummary.result} in ${gameSummary.moveCount} moves.`);
         if (gameSummary.openingName) facts.push(`Opening: ${gameSummary.openingName}.`);
-        if (gameSummary.brilliantMoves > 0) facts.push(`Brilliant moves: ${gameSummary.brilliantMoves}.`);
+        if (gameSummary.brilliantMoves > 0) facts.push(`Legendary moves: ${gameSummary.brilliantMoves}.`);
         if (gameSummary.keyMoments) facts.push(`Key moments: ${gameSummary.keyMoments}`);
       }
 

@@ -60,7 +60,7 @@ function evalSign(cp: number | null, mate: number | null): number {
 
 function getClassificationLabel(cls: MoveAnalysis['classification']): string | null {
   switch (cls) {
-    case 'brilliant': return 'Brilliant';
+    case 'brilliant': return 'Legendary';
     case 'great': return 'Good move';
     case 'blunder': return 'Blunder';
     case 'mistake': return 'Mistake';

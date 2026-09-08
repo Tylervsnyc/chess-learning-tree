@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ActivityComplete, type ActivitySource } from '@/components/shared/ActivityComplete'
+import { ActivityComplete, type ActivitySource, type MoveStats } from '@/components/shared/ActivityComplete'
 import { warmupAudio } from '@/lib/sounds'
 
 type Scenario = {
@@ -13,6 +13,7 @@ type Scenario = {
   outcome?: 'win' | 'loss' | 'draw' | 'resign'
   activityName?: string
   accentColor?: string
+  moveStats?: MoveStats
 }
 
 const SCENARIOS: Scenario[] = [
@@ -22,9 +23,11 @@ const SCENARIOS: Scenario[] = [
   { label: 'Opening - Complete', source: 'opening', mode: 'terminal', activityName: 'The Italian Game: Main Ideas', accentColor: '#FF9600' },
   { label: 'Daily - Good (18/22)', source: 'daily', mode: 'dismissible', correctCount: 18, totalCount: 22 },
   { label: 'Daily - Perfect (22/22)', source: 'daily', mode: 'dismissible', correctCount: 22, totalCount: 22 },
-  { label: 'Play - Win', source: 'play', mode: 'dismissible', outcome: 'win' },
-  { label: 'Play - Loss', source: 'play', mode: 'dismissible', outcome: 'loss' },
-  { label: 'Play - Draw', source: 'play', mode: 'dismissible', outcome: 'draw' },
+  { label: 'Play - Win', source: 'play', mode: 'dismissible', outcome: 'win', moveStats: { legendary: 2, great: 5 } },
+  { label: 'Play - Win (big haul)', source: 'play', mode: 'dismissible', outcome: 'win', moveStats: { legendary: 4, great: 12 } },
+  { label: 'Play - Loss (no legendary)', source: 'play', mode: 'dismissible', outcome: 'loss', moveStats: { legendary: 0, great: 1 } },
+  { label: 'Play - Draw (nothing landed)', source: 'play', mode: 'dismissible', outcome: 'draw', moveStats: { legendary: 0, great: 0 } },
+  { label: 'Play - Win (no analysis)', source: 'play', mode: 'dismissible', outcome: 'win' },
 ]
 
 export default function ActivityCompleteTestPage() {
@@ -53,6 +56,7 @@ export default function ActivityCompleteTestPage() {
           correctCount={active.correctCount}
           totalCount={active.totalCount}
           outcome={active.outcome}
+          moveStats={active.moveStats}
           activityName={active.activityName}
           accentColor={active.accentColor}
           playerName="Tyler"
@@ -64,9 +68,9 @@ export default function ActivityCompleteTestPage() {
             title: 'Chess Path',
             text: 'I completed a lesson on Chess Path!',
           }}
-          onContinue={() => { setActive(null); alert('Continue clicked') }}
-          onDismiss={active.mode === 'dismissible' ? () => { setActive(null); alert('Dismissed — would show review') } : undefined}
-          onRetry={active.correctCount !== undefined && active.correctCount <= 3 ? () => { setActive(null); alert('Retry clicked') } : undefined}
+          onContinue={() => { setActive(null); console.log('[test] Continue clicked') }}
+          onDismiss={active.mode === 'dismissible' ? () => { setActive(null); console.log('[test] Dismissed — would show review') } : undefined}
+          onRetry={active.correctCount !== undefined && active.correctCount <= 3 ? () => { setActive(null); console.log('[test] Retry clicked') } : undefined}
         />
       )}
     </div>

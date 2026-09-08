@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
         `Accuracy: ${Math.round(summary.playerAccuracy)}%.`,
         summary.blunders > 0 ? `Blunders: ${summary.blunders}.` : null,
         summary.mistakes > 0 ? `Mistakes: ${summary.mistakes}.` : null,
-        summary.brilliantMoves > 0 ? `Brilliant moves: ${summary.brilliantMoves}.` : null,
+        summary.brilliantMoves > 0 ? `Legendary moves: ${summary.brilliantMoves}.` : null,
         summary.primaryWeakness ? `Key moments: ${summary.primaryWeakness}` : null,
         summary.rookieOpeningPlayed ? `Rookie played the ${summary.rookieOpeningPlayed} from her opening book.` : null,
         summary.deviation ? `Opening deviation: ${summary.deviation}` : null,

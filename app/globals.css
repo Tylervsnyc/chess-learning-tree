@@ -413,3 +413,82 @@ body {
 }
 @keyframes foil-shift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 @keyframes foil-sweep { 0%{transform:translateX(-100%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
+
+/* ─── Post-game stat tiles (ActivityComplete) ─────────────────────────────
+   Slot-machine reels land one at a time, then the Legendary tile lights up.
+   Keyframes live here (not inline) so prefers-reduced-motion can kill them
+   in one place. */
+
+@keyframes statLand {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+.animate-stat-land { animation: statLand 420ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* A narrow, bright glint travelling across the Legendary tile — a highlight
+   sliding over metal, not the flat wash the gold Play button has. */
+@keyframes goldSheen {
+  0%        { transform: translateX(-220%) skewX(-24deg); opacity: 0; }
+  5%        { opacity: 1; }
+  30%       { opacity: 1; }
+  45%, 100% { transform: translateX(420%) skewX(-24deg); opacity: 0; }
+}
+.gold-sheen::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 26%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+  animation: goldSheen 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Carries the metallic bevel as well as the pulse: an animated box-shadow
+   replaces any static one, so the inset edges have to live in the keyframes. */
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.90),
+      inset 0 -3px 8px rgba(150,95,0,0.30),
+      0 0 0 1px rgba(214,150,20,0.55),
+      0 2px 10px rgba(222,150,10,0.32);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.95),
+      inset 0 -3px 8px rgba(150,95,0,0.34),
+      0 0 0 1px rgba(214,150,20,0.80),
+      0 5px 22px rgba(222,150,10,0.55);
+  }
+}
+.gold-glow { animation: goldGlow 2.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stat-land,
+  .gold-sheen::after,
+  .gold-glow { animation: none; }
+}
+
+/* Finish-screen rook. The popup is tall (header + rook + bubble + stat tiles +
+   three button rows); below ~860px of viewport the primary button starts
+   falling under the fold, so the rook gives up space first. Scaling the
+   rendered result rather than InteractiveRook's blockSize keeps the block
+   grid on integer math — see the BreathingRook spacing fix. */
+.finish-rook {
+  width: 180px;
+  height: 180px;
+}
+.finish-rook-scale {
+  transform-origin: center;
+}
+@media (max-height: 860px) {
+  .finish-rook { width: 128px; height: 128px; }
+  .finish-rook-scale { transform: scale(0.78); }
+}
+@media (max-height: 700px) {
+  .finish-rook { width: 96px; height: 96px; }
+  .finish-rook-scale { transform: scale(0.58); }
+}

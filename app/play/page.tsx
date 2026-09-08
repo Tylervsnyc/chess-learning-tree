@@ -2432,42 +2432,6 @@ export default function PlayRookiePage() {
   // ════════════════════════════════
   // ANALYSIS SUMMARY — move classification + accuracy
   // ════════════════════════════════
-  const AnalysisSummary = ({ analysis }: { analysis: GameAnalysis }) => {
-    const hasEvals = analysis.playerMoveCount > 0;
-    const acc = Math.round(analysis.playerAccuracy);
-    const accColor = acc >= 80 ? 'text-chess-green' : acc >= 60 ? 'text-amber-400' : 'text-red-400';
-
-    return (
-      <div className="bg-chess-surface rounded-xl px-3 py-2 text-left space-y-1.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-chess-text-muted">Your Accuracy</span>
-          {hasEvals ? (
-            <span className={`text-lg font-black ${accColor}`}>{acc}%</span>
-          ) : (
-            <span className="text-xs font-semibold text-chess-text-faint">Unavailable</span>
-          )}
-        </div>
-        <div className="flex items-center gap-3 text-[10px] font-bold">
-          {analysis.brilliantMoves > 0 && (
-            <span className="text-cyan-400">{analysis.brilliantMoves} brilliant</span>
-          )}
-          {analysis.greatMoves > 0 && (
-            <span className="text-chess-green">{analysis.greatMoves} great</span>
-          )}
-          {analysis.inaccuracies > 0 && (
-            <span className="text-amber-400">{analysis.inaccuracies} inaccuracy</span>
-          )}
-          {analysis.mistakes > 0 && (
-            <span className="text-orange-400">{analysis.mistakes} mistake</span>
-          )}
-          {analysis.blunders > 0 && (
-            <span className="text-red-400">{analysis.blunders} blunder</span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   // ════════════════════════════════
   // GAME SCREEN (playing, gameover, review)
   // ════════════════════════════════
@@ -2878,6 +2842,10 @@ export default function PlayRookiePage() {
         <ActivityComplete
           source="play"
           mode="dismissible"
+          moveStats={postGame.analysis ? {
+            legendary: postGame.analysis.brilliantMoves,
+            great: postGame.analysis.greatMoves,
+          } : null}
           outcome={
             gameResult === 'You win!' ? 'win'
               : gameResult === 'Rookie wins!' ? 'loss'
