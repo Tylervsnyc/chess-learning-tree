@@ -120,6 +120,7 @@ export const PUBLIC_ALLOWLIST = [
   'stockfish',
   'models',               // Quadrant Fight's self-hosted MoveNet (~4.8 MB); without it the app's camera boot dies with Safari's "Load failed"
   'og',
+  'family',               // App Store icons for the Your Chess strip + cross-promo lines (3 small WebPs)
   'manifest.json',
   'sw.js',
   'rookie-worker.js',
