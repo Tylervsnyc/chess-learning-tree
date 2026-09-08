@@ -17,6 +17,7 @@
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { useEffect, type ReactNode } from 'react';
 import { StreakComplete } from '@/components/shared/StreakComplete';
+import { RevengeMoment } from '@/components/shared/FamilyMoment';
 import { maybeRequestReview } from '@/lib/native/review';
 import { playBoxingBell, playButtonClick } from '@/lib/sounds';
 import { CardRaysHero, HERO_DONE_MS } from './CardRaysHero';
@@ -177,6 +178,12 @@ export function FightResultCard(p: Props) {
               p.showLeaderboard && <Btn onClick={p.onLeaderboard} green>{p.leaderboardLabel}</Btn>
             )}
             <Btn onClick={p.onDone} blue>Done</Btn>
+          </Land>
+
+          {/* Day done → Rookie's Revenge. Sits under the actions (the streak
+              slot above is the celebration; this must never outrank a CTA). */}
+          <Land delay={d + 0.75} className="mt-1">
+            <RevengeMoment tone="light" />
           </Land>
         </div>
       </div>

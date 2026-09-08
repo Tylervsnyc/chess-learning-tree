@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { fireConfetti } from '@/lib/confetti';
 import RookieCampfire from './RookieCampfire';
 import { pickCelebrationLine, isMilestone } from '@/lib/daily-workout/celebration-lines';
+import { RevengeMoment } from '@/components/shared/FamilyMoment';
 
 interface DailyWorkoutCelebrationProps {
   /** Final streak number after today is counted. */
@@ -171,6 +172,9 @@ export function DailyWorkoutCelebration({ streak, open, onClose, onShare }: Dail
             Keep going
           </button>
         </div>
+
+        {/* Day done → Rookie's Revenge. Under the CTAs, never above them. */}
+        <RevengeMoment tone="light" className="mt-2 w-full" />
       </div>
     </div>
   );

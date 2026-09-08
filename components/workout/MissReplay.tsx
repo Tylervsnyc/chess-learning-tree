@@ -39,6 +39,7 @@ import {
 } from '@/lib/sounds';
 import type { MissAnalysis } from '@/hooks/useMissAnalysis';
 import { ProLockedLine } from '@/components/pro/ProLockedLine';
+import { LearnWhyMoment } from '@/components/shared/FamilyMoment';
 
 type Arrow = { startSquare: string; endSquare: string; color: string };
 type Step = { fen: string; san: string; arrow: Arrow | null; sound: 'move' | 'capture' | 'correct' | 'mate' };
@@ -262,6 +263,11 @@ export function MissReplay({ analysis, line, lineLoading, locked = false, onUnlo
                 <p className="text-sm text-white/60">Rookie is speechless on this one.</p>
               )}
             </div>
+
+            {/* Cross-app moment: the lesson that teaches this miss's theme,
+                in Chess Path. Hidden while Rookie's line is paywalled so the
+                two prompts never stack. */}
+            {!locked && <LearnWhyMoment themes={analysis.themes} tone="dark" />}
 
             <div className="flex items-center justify-center gap-4">
               {steps.length > 0 && (
