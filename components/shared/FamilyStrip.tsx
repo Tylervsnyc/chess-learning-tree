@@ -85,11 +85,27 @@ export function FamilyStrip({ streak, elo, loading, signedIn, tone = 'light' }: 
             key={app.id}
             type="button"
             onClick={() => openFamilyApp(app.id)}
-            className={`min-h-[56px] min-w-0 rounded-xl px-3 py-2 text-left transition-colors tap-highlight ${tile}`}
+            className={`flex min-h-[56px] min-w-0 items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors tap-highlight ${tile}`}
           >
-            <span className="block truncate text-sm font-extrabold leading-tight">{app.name}</span>
-            <span className={`mt-0.5 block text-[11px] font-semibold leading-snug ${label}`}>
-              {HOOKS[app.id]}
+            {/* The real App Store icon, rounded like iOS draws it, so the tile
+                reads as "an app you can open", not a link. Plain <img>: the
+                offline bundles are static exports with no image optimizer. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/family/${app.id}.webp`}
+              alt=""
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0 rounded-[10px] shadow-sm ring-1 ring-black/10"
+            />
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-extrabold leading-tight">{app.name}</span>
+              <span className={`mt-0.5 block text-[11px] font-semibold leading-snug ${label}`}>
+                {HOOKS[app.id]}
+              </span>
+              <span className={`mt-0.5 block text-[10px] font-bold uppercase tracking-wide ${label}`}>
+                Open app
+              </span>
             </span>
           </button>
         ))}
