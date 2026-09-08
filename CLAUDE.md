@@ -106,30 +106,26 @@ Read RULES.md lines {start}-{end} (§{number} {name}) — use offset/limit, not 
 
 ## RULES.md Section Index (line numbers)
 
-Use `offset` and `limit` to read only the section you need — never read the full 2,300-line file.
+Use `offset` and `limit` to read only the section you need — never read the full file. (Index regenerated 2026-09-08; regenerate with `grep -n "^## [0-9]" RULES.md` when sections move.)
 
 ```
-§1  User Types           L57    §16 Header              L589   §31 Share Card (Daily)  L1560
-§2  Lesson Unlocking     L85    §17 Lesson Page         L674   §32 Share Card (Lesson) L1656
-§3  Level Unlocking      L127   §18 Puzzle Interaction  L1020  §33 SEO & Marketing     L1717
-§4  Nav After Complete   L143   §19 Sounds              L1113  §34 Daily Maintenance    L1810
-§5  Scroll Behavior      L160   §20 User ELO            L1136  §35 Payment Recovery     L1852
-§6  Naming Conventions   L268   §21 Analytics           L1144  §36 Revenue Dashboard    L1879
-§7  Daily Limits         L290   §22 Feature Flags       L1173  §37 Paywall Analytics    L1905
-§8  Premium Prompts      L308   §23 Database Tables     L1207  §38 Dynamic Pricing      L1930
-§9  Admin Users          L322   §24 Puzzle Selection    L1265  §39 Ad Placement         L1960
-§10 Data Storage         L337   §25 Quip System         L1279  §40 Cron Schedule        L1992
-§11 Streaks              L350   §26 Quip Guidelines     L1386  §41 Breathing Rook       L2047
-§12 Daily Rook (ARCH)    L369   §27 Lesson Naming       L1427  §42 Admin Dashboard      L2090
-§13 Leaderboard          L489   §28 Intro Messages      L1457  §43 Design System        L2174
-§14 Level Tests          L516   §29 New Levels Checklist L1471 §44 Daily Puzzle Video   L2264
-                                                              §45 Opening Lessons      L2415
-                                                              §46 Social Funnel (PAUSED) L2449
-                                                              §47 Welcome Funnel       L2538
-                                                              §48 Rookie Play Engine   L2623
-                                                              §49 Rookie's Run         L2669
-§15 Pages                L556   §30 Work In Progress    L1519   §50 Responsive Design   L2832
-                                                              §51 Premove              L2908
+§1  User Types              L57     §18 Puzzle Interaction      L1036   §35 Failed Payment Recovery L1910
+§2  Lesson Unlocking        L85     §19 Sounds                  L1129   §36 Revenue Dashboard       L1937
+§3  Level Unlocking         L130    §20 User ELO                L1152   §37 Paywall Analytics       L1963
+§4  Navigation After Lesson…L149    §21 Analytics (PostHog)     L1184   §38 Dynamic Pricing         L1988
+§5  Scroll Behavior on /    L166    §22 Feature Flags           L1213   §39 Ad Placement            L2018
+§6  Naming Conventions      L274    §23 Database Tables         L1249   §40 Cron Schedule           L2050
+§7  Daily Limits            L296    §24 Puzzle Selection        L1323   §41 Loading Indicator — Bre…L2109
+§8  Premium & Signup PromptsL316    §25 Quip System             L1337   §42 Admin Dashboard         L2152
+§9  Admin Users             L335    §26 Quip Content Guidelines L1444   §43 Design System ComplianceL2236
+§10 Data Storage            L350    §27 Lesson/Level/Block Nami…L1485   §44 Daily Puzzle Video      L2326
+§11 Streaks                 L363    §28 Intro Messages          L1515   §45 Opening Lessons         L2572
+§12 The Daily Rook          L385    §29 Adding New Levels Check…L1529   §46 Social Media Sales Funn…L2606
+§13 Leaderboard             L505    §30 Work In Progress (WIP)  L1577   §47 Welcome Funnel          L2695
+§14 Level Tests             L532    §31 Share Card — "The Daily…L1618   §48 Rookie Play Engine      L2780
+§15 Pages                   L572    §32 Lesson Share Card       L1714   §49 Rookie's Run (/run)     L2829
+§16 Header                  L605    §33 SEO & Marketing         L1775   §50 Responsive Design       L2882
+§17 Lesson Page             L690    §34 Daily Maintenance Check L1868   §51 Premove                 L2961
 ```
 
 ---

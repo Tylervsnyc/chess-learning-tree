@@ -222,6 +222,17 @@ export const FEATURE_FLAGS = {
    */
   FAMILY_STRIP: false,
   /**
+   * One web login across chesspath.app and run.chesspath.app (plan 1.4).
+   * Supabase auth cookies are written with `Domain=.chesspath.app` (via
+   * lib/supabase/cookie-domain.ts) so a sign-in on either site is a sign-in on
+   * both, and a sign-out on either clears both. Only on chesspath.app hosts —
+   * localhost and *.vercel.app previews keep host-only cookies. Also runs a
+   * one-time cleanup in middleware (`cp_cookie_v2` marker) that migrates the
+   * old host-only `sb-*` cookies to the domain cookie. Must be flipped in BOTH
+   * repos together. OFF = cookieOptions omitted, byte-identical to today.
+   */
+  SHARED_AUTH_COOKIE: false,
+  /**
    * Rookie's post-game banter on /play (2026-08-31, Tyler: "has got to go").
    * Gates BOTH post-game speech paths: the spoken game summary right after a
    * game ends (speech.onPostGame) and the win/loss quip when landing back on

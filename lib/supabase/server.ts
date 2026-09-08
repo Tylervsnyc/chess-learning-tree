@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies, headers } from 'next/headers';
+import { sharedCookieOptions } from '@/lib/supabase/cookie-domain';
 
 /**
  * The request-scoped Supabase client every API route authenticates with.
@@ -23,7 +24,8 @@ import { cookies, headers } from 'next/headers';
  * bypass RLS and is untouched by this.
  */
 export async function createClient() {
-  const authorization = (await headers()).get('authorization');
+  const requestHeaders = await headers();
+  const authorization = requestHeaders.get('authorization');
 
   if (authorization?.startsWith('Bearer ')) {
     const token = authorization.slice('Bearer '.length);
@@ -55,10 +57,18 @@ export async function createClient() {
 
   const cookieStore = await cookies();
 
+  // SHARED_AUTH_COOKIE: on a chesspath.app host, write auth cookies with
+  // Domain=.chesspath.app (see lib/supabase/cookie-domain.ts). Flag off or any
+  // other host -> undefined -> the key is omitted from the options entirely.
+  const cookieOptions = sharedCookieOptions(
+    requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
+  );
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      ...(cookieOptions ? { cookieOptions } : {}),
       cookies: {
         getAll() {
           return cookieStore.getAll();

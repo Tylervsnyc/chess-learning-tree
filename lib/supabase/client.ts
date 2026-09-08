@@ -1,5 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { IS_OFFLINE_APP } from '@/lib/config/offline';
+import { sharedCookieOptions } from '@/lib/supabase/cookie-domain';
 
 /**
  * Session storage for the offline app bundle.
@@ -38,13 +39,25 @@ const localStorageCookies = {
 // Singleton client instance to avoid multiple instances
 let clientInstance: ReturnType<typeof createBrowserClient> | null = null;
 
+/**
+ * Web transport options. With SHARED_AUTH_COOKIE on and the page served from
+ * a chesspath.app host, auth cookies get `Domain=.chesspath.app` so the same
+ * session is visible on run.chesspath.app. Otherwise `undefined` — no options
+ * at all, exactly as before the flag existed.
+ */
+function webOptions() {
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : undefined;
+  const cookieOptions = sharedCookieOptions(hostname);
+  return cookieOptions ? { cookieOptions } : undefined;
+}
+
 export function createClient() {
   if (clientInstance) return clientInstance;
 
   clientInstance = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    IS_OFFLINE_APP ? { cookies: localStorageCookies } : undefined
+    IS_OFFLINE_APP ? { cookies: localStorageCookies } : webOptions()
   );
 
   return clientInstance;
