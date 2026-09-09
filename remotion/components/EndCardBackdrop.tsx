@@ -1,5 +1,5 @@
 import React from 'react';
-import { interpolate, useCurrentFrame } from 'remotion';
+import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { FRAME_W, FRAME_H, FPS } from '../lib/timing';
 
 /**
@@ -66,15 +66,17 @@ function makeBlocks(count: number, seed: number, near: boolean): Block[] {
 const FAR = makeBlocks(26, 3.2, false);
 const NEAR = makeBlocks(7, 91.4, true);
 
-const BlockField: React.FC<{ blocks: Block[]; t: number }> = ({ blocks, t }) => (
+// Blocks are laid out on the 1080x1920 reel frame; `sx`/`sy` squeeze that
+// field onto whatever frame the card is rendered at (the LinkedIn square).
+const BlockField: React.FC<{ blocks: Block[]; t: number; sx: number; sy: number }> = ({ blocks, t, sx, sy }) => (
   <>
     {blocks.map((b, i) => (
       <div
         key={i}
         style={{
           position: 'absolute',
-          left: b.x,
-          top: b.y - t * b.drift,
+          left: b.x * sx,
+          top: b.y * sy - t * b.drift,
           width: b.size,
           height: b.size,
           borderRadius: b.size * 0.22,
@@ -90,6 +92,9 @@ const BlockField: React.FC<{ blocks: Block[]; t: number }> = ({ blocks, t }) => 
 
 export const EndCardBackdrop: React.FC = () => {
   const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+  const sx = width / FRAME_W;
+  const sy = height / FRAME_H;
   const t = frame / FPS;
 
   // The field settles: it arrives with a touch more energy than it keeps.
@@ -112,8 +117,8 @@ export const EndCardBackdrop: React.FC = () => {
           position: 'absolute',
           left: -420,
           top: -420,
-          width: FRAME_W + 840,
-          height: FRAME_H + 840,
+          width: width + 840,
+          height: height + 840,
           // Big squares, hard tilt: small even gray squares read as a
           // transparency grid, not a chessboard.
           transform: `rotate(-15deg) translateY(${-t * 10}px)`,
@@ -125,7 +130,7 @@ export const EndCardBackdrop: React.FC = () => {
 
       {/* 3 — far blocks */}
       <div style={{ position: 'absolute', inset: 0, opacity: settle }}>
-        <BlockField blocks={FAR} t={t} />
+        <BlockField blocks={FAR} t={t} sx={sx} sy={sy} />
       </div>
 
       {/* 4 — spotlight under the subject */}
@@ -140,7 +145,7 @@ export const EndCardBackdrop: React.FC = () => {
 
       {/* 5 — near blocks, in front of the light */}
       <div style={{ position: 'absolute', inset: 0 }}>
-        <BlockField blocks={NEAR} t={t} />
+        <BlockField blocks={NEAR} t={t} sx={sx} sy={sy} />
       </div>
 
       {/* edge vignette so the frame holds together on a phone */}

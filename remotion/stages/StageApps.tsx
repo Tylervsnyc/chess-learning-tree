@@ -4,7 +4,7 @@ import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLogo } from '../components/ReelLogo';
 import { AppStoreBadge } from '../components/AppStoreBadge';
 import { EndCardBackdrop } from '../components/EndCardBackdrop';
-import { FRAME_W, FRAME_H, SAFE_PAD } from '../lib/timing';
+import { SAFE_PAD } from '../lib/timing';
 
 const { fontFamily } = loadFont();
 
@@ -29,7 +29,11 @@ export const BADGE_LAND = 98;
  */
 export const StageApps: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
+  // The column is laid out for the 1080x1920 reel (~1200px tall). On a
+  // shorter frame (the 1:1 LinkedIn cut) the whole column scales down as one
+  // object so every spring, squash and sound cue stays identical.
+  const contentScale = Math.min(1, (height - SAFE_PAD * 2) / 1240);
 
   const headline = interpolate(frame, [4, 22], [0, 1], {
     extrapolateLeft: 'clamp',
@@ -49,8 +53,8 @@ export const StageApps: React.FC = () => {
   return (
     <div
       style={{
-        width: FRAME_W,
-        height: FRAME_H,
+        width,
+        height,
         backgroundColor: '#EBF0F5',
         position: 'relative',
         fontFamily,
@@ -65,7 +69,17 @@ export const StageApps: React.FC = () => {
     >
       <EndCardBackdrop />
 
-      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 64 }}>
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 64,
+          transform: `scale(${contentScale})`,
+          transformOrigin: 'center center',
+        }}
+      >
       <ReelLogo />
 
       <p

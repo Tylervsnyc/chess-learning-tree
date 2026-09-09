@@ -1,5 +1,6 @@
 import React from 'react';
 import { Composition } from 'remotion';
+import { ChessBoxingMeetupThumb } from './ChessBoxingMeetupThumb';
 import { ChessBoxingMeetupReel, CB_MEETUP_DURATION, CB_MEETUP_FPS, CB_MEETUP_W, CB_MEETUP_H } from './ChessBoxingMeetupReel';
 import { DailyPuzzleVideo, type DailyPuzzleVideoProps } from './DailyPuzzleVideo';
 import { DuolingoAdReel, DuolingoAdReelShort, DuolingoAdReelLong } from './DuolingoAdReel';
@@ -49,6 +50,7 @@ import {
   ROOKIES_RUN_REEL_OUTRO,
   type RookiesRunDailyReelProps,
 } from './RookiesRunDailyReel';
+import { RevengeTrailerReel, TRAILER_FRAMES, TRAILER_FPS } from './RevengeTrailerReel';
 import { buildAutoplaySequence } from './lib/run-autoplay';
 import { getRunById } from '@/lib/run/runs';
 
@@ -96,6 +98,16 @@ export const Root: React.FC = () => {
         height={CB_MEETUP_H}
       />
       <Composition
+        id="ChessBoxingMeetupReel-Square"
+        component={ChessBoxingMeetupReel}
+        durationInFrames={CB_MEETUP_DURATION}
+        fps={CB_MEETUP_FPS}
+        width={1080}
+        height={1080}
+      />
+      <Composition id="ChessBoxingMeetupThumb" component={ChessBoxingMeetupThumb} durationInFrames={120} fps={30} width={1080} height={1920} />
+      <Composition id="ChessBoxingMeetupThumb-Square" component={ChessBoxingMeetupThumb} durationInFrames={120} fps={30} width={1080} height={1080} />
+      <Composition
         id="DailyPuzzleVideo"
         // Remotion 4 Composition types require Record<string, unknown>; cast needed for typed props
         component={DailyPuzzleVideo as any} // eslint-disable-line
@@ -117,6 +129,16 @@ export const Root: React.FC = () => {
         fps={FPS}
         width={FRAME_W}
         height={FRAME_H}
+      />
+      {/* 1:1 cut of the same card for LinkedIn (square fills the feed; the
+          card scales its column down to fit, animation unchanged) */}
+      <Composition
+        id="AppsLaunchSquare"
+        component={AppsLaunchReel}
+        durationInFrames={APPS_LAUNCH_TOTAL}
+        fps={FPS}
+        width={1080}
+        height={1080}
       />
       <Composition
         id="OperaGameReel"
@@ -401,6 +423,14 @@ export const Root: React.FC = () => {
         width={FRAME_W}
         height={FRAME_H}
         defaultProps={{}}
+      />
+      <Composition
+        id="RevengeTrailer"
+        component={RevengeTrailerReel}
+        durationInFrames={TRAILER_FRAMES}
+        fps={TRAILER_FPS}
+        width={1080}
+        height={1920}
       />
       <Composition
         id="RookiesRunDailyReel"
