@@ -470,6 +470,8 @@ export default function PlayRookiePage() {
 
   // The level Rookie should play at. Paint from the cache immediately so the
   // bar isn't blank, then take whatever the server says (it owns the ladder).
+  // Re-asks whenever the signed-in user changes: a logged-out first paint
+  // must not stick after login (level-client keys its cache on the user).
   useEffect(() => {
     const peeked = peekRookieLevel();
     setMatchedLevel(peeked.level);
@@ -485,7 +487,7 @@ export default function PlayRookiePage() {
       setSubProgress(levelProgress(state));
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [user?.id]);
 
   // FEN is the single source of truth for board state
   const [fen, setFen] = useState(START_FEN);

@@ -20,6 +20,7 @@
  *              in and it arrives.
  */
 
+import { createClient } from '@/lib/supabase/client';
 import {
   applyWin,
   winCounts,
@@ -39,7 +40,25 @@ export interface RookieLevelState extends WinLadderState {
 }
 
 let cached: RookieLevelState | null = null;
+/**
+ * Who the cache was built for ('' = logged out). A memoized answer is only
+ * good for the person who asked: signing in after a logged-out read must
+ * re-ask the server, or the fresh device's level-1 ladder sticks for the
+ * whole session (the iOS "doesn't remember Rookie's level" bug, 2026-09-09).
+ * Same idea as the user-validated snapshot in lib/streak-client.ts.
+ */
+let cachedForUser = '';
 let inflight: Promise<RookieLevelState> | null = null;
+
+/** The signed-in user id, or '' — local session read, no network. */
+async function currentUserId(): Promise<string> {
+  try {
+    const { data } = await createClient().auth.getSession();
+    return data.session?.user.id ?? '';
+  } catch {
+    return '';
+  }
+}
 
 function clampLevel(level: number): number {
   return Math.max(1, Math.min(maxLevel(), level));
@@ -98,10 +117,12 @@ function stateFromBody(body: Record<string, unknown>): RookieLevelState | null {
  * never silently drop somebody back to Baby Mode.
  */
 export async function getRookieLevel(opts: { fresh?: boolean } = {}): Promise<RookieLevelState> {
-  if (cached && !opts.fresh) return cached;
+  const userId = await currentUserId();
+  if (cached && !opts.fresh && cachedForUser === userId) return cached;
   if (inflight) return inflight;
 
   inflight = (async (): Promise<RookieLevelState> => {
+    cachedForUser = userId;
     try {
       const res = await fetch('/api/rookie/level');
       if (res.ok) {
