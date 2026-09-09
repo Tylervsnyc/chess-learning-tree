@@ -258,3 +258,9 @@ Complete beginners to chess who want to learn without feeling dumb. They're on t
 3. **Celebrate everything, even failure.** Wrong moves are funny, not punishing. Rookie reacts to mistakes with empathy and humor, never judgment.
 4. **Momentum over perfection.** Keep the user moving forward. Skip buttons always available. Progress bars visible. Never trap someone in a flow.
 5. **Earn the signup.** Delay account creation until after the first "I did it!" moment. The tutorial IS the pitch.
+
+---
+
+## Rookie's Run / Revenge playtesting lives in `~/rookies-run` (2026-09-09)
+
+The playtest harness, its data, and the nightly were removed from this repo in the 2026-09-09 audit. The copy here was the legacy rank-8 pipeline whose bots never cast abilities. Never run a playtest from chess-learning-tree; use `~/rookies-run/scripts/run-playtest/` and read `~/rookies-run/docs/AUDIT-2026-09-09.md` first.
