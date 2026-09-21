@@ -436,6 +436,10 @@ export default function PlayRookiePage() {
   }, [user?.id]);
 
   const [phase, setPhase] = useState<Phase>('setup');
+  // Latest phase for async callbacks (the level-up answer can land after the
+  // player is already back on the setup screen).
+  const phaseRef = useRef<Phase>(phase);
+  phaseRef.current = phase;
   // Chess Boxing shell: the setup screen swaps to the "Gym After Hours"
   // backdrop and Rookie's tap quips come from the boxing pool. Web unchanged.
   const inBoxShell = useBoxShell();
@@ -1199,8 +1203,15 @@ export default function PlayRookiePage() {
       setSubProgress(levelProgress(update));
       if (update.change === 'up') {
         // Celebrated on the setup screen, so the animation doesn't fight the
-        // result card for attention.
-        pendingLevelUpRef.current = { oldLevel: levelPlayed, newLevel: update.level };
+        // result card for attention. If the player already got back to setup
+        // and its landing already ran, nothing would pick up a pending
+        // level-up — so play it right now instead (otherwise the next game
+        // starts at the OLD level and its win doesn't count).
+        if (phaseRef.current === 'setup' && landingFiredRef.current) {
+          runLevelUpAnimation(levelPlayed, update.level);
+        } else {
+          pendingLevelUpRef.current = { oldLevel: levelPlayed, newLevel: update.level };
+        }
       } else {
         // Same level: sync to the server's answer (it can only ever be equal
         // or higher — e.g. wins landed from another device). Never stomp an
@@ -1418,7 +1429,7 @@ export default function PlayRookiePage() {
       setRookieMemory(updatedMemory);
       saveSpeechMemory(user.id, toSpeechMemory(updatedMemory));
     }
-  }, [playerColor, postGame, speech, user?.id]);
+  }, [playerColor, postGame, speech, user?.id, runLevelUpAnimation]);
 
   // ════════════════════════════════
   // ROOKIE'S TURN
@@ -2029,6 +2040,10 @@ export default function PlayRookiePage() {
     setShowCoaching(false);
     positionEvalsRef.current = [{ cp: 0, mate: null, bestMove: null, bestLine: [], depth: 0 }];
     setupGreetingSpokenRef.current = false;
+    // Re-arm the setup landing: it's what applies a pending level-up (and
+    // plays the post-game line). Left latched after the first visit, every
+    // later level-up was dropped and Rookie stayed at the old level.
+    landingFiredRef.current = false;
     setPhase('setup');
     // A finished game returns here without changing route, so the nav badge's
     // route-change refetch never sees it. Signal it directly so the badge
