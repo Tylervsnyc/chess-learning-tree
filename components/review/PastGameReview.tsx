@@ -29,6 +29,8 @@ interface GameSessionInfo {
   result: 'win' | 'loss' | 'draw' | null;
   playerColor: 'white' | 'black' | null;
   rookieDifficulty: number | null;
+  /** game_sessions.move_grades — the game's saved grades, when it has them. */
+  moveGrades?: unknown;
 }
 
 type LoadState = 'loading' | 'ready' | 'not-found' | 'too-short' | 'error';
@@ -115,6 +117,8 @@ export function PastGameReview({ gameId }: { gameId: string | null }) {
       playerColor: session.playerColor === 'black' ? 'black' : 'white',
       playerElo: session.rookieDifficulty ? getLevelElo(session.rookieDifficulty) : 800,
       result: session.result ?? 'draw',
+      playerLevel: session.rookieDifficulty,
+      storedGrades: session.moveGrades,
     });
   }, [state, session, moves, start]);
 

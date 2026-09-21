@@ -30,6 +30,11 @@ class StockfishEngine {
   /** Queue of requests waiting to run. Only the first runs at a time. */
   private queue: QueuedRequest[] = [];
   private busy = false;
+  /** A cancelled search is still winding down: its `bestmove` is owed and
+   * belongs to nobody. Until it arrives the engine stays busy, or the next
+   * request would be resolved with the stopped search's result — and every
+   * request after it with its predecessor's (a permanent off-by-one). */
+  private stopping = false;
 
   isHealthy(): boolean {
     return this.ready && !this.dead;
@@ -60,6 +65,14 @@ class StockfishEngine {
         }
 
         if (line.startsWith('bestmove')) {
+          if (this.stopping) {
+            // The stopped search's bestmove — its caller was already resolved
+            // by cancel(). Now the engine is really free.
+            this.stopping = false;
+            this.busy = false;
+            this.drain();
+            return;
+          }
           const raw = line.split(' ')[1];
           // Terminal positions (checkmate/stalemate) report "bestmove (none)".
           const bestMove = raw && raw !== '(none)' ? raw : null;
@@ -87,6 +100,7 @@ class StockfishEngine {
         }
         // Flush the queue so callers aren't stuck waiting forever
         this.busy = false;
+        this.stopping = false;
         this.flushQueue();
         reject(new Error('Stockfish worker error: ' + err.message));
       };
@@ -340,11 +354,15 @@ class StockfishEngine {
     // Resolve every queued caller with null so nobody hangs.
     const pending = this.queue;
     this.queue = [];
-    this.busy = false;
     for (const req of pending) req.cancel();
-    // Stop any in-progress search
-    if (this.worker && this.ready) {
+    // Stop any in-progress search. The engine still answers it with a
+    // `bestmove`; stay busy until that arrives so it can't be mistaken for
+    // the next request's answer.
+    if (this.busy && this.worker && this.ready && !this.dead) {
+      this.stopping = true;
       this.worker.postMessage('stop');
+    } else {
+      this.busy = false;
     }
   }
 
@@ -354,6 +372,7 @@ class StockfishEngine {
     this.ready = false;
     this.readyPromise = null;
     this.busy = false;
+    this.stopping = false;
     this.queue = [];
     this.infoListener = null;
   }

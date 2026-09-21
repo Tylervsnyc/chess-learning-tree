@@ -426,6 +426,14 @@ body {
 }
 .animate-stat-land { animation: statLand 420ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 
+/* While the game is still being graded the reels just keep spinning (a
+   10-digit strip, doubled so the loop point is seamless). */
+@keyframes statReelLoop {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+.animate-stat-reel-loop { animation: statReelLoop 0.9s linear infinite; }
+
 /* A narrow, bright glint travelling across the Legendary tile — a highlight
    sliding over metal, not the flat wash the gold Play button has. */
 @keyframes goldSheen {
@@ -468,6 +476,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-stat-land,
+  .animate-stat-reel-loop,
   .gold-sheen::after,
   .gold-glow { animation: none; }
 }

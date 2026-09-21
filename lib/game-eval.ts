@@ -64,6 +64,15 @@ export interface GameAnalysis {
   greatMoves: number;
 }
 
+/**
+ * The ONE depth a finished game is graded at — the post-game pass on /play,
+ * the stored grades, /review's fallback re-grade, the bout review, the
+ * backfill and the Legendary calibration all use it, so a move can't grade
+ * one way on the finish screen and another in the review. (Live in-game evals
+ * run shallower — they drive the eval bar and Rookie's mood, never grades.)
+ */
+export const GRADE_DEPTH = 14;
+
 // ════════════════════════════════
 // CORE MATH — Lichess sigmoid
 // ════════════════════════════════
@@ -380,23 +389,83 @@ export function extractKeyMoments(
 }
 
 // ════════════════════════════════
-// BRILLIANT MOVE DETECTION (chess.com-style)
+// BRILLIANT ("LEGENDARY") MOVE DETECTION — chess.com-style, scaled by level
 // ════════════════════════════════
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const PIECE_VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-// Calibrated against 60 real play-rookie games (1,877 graded player moves) by
-// scripts/calibrate-legendary.ts — target: a Legendary move in ~1 game in 4.
-// The old 80/50 pair fired in 2% of games, because against Rookie you're
-// usually already far ahead by the time you find a sacrifice, and the
-// "not already winning" gate threw those out.
-const BRILLIANT_MAX_WP_BEFORE = 92;  // already crushing → not legendary
-const BRILLIANT_MIN_WP_AFTER = 45;   // the sac must leave you roughly equal
-// Legendary tolerates a slightly looser "best move" than "!" does, but stays
-// inside INACCURACY_THRESHOLD (5) — a move can never be Legendary AND an
-// inaccuracy.
-const BRILLIANT_MAX_DELTA = 5;
-const SACRIFICE_MIN_LOSS = 2;        // net material given up (a real piece, not a pawn)
+
+/**
+ * The Legendary gates. One set per Rookie level: a beginner's sacrifice only
+ * has to be near-best and leave them okay; at the top of the ladder it has to
+ * be the engine's move, from a position that was still a fight.
+ */
+export interface LegendaryRules {
+  /** Max win% the move may give up vs. best. Always kept < INACCURACY_THRESHOLD
+   *  so a move can never be Legendary AND an inaccuracy. */
+  maxDelta: number;
+  /** At/above this win% before the move you're already winning — nothing to prove. */
+  maxWpBefore: number;
+  /** The mover must still have at least this win% after the sacrifice. */
+  minWpAfter: number;
+  /** Material (pawn units) the move itself puts en prise. */
+  minSac: number;
+  /** Must be exactly the engine's top move, not merely within maxDelta. */
+  requireEngineBest: boolean;
+  /** Max centipawns the move may give up vs. the engine's best. Win% flattens
+   *  out near 0 and 100 (a whole piece costs ~2% when you're +8 or -8), so a
+   *  win%-only "near-best" check lets real losses through at both ends; this
+   *  gate doesn't saturate. */
+  maxCpLoss: number;
+}
+
+/**
+ * Calibrated 2026-09-21 by scripts/calibrate-legendary.ts on 555 real
+ * play-rookie games, graded at GRADE_DEPTH with the app's own WASM engine,
+ * AFTER the book pass (book moves are never Legendary).
+ *
+ * Two axes:
+ *  - SKILL (maxCpLoss) scales with level: how close to the engine's move the
+ *    sacrifice must be — 1.5 pawns of slack at L1, 0.4 at L10.
+ *  - SITUATION (maxWpBefore 92 / minWpAfter 10) is shared: not already won
+ *    before, not dead lost after. Kept this loose on purpose — against a weak
+ *    Rookie players are usually far ahead, against a strong one usually
+ *    behind, and a sound sac happens in both.
+ *
+ * The target was ~1 game in 4 at every level. With an HONEST sacrifice (one
+ * the move itself makes — see sacrificeNetLoss) real games don't contain that
+ * many: even with every situation gate removed, L1 tops out at 19% and L5 at
+ * 11%. These gates are the loosest defensible set; they land 7-21% per level
+ * (~15% overall). Getting to 25% would mean calling non-sacrifices Legendary.
+ *
+ * maxDelta stays 4.9 (< INACCURACY_THRESHOLD): never Legendary AND an
+ * inaccuracy. L8-10 have 6-18 games from ONE player each — too few to fit;
+ * they extend the skill trend.
+ */
+const SITUATION = { maxWpBefore: 92, minWpAfter: 10, maxDelta: 4.9, minSac: 2, requireEngineBest: false };
+const LEGENDARY_RULES_BY_LEVEL: Record<number, LegendaryRules> = {
+  1: { ...SITUATION, maxCpLoss: 150 },
+  2: { ...SITUATION, maxCpLoss: 135 },
+  3: { ...SITUATION, maxCpLoss: 120 },
+  4: { ...SITUATION, maxCpLoss: 105 },
+  5: { ...SITUATION, maxCpLoss: 90 },
+  6: { ...SITUATION, maxCpLoss: 80 },
+  7: { ...SITUATION, maxCpLoss: 70 },
+  8: { ...SITUATION, maxCpLoss: 60 },
+  9: { ...SITUATION, maxCpLoss: 50 },
+  10: { ...SITUATION, maxCpLoss: 40 },
+};
+
+/** Default when the level is unknown (old rows, test pages): the middle of the ladder. */
+const DEFAULT_LEGENDARY_LEVEL = 3;
+
+/** Legendary gates for a Rookie level (1-10; anything else clamps). */
+export function legendaryRulesForLevel(level?: number | null): LegendaryRules {
+  const l = level == null || !Number.isFinite(level)
+    ? DEFAULT_LEGENDARY_LEVEL
+    : Math.max(1, Math.min(10, Math.round(level)));
+  return LEGENDARY_RULES_BY_LEVEL[l];
+}
 
 export interface BrilliantInput {
   fenBefore: string;
@@ -411,6 +480,10 @@ export interface BrilliantInput {
   evalBefore?: { mate: number | null };
   /** SAN of the opponent's previous move (to detect plain recaptures). */
   prevSan?: string | null;
+  /** Did the mover play exactly the engine's top move? */
+  playedEngineBest?: boolean;
+  /** Centipawns given up vs. the engine's best (mover's view; see cpLossForMover). */
+  cpLoss?: number | null;
 }
 
 /** Destination square of a SAN move (null for castling). */
@@ -419,88 +492,206 @@ function sanToSquare(san: string): string | null {
   return m ? m[1] : null;
 }
 
-/**
- * Is the mover materially down after the opponent's best 1-ply capture?
- *
- * For every legal opponent capture of a mover's NON-pawn piece: material for
- * the mover = (what the move itself captured) − (victim) + (attacker, if the
- * mover can recapture on that square). Returns how far the worst case leaves
- * the mover BELOW where he stood before the move — so 0 is a clean trade and
- * 3 means a piece handed over. null = nothing to capture, or an unparseable
- * position. Callers compare it against SACRIFICE_MIN_LOSS; the calibration
- * script sweeps that threshold, which is why the raw number is exported.
- */
-export function sacrificeNetLoss(fenBefore: string, fenAfter: string): number | null {
-  let before: Chess, after: Chess;
-  try {
-    before = new Chess(fenBefore);
-    after = new Chess(fenAfter);
-  } catch {
-    return null;
+function materialBalance(c: Chess, color: 'w' | 'b'): number {
+  const opp = color === 'w' ? 'b' : 'w';
+  let sum = 0;
+  for (const sq of c.board().flat()) {
+    if (!sq) continue;
+    sum += (sq.color === color ? 1 : sq.color === opp ? -1 : 0) * PIECE_VALUE[sq.type];
   }
-  const mover = before.turn();
-  const count = (c: Chess, color: 'w' | 'b') =>
-    c.board().flat().reduce((sum, sq) => sum + (sq && sq.color === color ? PIECE_VALUE[sq.type] : 0), 0);
+  return sum;
+}
 
-  const opp = mover === 'w' ? 'b' : 'w';
-  // Material BALANCE (mover − opponent) so the move's own capture is credited.
-  const materialBefore = count(before, mover) - count(before, opp);
-  const materialAfterMove = count(after, mover) - count(after, opp);
-
+/**
+ * Worst-case material balance for `mover` after the side to move in `fen`
+ * (the opponent) makes its best 1-ply capture of a NON-pawn mover piece, with
+ * the mover's recapture credited. null = no such capture exists.
+ * `skipSquare` ignores captures landing there; `onlySquare` considers only those.
+ */
+function worstBalanceAfterCapture(
+  fen: string,
+  mover: 'w' | 'b',
+  skipSquare?: string,
+  onlySquare?: string,
+): number | null {
+  let c: Chess;
+  try { c = new Chess(fen); } catch { return null; }
+  const balance = materialBalance(c, mover);
   let worst = Infinity;
-  for (const cap of after.moves({ verbose: true })) {
+  for (const cap of c.moves({ verbose: true })) {
     if (!cap.captured || cap.captured === 'p') continue; // pawns don't count as a sac
+    if (skipSquare && cap.to === skipSquare) continue;
+    if (onlySquare && cap.to !== onlySquare) continue;
     const victim = PIECE_VALUE[cap.captured];
     const attacker = PIECE_VALUE[cap.piece];
-    const sim = new Chess(fenAfter);
+    const sim = new Chess(fen);
     sim.move(cap.san);
     const canRecapture = sim.moves({ verbose: true }).some(r => r.to === cap.to && r.captured);
-    const net = materialAfterMove - victim + (canRecapture ? attacker : 0);
-    worst = Math.min(worst, net);
+    worst = Math.min(worst, balance - victim + (canRecapture ? attacker : 0));
   }
-  if (worst === Infinity) return null;
-  return materialBefore - worst;
+  return worst === Infinity ? null : worst;
 }
 
-/** Did this move give up at least SACRIFICE_MIN_LOSS of material? */
-export function isSacrifice(fenBefore: string, fenAfter: string): boolean {
-  const loss = sacrificeNetLoss(fenBefore, fenAfter);
-  return loss !== null && loss >= SACRIFICE_MIN_LOSS;
+/** From/to squares of the move fenBefore → fenAfter (via SAN when given). */
+function movedSquares(fenBefore: string, fenAfter: string, san?: string): { from: string; to: string } | undefined {
+  try {
+    if (san) {
+      const m = new Chess(fenBefore).move(san);
+      return { from: m.from, to: m.to };
+    }
+    const key = (f: string) => f.split(' ').slice(0, 2).join(' ');
+    const target = key(fenAfter);
+    for (const m of new Chess(fenBefore).moves({ verbose: true })) {
+      const t = new Chess(fenBefore);
+      t.move(m.san);
+      if (key(t.fen()) === target) return { from: m.from, to: m.to };
+    }
+  } catch { /* unparseable */ }
+  return undefined;
 }
 
 /**
- * chess.com-style "brilliant": a best-or-near-best move that sacrifices
- * material, played from a position that wasn't already won, that still
- * leaves the mover okay, and that wasn't forced. Pure — no engine calls.
+ * How much material THIS MOVE puts en prise (pawn units) — the sacrifice size.
+ *
+ *   loss after the move  = balance before − worst balance after the
+ *                          opponent's best capture (recapture credited)
+ *   risk already there   = the same measure on the position BEFORE the move,
+ *                          as if the opponent were to move, ignoring the moved
+ *                          piece itself
+ *   sacrifice            = loss after − risk already there
+ *
+ * Subtracting the pre-existing risk is the point: a piece that was ALREADY
+ * hanging and stays hanging is not a sacrifice this move made — counting it
+ * was what turned every king shuffle of a beginner (whose pieces hang all
+ * game) into a "Legendary" move. Moving an attacked piece onto another
+ * attacked square still counts: the moved piece is excluded from the "risk
+ * already there" side.
+ *
+ * null = nothing capturable after the move, or an unparseable position.
  */
-export function isBrilliant(input: BrilliantInput): boolean {
+export function sacrificeNetLoss(fenBefore: string, fenAfter: string, san?: string): number | null {
+  let before: Chess;
+  try { before = new Chess(fenBefore); } catch { return null; }
+  const mover = before.turn();
+  const balanceBefore = materialBalance(before, mover);
+
+  // Which piece moved? Its origin square is excluded from the "already at
+  // risk" scan so moving an attacked piece onto a new attacked square counts.
+  const moved = movedSquares(fenBefore, fenAfter, san);
+
+  // In check there is no null move to measure pre-existing risk against, so
+  // only the piece that MOVED can be the sacrifice (an interposing piece can
+  // be; a king step never is). Otherwise every check evasion with a piece
+  // already hanging elsewhere read as a sac.
+  if (before.inCheck()) {
+    if (!moved) return null;
+    const worst = worstBalanceAfterCapture(fenAfter, mover, undefined, moved.to);
+    return worst === null ? null : balanceBefore - worst;
+  }
+
+  const worstAfter = worstBalanceAfterCapture(fenAfter, mover);
+  if (worstAfter === null) return null;
+  const lossAfter = balanceBefore - worstAfter;
+
+  // Null move: the opponent to move in the pre-move position — what was
+  // already en prise before this move was made.
+  let riskBefore = 0;
+  const parts = fenBefore.split(' ');
+  parts[1] = mover === 'w' ? 'b' : 'w';
+  parts[3] = '-';
+  const worstBefore = worstBalanceAfterCapture(parts.join(' '), mover, moved?.from);
+  if (worstBefore !== null) riskBefore = Math.max(0, balanceBefore - worstBefore);
+  return lossAfter - riskBefore;
+}
+
+/** Did this move give up at least `minSac` of material? */
+export function isSacrifice(fenBefore: string, fenAfter: string, minSac = 2): boolean {
+  const loss = sacrificeNetLoss(fenBefore, fenAfter);
+  return loss !== null && loss >= minSac;
+}
+
+/**
+ * Centipawns the mover gave up: eval before (= the engine's best line) minus
+ * eval after, from the mover's side. Mates map to mateToEquivalentCp; plain
+ * scores clamp at ±2000 so a mate-in-N swing stays comparable.
+ */
+export function cpLossForMover(
+  before: { cp: number | null; mate: number | null },
+  after: { cp: number | null; mate: number | null },
+  moverColor: 'white' | 'black',
+): number | null {
+  const cpOf = (e: { cp: number | null; mate: number | null }) =>
+    e.mate !== null ? mateToEquivalentCp(e.mate) : e.cp !== null ? Math.max(-2000, Math.min(2000, e.cp)) : null;
+  const b = cpOf(before);
+  const a = cpOf(after);
+  if (b === null || a === null) return null;
+  return (moverColor === 'white' ? 1 : -1) * (b - a);
+}
+
+/** Everything the Legendary gates test, as raw numbers (cached by the calibration script). */
+export interface LegendaryFacts {
+  delta: number;
+  wpBefore: number;
+  wpAfter: number;
+  /** sacrificeNetLoss — null when nothing is capturable. */
+  sac: number | null;
+  playedEngineBest: boolean;
+  /** Centipawns given up vs. best, mover's view. null = unknown. */
+  cpLoss: number | null;
+  /** Only one legal move. */
+  forced: boolean;
+  /** Plain recapture on the square the opponent just took on. */
+  recapture: boolean;
+  /** The mover already had a forced mate before the move. */
+  mateForMover: boolean;
+}
+
+export function legendaryFacts(input: BrilliantInput): LegendaryFacts | null {
   const { fenBefore, fenAfter, san, winPercentDelta, winPercentBefore, winPercentAfter, evalBefore, prevSan } = input;
-
-  // 1. Best or near-best
-  if (winPercentDelta > BRILLIANT_MAX_DELTA) return false;
-
-  // 3. Not already crushing
-  if (winPercentBefore >= BRILLIANT_MAX_WP_BEFORE) return false;
-  if (evalBefore?.mate != null) {
-    let moverIsWhite = true;
-    try { moverIsWhite = new Chess(fenBefore).turn() === 'w'; } catch { /* keep default */ }
-    if ((evalBefore.mate > 0) === moverIsWhite) return false; // mate for the mover
-  }
-
-  // 4. Not losing badly after
-  if (winPercentAfter < BRILLIANT_MIN_WP_AFTER) return false;
-
-  // 5. Not forced
   let chess: Chess;
-  try { chess = new Chess(fenBefore); } catch { return false; }
-  const legal = chess.moves();
-  if (legal.length <= 1) return false;
-  if (prevSan && prevSan.includes('x') && san.includes('x') && sanToSquare(prevSan) === sanToSquare(san)) {
-    return false; // plain recapture
-  }
+  try { chess = new Chess(fenBefore); } catch { return null; }
+  const moverIsWhite = chess.turn() === 'w';
+  return {
+    delta: winPercentDelta,
+    wpBefore: winPercentBefore,
+    wpAfter: winPercentAfter,
+    sac: sacrificeNetLoss(fenBefore, fenAfter, san),
+    playedEngineBest: !!input.playedEngineBest,
+    cpLoss: input.cpLoss ?? null,
+    forced: chess.moves().length <= 1,
+    recapture: !!prevSan && prevSan.includes('x') && san.includes('x') &&
+      sanToSquare(prevSan) !== null && sanToSquare(prevSan) === sanToSquare(san),
+    mateForMover: evalBefore?.mate != null && (evalBefore.mate > 0) === moverIsWhite,
+  };
+}
 
-  // 2. It's a sacrifice
-  return isSacrifice(fenBefore, fenAfter);
+/** The gates themselves — pure arithmetic on LegendaryFacts. */
+export function passesLegendary(f: LegendaryFacts, rules: LegendaryRules): boolean {
+  // 1. Best or near-best — and never as bad as an inaccuracy.
+  if (f.delta > rules.maxDelta || f.delta >= INACCURACY_THRESHOLD) return false;
+  if (rules.requireEngineBest && !f.playedEngineBest) return false;
+  if (f.cpLoss !== null && f.cpLoss > rules.maxCpLoss) return false;
+  // 2. The position was still a fight (not already won, not a forced mate).
+  if (f.wpBefore >= rules.maxWpBefore) return false;
+  if (f.mateForMover) return false;
+  // 3. The sacrifice still leaves you okay.
+  if (f.wpAfter < rules.minWpAfter) return false;
+  // 4. A real choice, not a forced or automatic move.
+  if (f.forced || f.recapture) return false;
+  // 5. It gives up material.
+  return f.sac !== null && f.sac >= rules.minSac;
+}
+
+/**
+ * chess.com-style "brilliant" (shown as Legendary): a best-or-near-best move
+ * that sacrifices material, from a position that wasn't already won, that
+ * still leaves the mover okay, and that wasn't forced. Pure — no engine calls.
+ * Book moves are excluded by the book pass (lib/review/book-moves), which runs
+ * on every graded game.
+ */
+export function isBrilliant(input: BrilliantInput, rules: LegendaryRules = legendaryRulesForLevel()): boolean {
+  const facts = legendaryFacts(input);
+  return !!facts && passesLegendary(facts, rules);
 }
 
 // ════════════════════════════════
@@ -515,13 +706,17 @@ export function isBrilliant(input: BrilliantInput): boolean {
  *   enable brilliant-move detection (fenBefore = previous fenAfter / startFen)
  * @param playerColor - which color the player was
  * @param startFen - starting position (default: standard start)
+ * @param options.playerLevel - Rookie level the game was played at (1-10);
+ *   scales the Legendary gates (legendaryRulesForLevel). Unknown → default.
  */
 export function analyzeGameMoves(
   positionEvals: (PositionEval | null)[],
   moves: { san: string; movedBy: 'player' | 'rookie'; moveNumber: number; fenAfter?: string; fenBefore?: string }[],
   playerColor: 'white' | 'black',
   startFen: string = START_FEN,
+  options: { playerLevel?: number | null } = {},
 ): GameAnalysis {
+  const legendaryRules = legendaryRulesForLevel(options.playerLevel);
   const evaluatedMoves: MoveEvaluation[] = [];
   // Win% the previous move (the opponent's) gave away — fuels the "!" gate.
   let prevMoveDelta: number | null = null;
@@ -645,7 +840,9 @@ export function analyzeGameMoves(
         winPercentAfter: wpAfter,
         evalBefore: { mate: evalBefore.mate },
         prevSan: i > 0 ? moves[i - 1].san : null,
-      });
+        playedEngineBest,
+        cpLoss: cpLossForMover(evalBefore, evalAfter, moverColor),
+      }, legendaryRules);
       if (brilliant) classification = 'brilliant';
     }
 

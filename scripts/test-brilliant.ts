@@ -2,7 +2,8 @@
  * Brilliant-move detection tests. Run: npx tsx scripts/test-brilliant.ts
  */
 import { Chess } from 'chess.js';
-import { isBrilliant, isSacrifice, analyzeGameMoves, type PositionEval } from '../lib/game-eval';
+import { isBrilliant, isSacrifice, analyzeGameMoves, legendaryRulesForLevel, type PositionEval } from '../lib/game-eval';
+import { applyBookMoves } from '../lib/review/book-moves';
 
 let failed = 0;
 function check(name: string, got: boolean, want: boolean) {
@@ -54,10 +55,28 @@ const defAfter = after(defFen, 'Rd4'); // ...Rxd4 Rxd4: rook for rook
 check('trade offer with equal recapture is not a sacrifice', isSacrifice(defFen, defAfter), false);
 
 // 5. Gates: already crushing / losing after / mate-for-mover / only move.
-check('crushing before (wp 95) is not brilliant',
-  isBrilliant({ fenBefore: sacFen, fenAfter: sacAfter, san: 'Rxe6', winPercentDelta: 0, winPercentBefore: 95, winPercentAfter: 97 }), false);
-check('losing after (wp 30) is not brilliant',
-  isBrilliant({ fenBefore: sacFen, fenAfter: sacAfter, san: 'Rxe6', winPercentDelta: 0, winPercentBefore: 35, winPercentAfter: 30 }), false);
+check('crushing before (wp 97) is not brilliant',
+  isBrilliant({ fenBefore: sacFen, fenAfter: sacAfter, san: 'Rxe6', winPercentDelta: 0, winPercentBefore: 97, winPercentAfter: 98 }), false);
+check('dead lost after (wp 5) is not brilliant',
+  isBrilliant({ fenBefore: sacFen, fenAfter: sacAfter, san: 'Rxe6', winPercentDelta: 0, winPercentBefore: 8, winPercentAfter: 5 }), false);
+
+// 5b. A piece that was ALREADY hanging is not a sacrifice this move made
+// (Walker's "Legendary" king shuffles, 2026-09-21).
+const alreadyHangFen = '6k1/8/8/5p2/1b6/8/3N4/6K1 w - - 0 1'; // Nd2 already en prise to Bb4
+check('king move with a piece already hanging is not a sacrifice',
+  isSacrifice(alreadyHangFen, after(alreadyHangFen, 'Kh2')), false);
+// ...but moving the attacked piece onto ANOTHER attacked square still is.
+check('moving an attacked knight onto a new attacked square is a sacrifice',
+  isSacrifice(alreadyHangFen, after(alreadyHangFen, 'Ne4')), true);
+
+// 5c. In check, only the moved piece can be the sac: a king step never is.
+const checkFen = '4r1k1/8/8/8/8/8/3N4/4K3 w - - 0 1'; // Re8+ check, Nd2 otherwise safe
+check('king escape from check is not a sacrifice', isSacrifice(checkFen, after(checkFen, 'Kf2')), false);
+
+// 5d. Level scaling: 1.2 pawns worse than best is fine at L1, not at L10.
+const cpSac = { fenBefore: sacFen, fenAfter: sacAfter, san: 'Rxe6', winPercentDelta: 3, winPercentBefore: 60, winPercentAfter: 57, cpLoss: 120 };
+check('L1 tolerates a 120cp sac', isBrilliant(cpSac, legendaryRulesForLevel(1)), true);
+check('L10 does not', isBrilliant(cpSac, legendaryRulesForLevel(10)), false);
 check('mate-for-mover before is not brilliant',
   isBrilliant({ fenBefore: sacFen, fenAfter: sacAfter, san: 'Rxe6', evalBefore: { mate: 3 }, ...good }), false);
 check('not near-best (delta 10) is not brilliant',
@@ -72,7 +91,19 @@ const ga = analyzeGameMoves([ev(50), ev(150)], [{ san: 'Rxe6', movedBy: 'player'
 check('analyzeGameMoves classifies the sac as brilliant', ga.moves[0].classification === 'brilliant', true);
 check('analyzeGameMoves counts brilliantMoves', ga.brilliantMoves === 1, true);
 const ga2 = analyzeGameMoves([ev(50), ev(150)], [{ san: 'Rxe6', movedBy: 'player', moveNumber: 1 }], 'white', sacFen);
-check('without fenAfter it stays great (no brilliant)', ga2.moves[0].classification === 'great', true);
+check('without fenAfter it is never brilliant', ga2.moves[0].classification !== 'brilliant', true);
+
+// 7. Book moves are never Legendary (Tyler, 2026-09-21).
+{
+  const scotch = ['e4', 'e5', 'Nf3', 'Nc6', 'd4'];
+  const c = new Chess();
+  const recs = scotch.map((san, i) => { c.move(san); return { san, movedBy: (i % 2 === 0 ? 'player' : 'rookie') as 'player' | 'rookie', moveNumber: i + 1, fenAfter: c.fen() }; });
+  const fake = analyzeGameMoves(recs.map(() => ev(0)).concat([ev(0)]), recs, 'white');
+  fake.moves[4].classification = 'brilliant';
+  applyBookMoves(fake, scotch, 'white');
+  check('a book move graded brilliant becomes book', fake.moves[4].classification === 'book', true);
+  check('...and is not counted', fake.brilliantMoves === 0, true);
+}
 
 console.log(failed ? `\n${failed} FAILED` : '\nall passed');
 process.exit(failed ? 1 : 0);

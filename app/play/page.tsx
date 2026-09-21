@@ -47,7 +47,7 @@ import { selectByCategory } from '@/lib/speech/priority-queue';
 import { getQuipPool } from '@/lib/quips/load-quip-pool';
 import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { hasHangingPiece, findFreeCaptureAvailable } from '@/lib/board-analysis';
-import { evalToWinPercent, analyzeGameMoves, extractKeyMoments } from '@/lib/game-eval';
+import { evalToWinPercent, extractKeyMoments } from '@/lib/game-eval';
 import type { GameAnalysis, PositionEval, KeyMoment } from '@/lib/game-eval';
 import { usePostGameAnalysis } from '@/hooks/usePostGameAnalysis';
 import { loadSpeechMemory, saveSpeechMemory } from '@/lib/speech/memory';
@@ -86,7 +86,8 @@ import { BOXING_PLAY_TAP_QUIPS, BOXING_PLAY_DEFAULT_LINE } from '@/data/quips/bo
 import { isIgCohort } from '@/lib/growth/ig-cohort';
 import { FEATURE_FLAGS, IG_SPRINT_FLAGS } from '@/lib/config/feature-flags';
 import { getArrowColor, ARROW_BEST, fetchCoachReview } from '@/lib/review/review-core';
-import { applyBookMoves } from '@/lib/review/book-moves';
+import { gradeGame } from '@/lib/review/grade';
+import { saveGameGrades } from '@/lib/review/save-grades';
 import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
 import { ShellColor } from '@/components/chessboxing/ShellColor';
 import { SHELL_GYM } from '@/components/chessboxing/ShellChrome';
@@ -610,6 +611,9 @@ export default function PlayRookiePage() {
 
   // Session tracking for coaching
   const sessionRef = useRef<GameSession | null>(null);
+  // The saved game_sessions row id (resolves after the insert) — the graded
+  // pass writes the game's grades onto it.
+  const savedSessionIdRef = useRef<Promise<string | null> | null>(null);
   const moveStartRef = useRef<number>(Date.now());
   // Local move log — always tracks moves for review, even without login
   const moveLogRef = useRef<MoveRecord[]>([]);
@@ -1221,15 +1225,13 @@ export default function PlayRookiePage() {
       }
     });
 
-    // Analyze game for review — always works, even without login
+    // Instant analysis from the live in-game evals — always works, even
+    // without login. Feeds key moments + the first coach pass; NOT the grades
+    // (badges, tiles and the saved counts wait for the graded pass below).
     const moves = moveLogRef.current;
     const moveInfos = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter }));
     const analysis = moves.length > 0
-      ? applyBookMoves(
-          analyzeGameMoves(positionEvalsRef.current, moveInfos, playerColor),
-          moves.map(m => m.san),
-          playerColor,
-        )
+      ? gradeGame(positionEvalsRef.current, moveInfos, playerColor, { playerLevel: levelPlayed })
       : null;
 
     if (moves.length > 0 && analysis) {
@@ -1237,14 +1239,24 @@ export default function PlayRookiePage() {
       const moveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
       setKeyMoments(extractKeyMoments(analysis, moveRecs, playerName || undefined).filter(m => m.type !== 'best-move' && m.type !== 'turning-point'));
 
-      // Per-game brilliant/great counts → game_sessions + profile totals (instant analysis;
-      // deep analysis may reclassify but we don't re-write — good enough for now).
-      sessionRef.current?.setMoveQuality(analysis.brilliantMoves, analysis.greatMoves);
-
-      // Show instant analysis immediately, then kick off deep analysis (depth 18)
+      // Grade ONCE. The instant analysis (live depth-10 evals) only drives the
+      // review board until the graded pass lands — it never grades. The graded
+      // pass (GRADE_DEPTH, Legendary gates scaled to the level played) is what
+      // the finish-screen tiles show and what gets saved, so the counts, the
+      // tiles and /review can't disagree.
       postGame.setInstantAnalysis(analysis);
-      postGame.analyze(moves, playerColor).then((deep) => {
-        if (!deep) return;
+      const gradeGen = gameGenRef.current;
+      postGame.analyze(moves, playerColor, { playerLevel: levelPlayed }).then((deep) => {
+        if (!deep) return; // abandoned (new game / left) — nothing is saved
+        if (gradeGen !== gameGenRef.current) return;
+        // Save only a COMPLETE grading: a hole means the engine died mid-pass,
+        // and partial grades would under-count forever.
+        const complete = deep.evals.every(e => e.cp !== null || e.mate !== null);
+        if (complete && savedSessionIdRef.current) {
+          void savedSessionIdRef.current.then((sessionId) => {
+            if (sessionId) void saveGameGrades(sessionId, deep.analysis, levelPlayed);
+          });
+        }
         setReviewEvals(deep.evals);
         // Update key moments with deeper eval
         const deepMoveRecs = moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to }));
@@ -1382,25 +1394,32 @@ export default function PlayRookiePage() {
           openingName: classifyOpening(moves.map(m => m.san))?.name ?? null,
           blunders: analysis.blunders,
           mistakes: analysis.mistakes,
-          brilliantMoves: analysis.brilliantMoves,
+          // Legendary is graded by the post-game pass, which hasn't landed yet —
+          // Rookie never claims one off the quick in-game evals.
+          brilliantMoves: 0,
           keyMoments: extractKeyMoments(analysis, moves.map(m => ({ san: m.san, movedBy: m.movedBy, moveNumber: m.moveNumber, fenAfter: m.fenAfter, from: m.from, to: m.to })), playerName || undefined)
             .map(m => `${m.type}: ${m.moveSan} on move ${m.moveNumber}`)
             .join('. ') || undefined,
         };
         const angle = pickAngle({
-          hadSwing: analysis.blunders > 0 || analysis.brilliantMoves > 0,
+          hadSwing: analysis.blunders > 0,
           hadEndgame: moves.length >= 60,
-          hadBrilliant: analysis.brilliantMoves > 0,
+          hadBrilliant: false,
         }).lens;
         speech.onPostGame(analysis.playerAccuracy, rookieWon, gameSummary, angle);
       }
     }
 
-    // Save to DB if logged in
+    // Save to DB if logged in. The row is written now (the game must never
+    // wait on analysis); its grades are written once the graded pass lands.
     const session = sessionRef.current;
     if (session) {
-      session.end(result, method).catch(console.error);
+      savedSessionIdRef.current = session.end(result, method)
+        .then(summary => summary?.sessionId ?? null)
+        .catch((err) => { console.error(err); return null; });
       sessionRef.current = null;
+    } else {
+      savedSessionIdRef.current = null;
     }
 
     // Save speech memory (fact extraction + line drain)
@@ -1941,17 +1960,19 @@ export default function PlayRookiePage() {
   // SQUARE STYLES
   // ════════════════════════════════
   // Review-only: last-move square color by classification. Isolated from the
-  // main style memo so async analysis updates (postGame.analysis) and review
+  // main style memo so async analysis updates (postGame.graded) and review
   // navigation can't recompute all 64 square styles during live play — in
   // play/gameover this stays null, so sqStyles only depends on the position.
+  // Badges come from the GRADES only (never the quick in-game evals), so a
+  // badge never appears and then changes — it's the one that gets saved.
   const reviewClassification = useMemo(() => {
     if (phase !== 'review' || reviewMoveIndex < 0 || branch.inBranch) return null;
     const move = moveLogRef.current[reviewMoveIndex];
-    if (!move || !postGame.analysis) return null;
-    const cls = postGame.analysis.moves[reviewMoveIndex]?.classification ?? null;
+    if (!move || !postGame.graded) return null;
+    const cls = postGame.graded.moves[reviewMoveIndex]?.classification ?? null;
     return cls === 'unknown' ? null : cls; // ungradable move — no badge
 
-  }, [phase, reviewMoveIndex, postGame.analysis, branch.inBranch]);
+  }, [phase, reviewMoveIndex, postGame.graded, branch.inBranch]);
 
   const sqStyles = useMemo(() => {
     const s: Record<string, React.CSSProperties> = {};
@@ -2760,7 +2781,7 @@ export default function PlayRookiePage() {
                   evals={reviewEvals ?? positionEvalsRef.current}
                   moves={moveLogRef.current.map((m, i) => ({
                     movedBy: m.movedBy,
-                    classification: postGame.analysis?.moves[i]?.classification ?? null,
+                    classification: postGame.graded?.moves[i]?.classification ?? null,
                   }))}
                   currentMoveIndex={branch.inBranch ? branch.rootPly : reviewMoveIndex}
                   onSelectMove={selectGraphMove}
@@ -2901,10 +2922,12 @@ export default function PlayRookiePage() {
         <ActivityComplete
           source="play"
           mode="dismissible"
-          moveStats={postGame.analysis ? {
-            legendary: postGame.analysis.brilliantMoves,
-            great: postGame.analysis.greatMoves,
-          } : null}
+          // Graded counts only — the reels keep spinning until the graded pass
+          // lands, so the number they settle on is the one that's saved.
+          moveStats={postGame.graded ? {
+            legendary: postGame.graded.brilliantMoves,
+            great: postGame.graded.greatMoves,
+          } : postGame.isAnalyzing ? 'pending' : null}
           outcome={
             gameResult === 'You win!' ? 'win'
               : gameResult === 'Rookie wins!' ? 'loss'

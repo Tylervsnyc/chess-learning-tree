@@ -8,12 +8,14 @@
  * tap or drag anywhere to jump. Player mistakes/blunders are marked.
  *
  * Replaces the old swinging eval bar in review (RULES.md §50: scales with the
- * board, no fixed widths, tap targets are the whole strip).
+ * board, no fixed widths, tap targets are the whole strip). Legendary moves
+ * are gold: a full-height beam + a bigger dot, so they're easy to spot.
  */
 
 import { useCallback, useMemo, useRef } from 'react';
 import { evalToWinPercent } from '@/lib/game-eval';
 import type { PositionEval, MoveClassification } from '@/lib/game-eval';
+import { LEGENDARY_GOLD_SOLID } from '@/lib/review/move-badges';
 
 interface EvalGraphProps {
   /** One eval per position: index 0 = start, index N = after move N. Holes allowed. */
@@ -31,7 +33,7 @@ const W = 1000; // viewBox width — the SVG stretches to the container
 const MARK: Partial<Record<MoveClassification, string>> = {
   blunder: '#EB4034',
   mistake: '#F59E0B',
-  brilliant: '#1CB0F6',
+  brilliant: LEGENDARY_GOLD_SOLID, // Legendary is gold everywhere
 };
 
 export function EvalGraph({ evals, moves, currentMoveIndex, onSelectMove, height = 72 }: EvalGraphProps) {
@@ -102,6 +104,19 @@ export function EvalGraph({ evals, moves, currentMoveIndex, onSelectMove, height
       <line x1={0} x2={W} y1={mid} y2={mid} stroke="rgba(0,0,0,0.25)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
       {/* Eval line */}
       <path d={linePath} fill="none" stroke="#58CC02" strokeWidth={2} vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+      {/* Legendary moves get a full-height gold beam so they're findable at a glance */}
+      {moves.map((m, i) => {
+        if (m.movedBy !== 'player' || m.classification !== 'brilliant') return null;
+        const x = (((i + 1) / n) * W).toFixed(1);
+        return (
+          <line
+            key={`leg-${i}`}
+            x1={x} x2={x} y1={0} y2={H}
+            stroke={LEGENDARY_GOLD_SOLID} strokeOpacity={0.85} strokeWidth={3}
+            vectorEffect="non-scaling-stroke"
+          />
+        );
+      })}
       {/* Markers for the player's notable moves */}
       {moves.map((m, i) => {
         if (m.movedBy !== 'player' || !m.classification) return null;
@@ -112,7 +127,9 @@ export function EvalGraph({ evals, moves, currentMoveIndex, onSelectMove, height
         return (
           <g key={i} transform={`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`}>
             {/* scale-corrected dot: the viewBox is stretched horizontally, so draw as an ellipse in local units */}
-            <ellipse rx={W / 160} ry={4.5} fill={color} stroke="#fff" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+            {m.classification === 'brilliant'
+              ? <ellipse rx={W / 70} ry={6.5} fill={color} stroke="#fff" strokeWidth={1.25} vectorEffect="non-scaling-stroke" />
+              : <ellipse rx={W / 160} ry={4.5} fill={color} stroke="#fff" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />}
           </g>
         );
       })}

@@ -22,7 +22,23 @@ export interface BadgeSpec {
   text: string;
   /** Soft square tint behind the destination square. */
   tint: string;
+  /**
+   * Optional CSS `background` for pills (overrides the flat `circle`). Only
+   * Legendary uses it: the metallic gold ramp keeps it from reading as the
+   * flat yellow Inaccuracy pill.
+   */
+  fill?: string;
 }
+
+/**
+ * Legendary gold — the same metallic ramp as the finish-screen Legendary tile
+ * (components/shared/ActivityComplete.tsx LEGENDARY_GOLD) and the profile's
+ * amber "legendary" pill. Legendary is GOLD everywhere.
+ */
+export const LEGENDARY_GOLD =
+  'linear-gradient(146deg,#FFFDF0 0%,#FFEDAE 16%,#F8C63F 44%,#DD9709 70%,#FFE08A 100%)';
+/** Solid gold for strokes, dots and outlines. */
+export const LEGENDARY_GOLD_SOLID = '#E8A208';
 
 export const BADGE_SPECS: Record<MoveClassification, BadgeSpec> = {
   book: {
@@ -56,9 +72,10 @@ export const BADGE_SPECS: Record<MoveClassification, BadgeSpec> = {
   brilliant: {
     glyph: '!!',
     label: 'Legendary',
-    circle: '#06b6d4',
-    text: '#ffffff',
-    tint: 'rgba(6, 182, 212, 0.32)',
+    circle: '#F2B418',
+    text: '#5A3A00',
+    tint: 'rgba(248, 198, 63, 0.55)',
+    fill: LEGENDARY_GOLD,
   },
   inaccuracy: {
     glyph: '?!',
@@ -103,7 +120,13 @@ export const BADGE_SPECS: Record<MoveClassification, BadgeSpec> = {
 const BOOK_PATH =
   '<path d="M15 11.2c-2-1.3-4.2-1.8-6.6-1.8-.5 0-.9.4-.9.9v10c0 .5.4.9.9.9 2.4 0 4.6.5 6.6 1.8zM17 11.2c2-1.3 4.2-1.8 6.6-1.8.5 0 .9.4.9.9v10c0 .5-.4.9-.9.9-2.4 0-4.6.5-6.6 1.8z" fill="#fff"/>';
 
-function badgeSvg(spec: BadgeSpec, useBookGlyph: boolean): string {
+/** Legendary's badge: metallic gold (light top, deep amber bottom) + dark glyph. */
+const GOLD_DEFS =
+  '<defs><linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1">' +
+  '<stop offset="0" stop-color="#FFF3C4"/><stop offset="0.45" stop-color="#F8C63F"/>' +
+  '<stop offset="1" stop-color="#C98500"/></linearGradient></defs>';
+
+function badgeSvg(spec: BadgeSpec, useBookGlyph: boolean, gold = false): string {
   const inner = useBookGlyph
     ? BOOK_PATH
     : `<text x="16" y="21.5" font-family="Arial, sans-serif" font-size="${
@@ -111,7 +134,8 @@ function badgeSvg(spec: BadgeSpec, useBookGlyph: boolean): string {
       }" font-weight="bold" fill="${spec.text}" text-anchor="middle">${spec.glyph}</text>`;
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">` +
-    `<circle cx="16" cy="16" r="14.5" fill="${spec.circle}" stroke="#fff" stroke-width="1.6"/>` +
+    (gold ? GOLD_DEFS : '') +
+    `<circle cx="16" cy="16" r="14.5" fill="${gold ? 'url(#g)' : spec.circle}" stroke="#fff" stroke-width="1.6"/>` +
     inner +
     `</svg>`
   );
@@ -121,7 +145,7 @@ function badgeSvg(spec: BadgeSpec, useBookGlyph: boolean): string {
 const BADGE_IMAGES: Record<MoveClassification, string> = Object.fromEntries(
   (Object.keys(BADGE_SPECS) as MoveClassification[]).map((cls) => [
     cls,
-    `url("data:image/svg+xml,${encodeURIComponent(badgeSvg(BADGE_SPECS[cls], cls === 'book'))}")`,
+    `url("data:image/svg+xml,${encodeURIComponent(badgeSvg(BADGE_SPECS[cls], cls === 'book', cls === 'brilliant'))}")`,
   ]),
 ) as Record<MoveClassification, string>;
 

@@ -20,7 +20,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { BADGE_SPECS } from '@/lib/review/move-badges';
+import { BADGE_SPECS, LEGENDARY_GOLD_SOLID } from '@/lib/review/move-badges';
 import type { MoveClassification } from '@/lib/game-eval';
 
 export interface ReviewNavProps {
@@ -128,8 +128,9 @@ export function ReviewNav({
             <span
               className="inline-flex items-center justify-center rounded-full px-1.5 h-4 text-[9px] font-black not-italic"
               style={{
-                backgroundColor: BADGE_SPECS[classification].circle,
+                background: BADGE_SPECS[classification].fill ?? BADGE_SPECS[classification].circle,
                 color: BADGE_SPECS[classification].text,
+                ...(classification === 'brilliant' ? { boxShadow: `0 0 0 1px ${LEGENDARY_GOLD_SOLID}` } : {}),
               }}
               title={BADGE_SPECS[classification].label}
             >

@@ -13,13 +13,19 @@
  *
  * /play itself keeps its live-eval path (instant analysis from evals gathered
  * during the game) — this hook is for everyone who doesn't have that.
+ *
+ * Grades: a stored game that was already graded (game_sessions.move_grades)
+ * shows THOSE grades — the eval pass still runs for the graph, arrows and
+ * coach, but it never re-labels a move. Only an ungraded game (older, or the
+ * graded pass never finished) is graded here, through the same pipeline
+ * (lib/review/grade) at the same GRADE_DEPTH.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { stockfish } from '@/lib/stockfish/stockfish-adapter';
 import {
-  analyzeGameMoves,
   extractKeyMoments,
+  GRADE_DEPTH,
   type GameAnalysis,
   type KeyMoment,
   type PositionEval,
@@ -29,12 +35,7 @@ import {
   START_FEN,
   type ReviewMove,
 } from '@/lib/review/review-core';
-import { applyBookMoves } from '@/lib/review/book-moves';
-
-/** Depth per position. /play's live evals run 10, its deep pass 18 — 14 is
- * the middle ground: close to deep quality, fast enough to finish while the
- * result card is still on screen. */
-const REVIEW_DEPTH = 14;
+import { applyStoredGrades, gradeGame, parseStoredGrades } from '@/lib/review/grade';
 
 export interface GameReviewData {
   analysis: GameAnalysis | null;
@@ -60,6 +61,10 @@ export interface StartGameReviewArgs {
   result: 'win' | 'loss' | 'draw';
   playerName?: string;
   startFen?: string;
+  /** Rookie level the game was played at — scales the Legendary gates. */
+  playerLevel?: number | null;
+  /** game_sessions.move_grades, when the game was already graded. */
+  storedGrades?: unknown;
 }
 
 const EMPTY: GameReviewData = {
@@ -119,13 +124,13 @@ export function useGameReview(): GameReviewData & {
         const evals: PositionEval[] = [];
         for (let i = 0; i < fens.length; i++) {
           if (cancelled()) return;
-          const result = await stockfish.getFullEval(fens[i], REVIEW_DEPTH);
+          const result = await stockfish.getFullEval(fens[i], GRADE_DEPTH);
           evals.push({
             cp: result?.cp ?? null,
             mate: result?.mate ?? null,
             bestMove: result?.bestMove ?? null,
             bestLine: [],
-            depth: REVIEW_DEPTH,
+            depth: GRADE_DEPTH,
           });
           const progress = Math.round(((i + 1) / fens.length) * 100);
           if (!cancelled()) setData((prev) => ({ ...prev, progress }));
@@ -138,11 +143,9 @@ export function useGameReview(): GameReviewData & {
           moveNumber: m.moveNumber,
           fenAfter: m.fenAfter,
         }));
-        const analysis = applyBookMoves(
-          analyzeGameMoves(evals, moveInfos, args.playerColor, startFen),
-          args.moves.map((m) => m.san),
-          args.playerColor,
-        );
+        const graded = gradeGame(evals, moveInfos, args.playerColor, { startFen, playerLevel: args.playerLevel });
+        const stored = parseStoredGrades(args.storedGrades, args.moves.length);
+        const analysis = stored ? applyStoredGrades(graded, stored) : graded;
         // Same filter as /play: only blunder/mistake moments drive the review.
         const keyMoments = extractKeyMoments(analysis, args.moves, args.playerName)
           .filter((m) => m.type !== 'best-move' && m.type !== 'turning-point');

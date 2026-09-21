@@ -5,17 +5,22 @@
  * Lives in its own module (not lib/game-eval) so surfaces that only need the
  * eval math never pull in the opening trees.
  *
- * Rule: book overrides the neutral labels (good/great/forced) but NEVER
- * downgrades a move the eval flagged as bad (inaccuracy/mistake/blunder) —
- * and never hides a brilliant. In practice book moves won't be bad, but if
+ * Rule: book overrides the neutral labels (good/great/forced) AND brilliant
+ * — a book move is never Legendary (Tyler, 2026-09-21: a book gambit like
+ * d4 in the Scotch or b4 in the Evans is theory you memorized, not a sac you
+ * found). It NEVER downgrades a move the eval flagged as bad
+ * (inaccuracy/mistake/blunder): in practice book moves won't be bad, but if
  * the eval says a move lost real win%, the honest label wins.
+ *
+ * Every graded game runs through this pass (lib/review/grade.ts), so the
+ * Legendary count is book-free everywhere it's shown or stored.
  */
 
 import { detectOpeningBook } from '@/lib/opening-book-detector';
 import type { GameAnalysis } from '@/lib/game-eval';
 
 // 'unknown' included: an opening-theory move whose eval failed is safely book.
-const BOOK_OVERRIDES = new Set(['good', 'great', 'forced', 'unknown']);
+const BOOK_OVERRIDES = new Set(['good', 'great', 'forced', 'brilliant', 'unknown']);
 
 /**
  * Mutates `analysis` in place (and returns it): moves with index <

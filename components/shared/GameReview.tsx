@@ -12,6 +12,9 @@
  * "Try it" variations: move either side from any reviewed position, the
  * engine's best-move arrow follows whoever is to move, amber "Trying:" label,
  * "Back to game" returns to the mainline (hooks/useReviewBranch.ts).
+ * Legendary moves (the player's 'brilliant' grades) are gold everywhere and
+ * findable: a gold jump chip above the board cycles through them, the eval
+ * graph marks them with a gold beam, and landing on one pulses its square.
  *
  * /play's review is still rendered in-page (it shares the live board and the
  * evals collected during play); this component is the same experience for
@@ -34,7 +37,7 @@ import {
   type ReviewMove,
 } from '@/lib/review/review-core';
 import type { GameReviewData } from '@/hooks/useGameReview';
-import { BADGE_SPECS, badgeSquareStyle } from '@/lib/review/move-badges';
+import { BADGE_SPECS, LEGENDARY_GOLD, LEGENDARY_GOLD_SOLID, badgeSquareStyle } from '@/lib/review/move-badges';
 import type { MoveClassification } from '@/lib/game-eval';
 import { useReviewBranch } from '@/hooks/useReviewBranch';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
@@ -300,6 +303,14 @@ export function GameReview({
       s[shownLastMv.to] = currentClassification
         ? badgeSquareStyle(currentClassification)
         : { background: tint };
+      // Legendary: a gold ring that pulses once when the review lands on it.
+      if (currentClassification === 'brilliant') {
+        s[shownLastMv.to] = {
+          ...s[shownLastMv.to],
+          boxShadow: `inset 0 0 0 3px ${LEGENDARY_GOLD_SOLID}`,
+          animation: 'cp-legendary-pulse 1.1s ease-out 1',
+        };
+      }
     }
     if (game?.isCheck()) {
       const kingColor = game.turn();
@@ -335,14 +346,15 @@ export function GameReview({
   const atStart = moveIndex <= -1;
   const atEnd = moveIndex >= totalMoves - 1;
 
-  const moveLabel = (() => {
-    if (moveIndex < 0) return 'Start';
-    const m = moves[moveIndex];
-    if (!m) return 'Start';
-    const chessMoveNum = Math.ceil((moveIndex + 1) / 2);
+  /** "12... Nf6" for the move at ply i. */
+  const plyLabel = useCallback((i: number) => {
+    const m = moves[i];
+    if (!m) return '';
+    const chessMoveNum = Math.ceil((i + 1) / 2);
     const isBlack = m.movedBy === 'player' ? playerColor === 'black' : playerColor === 'white';
     return `${chessMoveNum}${isBlack ? '...' : '.'} ${m.san}`;
-  })();
+  }, [moves, playerColor]);
+  const moveLabel = moveIndex < 0 ? 'Start' : (plyLabel(moveIndex) || 'Start');
 
   const displayName = playerName || 'You';
   const playerIsWhite = playerColor === 'white';
@@ -365,6 +377,24 @@ export function GameReview({
     [moves, analysis],
   );
 
+  // ── Legendary jump — the player's Legendary moves only (Rookie's don't count)
+  const legendaryPlies = useMemo(() => {
+    if (!analysis) return [] as number[];
+    const out: number[] = [];
+    moves.forEach((m, i) => {
+      if (m.movedBy === 'player' && analysis.moves[i]?.classification === 'brilliant') out.push(i);
+    });
+    return out;
+  }, [moves, analysis]);
+
+  // The chip names where a tap goes: the next Legendary after the current
+  // mainline move, wrapping — so repeated taps cycle through all of them.
+  const shownPly = inBranch ? branch.rootPly : moveIndex;
+  const nextLegendary = legendaryPlies.length === 0
+    ? null
+    : (legendaryPlies.find((i) => i > shownPly) ?? legendaryPlies[0]);
+  const nextLegendaryPos = nextLegendary === null ? 0 : legendaryPlies.indexOf(nextLegendary) + 1;
+
   const toggleBestArrow = () => {
     const on = !showBestArrow;
     setShowBestArrow(on);
@@ -374,6 +404,8 @@ export function GameReview({
 
   return (
     <div className="h-full bg-chess-page text-chess-text flex flex-col">
+      {/* One-shot gold pulse for a Legendary square (see sqStyles) */}
+      <style>{`@keyframes cp-legendary-pulse{0%{box-shadow:inset 0 0 0 3px ${LEGENDARY_GOLD_SOLID},0 0 0 0 rgba(248,198,63,.9)}40%{box-shadow:inset 0 0 0 5px ${LEGENDARY_GOLD_SOLID},0 0 18px 6px rgba(248,198,63,.75)}100%{box-shadow:inset 0 0 0 3px ${LEGENDARY_GOLD_SOLID},0 0 0 0 rgba(248,198,63,0)}}@media (prefers-reduced-motion: reduce){[style*="cp-legendary-pulse"]{animation:none!important}}`}</style>
       <div className="h-2 flex-shrink-0" />
       {/* The review column scrolls if a device is too short; the exit button stays pinned below. */}
       <div className="flex-1 flex items-start justify-center px-4 md:px-6 pt-2 min-h-0 overflow-y-auto">
@@ -415,9 +447,33 @@ export function GameReview({
             </div>
           </div>
 
-          {/* Top player (opponent) */}
-          <div className="flex justify-between items-center mb-0.5">
+          {/* Top player (opponent) + the gold Legendary jump chip */}
+          <div className="flex justify-between items-center gap-2 mb-0.5">
             {playerLabel(playerIsWhite ? 'black' : 'white', 'Rookie')}
+            {nextLegendary !== null && (
+              <button
+                type="button"
+                onClick={() => selectGraphMove(nextLegendary)}
+                aria-label={`Jump to Legendary move ${plyLabel(nextLegendary)}`}
+                className="min-h-[44px] min-w-0 flex items-center select-none touch-manipulation active:scale-95 transition-transform"
+              >
+                <span
+                  className="flex items-center gap-1.5 min-w-0 h-8 pl-1 pr-3 rounded-full text-[12px] font-black text-[#5A3A00]"
+                  style={{ background: LEGENDARY_GOLD, boxShadow: `0 2px 0 #C98500, inset 0 0 0 1px ${LEGENDARY_GOLD_SOLID}` }}
+                >
+                  <span className="flex-shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/70 text-[10px] font-black">
+                    {BADGE_SPECS.brilliant.glyph}
+                  </span>
+                  <span className="whitespace-nowrap">Legendary</span>
+                  <span className="font-mono truncate">{plyLabel(nextLegendary)}</span>
+                  {legendaryPlies.length > 1 && (
+                    <span className="flex-shrink-0 text-[10px] font-bold opacity-70 tabular-nums">
+                      {nextLegendaryPos}/{legendaryPlies.length}
+                    </span>
+                  )}
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Board — read-only unless "Try it" variations are on */}

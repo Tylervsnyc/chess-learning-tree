@@ -39,9 +39,10 @@ export type ActivitySource = 'play' | 'daily' | 'path' | 'opening'
  * Post-game move breakdown (play only). Only the good stuff — the finish
  * screen celebrates, the review is where mistakes get looked at.
  *
- * The counts come straight off the GameAnalysis /play already builds at game
- * end from the evals collected during the game — no extra engine pass, so the
- * reels always have a real number to land on.
+ * The counts are the game's GRADES — the post-game graded pass, the same
+ * numbers that get saved and that /review shows. While that pass is still
+ * running /play passes 'pending' and the reels keep spinning; they land once,
+ * on the final number, and never change after.
  */
 export interface MoveStats {
   legendary: number
@@ -59,8 +60,9 @@ export interface ActivityCompleteProps {
   // Outcome (play)
   outcome?: 'win' | 'loss' | 'draw' | 'resign'
 
-  /** Per-classification move counts (play). Renders the chess.com-style tile row. */
-  moveStats?: MoveStats | null
+  /** Per-classification move counts (play). Renders the chess.com-style tile row.
+      'pending' = still grading: the reels spin until the counts arrive. */
+  moveStats?: MoveStats | 'pending' | null
 
   // Context
   activityName?: string
@@ -203,15 +205,33 @@ function CountReel({
 const LEGENDARY_GOLD =
   'linear-gradient(146deg,#FFFDF0 0%,#FFEDAE 16%,#F8C63F 44%,#DD9709 70%,#FFE08A 100%)'
 
+/** A reel that just keeps spinning — shown while the game is still being graded. */
+function SpinningReel() {
+  const reduced = usePrefersReducedMotion()
+  if (reduced) {
+    return <span className="block tabular-nums opacity-40" style={{ height: DIGIT_H, lineHeight: `${DIGIT_H}px` }}>-</span>
+  }
+  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  return (
+    <span className="block overflow-hidden opacity-60" style={{ height: DIGIT_H }} aria-label="Grading">
+      <span className="block animate-stat-reel-loop">
+        {[...digits, ...digits].map((d, i) => (
+          <span key={i} className="block tabular-nums" style={{ height: DIGIT_H, lineHeight: `${DIGIT_H}px` }}>{d}</span>
+        ))}
+      </span>
+    </span>
+  )
+}
+
 function StatTile({
   kind, count, durationMs, cells,
-}: { kind: 'great' | 'legendary'; count: number; durationMs: number; cells: number }) {
+}: { kind: 'great' | 'legendary'; count: number | null; durationMs: number; cells: number }) {
   const [landed, setLanded] = useState(false)
   const onLand = useCallback(() => setLanded(true), [])
   const gold = kind === 'legendary'
   const spec = BADGE_SPECS[gold ? 'brilliant' : 'great']
   // Only a tile that actually scored lights up — a landed 0 stays quiet.
-  const lit = landed && count > 0
+  const lit = landed && count !== null && count > 0
   const goldLit = gold && lit
 
   return (
@@ -230,7 +250,9 @@ function StatTile({
           className="font-black leading-none"
           style={{ fontSize: 42, color: goldLit ? '#5A3A00' : 'var(--color-chess-text)' }}
         >
-          <CountReel value={count} cells={cells} durationMs={durationMs} onLand={onLand} />
+          {count === null
+            ? <SpinningReel />
+            : <CountReel value={count} cells={cells} durationMs={durationMs} onLand={onLand} />}
         </div>
         <div className="mt-1 flex items-center gap-1.5">
           <span
@@ -257,12 +279,13 @@ function StatTile({
   )
 }
 
-function MoveStatRow({ stats }: { stats: MoveStats }) {
+function MoveStatRow({ stats }: { stats: MoveStats | 'pending' }) {
+  const pending = stats === 'pending'
   return (
     <div className="mb-4 flex w-full gap-2">
       {/* Great settles first so the gold one lands last. */}
-      <StatTile kind="great" count={stats.great} durationMs={GREAT_SPIN_MS} cells={14} />
-      <StatTile kind="legendary" count={stats.legendary} durationMs={LEGENDARY_SPIN_MS} cells={24} />
+      <StatTile kind="great" count={pending ? null : stats.great} durationMs={GREAT_SPIN_MS} cells={14} />
+      <StatTile kind="legendary" count={pending ? null : stats.legendary} durationMs={LEGENDARY_SPIN_MS} cells={24} />
     </div>
   )
 }

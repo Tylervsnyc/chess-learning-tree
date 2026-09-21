@@ -20,12 +20,23 @@ export async function GET(
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const { data: session, error: sessionError } = await supabase
+  const BASE_COLS = 'id, started_at, ended_at, result, result_method, player_color, total_moves, rookie_difficulty';
+  const read = (cols: string) => supabase
     .from('game_sessions')
-    .select('id, started_at, ended_at, result, result_method, player_color, total_moves, rookie_difficulty')
+    .select(cols)
     .eq('id', id)
     .eq('user_id', user.id)
     .maybeSingle();
+  // move_grades may not exist yet (supabase/migrations/2026-09-21-move-grades.sql).
+  let { data: sessionData, error: sessionError } = await read(`${BASE_COLS}, move_grades`);
+  if (sessionError && /move_grades|column/i.test(sessionError.message ?? '')) {
+    ({ data: sessionData, error: sessionError } = await read(BASE_COLS));
+  }
+  const session = sessionData as unknown as {
+    id: string; started_at: string | null; ended_at: string | null; result: string | null;
+    result_method: string | null; player_color: string | null; total_moves: number | null;
+    rookie_difficulty: number | null; move_grades?: unknown;
+  } | null;
 
   if (sessionError) {
     console.error('game session read failed', sessionError);
@@ -57,6 +68,8 @@ export async function GET(
       playerColor: session.player_color,
       totalMoves: session.total_moves ?? 0,
       rookieDifficulty: session.rookie_difficulty,
+      // The game's saved grades — /review shows these instead of re-grading.
+      moveGrades: session.move_grades ?? null,
     },
     moves: (moveRows ?? []).map((m) => ({
       moveNumber: m.move_number,

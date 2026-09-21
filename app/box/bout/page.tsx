@@ -864,6 +864,7 @@ export default function BoutPage() {
       moves: reviewMovesRef.current,
       playerColor: 'white', // the bout fighter is always white
       playerElo: getLevelElo(levelRef.current),
+      playerLevel: levelRef.current,
       result:
         result.outcome === 'ko_win' || result.outcome === 'decision_win'
           ? 'win'
