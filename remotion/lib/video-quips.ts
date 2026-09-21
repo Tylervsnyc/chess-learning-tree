@@ -62,6 +62,12 @@ const RESULT_QUIPS: Record<string, string[]> = {
     'That pawn was load-bearing.',
     'Never underestimate a missing pawn.',
   ],
+  promotion: [
+    'Every pawn dreams of becoming a queen.',
+    'A pawn today, a queen tomorrow.',
+    'Promotion day. Well earned.',
+    'Eight ranks. One very determined pawn.',
+  ],
   brilliant: [
     'The best move is the one you find.',
     'Quiet confidence wins loud games.',

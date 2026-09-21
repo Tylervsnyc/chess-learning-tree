@@ -282,6 +282,15 @@ export function insightHook(f: PuzzleFacts, seed = 0): string | null {
   // Sacrifice that wins material rather than mating.
   if (f.sacrifices && !f.isMate) {
     const piece = f.sacrificedPiece ? PIECE_NAME[f.sacrificedPiece] : 'material';
+    // "Comes back with interest" / "comes out ahead" claim a NET material gain —
+    // only say it when the line really ends ahead. Otherwise the payoff is
+    // positional (Lichess stops at a decisive edge), so claim only the sacrifice.
+    if (f.materialSwing <= 0) {
+      return pick([
+        `Losing the ${piece} is the point, not the problem.`,
+        `${S} gives up the ${piece} on purpose — the position is worth more.`,
+      ], seed);
+    }
     return pick([
       `${S} hands over the ${piece} on purpose. It comes back with interest.`,
       `The ${piece} is offered up, and ${s} comes out ahead.`,

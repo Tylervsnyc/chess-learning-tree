@@ -16,6 +16,9 @@
  *   - smotheredMate     → mated by a knight with every flight square self-blocked
  *   - other themes      → the claimed theme is present in the puzzle's Lichess themes
  *   - rating line       → matches the pool's rating for that puzzle
+ *   - Stage-4 headline  → recomputed with describeResult(); a "Won the X" /
+ *                         "Won a X" headline may never claim more than the
+ *                         solver's NET material (a trade is never a win)
  */
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
@@ -28,6 +31,9 @@ import {
   THEME_HOOKS, DIFFICULT_HOOKS, IMPOSSIBLE_HOOKS, captionHash, SPOILER_GAP, sideToMoveLine,
 } from '../lib/ig-captions';
 import { hookForPuzzle } from '../lib/ig-puzzle-insight';
+import {
+  describeResult, netMaterialForSolver, headlineMaterialClaim,
+} from '../remotion/lib/describe-result';
 
 const POOL: Record<string, PoolPuzzle> = allPoolPuzzles();
 
@@ -113,6 +119,30 @@ function analyse(p: PoolPuzzle): Facts | null {
 }
 
 interface Problem { id: string; where: string; claim: string; truth: string }
+
+/**
+ * The video's Stage-4 headline is not stored anywhere we can read back, so
+ * recompute it exactly as the renderer does and hold it to the net material.
+ */
+function checkHeadline(id: string, where: string): Problem[] {
+  const puzzle = POOL[id];
+  if (!puzzle) return [];
+  const raw = puzzle.moves.split(' ');
+  const outcome = netMaterialForSolver(puzzle.fen, raw);
+  if (!outcome) return [{ id, where, claim: 'headline', truth: 'could not replay the solution' }];
+  const board = new Chess(puzzle.fen);
+  board.move({ from: raw[0].slice(0, 2), to: raw[0].slice(2, 4), promotion: raw[0][4] });
+  const color = board.turn() === 'w' ? 'white' : 'black';
+  const { text } = describeResult(board.fen(), outcome.finalFen, color, puzzle.allThemes ?? [], raw.slice(1));
+  const claim = headlineMaterialClaim(text);
+  if (claim !== null && claim > outcome.net) {
+    return [{
+      id, where, claim: `headline "${text}"`,
+      truth: `net material for the solver is ${outcome.net >= 0 ? '+' : ''}${outcome.net} — the headline claims ${claim}`,
+    }];
+  }
+  return [];
+}
 
 function checkCaption(id: string, where: string, caption: string): Problem[] {
   const puzzle = POOL[id];
@@ -231,13 +261,16 @@ async function main() {
     if (!POOL[r.puzzleId]) { unknown++; continue; }
     checked++;
     problems.push(...checkCaption(r.puzzleId, `disk ${r.date}`, r.caption));
+    problems.push(...checkHeadline(r.puzzleId, `disk ${r.date}`));
   }
 
   if (process.argv.includes('--queue')) {
     for (const item of await loadQueue()) {
       if (!item.puzzleId || !POOL[item.puzzleId]) continue;
       checked++;
-      problems.push(...checkCaption(item.puzzleId, `queue ${item.date}${item.posted ? ' (posted)' : ''}`, item.caption));
+      const where = `queue ${item.date}${item.posted ? ' (posted)' : ''}`;
+      problems.push(...checkCaption(item.puzzleId, where, item.caption));
+      problems.push(...checkHeadline(item.puzzleId, where));
     }
   }
 

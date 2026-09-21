@@ -20,8 +20,9 @@ const MANIFEST_PATH = 'ig-queue/manifest.json';
  * the composition changes in a way that should migrate unposted reels
  * (scripts/ig-rerender-queue.ts). Fresh renders are stamped with it.
  * 5 = final end card (slow fly-in + squash landing, badge lands last).
+ * 6 = net-material result headline (a trade is never "Won the Queen!").
  */
-export const REEL_FORMAT_VERSION = 5;
+export const REEL_FORMAT_VERSION = 6;
 
 export interface QueueItem {
   date: string;        // original folder name, e.g. "5.31.26"
