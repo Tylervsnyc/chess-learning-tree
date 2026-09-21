@@ -9,7 +9,12 @@
  * Same output schema as data/video-puzzle-pool.json so the renderer treats them
  * identically. Dedup is shared via data/video-puzzle-usage.json (by puzzleId).
  *
- * Usage: npx tsx scripts/curate-video-puzzles-hard.ts
+ * Usage: npx tsx scripts/curate-video-puzzles-hard.ts               # difficult pool, 2000-2400
+ *        npx tsx scripts/curate-video-puzzles-hard.ts --impossible  # impossible pool, 2401-2800
+ *
+ * --impossible builds data/video-puzzle-pool-impossible.json for the IMPOSSIBLE
+ * tier (Thu/Sat, lib/ig-difficult-days.ts). Same filters, higher band. The raw
+ * CSVs are gitignored, so this only runs locally — commit the JSON it writes.
  */
 
 import * as fs from 'fs';
@@ -17,15 +22,21 @@ import * as path from 'path';
 import { HARD_VIDEO_THEMES } from '../lib/ig-captions';
 
 const SRC_DIR = path.join(process.cwd(), 'data', 'puzzles-by-rating', '2000-plus');
-const OUTPUT = path.join(process.cwd(), 'data', 'video-puzzle-pool-hard.json');
+const IMPOSSIBLE = process.argv.includes('--impossible');
+const OUTPUT = path.join(
+  process.cwd(), 'data',
+  IMPOSSIBLE ? 'video-puzzle-pool-impossible.json' : 'video-puzzle-pool-hard.json',
+);
 
 // Themes we write hooks for, minus mateIn1 (never a "difficult" puzzle). Some
 // don't exist as 2000+ files (smotheredMate/kingside/queensideAttack) — skipped
 // gracefully below.
 const VIDEO_THEMES = HARD_VIDEO_THEMES;
 
-const MIN_RATING = 2000;
-const MAX_RATING = 2400; // keep it hard-but-solvable / watchable, not insane
+// Difficult: hard-but-solvable / watchable. Impossible: the band above it —
+// capped at 2800 so the solutions stay explainable in a 20-second reel.
+const MIN_RATING = IMPOSSIBLE ? 2401 : 2000;
+const MAX_RATING = IMPOSSIBLE ? 2800 : 2400;
 const MIN_POPULARITY = 85;
 const MIN_MOVES = 3;
 const MAX_MOVES = 8;
@@ -52,7 +63,8 @@ function seededShuffle<T>(arr: T[]): void {
 }
 
 function main() {
-  console.log('Curating HARD video puzzle pool (2000+) from raw Lichess CSVs...\n');
+  console.log(`Curating ${IMPOSSIBLE ? 'IMPOSSIBLE' : 'HARD'} video puzzle pool ` +
+    `(${MIN_RATING}-${MAX_RATING}) from raw Lichess CSVs...\n`);
 
   const pool: HardPoolPuzzle[] = [];
 
@@ -110,7 +122,7 @@ function main() {
   fs.writeFileSync(OUTPUT, JSON.stringify(result, null, 2));
 
   const ratings = pool.map((p) => p.rating);
-  console.log(`\nHard pool: ${pool.length} puzzles`);
+  console.log(`\n${IMPOSSIBLE ? 'Impossible' : 'Hard'} pool: ${pool.length} puzzles`);
   console.log(`Rating range: ${Math.min(...ratings)} - ${Math.max(...ratings)}`);
   console.log(`Written to ${OUTPUT}`);
 }

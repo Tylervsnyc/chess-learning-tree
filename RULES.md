@@ -2372,7 +2372,7 @@ Rook icon (22 colored blocks, 2× scale) + "chesspath" wordmark (144px, DM Sans 
 
 Green pill below logo: `linear-gradient(135deg, #58CC02, #46a302)`, white text, 40px, font-700, uppercase, letter-spacing 0.12em.
 
-On **difficult days** (see below) this becomes a red **"Difficult Puzzle"** pill (`#FF4B4B → #d63333`) with an ambulance-siren glow — two opposite-phase red/blue box-shadows breathing on a ~0.8s cycle (`SIREN_CYCLE = 24` frames), driven by `useCurrentFrame` in `ReelLayout` (CSS animation doesn't survive Remotion render). Toggled by the `difficult` prop threaded from `DailyPuzzleVideo` → all 4 stages → `ReelLayout`.
+On **difficult days** (see Reel Tiers below) this becomes a red **"Difficult Puzzle"** pill (`#FF4B4B → #d63333`) with an ambulance-siren glow — two opposite-phase red/blue box-shadows breathing on a ~0.8s cycle (`SIREN_CYCLE = 24` frames), driven by `useCurrentFrame` in `ReelLayout` (CSS animation doesn't survive Remotion render). On **impossible days** it is an **"Impossible Puzzle"** pill (`#1B1030 → #4B1D8F`) with the same pulse in violet/red. Picked by the `tier` prop threaded from `DailyPuzzleVideo` → all 4 stages → `ReelLayout`.
 
 ### Bottom Card — 3D Layered Style
 
@@ -2418,8 +2418,8 @@ Lichess-style amber squares:
 
 ### Puzzle Pool & Rendering
 
-**Pool file:** `data/video-puzzle-pool.json` (250 puzzles as of 2026-08-05, normal days) · `data/video-puzzle-pool-hard.json` (180, rated 2000+, difficult days — see below)
-**Rating range:** 500–2000 normal, 2000–2400 difficult
+**Pool file:** `data/video-puzzle-pool.json` (250 puzzles as of 2026-08-05, normal days) · `data/video-puzzle-pool-hard.json` (180, rated 2000+, difficult days) · `data/video-puzzle-pool-impossible.json` (179, 2401–2800, impossible days — see Reel Tiers)
+**Rating range:** 500–2000 normal, 2000–2400 difficult, 2401–2800 impossible
 **Solution moves:** 3–7 (not too short for video, not too long)
 **Preferred themes:** `VIDEO_THEMES` in `lib/ig-captions.ts` — the themes we write hooks for ARE the themes we curate. Never hardcode a second copy of that list.
 
@@ -2442,7 +2442,7 @@ npx tsx scripts/curate-video-puzzles.ts
 **Output** (three files per reel, all named for the puzzle):
 - `out/videos/{M.D.YY}/daily.{M.D.YY}-{puzzleId}.mp4`
 - `…​.txt` — the caption
-- `…​.json` — **metadata sidecar** (`puzzleId`, `difficult`, rating, theme, quip). The sidecar is the authority on whether a reel is difficult. Nothing downstream may re-infer that flag by pattern-matching caption text.
+- `…​.json` — **metadata sidecar** (`puzzleId`, `tier`, legacy `difficult`, rating, theme, quip, `formatVersion`). The sidecar is the authority on a reel's tier. Nothing downstream may re-infer that flag by pattern-matching caption text.
 
 **Health check / repair:**
 ```bash
@@ -2458,40 +2458,47 @@ npx tsx scripts/ig-verify-captions.ts --queue  # + every item in the live queue
 ```
 Hooks are picked by THEME, so a mislabelled puzzle produces a caption that lies — "Checkmate in 2!" over a mate in 3 is the worst thing this pipeline can ship. The verifier replays each puzzle with chess.js and decides from the board, never from the pool's label: mate-in-N counts, that mate hooks really end in mate, back-rank mates on rank 1/8, smothered mates delivered by a knight with every flight square self-blocked, non-mate themes present in the puzzle's Lichess themes, and the Rating line. Run it after any change to the hook pools or the curation scripts.
 
-### Posting Pipeline (queue → weekday-aware cron)
+### Posting Pipeline (queue → weekday-aware cron → self-refilling)
 
-Rendering (local) is decoupled from posting (daily Vercel cron `/api/cron/ig-post`, 8am ET) by a Blob queue manifest (`lib/ig-queue.ts`). **Two logical pools live in one queue**, tagged by a per-item `difficult` flag:
+Rendering is decoupled from posting (daily Vercel cron `/api/cron/ig-post`, 8am ET) by a Blob queue manifest (`lib/ig-queue.ts`). **Three tiers live in one queue**, tagged by a per-item `tier` (`normal | difficult | impossible`). Items queued before 2026-09-21 only carry the legacy `difficult` boolean; always read tier through `tierOf()` — never `item.difficult` directly.
 
-- The cron uses `nextForDate(queue, now)`: on **difficult days — Mon/Tue/Thu/Fri/Sat (ET)** — it serves the oldest unposted **difficult** reel; on Wed/Sun the oldest **normal** reel. If the preferred pool is empty it falls back to the other pool so the account never skips a day. **Cadence is correct regardless of how deep the backlog is** — difficult reels always land on difficult days, no need to keep the queue real-time. The day set is the single source of truth `DIFFICULT_DOW` in `lib/ig-difficult-days.ts` (imported by both the poster and the renderer).
-- **Refill inventory with one command** (renders ahead + uploads, dedup by puzzleId, auto-tags difficult from caption, reports runway):
+- The cron uses `nextForDate(queue, now)`: it serves the oldest unposted reel of **today's tier** (`tierForDate`, ET). If that bucket is empty it falls back to the **nearest** tier (impossible ↔ difficult before ever dropping to normal), posts anyway so the account never skips a day, and **posts a Slack line** (`SLACK_WEBHOOK_URL`) on any fallback, empty queue, or tier under 4. **Cadence is correct regardless of how deep the backlog is** — posting is by the real calendar day, not by the reel's date label.
+- **The queue refills itself.** `.github/workflows/ig-refill.yml` runs daily at 07:00 UTC (and on demand: `gh workflow run ig-refill.yml -f max=20`). It runs `scripts/ig-refill.ts --top-up --max=6`, which renders ONLY what each tier is short of (target ≈ 4 weeks of runway per tier, most-starved tier first), uploads, and **exits non-zero if any tier is still under 4** — so a failing refill emails from GitHub. Needs one repo secret, `BLOB_READ_WRITE_TOKEN`. It never posts and commits nothing.
+- **Manual refill, same command:**
   ```bash
-  npx tsx scripts/ig-refill.ts                 # upload any un-queued renders on disk
-  npx tsx scripts/ig-refill.ts --render=14     # render 14 days ahead first, then upload
-  npx tsx scripts/ig-refill.ts --render=28 --render-difficult-only
-                                               # render ONLY the difficult days in that window
-  npx tsx scripts/ig-refill.ts --dry           # preview, touch nothing
+  npx tsx scripts/ig-refill.ts --top-up            # what the Action runs (max 6 renders)
+  npx tsx scripts/ig-refill.ts --top-up --max=20   # big catch-up batch (~30s/render locally)
+  npx tsx scripts/ig-refill.ts --top-up --dry      # show the plan, touch nothing
+  npx tsx scripts/ig-refill.ts                     # upload any un-queued renders on disk
   ```
-  **Render difficult days, not calendar days.** There are 5 difficult slots/week and 2 normal ones, so a flat `--render=N` builds normal inventory ~2.5x faster than it's consumed — dead stock in the format that underperforms ~5x. Refill warns when runway goes lopsided; answer it with `--render-difficult-only`.
-  It warns when the difficult pool drops below 4 (< ~1 week at 5 difficult days/wk). Puzzles are evergreen, so a stale-dated normal reel is fine to post; the difficult pool is the one to keep stocked. It reads each reel's `difficult` flag from the render sidecar, skips reels with no caption file, and dedups by `puzzleId`.
+  It reads each reel's tier from the render sidecar, skips reels with no caption file, and dedups by `puzzleId`.
+- **Dedup across machines:** `render-daily-video.ts` adds every `puzzleId` in the Blob queue to the disk ∪ ledger set before picking (posted items are never removed from the manifest, so it is a complete record). This is what makes CI renders safe — CI has no `out/` sidecars. It **refuses to run without `BLOB_READ_WRITE_TOKEN`** rather than dedup against less.
 
 **ONE way in, ONE way out (do not add a second):**
-- **Into the queue:** `scripts/ig-refill.ts` only.
+- **Into the queue:** `scripts/ig-refill.ts` only (the Action calls it; it does not re-implement it).
 - **Onto Instagram:** `/api/cron/ig-post` only. Side-channel posting scripts (`ig-post-daily.ts`, `ig-push-difficult.ts`, `ig-test-post.ts --post`) bypassed the queue's `posted` state and caused the 2026-08 double-posts — all removed. `scripts/ig-token-check.ts` is read-only diagnostics and deliberately cannot publish.
 
-### Difficult Days (Mon/Tue/Thu/Fri/Sat — 5×/week)
+### Reel Tiers — Impossible Thu/Sat · Difficult Mon/Tue/Fri · Normal Wed/Sun
 
-Difficult reels are the top performers (~5x the views of normal reels, verified 2026-07-30), so they run **5 days a week — Mon, Tue, Thu, Fri, Sat**; only **Wed + Sun** stay normal. On a difficult day the render is automatically a DIFFICULT reel — a harder puzzle with a "guess in the comments" engagement hook. No flag needed: `render-daily-video.ts` derives the weekday from the **target date** (the `--date=M.DD.YY` you pass, or today) via the shared `DIFFICULT_DOW` set. Posting is **not** FIFO by date — the cron picks difficult vs normal by the real calendar day (see Posting Pipeline above), so a difficult reel dated for one difficult day can post on any later difficult day.
+| Tier | Days (ET) | Pool | Rating | Badge |
+|---|---|---|---|---|
+| impossible | Thu, Sat | `data/video-puzzle-pool-impossible.json` (179) | 2401–2800 | near-black → purple pill, violet/red pulse |
+| difficult | Mon, Tue, Fri | `data/video-puzzle-pool-hard.json` (180) | 2000–2400 | red siren pill |
+| normal | Wed, Sun | `data/video-puzzle-pool.json` (250) | 500–2000 | green pill |
 
-What differs on difficult days:
-- **Separate pool:** pulls from `data/video-puzzle-pool-hard.json` (2000+ puzzles, built from the raw Lichess `data/puzzles-by-rating/2000-plus` CSVs — the normal `clean-puzzles-v2` source caps at ~1999). Dedup is shared via the same `video-puzzle-usage.json`, so no repeats across pools. Normal days are untouched.
-- **Red siren badge** (see "Daily Puzzle" Badge above).
-- **Caption** swaps to a harder hook + a `Drop your guess in the comments BEFORE you watch the solution` line.
+Difficult reels are the top performers (~5x the views of normal reels, verified 2026-07-30). IMPOSSIBLE (added 2026-09-21) is the step above: a weekly-event bragging-rights reel. `render-daily-video.ts` derives the tier from the **target date** (`--date=M.D.YY`, or today) — no flag needed; `--tier=normal|difficult|impossible` forces one.
 
-**Override the weekday logic:** `--difficult` forces it on any day; `--no-difficult` forces a normal render on a difficult day. **Cadence lives in one place:** `DIFFICULT_DOW` in `lib/ig-difficult-days.ts` (0=Sun..6=Sat), imported by both `render-daily-video.ts` and `lib/ig-queue.ts` — change the days there and both renderer + poster follow.
+**Cadence lives in one place:** `IMPOSSIBLE_DOW` / `DIFFICULT_DOW` + `tierForDate` / `tierForDateLabel` in `lib/ig-difficult-days.ts` (0=Sun..6=Sat), imported by the renderer, the poster, and refill — change the days there and everything follows. Pool paths live in `TIER_POOLS` (`lib/ig-reels.ts`).
 
-**Refill the hard pool** (rare — the render warns when <10 unused remain):
+What differs per tier:
+- **Pool** (table above). The 2000+ pools are built from the raw Lichess `data/puzzles-by-rating/2000-plus` CSVs (the normal `clean-puzzles-v2` source caps at ~1999). Those CSVs are gitignored, so curation is local-only — commit the pool JSON it writes. Dedup is shared, so no repeats across tiers.
+- **Badge** (see "Daily Puzzle" Badge above) — the `tier` prop threads `DailyPuzzleVideo` → all 4 stages → `ReelLayout`.
+- **Caption payoff:** difficult uses a position-derived insight, falling back to `DIFFICULT_HOOKS`; impossible always uses `IMPOSSIBLE_HOOKS` (claim-free, no emojis). Both stay below the spoiler gap.
+
+**Refill a puzzle pool** (rare — the render warns when <10 unused remain):
 ```bash
-npx tsx scripts/curate-video-puzzles-hard.ts   # 2000–2400, pop≥85, 3–8 moves
+npx tsx scripts/curate-video-puzzles-hard.ts                # difficult: 2000–2400, pop≥85, 3–8 moves
+npx tsx scripts/curate-video-puzzles-hard.ts --impossible   # impossible: 2401–2800, same filters
 ```
 Band/size knobs (`MIN_RATING`/`MAX_RATING`/`PER_THEME`) live at the top of that script.
 
@@ -2551,13 +2558,14 @@ The line under the gap (and on Stage 4 of the video) is **derived from the posit
 | `remotion/lib/describe-result.ts` | Auto-generates result text from position |
 | **`lib/ig-captions.ts`** | **OSOT: all caption copy + `generateCaption()` + `VIDEO_THEMES`** |
 | **`lib/ig-puzzle-insight.ts`** | **OSOT: position-derived hooks for difficult reels (chess.js facts)** |
-| **`lib/ig-difficult-days.ts`** | **OSOT: `DIFFICULT_DOW` + the ET clock used to read it** |
+| **`lib/ig-difficult-days.ts`** | **OSOT: tier weekdays (`IMPOSSIBLE_DOW`/`DIFFICULT_DOW`, `tierForDate`) + the ET clock** |
 | **`lib/ig-reels.ts`** | **OSOT: what's rendered on disk, sidecars, `usedPuzzleIds()`** |
 | `lib/ig-queue.ts` | Blob queue manifest + `nextForDate()` weekday-aware pick |
 | `lib/instagram.ts` | Graph API: blob upload + `publishReel()` |
 | `app/api/cron/ig-post/route.ts` | The only thing that posts to Instagram |
 | `scripts/render-daily-video.ts` | The only renderer (pick → render → caption → sidecar → ledger) |
-| `scripts/ig-refill.ts` | The only path into the post queue (render ahead + upload) |
+| `scripts/ig-refill.ts` | The only path into the post queue (`--top-up` = render what each tier lacks + upload) |
+| `.github/workflows/ig-refill.yml` | Daily 07:00 UTC auto-refill — runs `ig-refill.ts --top-up` |
 | `scripts/ig-reconcile.ts` | Health check + repair (duplicates, ledger drift, sidecars) |
 | `scripts/ig-verify-captions.ts` | Proves each caption's claim against the real position (chess.js) |
 | `scripts/ig-recaption-queue.ts` | Rewrites unposted queue captions from `lib/ig-captions.ts` |

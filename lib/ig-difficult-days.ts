@@ -1,17 +1,36 @@
 /**
- * "Difficult puzzle" cadence — ONE source of truth for the weekday set AND the
- * clock used to read it. Imported by the renderer (scripts/render-daily-video.ts)
+ * Reel TIER cadence — ONE source of truth for which weekday gets which tier AND
+ * the clock used to read it. Imported by the renderer (scripts/render-daily-video.ts)
  * and the poster (lib/ig-queue.ts → /api/cron/ig-post).
  *
- * Difficult reels post 5 days/week — Mon(1), Tue(2), Thu(4), Fri(5), Sat(6).
- * Wed(3) + Sun(0) stay normal for variety. See RULES.md §44.
+ *   impossible — Thu(4), Sat(6)
+ *   difficult  — Mon(1), Tue(2), Fri(5)
+ *   normal     — Wed(3), Sun(0)
+ *
+ * See RULES.md §44.
  *
  * Dependency-free on purpose: the renderer must be able to import this without
  * pulling in @vercel/blob.
  */
-export const DIFFICULT_DOW = new Set([1, 2, 4, 5, 6]);
+export type ReelTier = 'normal' | 'difficult' | 'impossible';
+
+export const IMPOSSIBLE_DOW = new Set([4, 6]);
+export const DIFFICULT_DOW = new Set([1, 2, 5]);
+
+/** Posting slots per week for each tier — for runway math. */
+export const TIER_SLOTS_PER_WEEK: Record<ReelTier, number> = {
+  impossible: IMPOSSIBLE_DOW.size,
+  difficult: DIFFICULT_DOW.size,
+  normal: 7 - IMPOSSIBLE_DOW.size - DIFFICULT_DOW.size,
+};
 
 const DOW_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function tierForDow(dow: number): ReelTier {
+  if (IMPOSSIBLE_DOW.has(dow)) return 'impossible';
+  if (DIFFICULT_DOW.has(dow)) return 'difficult';
+  return 'normal';
+}
 
 /**
  * Weekday (0=Sun..6=Sat) of an instant in America/New_York — the audience's day.
@@ -25,9 +44,9 @@ export function easternDayOfWeek(d: Date): number {
   return DOW_NAMES.indexOf(wd);
 }
 
-/** Is this instant on a difficult day (ET)? */
-export function isDifficultDay(d: Date): boolean {
-  return DIFFICULT_DOW.has(easternDayOfWeek(d));
+/** Which tier posts on this instant (ET)? */
+export function tierForDate(d: Date): ReelTier {
+  return tierForDow(easternDayOfWeek(d));
 }
 
 /**
@@ -42,10 +61,18 @@ export function dayOfWeekForDateLabel(dateStr: string): number {
   return new Date(Date.UTC(2000 + Number(yy), Number(mo) - 1, Number(d))).getUTCDay();
 }
 
-/** Is the reel dated `dateStr` ("M.D.YY") a difficult one? */
-export function isDifficultDateLabel(dateStr: string): boolean {
+/** Which tier is the reel dated `dateStr` ("M.D.YY")? Unparseable → normal. */
+export function tierForDateLabel(dateStr: string): ReelTier {
   const dow = dayOfWeekForDateLabel(dateStr);
-  return dow >= 0 && DIFFICULT_DOW.has(dow);
+  return dow >= 0 ? tierForDow(dow) : 'normal';
+}
+
+/**
+ * Tier of a record written before tiers existed (queue item, sidecar, ledger
+ * row). `tier` wins when present; otherwise the legacy `difficult` boolean.
+ */
+export function tierOf(rec: { tier?: ReelTier; difficult?: boolean }): ReelTier {
+  return rec.tier ?? (rec.difficult ? 'difficult' : 'normal');
 }
 
 /** Today's "M.D.YY" label in America/New_York — matches the poster's clock. */

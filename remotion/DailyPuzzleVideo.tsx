@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import type { ReelTier } from '../lib/ig-difficult-days';
 import { Sequence } from 'remotion';
 import { Chess } from 'chess.js';
 import { parseUciMove, uciToSan } from '../lib/puzzle-utils';
@@ -25,7 +26,7 @@ export interface DailyPuzzleVideoProps {
   rating: number;
   themes: string[];
   quip: string;
-  difficult?: boolean;
+  tier?: ReelTier;
   /** Post-solution explanation. Derived from the position when the renderer
    *  passes it; the composition falls back to computing it itself. */
   insight?: string;
@@ -40,7 +41,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
   rawMoves,
   themes,
   quip,
-  difficult,
+  tier,
   insight,
 }) => {
   const puzzle = useMemo(() => {
@@ -115,7 +116,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           playerColorLabel={playerColorLabel}
           setupFrom={puzzle.setupFrom}
           setupTo={puzzle.setupTo}
-          difficult={difficult}
+          tier={tier}
         />
       </Sequence>
 
@@ -129,7 +130,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           orientation={puzzle.playerColor}
           setupFrom={puzzle.setupFrom}
           setupTo={puzzle.setupTo}
-          difficult={difficult}
+          tier={tier}
         />
       </Sequence>
 
@@ -145,7 +146,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           solutionSanMoves={puzzle.solutionSanMoves}
           setupFrom={puzzle.setupFrom}
           setupTo={puzzle.setupTo}
-          difficult={difficult}
+          tier={tier}
         />
       </Sequence>
 
@@ -162,7 +163,7 @@ export const DailyPuzzleVideo: React.FC<DailyPuzzleVideoProps> = ({
           quip={quip}
           lastMoveFrom={puzzle.lastMoveFrom}
           lastMoveTo={puzzle.lastMoveTo}
-          difficult={difficult}
+          tier={tier}
         />
       </Sequence>
 

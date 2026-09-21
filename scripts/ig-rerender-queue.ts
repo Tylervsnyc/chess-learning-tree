@@ -24,25 +24,21 @@ dotenv.config({ path: '.env.local' });
 
 import * as fs from 'fs';
 import { execSync } from 'child_process';
-import { loadQueue, saveQueue } from '../lib/ig-queue';
+import { loadQueue, saveQueue, tierOf, REEL_FORMAT_VERSION, type ReelTier } from '../lib/ig-queue';
 import { uploadToBlob, stripEmojis } from '../lib/instagram';
+import { allPoolPuzzles } from '../lib/ig-reels';
 
-const CURRENT_FORMAT = 5; // 5 = final end card (slow fly-in + squash landing, badge lands last)
+const CURRENT_FORMAT = REEL_FORMAT_VERSION;
 
 const arg = (n: string) => process.argv.find(a => a.startsWith(`--${n}=`))?.split('=')[1];
 const flag = (n: string) => process.argv.includes(`--${n}`);
 
-const POOL_IDS = new Set<string>();
-for (const f of ['data/video-puzzle-pool.json', 'data/video-puzzle-pool-hard.json']) {
-  if (!fs.existsSync(f)) continue;
-  for (const p of JSON.parse(fs.readFileSync(f, 'utf8')).puzzles ?? []) POOL_IDS.add(p.puzzleId);
-}
+const POOL_IDS = new Set(Object.keys(allPoolPuzzles()));
 
 /** Re-render one puzzle at its own date; returns the new mp4 + caption paths. */
-function rerender(puzzleId: string, date: string, difficult: boolean) {
-  const forceFlag = difficult ? '--difficult' : '--no-difficult';
+function rerender(puzzleId: string, date: string, tier: ReelTier) {
   execSync(
-    `npx tsx scripts/render-daily-video.ts --puzzle-id=${puzzleId} --date=${date} ${forceFlag}`,
+    `npx tsx scripts/render-daily-video.ts --puzzle-id=${puzzleId} --date=${date} --tier=${tier}`,
     { stdio: 'inherit', timeout: 600_000 },
   );
   const mp4 = `out/videos/${date}/daily.${date}-${puzzleId}.mp4`;
@@ -66,7 +62,7 @@ async function main() {
   const todo = unposted
     .filter(i => i.puzzleId && POOL_IDS.has(i.puzzleId))
     .filter(i => (i.formatVersion ?? 1) < CURRENT_FORMAT)
-    .filter(i => !difficultOnly || i.difficult)
+    .filter(i => !difficultOnly || tierOf(i) !== 'normal')
     .sort((a, b) => a.sortKey - b.sortKey);          // soonest-to-post first
 
   const done = unposted.filter(i => (i.formatVersion ?? 1) >= CURRENT_FORMAT).length;
@@ -86,7 +82,7 @@ async function main() {
 
   if (dry) {
     for (const i of todo.slice(0, limit)) {
-      console.log(`  would re-render ${i.difficult ? 'DIFFICULT' : 'normal   '} ${i.date} ${i.puzzleId}`);
+      console.log(`  would re-render ${tierOf(i).padEnd(10)} ${i.date} ${i.puzzleId}`);
     }
     console.log(`\n[DRY] ${Math.min(todo.length, limit)} reel(s) would be migrated.`);
     return;
@@ -103,10 +99,10 @@ async function main() {
   const batch = todo.slice(0, limit);
 
   for (const [n, item] of batch.entries()) {
-    const label = `${item.date} ${item.puzzleId} (${item.difficult ? 'difficult' : 'normal'})`;
+    const label = `${item.date} ${item.puzzleId} (${tierOf(item)})`;
     console.log(`\n── [${n + 1}/${batch.length}] ${label} ──`);
     try {
-      const { mp4, caption } = rerender(item.puzzleId!, item.date, !!item.difficult);
+      const { mp4, caption } = rerender(item.puzzleId!, item.date, tierOf(item));
       const videoUrl = await uploadToBlob(
         mp4, `ig-queue/videos/${item.date}-${item.puzzleId}-v${CURRENT_FORMAT}.mp4`,
       );

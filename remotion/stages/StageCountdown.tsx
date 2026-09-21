@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ReelTier } from '../../lib/ig-difficult-days';
 import { useCurrentFrame } from 'remotion';
 import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLayout } from '../components/ReelLayout';
@@ -16,8 +17,8 @@ export const StageCountdown: React.FC<{
   orientation: 'white' | 'black';
   setupFrom: string;
   setupTo: string;
-  difficult?: boolean;
-}> = ({ puzzleFen, orientation, setupFrom, setupTo, difficult }) => {
+  tier?: ReelTier;
+}> = ({ puzzleFen, orientation, setupFrom, setupTo, tier }) => {
   const frame = useCurrentFrame();
 
   // 30 frames per count: 0-29=3, 30-59=2, 60-89=1, 90+=GO!
@@ -29,7 +30,7 @@ export const StageCountdown: React.FC<{
     <ReelLayout
       fen={puzzleFen}
       orientation={orientation}
-      difficult={difficult}
+      tier={tier}
       highlightFrom={setupFrom}
       highlightTo={setupTo}
       bottomContent={

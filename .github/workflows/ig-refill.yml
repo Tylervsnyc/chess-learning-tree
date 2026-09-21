@@ -1,0 +1,52 @@
+name: Refill IG puzzle queue
+
+# Keeps the Instagram daily-puzzle queue stocked with no human in the loop.
+# Renders only what each tier (normal / difficult / impossible) is short of,
+# uploads to the Blob queue, and fails (→ GitHub email) if a tier is still low.
+# The ONE way into the queue is scripts/ig-refill.ts — this just runs it.
+# Posting stays on Vercel (/api/cron/ig-post); this job never touches Instagram.
+#
+# Dedup: the renderer reads every puzzle id from the Blob queue (posted items
+# are never removed), so nothing is committed back — no bot commits, no deploys.
+
+on:
+  schedule:
+    # 07:00 UTC daily — hours before the 12:00 UTC (8am ET) post.
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      max:
+        description: 'Max reels to render this run'
+        required: false
+        default: '6'
+
+concurrency:
+  group: ig-refill
+  cancel-in-progress: false
+
+jobs:
+  refill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install system deps for Remotion (ffmpeg, fonts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-liberation libnss3 libatk1.0-0 libatk-bridge2.0-0 libgbm1
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Top up the queue
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: npx tsx scripts/ig-refill.ts --top-up --max=${{ github.event.inputs.max || '6' }}

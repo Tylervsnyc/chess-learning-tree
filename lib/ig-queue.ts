@@ -6,12 +6,22 @@
  * cron pops the oldest unposted item, publishes it, and saves the manifest back.
  */
 import { list, put } from '@vercel/blob';
-import { easternDayOfWeek, isDifficultDay } from './ig-difficult-days';
+import {
+  easternDayOfWeek, tierForDate, tierOf, TIER_SLOTS_PER_WEEK, type ReelTier,
+} from './ig-difficult-days';
 
 // Re-exported so callers have one import site for queue + cadence.
-export { easternDayOfWeek, isDifficultDay };
+export { easternDayOfWeek, tierForDate, tierOf, type ReelTier };
 
 const MANIFEST_PATH = 'ig-queue/manifest.json';
+
+/**
+ * The video format the DailyPuzzleVideo composition renders today. Bump it when
+ * the composition changes in a way that should migrate unposted reels
+ * (scripts/ig-rerender-queue.ts). Fresh renders are stamped with it.
+ * 5 = final end card (slow fly-in + squash landing, badge lands last).
+ */
+export const REEL_FORMAT_VERSION = 5;
 
 export interface QueueItem {
   date: string;        // original folder name, e.g. "5.31.26"
@@ -21,7 +31,10 @@ export interface QueueItem {
   posted: boolean;
   postedAt?: string;
   mediaId?: string;
-  difficult?: boolean; // true = a "Difficult Puzzle" reel (posts on difficult days)
+  /** normal | difficult | impossible. Absent on items queued before tiers — read via tierOf(). */
+  tier?: ReelTier;
+  /** Legacy flag, still written (= tier !== 'normal') so an older poster degrades sanely. */
+  difficult?: boolean;
   puzzleId?: string;   // Lichess puzzle id, for dedup across folders/renders
   /**
    * Which video format this reel was rendered in. 2 = the no-spoiler format
@@ -65,38 +78,46 @@ export async function saveQueue(queue: QueueItem[]): Promise<void> {
   });
 }
 
-const oldestUnposted = (queue: QueueItem[], difficult: boolean): QueueItem | null =>
+const oldestUnposted = (queue: QueueItem[], tier: ReelTier): QueueItem | null =>
   queue
-    .filter(i => !i.posted && !!i.difficult === difficult)
+    .filter(i => !i.posted && tierOf(i) === tier)
     .sort((a, b) => a.sortKey - b.sortKey)[0] ?? null;
 
 /**
- * Weekday-aware pick for the daily poster. On difficult days (DIFFICULT_DOW in
- * ET — currently Mon/Tue/Thu/Fri/Sat) it serves the oldest unposted DIFFICULT
- * reel; on the remaining days the oldest NORMAL reel. If the preferred pool is
- * empty it falls back to the other pool so the account never silently skips a
- * day. Returns what was picked + why.
+ * When a tier's bucket is dry, serve the NEAREST tier — never jump straight to
+ * normal (the format that underperforms ~5x) while hard reels are sitting there.
+ */
+const FALLBACK_ORDER: Record<ReelTier, ReelTier[]> = {
+  impossible: ['impossible', 'difficult', 'normal'],
+  difficult: ['difficult', 'impossible', 'normal'],
+  normal: ['normal', 'difficult', 'impossible'],
+};
+
+/**
+ * Weekday-aware pick for the daily poster: the oldest unposted reel of today's
+ * tier (tierForDate, ET). If that bucket is empty it falls back per
+ * FALLBACK_ORDER so the account never skips a day — and reports `fellBack` so
+ * the caller can raise the alarm. Returns what was picked + why.
  */
 export function nextForDate(
   queue: QueueItem[],
   when: Date,
-): { item: QueueItem; wantedDifficult: boolean; fellBack: boolean } | null {
-  const wantDifficult = isDifficultDay(when);
-  const preferred = oldestUnposted(queue, wantDifficult);
-  if (preferred) return { item: preferred, wantedDifficult: wantDifficult, fellBack: false };
-  const other = oldestUnposted(queue, !wantDifficult);
-  if (other) return { item: other, wantedDifficult: wantDifficult, fellBack: true };
+): { item: QueueItem; wantedTier: ReelTier; fellBack: boolean } | null {
+  const wantedTier = tierForDate(when);
+  for (const tier of FALLBACK_ORDER[wantedTier]) {
+    const item = oldestUnposted(queue, tier);
+    if (item) return { item, wantedTier, fellBack: tier !== wantedTier };
+  }
   return null;
 }
 
-/** Unposted counts per pool + rough runway, for refill/reporting. */
+/** Unposted count + weeks of runway per tier, for refill/reporting/alerts. */
 export function queueRunway(queue: QueueItem[]) {
-  const normal = queue.filter(i => !i.posted && !i.difficult).length;
-  const difficult = queue.filter(i => !i.posted && i.difficult).length;
-  return {
-    normal,
-    difficult,
-    normalDays: normal,          // ~1 normal post per Wed/Sun
-    difficultWeeks: difficult / 5, // 5 difficult slots per week (Mon/Tue/Thu/Fri/Sat)
-  };
+  const count = (tier: ReelTier) => queue.filter(i => !i.posted && tierOf(i) === tier).length;
+  const out = {} as Record<ReelTier, { count: number; weeks: number }>;
+  for (const tier of ['normal', 'difficult', 'impossible'] as const) {
+    const n = count(tier);
+    out[tier] = { count: n, weeks: n / TIER_SLOTS_PER_WEEK[tier] };
+  }
+  return out;
 }

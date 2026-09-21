@@ -14,18 +14,59 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { tierOf, type ReelTier } from './ig-difficult-days';
 
 export const VIDEOS_DIR = join(process.cwd(), 'out', 'videos');
 export const USAGE_FILE = join(process.cwd(), 'data', 'video-puzzle-usage.json');
 
+/** The curated puzzle pool each tier renders from, and the script that builds it. */
+export const TIER_POOLS: Record<ReelTier, { file: string; curate: string }> = {
+  normal: {
+    file: join(process.cwd(), 'data', 'video-puzzle-pool.json'),
+    curate: 'scripts/curate-video-puzzles.ts',
+  },
+  difficult: {
+    file: join(process.cwd(), 'data', 'video-puzzle-pool-hard.json'),
+    curate: 'scripts/curate-video-puzzles-hard.ts',
+  },
+  impossible: {
+    file: join(process.cwd(), 'data', 'video-puzzle-pool-impossible.json'),
+    curate: 'scripts/curate-video-puzzles-hard.ts --impossible',
+  },
+};
+
+export interface PoolPuzzle {
+  puzzleId: string;
+  fen: string;
+  moves: string;
+  rating: number;
+  theme: string;
+  allThemes: string[];
+  gameUrl?: string;
+}
+
+/** Every puzzle across every tier's pool, by id (missing pool files are skipped). */
+export function allPoolPuzzles(): Record<string, PoolPuzzle> {
+  const out: Record<string, PoolPuzzle> = {};
+  for (const { file } of Object.values(TIER_POOLS)) {
+    if (!existsSync(file)) continue;
+    for (const p of JSON.parse(readFileSync(file, 'utf-8')).puzzles ?? []) out[p.puzzleId] = p;
+  }
+  return out;
+}
+
 export interface ReelMeta {
   puzzleId: string;
   date: string;        // folder / label, "M.D.YY"
+  tier: ReelTier;
+  /** Legacy (= tier !== 'normal'); old sidecars only have this. */
   difficult: boolean;
   rating?: number;
   theme?: string;
   quip?: string;
   renderedAt?: string;
+  /** REEL_FORMAT_VERSION (lib/ig-queue.ts) the reel was rendered in. */
+  formatVersion?: number;
 }
 
 export interface DiscoveredReel extends ReelMeta {
@@ -36,7 +77,7 @@ export interface DiscoveredReel extends ReelMeta {
 
 export interface UsageData {
   usedPuzzleIds: string[];
-  renders: { puzzleId: string; date: string; file: string; difficult?: boolean }[];
+  renders: { puzzleId: string; date: string; file: string; difficult?: boolean; tier?: ReelTier }[];
 }
 
 export function loadUsage(): UsageData {
@@ -59,15 +100,15 @@ export function writeSidecar(mp4: string, meta: ReelMeta): void {
 
 /**
  * Every daily reel across every date folder — NOT one-per-folder.
- * `difficult` comes from the sidecar; legacy renders fall back to the ledger,
+ * `tier` comes from the sidecar; legacy renders fall back to the ledger,
  * then to caption text (in that order of trust).
  */
 export function discoverReels(): DiscoveredReel[] {
   if (!existsSync(VIDEOS_DIR)) return [];
 
-  const ledgerDifficult: Record<string, boolean> = {};
+  const ledgerTier: Record<string, ReelTier> = {};
   for (const r of loadUsage().renders) {
-    if (r.puzzleId) ledgerDifficult[r.puzzleId] = !!r.difficult;
+    if (r.puzzleId) ledgerTier[r.puzzleId] = tierOf(r);
   }
 
   const reels: DiscoveredReel[] = [];
@@ -88,18 +129,20 @@ export function discoverReels(): DiscoveredReel[] {
         ? JSON.parse(readFileSync(sidecarPath(mp4), 'utf-8'))
         : {};
 
-      const difficult = hasSidecar
-        ? !!side.difficult
-        : ledgerDifficult[puzzleId] ?? /difficult puzzle/i.test(caption);
+      const tier: ReelTier = hasSidecar
+        ? tierOf(side)
+        : ledgerTier[puzzleId] ?? (/difficult puzzle/i.test(caption) ? 'difficult' : 'normal');
 
       reels.push({
         puzzleId,
         date: entry,
-        difficult,
+        tier,
+        difficult: tier !== 'normal',
         rating: side.rating,
         theme: side.theme,
         quip: side.quip,
         renderedAt: side.renderedAt,
+        formatVersion: side.formatVersion,
         mp4,
         caption,
         hasSidecar,

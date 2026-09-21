@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ReelTier } from '../../lib/ig-difficult-days';
 import { useCurrentFrame } from 'remotion';
 import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLogo, LOGO_H } from './ReelLogo';
@@ -21,11 +22,11 @@ export const ReelLayout: React.FC<{
   boardOverlay?: React.ReactNode;
   highlightFrom?: string;
   highlightTo?: string;
-  difficult?: boolean;
-}> = ({ fen, orientation, bottomContent, boardOverlay, highlightFrom, highlightTo, difficult }) => {
+  tier?: ReelTier;
+}> = ({ fen, orientation, bottomContent, boardOverlay, highlightFrom, highlightTo, tier }) => {
   const frame = useCurrentFrame();
 
-  // Ambulance-siren pulse for the DIFFICULT pill: two opposite-phase glows
+  // Ambulance-siren pulse for the DIFFICULT/IMPOSSIBLE pills: two opposite-phase glows
   // (red + blue) breathe in and out on a ~0.8s cycle. Subtle — the pill stays
   // red; only the glow alternates color.
   const SIREN_CYCLE = 24; // frames per full cycle (~0.8s at 30fps)
@@ -33,6 +34,27 @@ export const ReelLayout: React.FC<{
   const redGlow = 0.18 + 0.5 * wave;
   const blueGlow = 0.18 + 0.5 * (1 - wave);
   const difficultShadow = `0 0 36px rgba(255,75,75,${redGlow.toFixed(3)}), 0 0 44px rgba(56,132,255,${blueGlow.toFixed(3)})`;
+  // IMPOSSIBLE: same pulse, but violet ↔ red over a near-black pill — reads as
+  // one step past the red DIFFICULT pill.
+  const impossibleShadow = `0 0 40px rgba(155,77,255,${redGlow.toFixed(3)}), 0 0 48px rgba(255,75,75,${blueGlow.toFixed(3)})`;
+
+  const badge = {
+    normal: {
+      label: 'Daily Puzzle',
+      background: 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+      boxShadow: '0 8px 24px rgba(88,204,2,0.3)',
+    },
+    difficult: {
+      label: 'Difficult Puzzle',
+      background: 'linear-gradient(135deg, #FF4B4B 0%, #d63333 100%)',
+      boxShadow: difficultShadow,
+    },
+    impossible: {
+      label: 'Impossible Puzzle',
+      background: 'linear-gradient(135deg, #1B1030 0%, #4B1D8F 100%)',
+      boxShadow: impossibleShadow,
+    },
+  }[tier ?? 'normal'];
 
   return (
     <div
@@ -86,16 +108,12 @@ export const ReelLayout: React.FC<{
               fontWeight: 700,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              background: difficult
-                ? 'linear-gradient(135deg, #FF4B4B 0%, #d63333 100%)'
-                : 'linear-gradient(135deg, #58CC02 0%, #46a302 100%)',
+              background: badge.background,
               color: '#fff',
-              boxShadow: difficult
-                ? difficultShadow
-                : '0 8px 24px rgba(88,204,2,0.3)',
+              boxShadow: badge.boxShadow,
             }}
           >
-            {difficult ? 'Difficult Puzzle' : 'Daily Puzzle'}
+            {badge.label}
           </span>
         </div>
       </div>

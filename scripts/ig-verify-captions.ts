@@ -22,23 +22,14 @@ dotenv.config({ path: '.env.local' });
 
 import * as fs from 'fs';
 import { Chess } from 'chess.js';
-import { discoverReels } from '../lib/ig-reels';
+import { discoverReels, allPoolPuzzles, type PoolPuzzle } from '../lib/ig-reels';
 import { loadQueue } from '../lib/ig-queue';
 import {
-  THEME_HOOKS, DIFFICULT_HOOKS, captionHash, SPOILER_GAP, sideToMoveLine,
+  THEME_HOOKS, DIFFICULT_HOOKS, IMPOSSIBLE_HOOKS, captionHash, SPOILER_GAP, sideToMoveLine,
 } from '../lib/ig-captions';
 import { hookForPuzzle } from '../lib/ig-puzzle-insight';
 
-interface PoolPuzzle {
-  puzzleId: string; fen: string; moves: string;
-  rating: number; theme: string; allThemes: string[];
-}
-
-const POOL: Record<string, PoolPuzzle> = {};
-for (const f of ['data/video-puzzle-pool.json', 'data/video-puzzle-pool-hard.json']) {
-  if (!fs.existsSync(f)) continue;
-  for (const p of JSON.parse(fs.readFileSync(f, 'utf8')).puzzles ?? []) POOL[p.puzzleId] = p;
-}
+const POOL: Record<string, PoolPuzzle> = allPoolPuzzles();
 
 const norm = (s: string) => s.replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
 
@@ -47,7 +38,7 @@ const HOOK_THEME: Record<string, string> = {};
 for (const [theme, hooks] of Object.entries(THEME_HOOKS)) {
   for (const h of hooks) HOOK_THEME[norm(h)] = theme;
 }
-const DIFFICULT_HOOK_SET = new Set(DIFFICULT_HOOKS.map(norm));
+const DIFFICULT_HOOK_SET = new Set([...DIFFICULT_HOOKS, ...IMPOSSIBLE_HOOKS].map(norm));
 
 interface Facts {
   playerMoves: number;
@@ -145,7 +136,7 @@ function checkCaption(id: string, where: string, caption: string): Problem[] {
   if (gapAt !== -1) {
     const expectedOpener = norm(sideToMoveLine({
       puzzleId: id, rating: facts.rating, theme: puzzle.theme, quip: '',
-      difficult: false, fen: puzzle.fen, rawMoves: puzzle.moves.split(' '),
+      tier: 'normal', fen: puzzle.fen, rawMoves: puzzle.moves.split(' '),
     }));
     if (norm(firstLine) !== expectedOpener) {
       problems.push({
@@ -175,7 +166,7 @@ function checkClaim(
   const firstLine = line;
   const problems: Problem[] = [];
 
-  // Generic difficult hooks make no claim about the puzzle — nothing to falsify.
+  // Generic difficult/impossible hooks make no claim about the puzzle — nothing to falsify.
   if (DIFFICULT_HOOK_SET.has(hook)) return problems;
 
   const claimed = HOOK_THEME[hook];

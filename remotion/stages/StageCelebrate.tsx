@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ReelTier } from '../../lib/ig-difficult-days';
 import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLayout } from '../components/ReelLayout';
 import { BottomCard } from '../components/BottomCard';
@@ -23,13 +24,13 @@ export const StageCelebrate: React.FC<{
   insight?: string;
   lastMoveFrom: string;
   lastMoveTo: string;
-  difficult?: boolean;
-}> = ({ finalFen, orientation, result, quip, insight, lastMoveFrom, lastMoveTo, difficult }) => {
+  tier?: ReelTier;
+}> = ({ finalFen, orientation, result, quip, insight, lastMoveFrom, lastMoveTo, tier }) => {
   return (
     <ReelLayout
       fen={finalFen}
       orientation={orientation}
-      difficult={difficult}
+      tier={tier}
       highlightFrom={lastMoveFrom}
       highlightTo={lastMoveTo}
       boardOverlay={<ResultPopup result={result} />}

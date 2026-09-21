@@ -2,7 +2,7 @@ import React from 'react';
 import { Composition } from 'remotion';
 import { ChessBoxingMeetupThumb } from './ChessBoxingMeetupThumb';
 import { ChessBoxingMeetupReel, CB_MEETUP_DURATION, CB_MEETUP_FPS, CB_MEETUP_W, CB_MEETUP_H } from './ChessBoxingMeetupReel';
-import { DailyPuzzleVideo, type DailyPuzzleVideoProps } from './DailyPuzzleVideo';
+import { DailyPuzzleComposition } from './DailyPuzzleComposition';
 import { DuolingoAdReel, DuolingoAdReelShort, DuolingoAdReelLong } from './DuolingoAdReel';
 import { StrategyReel } from './StrategyReel';
 import { StreakReel, STREAK_REEL_FRAMES } from './StreakReel';
@@ -74,17 +74,6 @@ import {
   MKT_INTERMEDIATE_TOTAL,
 } from './lib/timing';
 
-const defaultProps: DailyPuzzleVideoProps = {
-  puzzleId: 'Ttdum',
-  rawFen: '4rbrk/p1q2p1p/5Pp1/3pP3/2p4R/2P4Q/PP4PP/4R2K b - - 11 30',
-  rawMoves: ['h7h5', 'h4h5', 'g6h5', 'h3h5', 'f8h6', 'h5h6'],
-  rating: 829,
-  themes: ['exposedKing', 'kingsideAttack', 'mateIn3', 'sacrifice'],
-  quip: 'That rook had places to be!',
-  difficult: false,
-};
-
-const numSolutionMoves = defaultProps.rawMoves.length - 1;
 
 export const Root: React.FC = () => {
   return (
@@ -107,21 +96,7 @@ export const Root: React.FC = () => {
       />
       <Composition id="ChessBoxingMeetupThumb" component={ChessBoxingMeetupThumb} durationInFrames={120} fps={30} width={1080} height={1920} />
       <Composition id="ChessBoxingMeetupThumb-Square" component={ChessBoxingMeetupThumb} durationInFrames={120} fps={30} width={1080} height={1080} />
-      <Composition
-        id="DailyPuzzleVideo"
-        // Remotion 4 Composition types require Record<string, unknown>; cast needed for typed props
-        component={DailyPuzzleVideo as any} // eslint-disable-line
-        durationInFrames={totalFrames(numSolutionMoves)}
-        fps={FPS}
-        width={FRAME_W}
-        height={FRAME_H}
-        defaultProps={defaultProps as any} // eslint-disable-line
-        calculateMetadata={({ props }) => {
-          const p = props as unknown as DailyPuzzleVideoProps;
-          const moves = p.rawMoves.length - 1;
-          return { durationInFrames: totalFrames(moves) };
-        }}
-      />
+      <DailyPuzzleComposition />
       <Composition
         id="AppsLaunchReel"
         component={AppsLaunchReel}

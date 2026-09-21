@@ -4,8 +4,7 @@
  *   npx tsx scripts/render-daily-video.ts                      # next unused puzzle, today
  *   npx tsx scripts/render-daily-video.ts --date=8.14.26       # render for a target date
  *   npx tsx scripts/render-daily-video.ts --min-rating=1700    # extra rating floor
- *   npx tsx scripts/render-daily-video.ts --difficult          # force the hard pool
- *   npx tsx scripts/render-daily-video.ts --no-difficult       # force the normal pool
+ *   npx tsx scripts/render-daily-video.ts --tier=impossible    # force a tier (normal|difficult|impossible)
  *   npx tsx scripts/render-daily-video.ts --from-daily=2026-04-29 --index=18
  *                                                             # render a specific
  *                                                             # daily-challenge puzzle
@@ -13,34 +12,30 @@
  * Sources of truth this obeys:
  *   - lib/ig-difficult-days.ts  — which days are difficult, and on which clock
  *   - lib/ig-captions.ts        — every word of the caption
- *   - lib/ig-reels.ts           — which puzzles are already used (disk ∪ ledger)
+ *   - lib/ig-reels.ts           — which puzzles are already used (disk ∪ ledger ∪ Blob queue)
  */
 
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
 import { Chess } from 'chess.js';
 import { describeResult } from '../remotion/lib/describe-result';
 import { getVideoQuip } from '../remotion/lib/video-quips';
-import { isDifficultDateLabel, easternDateLabel } from '../lib/ig-difficult-days';
+import { tierForDateLabel, easternDateLabel, type ReelTier } from '../lib/ig-difficult-days';
 import { generateCaption, primaryTheme } from '../lib/ig-captions';
-import { loadUsage, saveUsage, usedPuzzleIds, writeSidecar } from '../lib/ig-reels';
+import { loadQueue, REEL_FORMAT_VERSION } from '../lib/ig-queue';
+import {
+  loadUsage, saveUsage, usedPuzzleIds, writeSidecar, allPoolPuzzles, TIER_POOLS,
+  type PoolPuzzle,
+} from '../lib/ig-reels';
 
-const POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool.json');
-const HARD_POOL_FILE = path.join(process.cwd(), 'data', 'video-puzzle-pool-hard.json');
 const DAILY_FILE = path.join(process.cwd(), 'data', 'daily-challenge-puzzles.json');
 const OUTPUT_DIR = path.join(process.cwd(), 'out', 'videos');
-const ENTRY_POINT = path.join(process.cwd(), 'remotion', 'index.ts');
-
-interface PoolPuzzle {
-  puzzleId: string;
-  fen: string;
-  moves: string;
-  rating: number;
-  theme: string;
-  allThemes: string[];
-  gameUrl?: string;
-}
+// Slim entry: only the daily-puzzle composition (bundles on a clean checkout).
+const ENTRY_POINT = path.join(process.cwd(), 'remotion', 'daily-puzzle-entry.ts');
+const TIERS: ReelTier[] = ['normal', 'difficult', 'impossible'];
 
 function parseArgs() {
   const args: Record<string, string> = {};
@@ -68,56 +63,64 @@ function puzzleFromDaily(date: string, indexFromOne: number): PoolPuzzle {
   };
 }
 
-/** A specific puzzle by id, from either pool. Used for re-renders. */
+/** A specific puzzle by id, from any tier's pool. Used for re-renders. */
 function puzzleById(id: string): PoolPuzzle {
-  for (const file of [POOL_FILE, HARD_POOL_FILE]) {
-    if (!fs.existsSync(file)) continue;
-    const pool: { puzzles: PoolPuzzle[] } = JSON.parse(fs.readFileSync(file, 'utf-8'));
-    const found = pool.puzzles.find(p => p.puzzleId === id);
-    if (found) return found;
-  }
-  throw new Error(`Puzzle ${id} is in neither pool`);
+  const found = allPoolPuzzles()[id];
+  if (!found) throw new Error(`Puzzle ${id} is in no pool`);
+  return found;
 }
 
-/** Next unused puzzle from the right pool, honouring an optional rating floor. */
-function puzzleFromPool(difficult: boolean, minRating: number): PoolPuzzle {
-  const poolFile = difficult ? HARD_POOL_FILE : POOL_FILE;
+/** Next unused puzzle from the tier's pool, honouring an optional rating floor. */
+function puzzleFromPool(tier: ReelTier, minRating: number, excludeIds: string[]): PoolPuzzle {
+  const { file: poolFile, curate } = TIER_POOLS[tier];
   if (!fs.existsSync(poolFile)) {
-    const script = difficult ? 'scripts/curate-video-puzzles-hard.ts' : 'scripts/curate-video-puzzles.ts';
-    throw new Error(`Pool file not found (${path.basename(poolFile)}). Run: npx tsx ${script}`);
+    throw new Error(`Pool file not found (${path.basename(poolFile)}). Run: npx tsx ${curate}`);
   }
   const pool: { puzzles: PoolPuzzle[] } = JSON.parse(fs.readFileSync(poolFile, 'utf-8'));
 
   // Dedup against everything actually rendered, not just the ledger — the
   // ledger has drifted before and we double-posted puzzles because of it.
-  const used = usedPuzzleIds();
+  // `excludeIds` widens it with the Blob queue — the only record that survives
+  // a machine without out/ (CI), since posted items are never removed from it.
+  const used = usedPuzzleIds(excludeIds);
   const puzzle = pool.puzzles.find(p => !used.has(p.puzzleId) && p.rating >= minRating);
   if (!puzzle) {
     throw new Error(
-      `No unused puzzles left in the ${difficult ? 'hard' : 'normal'} pool` +
-      `${minRating ? ` with rating >= ${minRating}` : ''}. Re-run the curation script.`,
+      `No unused puzzles left in the ${tier} pool` +
+      `${minRating ? ` with rating >= ${minRating}` : ''}. Re-run ${curate}.`,
     );
   }
 
   const remaining = pool.puzzles.filter(p => !used.has(p.puzzleId)).length - 1;
   if (remaining < 10) {
-    const script = difficult ? 'curate-video-puzzles-hard.ts' : 'curate-video-puzzles.ts';
-    console.warn(`⚠ Only ${remaining} unused puzzles left in the ${difficult ? 'hard' : 'normal'} pool — top up via scripts/${script}`);
+    console.warn(`⚠ Only ${remaining} unused puzzles left in the ${tier} pool — top up via ${curate}`);
   }
   return puzzle;
 }
 
-function main() {
+/** Every puzzle id ever queued (posted or not). Fails loud — a silent miss double-posts. */
+async function queuedPuzzleIds(): Promise<string[]> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error('BLOB_READ_WRITE_TOKEN not set — cannot dedup against the IG queue. ' +
+      'Set it (.env.local) or pass --puzzle-id to re-render a specific puzzle.');
+  }
+  return (await loadQueue()).map(i => i.puzzleId).filter((id): id is string => !!id);
+}
+
+async function main() {
   const args = parseArgs();
   const minRating = args['min-rating'] ? parseInt(args['min-rating'], 10) : 0;
 
-  // Target date drives BOTH the output folder and the difficult-day check.
+  // Target date drives BOTH the output folder and the tier.
   // Default is today in ET — the same clock the poster uses.
   const dateStr = args['date'] || easternDateLabel();
 
-  const forceOn = process.argv.includes('--difficult');
-  const forceOff = process.argv.includes('--no-difficult');
-  const difficult = forceOff ? false : forceOn || isDifficultDateLabel(dateStr);
+  const forced = args['tier'] as ReelTier | undefined;
+  if (forced && !TIERS.includes(forced)) {
+    throw new Error(`--tier must be one of ${TIERS.join('|')}, got "${forced}"`);
+  }
+  const tier: ReelTier = forced ?? tierForDateLabel(dateStr);
+  const difficult = tier !== 'normal';
 
   // --puzzle-id re-renders a SPECIFIC puzzle, dedup deliberately bypassed. This
   // is how an already-queued reel gets rebuilt in the current video format.
@@ -125,10 +128,10 @@ function main() {
     ? puzzleById(args['puzzle-id'])
     : args['from-daily']
       ? puzzleFromDaily(args['from-daily'], parseInt(args['index'] ?? '1', 10))
-      : puzzleFromPool(difficult, minRating);
+      : puzzleFromPool(tier, minRating, await queuedPuzzleIds());
 
   console.log(
-    `${difficult ? 'DIFFICULT' : 'Normal'} render for ${dateStr} — ` +
+    `${tier.toUpperCase()} render for ${dateStr} — ` +
     `puzzle ${puzzle.puzzleId} (${puzzle.theme}, rating ${puzzle.rating})`,
   );
 
@@ -175,7 +178,7 @@ function main() {
     rating: puzzle.rating,
     themes: puzzle.allThemes,
     quip,
-    difficult,
+    tier,
   };
   const propsJson = JSON.stringify(inputProps);
 
@@ -196,22 +199,24 @@ function main() {
     rating: puzzle.rating,
     theme: puzzle.theme,
     quip,
-    difficult,
+    tier,
     // Difficult reels open with a line derived from THIS position, not hype.
     fen: puzzle.fen,
     rawMoves,
   });
   fs.writeFileSync(outputFile.replace('.mp4', '.txt'), caption);
 
-  // Sidecar — the authority on this reel's `difficult` flag from here on.
+  // Sidecar — the authority on this reel's tier from here on.
   writeSidecar(outputFile, {
     puzzleId: puzzle.puzzleId,
     date: dateStr,
+    tier,
     difficult,
     rating: puzzle.rating,
     theme: puzzle.theme,
     quip,
     renderedAt: new Date().toISOString(),
+    formatVersion: REEL_FORMAT_VERSION,
   });
 
   // Ledger (a cache of disk, kept for ids whose mp4 gets cleaned up later)
@@ -222,6 +227,7 @@ function main() {
     date: dateStr,
     file: path.basename(outputFile),
     difficult,
+    tier,
   });
   saveUsage(usage);
 
@@ -231,4 +237,4 @@ function main() {
   console.log(`\n--- CAPTION ---\n${caption}\n--- END ---`);
 }
 
-main();
+main().catch(e => { console.error(e); process.exit(1); });

@@ -11,21 +11,14 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
-import * as fs from 'fs';
 import { loadQueue, saveQueue } from '../lib/ig-queue';
 import { THEME_HOOKS, generateCaption } from '../lib/ig-captions';
 import { stripEmojis } from '../lib/instagram';
+import { allPoolPuzzles } from '../lib/ig-reels';
 
 // puzzleId → the puzzle itself, from the render pools. Needed for the theme AND
 // for the position, so difficult items get a real insight hook rather than hype.
-interface PoolPuzzle { puzzleId: string; fen: string; moves: string; theme: string }
-const PUZZLES: Record<string, PoolPuzzle> = {};
-for (const f of ['data/video-puzzle-pool.json', 'data/video-puzzle-pool-hard.json']) {
-  if (!fs.existsSync(f)) continue;
-  for (const p of JSON.parse(fs.readFileSync(f, 'utf8')).puzzles ?? []) {
-    if (p.puzzleId) PUZZLES[p.puzzleId] = p;
-  }
-}
+const PUZZLES = allPoolPuzzles();
 
 // Queue captions passed through stripEmojis, so match hooks emoji-blind
 const norm = (s: string) => s.replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim();
@@ -61,7 +54,8 @@ async function main() {
 
     // The item's own flag is authoritative (set at render time). Only legacy
     // items with no flag at all fall back to reading their text.
-    const isDifficult = item.difficult ?? /DIFFICULT|TOUGH|miss it/i.test(firstLine);
+    const tier = item.tier
+      ?? (item.difficult ?? /DIFFICULT|TOUGH|miss it/i.test(firstLine) ? 'difficult' : 'normal');
 
     // Regenerate the WHOLE caption. The structure changed (setup above the
     // spoiler gap, payoff below), so a line-by-line swap can't get there.
@@ -70,7 +64,7 @@ async function main() {
       rating,
       theme: puzzle.theme || OLD_HOOK_THEME[norm(firstLine)] || 'generic',
       quip,
-      difficult: isDifficult,
+      tier,
       fen: puzzle.fen,
       rawMoves: puzzle.moves.split(' '),
     }));
@@ -78,7 +72,7 @@ async function main() {
     if (caption !== item.caption) {
       changed++;
       if (!save) {
-        console.log(`--- ${item.date}${item.difficult ? ' (difficult)' : ''} ---`);
+        console.log(`--- ${item.date} (${tier}) ---`);
         console.log(`OLD first line: ${firstLine}`);
         console.log(caption.split('\n').map(l => `    ${l}`).join('\n'));
         console.log('');

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import type { ReelTier } from '../../lib/ig-difficult-days';
 import { useCurrentFrame } from 'remotion';
 import { loadFont } from '@remotion/google-fonts/DMSans';
 import { Chess } from 'chess.js';
@@ -20,8 +21,8 @@ export const StageSolution: React.FC<{
   solutionSanMoves: string[];
   setupFrom: string;
   setupTo: string;
-  difficult?: boolean;
-}> = ({ puzzleFen, orientation, solutionUciMoves, solutionSanMoves, setupFrom, setupTo, difficult }) => {
+  tier?: ReelTier;
+}> = ({ puzzleFen, orientation, solutionUciMoves, solutionSanMoves, setupFrom, setupTo, tier }) => {
   const frame = useCurrentFrame();
 
   // Which move are we on? One move every FRAMES_PER_MOVE frames.
@@ -80,7 +81,7 @@ export const StageSolution: React.FC<{
     <ReelLayout
       fen={currentFen}
       orientation={orientation}
-      difficult={difficult}
+      tier={tier}
       highlightFrom={highlightFrom}
       highlightTo={highlightTo}
       bottomContent={

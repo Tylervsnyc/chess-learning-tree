@@ -11,6 +11,7 @@
  */
 
 import { hookForPuzzle, analysePuzzle } from './ig-puzzle-insight';
+import type { ReelTier } from './ig-difficult-days';
 
 export const THEME_HOOKS: Record<string, string[]> = {
   mateIn1: [
@@ -136,6 +137,23 @@ export const DIFFICULT_HOOKS = [
   'Your engine sees it instantly. Can you?',
 ];
 
+/**
+ * IMPOSSIBLE tier (2400-2800) — posts Thu + Sat. Like DIFFICULT_HOOKS these
+ * make no claim about the position (nothing for ig-verify-captions to falsify),
+ * and they live BELOW the spoiler gap. No emojis.
+ */
+export const IMPOSSIBLE_HOOKS = [
+  'IMPOSSIBLE PUZZLE. Rated 2400+. Most titled players need a minute here.',
+  'IMPOSSIBLE PUZZLE. If you found it, screenshot your comment. Proof.',
+  'IMPOSSIBLE PUZZLE. The engine found it. Did you?',
+  'IMPOSSIBLE PUZZLE. Every move you want to play is wrong.',
+  'IMPOSSIBLE PUZZLE. Nobody gets this on the first look.',
+  'IMPOSSIBLE PUZZLE. This is the one you send to the friend who thinks they are good.',
+  'IMPOSSIBLE PUZZLE. Grandmaster territory. No shame in watching the answer.',
+  'IMPOSSIBLE PUZZLE. You will not see it. Prove us wrong.',
+  'IMPOSSIBLE PUZZLE. Solved it before the reveal? You are in rare company.',
+];
+
 /** Every reel asks for a guess before the reveal — rotate the ask. */
 export const GUESS_LINES = [
   'Drop your guess in the comments BEFORE you watch the solution 👇',
@@ -182,10 +200,12 @@ export function captionHash(seed: string): number {
   return Math.abs(hash);
 }
 
-export function hookFor(theme: string, difficult: boolean, hash: number): string {
-  const pool = difficult
-    ? DIFFICULT_HOOKS
-    : THEME_HOOKS[theme] ?? THEME_HOOKS.generic;
+export function hookFor(theme: string, tier: ReelTier, hash: number): string {
+  const pool = tier === 'impossible'
+    ? IMPOSSIBLE_HOOKS
+    : tier === 'difficult'
+      ? DIFFICULT_HOOKS
+      : THEME_HOOKS[theme] ?? THEME_HOOKS.generic;
   return pool[hash % pool.length];
 }
 
@@ -208,7 +228,7 @@ export interface CaptionInput {
   rating: number;
   theme: string;
   quip: string;
-  difficult: boolean;
+  tier: ReelTier;
   /** Puzzle FEN + raw Lichess moves. Supply these and the caption can name the
    *  side to move and derive its post-solution payoff from the real position. */
   fen?: string;
@@ -218,17 +238,20 @@ export interface CaptionInput {
 /**
  * The line that goes AFTER the solution — the payoff, not the setup.
  * Prefers a position-derived insight (lib/ig-puzzle-insight.ts) and falls back
- * to the theme/difficult pools when the position yields nothing provable.
+ * to the theme/tier pools when the position yields nothing provable.
+ * IMPOSSIBLE reels always lead with their tier hook — the bragging right IS the
+ * payoff — and never fall through to a theme line.
  */
 export function payoffLine(
-  { puzzleId, theme, difficult, fen, rawMoves }: CaptionInput,
+  { puzzleId, theme, tier, fen, rawMoves }: CaptionInput,
 ): string {
   const hash = captionHash(puzzleId);
+  if (tier === 'impossible') return hookFor(theme, tier, hash);
   if (fen && rawMoves?.length) {
     const insight = hookForPuzzle(fen, rawMoves, hash);
     if (insight) return insight;
   }
-  return hookFor(theme, difficult, hash);
+  return hookFor(theme, tier, hash);
 }
 
 /** Separates the setup from the payoff so a scroller can't be spoiled. */

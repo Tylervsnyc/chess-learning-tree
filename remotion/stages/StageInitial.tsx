@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ReelTier } from '../../lib/ig-difficult-days';
 import { loadFont } from '@remotion/google-fonts/DMSans';
 import { ReelLayout } from '../components/ReelLayout';
 import { BottomCard } from '../components/BottomCard';
@@ -18,13 +19,13 @@ export const StageInitial: React.FC<{
   playerColorLabel: string;
   setupFrom: string;
   setupTo: string;
-  difficult?: boolean;
-}> = ({ puzzleFen, orientation, playerColorLabel, setupFrom, setupTo, difficult }) => {
+  tier?: ReelTier;
+}> = ({ puzzleFen, orientation, playerColorLabel, setupFrom, setupTo, tier }) => {
   return (
     <ReelLayout
       fen={puzzleFen}
       orientation={orientation}
-      difficult={difficult}
+      tier={tier}
       highlightFrom={setupFrom}
       highlightTo={setupTo}
       bottomContent={
