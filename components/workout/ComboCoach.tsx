@@ -164,7 +164,7 @@ export function ComboCoach({
 
   return (
     <div className={`w-full max-w-xs mx-auto ${className}`}>
-      <div className="relative rounded-2xl bg-chess-surface border border-slate-200 shadow-sm px-4 pt-3 pb-3.5 text-center">
+      <div className="relative rounded-2xl bg-box-bar border border-white/10 px-4 pt-3 pb-3.5 text-center">
         <button
           onClick={() => {
             const next = !muted;
@@ -173,7 +173,7 @@ export function ComboCoach({
             if (next && audioRef.current) audioRef.current.pause();
           }}
           aria-label={muted ? 'Unmute Rookie' : 'Mute Rookie'}
-          className="absolute top-2 right-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-chess-text-muted"
+          className="absolute top-2 right-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/60 hover:text-white"
         >
           <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             {muted ? (
@@ -192,15 +192,15 @@ export function ComboCoach({
 
         {teach ? (
           <div className="py-2">
-            <div className="text-[11px] font-black uppercase tracking-widest text-amber-500">
+            <div className="text-[11px] font-black uppercase tracking-widest text-amber-400">
               New move unlocked
             </div>
-            <div className="text-lg font-black text-chess-text mt-1">{teach.title}</div>
-            <p className="text-sm text-chess-text-muted mt-1.5 leading-relaxed">{teach.text}</p>
+            <div className="text-lg font-black text-white mt-1">{teach.title}</div>
+            <p className="text-sm text-white/70 mt-1.5 leading-relaxed">{teach.text}</p>
           </div>
         ) : combo ? (
           <>
-            <div className="text-[11px] font-black uppercase tracking-widest text-chess-text-muted">
+            <div className="text-[11px] font-black uppercase tracking-widest text-white/60">
               Rookie calls it
             </div>
             <div className="flex items-end justify-center gap-3 mt-1.5 min-h-[64px]">
@@ -209,17 +209,17 @@ export function ComboCoach({
                   <span
                     className={`text-5xl font-black tabular-nums leading-none transition-all duration-150 ${
                       i === litIndex
-                        ? 'text-amber-500 scale-110'
+                        ? 'text-amber-400 scale-110'
                         : i < litIndex
-                          ? 'text-chess-text'
-                          : 'text-slate-300'
+                          ? 'text-white'
+                          : 'text-white/25'
                     }`}
                   >
                     {MOVES[id].cue}
                   </span>
                   <span
                     className={`text-[10px] font-bold tracking-wide mt-1 ${
-                      i <= litIndex ? 'text-chess-text-muted' : 'text-slate-300'
+                      i <= litIndex ? 'text-white/60' : 'text-white/25'
                     }`}
                   >
                     {MOVES[id].name}
@@ -229,7 +229,7 @@ export function ComboCoach({
             </div>
           </>
         ) : (
-          <div className="py-4 text-sm font-semibold text-chess-text-muted">
+          <div className="py-4 text-sm font-semibold text-white/70">
             Hands up…
           </div>
         )}
@@ -238,8 +238,8 @@ export function ComboCoach({
       {/* Unlocked-moves legend — the curriculum made visible */}
       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-2">
         {legend.map((m) => (
-          <span key={m.id} className="text-[10px] font-bold text-chess-text-muted">
-            <span className="text-chess-text">{m.cue}</span> {m.name}
+          <span key={m.id} className="text-[10px] font-bold text-white/60">
+            <span className="text-white">{m.cue}</span> {m.name}
           </span>
         ))}
       </div>

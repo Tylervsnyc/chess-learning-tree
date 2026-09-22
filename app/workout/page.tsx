@@ -71,8 +71,7 @@ import { ComboCoach } from '@/components/workout/ComboCoach';
 import { bumpComboSessions } from '@/lib/workout/combo-coach';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
 import type { FightStats } from '@/lib/box/fight-stats';
-import { ShellColor } from '@/components/chessboxing/ShellColor';
-import { SHELL_ARENA } from '@/components/chessboxing/ShellChrome';
+import { themeHint, THEME_HINT_PUZZLES } from '@/lib/workout/theme-hint';
 
 // Quadrant Fight (beta) — opt-in camera game for boxing segments. Lazy so the
 // TF.js/game code is code-split and never loads unless the user turns it on.
@@ -380,7 +379,7 @@ function FrozenFightBoard({ fen }: { fen: string }) {
 
 function Legend({ color, label }: { color: string; label: string }) {
   return (
-    <span className="flex items-center gap-1.5 text-chess-text-muted">
+    <span className="flex items-center gap-1.5 text-white/70">
       <span className={`w-2.5 h-2.5 rounded-full ${color}`} />
       {label}
     </span>
@@ -1373,7 +1372,7 @@ function WorkoutPageInner() {
         toughestSolved: null,
         needsSignIn: false,
         achievements: [],
-        nextMedal: { id: 'training-thousand-fists', name: 'Thousand Fists', icon: '👊', progress: 412, target: 1000 },
+        nextMedal: { id: 'training-thousand-fists', name: 'Thousand Fists', icon: '/achievements/training-thousand-fists.webp', progress: 412, target: 1000 },
         sessionId: null,
       });
       setPhase('done');
@@ -1696,6 +1695,13 @@ function WorkoutPageInner() {
   }, [currentPuzzle, recordResult]);
 
   const liveScore = Math.max(0, score);
+  // 1-based number of the puzzle on the board this session (answered + 1).
+  // right/wrong are restored on resume, so the count survives an OS kill.
+  const puzzleNumber = right + wrong + 1;
+  const themeHintLabel =
+    !isFight && currentPuzzle && puzzleNumber <= THEME_HINT_PUZZLES
+      ? themeHint(currentPuzzle.themes)
+      : null;
   const multiplier = comboMultiplier(combo);
 
   // Preview of the circuit for the chosen duration (setup screen).
@@ -1713,11 +1719,12 @@ function WorkoutPageInner() {
   // ── SETUP ─────────────────────────────────────────────────────────────────
   if (phase === 'setup') {
     return (
-      <div className={`h-full ${fromBox ? 'relative overflow-hidden bg-box-arena flex flex-col' : 'overflow-auto bg-chess-page'}`}>
-        {fromBox && <FullBleedShell />}
-        {/* Only the setup window is dark; running and done are light, which is
-            /workout's route default. */}
-        {fromBox && <ShellColor value={SHELL_ARENA} />}
+      <div className={`h-full bg-box-arena text-white ${fromBox ? 'relative overflow-hidden flex flex-col' : 'overflow-auto'}`}>
+        {/* Every phase drops the 768px shell cap so the navy runs edge to
+            edge on desktop/iPad too; the content columns carry their own caps. */}
+        <FullBleedShell />
+        {/* Every workout phase is dark (arena navy is /workout's route
+            default in ShellChrome), so no <ShellColor> is needed here. */}
         {fromBox && <ArenaScene />}
         {fromBox && <ArenaBackButton />}
         {/* The hanging sign — same slot as RingHome so it never moves between windows. */}
@@ -1761,10 +1768,10 @@ function WorkoutPageInner() {
           )}
 
           {resumable && (
-            <div className={`rounded-2xl border-2 border-chess-blue/40 p-4 flex flex-col gap-3 ${fromBox ? 'bg-chess-blue/15' : 'bg-chess-blue/5'}`}>
+            <div className="rounded-2xl border-2 border-chess-blue/40 p-4 flex flex-col gap-3 bg-chess-blue/15">
               <div>
-                <div className={`text-sm font-black ${fromBox ? 'text-white' : 'text-chess-text'}`}>Resume your workout?</div>
-                <div className={`text-xs mt-0.5 ${fromBox ? 'text-white/60' : 'text-chess-text-muted'}`}>
+                <div className="text-sm font-black text-white">Resume your workout?</div>
+                <div className="text-xs mt-0.5 text-white/70">
                   You left off on round {Math.floor(resumable.segIndex / ROUND_LENGTH) + 1} of{' '}
                   {Math.max(1, Math.round((resumable.minutes * 60) / ROUND_SECONDS))}.
                 </div>
@@ -1781,11 +1788,7 @@ function WorkoutPageInner() {
                     clearResume();
                     setResumable(null);
                   }}
-                  className={`rounded-xl font-black text-sm px-4 py-3 active:translate-y-[1px] transition ${
-                    fromBox
-                      ? 'bg-white/10 border border-white/15 text-white/70'
-                      : 'bg-chess-surface border border-slate-200 text-chess-text-muted'
-                  }`}
+                  className="rounded-xl font-black text-sm px-4 py-3 active:translate-y-[1px] transition bg-white/10 border border-white/15 text-white/70"
                 >
                   Start over
                 </button>
@@ -1796,11 +1799,11 @@ function WorkoutPageInner() {
           {/* One Round — bold title with two lines encompassing the bars.
               Hidden in the ring flow: one window, the rounds picker says it all. */}
           {!fromBox && (
-          <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-4 pt-5">
-            <div className="relative rounded-xl border-2 border-chess-text/15 px-3 pt-6 pb-3">
+          <div className="bg-box-bar rounded-2xl border border-white/10 p-4 pt-5">
+            <div className="relative rounded-xl border-2 border-white/15 px-3 pt-6 pb-3">
               {/* "One Round" sits on the top border; the side borders are the two
                   lines that wrap the bars below. */}
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-chess-surface px-2.5 text-base font-black text-chess-text">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-box-bar px-2.5 text-base font-black text-white">
                 One Round
               </span>
 
@@ -1811,7 +1814,7 @@ function WorkoutPageInner() {
                 return (
                   <>
                     {/* Total round length, under the title */}
-                    <div className="text-center text-xs font-bold text-chess-text-muted mb-2.5">
+                    <div className="text-center text-xs font-bold text-white/70 mb-2.5">
                       {Math.round(total / 60)} Minutes
                     </div>
                     {/* Time labels — aligned over each bar */}
@@ -1819,7 +1822,7 @@ function WorkoutPageInner() {
                       {round.map((seg, i) => (
                         <div
                           key={i}
-                          className="text-center text-[10px] font-bold text-chess-text-muted leading-none"
+                          className="text-center text-[10px] font-bold text-white/70 leading-none"
                           style={{ width: `${(seg.seconds / total) * 100}%` }}
                         >
                           {fmt(seg.seconds)}
@@ -1835,7 +1838,7 @@ function WorkoutPageInner() {
           )}
 
           <div>
-            <h2 className={`text-[11px] font-bold uppercase tracking-wide mb-2 text-center ${fromBox ? 'text-white/50' : 'text-chess-text-muted'}`}>
+            <h2 className="text-[11px] font-bold uppercase tracking-wide mb-2 text-center text-white/60">
               How many rounds?
             </h2>
             <div className="grid grid-cols-4 gap-2">
@@ -1850,14 +1853,12 @@ function WorkoutPageInner() {
                     }}
                     className={`rounded-xl border-2 py-2.5 transition flex flex-col items-center leading-none ${
                       minutes === m
-                        ? `border-chess-blue text-chess-blue ${fromBox ? 'bg-chess-blue/20' : 'bg-chess-blue/10'}`
-                        : fromBox
-                          ? 'border-white/15 bg-white/[0.07] text-white'
-                          : 'border-slate-200 bg-chess-surface text-chess-text'
+                        ? 'border-chess-blue text-chess-blue bg-chess-blue/20'
+                        : 'border-white/15 bg-white/[0.07] text-white'
                     }`}
                   >
                     <span className="font-black text-lg">{rounds}</span>
-                    <span className={`text-[10px] font-semibold mt-0.5 ${fromBox ? 'text-white/50' : 'text-chess-text-muted'}`}>
+                    <span className="text-[10px] font-semibold mt-0.5 text-white/60">
                       {m} min
                     </span>
                   </button>
@@ -1870,7 +1871,7 @@ function WorkoutPageInner() {
               Hidden in the ring flow: Play vs Rookie is the other corner. */}
           {fightEnabled && !fromBox && (
             <div>
-              <h2 className="text-[11px] font-bold text-chess-text-muted uppercase tracking-wide mb-2 text-center">
+              <h2 className="text-[11px] font-bold text-white/60 uppercase tracking-wide mb-2 text-center">
                 Discipline
               </h2>
               <div className="grid grid-cols-2 gap-2">
@@ -1881,12 +1882,12 @@ function WorkoutPageInner() {
                   }}
                   className={`rounded-xl border-2 px-3 py-2.5 min-h-[44px] transition flex flex-col items-center leading-tight ${
                     discipline === 'puzzles'
-                      ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
-                      : 'border-slate-200 bg-chess-surface text-chess-text'
+                      ? 'border-chess-blue bg-chess-blue/20 text-chess-blue'
+                      : 'border-white/15 bg-white/[0.07] text-white'
                   }`}
                 >
                   <span className="font-black text-sm">Puzzles</span>
-                  <span className="text-[10px] font-semibold text-chess-text-muted mt-0.5">
+                  <span className="text-[10px] font-semibold text-white/60 mt-0.5">
                     Solve as many as you can
                   </span>
                 </button>
@@ -1897,12 +1898,12 @@ function WorkoutPageInner() {
                   }}
                   className={`rounded-xl border-2 px-3 py-2.5 min-h-[44px] transition flex flex-col items-center leading-tight ${
                     discipline === 'fight'
-                      ? 'border-chess-blue bg-chess-blue/10 text-chess-blue'
-                      : 'border-slate-200 bg-chess-surface text-chess-text'
+                      ? 'border-chess-blue bg-chess-blue/20 text-chess-blue'
+                      : 'border-white/15 bg-white/[0.07] text-white'
                   }`}
                 >
                   <span className="font-black text-sm">Fight Rookie</span>
-                  <span className="text-[10px] font-semibold text-chess-text-muted mt-0.5">
+                  <span className="text-[10px] font-semibold text-white/60 mt-0.5">
                     One game. It freezes while you train.
                   </span>
                 </button>
@@ -1931,36 +1932,33 @@ function WorkoutPageInner() {
 
           {/* Difficulty adapts — compact bullets */}
           {!fromBox && (
-          <div
-            className="rounded-2xl border border-amber-200 shadow-sm p-3"
-            style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)' }}
-          >
+          <div className="rounded-2xl bg-box-bar border border-[#f6c445]/30 p-3">
             <div className="flex items-center gap-1.5 mb-2">
-              <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500" />
-              <h2 className="text-[11px] font-black text-amber-700 uppercase tracking-wide">
+              <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445]" />
+              <h2 className="text-[11px] font-black text-[#f6c445] uppercase tracking-wide">
                 How it works
               </h2>
             </div>
             {fightEnabled && discipline === 'fight' ? (
-              <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
+              <ul className="flex flex-col gap-1.5 text-sm font-bold text-white/85">
                 <li className="flex items-center gap-2">
                   <span className="text-chess-green">✓</span> One game vs Rookie, across every round
                 </li>
                 <li className="flex items-center gap-2">
-                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                   Board freezes while you exercise — like the real sport
                 </li>
                 <li className="flex items-center gap-2">
-                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                   Judges score each round on material you win
                 </li>
                 <li className="flex items-center gap-2">
-                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                   Checkmate Rookie = big bonus (she plays your /play level)
                 </li>
               </ul>
             ) : (
-            <ul className="flex flex-col gap-1.5 text-sm font-bold text-amber-900">
+            <ul className="flex flex-col gap-1.5 text-sm font-bold text-white/85">
               <li className="flex items-center gap-2">
                 <span className="text-chess-green">✓</span> Correct answer = ELO +60
               </li>
@@ -1968,20 +1966,20 @@ function WorkoutPageInner() {
                 <span className="text-chess-red">✗</span> 3 wrong in a round = round over
               </li>
               <li className="flex items-center gap-2">
-                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                 Harder puzzle = more points (10–45)
               </li>
               <li className="flex items-center gap-2">
-                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                 Solve a streak = combo up to ×2
               </li>
               <li className="flex items-center gap-2">
-                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                 Easy puzzles below your peak barely pay
               </li>
               {FEATURE_FLAGS.LEADERBOARD_DAILY_SLOT && (
                 <li className="flex items-center gap-2">
-                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <Icon path={ICONS.bolt} className="w-3.5 h-3.5 text-[#f6c445] shrink-0" />
                   Leaderboard counts your best round each day
                 </li>
               )}
@@ -2005,7 +2003,8 @@ function WorkoutPageInner() {
   // ── DONE ──────────────────────────────────────────────────────────────────
   if (phase === 'done' && finishResult) {
     return (
-      <div className="h-full bg-chess-page">
+      <div className="h-full bg-box-arena">
+        <FullBleedShell />
         {/* Fresh medals play OVER the results popup (z-110), sized to the
             moment — never extra rows inside the card. */}
         {finishResult.achievements.length > 0 && (
@@ -2060,8 +2059,9 @@ function WorkoutPageInner() {
   // ── RUNNING (and confetti on the results popup) ───────────────────────────
   if (!current) {
     return (
-      <div className="h-full overflow-auto bg-chess-page flex items-center justify-center">
-        <p className="text-chess-text-muted">Loading…</p>
+      <div className="h-full overflow-auto bg-box-arena flex items-center justify-center">
+        <FullBleedShell />
+        <p className="text-white/70">Loading…</p>
       </div>
     );
   }
@@ -2070,13 +2070,14 @@ function WorkoutPageInner() {
   const lineSeed = segIndex;
 
   return (
-    <div className="h-full overflow-auto bg-chess-page flex flex-col">
+    <div className="h-full overflow-auto bg-box-arena text-white flex flex-col">
+      <FullBleedShell />
       {/* Header: progress + score + timer */}
-      <div className="bg-chess-surface border-b border-slate-200">
+      <div className="bg-box-bar border-b border-white/10">
         <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-chess-text-muted">Now</span>
-            <span className="text-sm font-bold text-chess-text flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-white/60">Now</span>
+            <span className="text-sm font-bold text-white flex items-center gap-1.5">
               {current.kind !== 'break' && (
                 <Icon path={ICONS[iconFor(current.kind)]} className="w-4 h-4 text-chess-blue" />
               )}
@@ -2086,7 +2087,7 @@ function WorkoutPageInner() {
 
           <div className="flex items-center gap-3 sm:gap-4">
             {isChess && firedUp && (
-              <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 bg-amber-500/15 text-amber-600">
+              <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 bg-amber-400/15 text-amber-300">
                 <Icon path={ICONS.bolt} className="w-4 h-4" />
                 <span className="text-sm font-black leading-none whitespace-nowrap">
                   Fired Up
@@ -2098,7 +2099,7 @@ function WorkoutPageInner() {
                 className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 transition-colors ${
                   multiplier > 1
                     ? 'bg-chess-gold/15 text-chess-gold'
-                    : 'bg-chess-page text-chess-text-muted'
+                    : 'bg-white/10 text-white/70'
                 }`}
               >
                 <Icon path={ICONS.bolt} className="w-4 h-4" />
@@ -2108,14 +2109,14 @@ function WorkoutPageInner() {
               </div>
             )}
             <div className="flex flex-col items-end">
-              <span className="text-xs font-semibold text-chess-text-muted">Points</span>
+              <span className="text-xs font-semibold text-white/60">Points</span>
               <span className="text-lg font-black text-chess-green tabular-nums leading-none">
                 {liveScore}
               </span>
             </div>
-            <div className="flex items-center gap-1.5 bg-chess-page rounded-xl px-3 py-1.5">
-              <Icon path={ICONS.clock} className="w-4 h-4 text-chess-text-muted" />
-              <span className="text-lg font-black text-chess-text tabular-nums leading-none">
+            <div className="flex items-center gap-1.5 bg-white/10 rounded-xl px-3 py-1.5">
+              <Icon path={ICONS.clock} className="w-4 h-4 text-white/60" />
+              <span className="text-lg font-black text-white tabular-nums leading-none">
                 {fmtTime(secondsLeft)}
               </span>
             </div>
@@ -2124,9 +2125,9 @@ function WorkoutPageInner() {
         {/* Round progress bar — 4 parts, with the moving playhead */}
         <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 pb-3.5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-black text-chess-text uppercase tracking-wide">
+            <span className="text-xs font-black text-white uppercase tracking-wide">
               Round {roundIndex + 1}{' '}
-              <span className="text-chess-text-muted">of {roundCount}</span>
+              <span className="text-white/60">of {roundCount}</span>
             </span>
           </div>
           <CircuitTimeline
@@ -2142,7 +2143,7 @@ function WorkoutPageInner() {
         {isChess && isFight ? (
           <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-3">
             {/* Rookie's canned line (resume / game-result) or the matchup */}
-            <p className="text-center text-sm font-semibold text-chess-text-muted leading-snug">
+            <p className="text-center text-sm font-semibold text-white/70 leading-snug">
               {fightLine ?? `Fight Rookie · Level ${fightLevel}`}
             </p>
             <ChessPathBoard
@@ -2167,7 +2168,7 @@ function WorkoutPageInner() {
             {/* Status — fixed height so the board never shifts */}
             <div className="text-center h-5">
               {rookieThinking ? (
-                <span className="text-xs font-medium text-chess-text-muted">
+                <span className="text-xs font-medium text-white/70">
                   Rookie is thinking…
                 </span>
               ) : fightGame && fightGame.turn() === 'w' ? (
@@ -2177,9 +2178,24 @@ function WorkoutPageInner() {
           </div>
         ) : isChess ? (
           <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-5 flex flex-col gap-4">
-            <p className="text-center text-sm font-semibold text-chess-text-muted">
-              {promptFor('chess')}
-            </p>
+            {/* One fixed-height row, exactly the old prompt line: for the first
+                THEME_HINT_PUZZLES puzzles it carries the beginner theme hint
+                INSTEAD of the prompt, so the hint adds no height and the board
+                never moves when it goes. */}
+            <div className="h-5 flex items-center justify-center" aria-live="polite">
+              {themeHintLabel ? (
+                <span className="inline-flex items-center gap-1.5 text-sm font-bold text-white leading-none">
+                  <span className="text-[10px] font-black uppercase tracking-[0.14em] text-[#f6c445]">
+                    Theme
+                  </span>
+                  {themeHintLabel}
+                </span>
+              ) : (
+                <p className="text-center text-sm font-semibold text-white/70">
+                  {promptFor('chess')}
+                </p>
+              )}
+            </div>
             {currentPuzzle ? (
               <WorkoutPuzzle
                 key={`${currentPuzzle.puzzleId || currentPuzzle.id}-${puzzlePos}`}
@@ -2190,7 +2206,7 @@ function WorkoutPageInner() {
               />
             ) : queueError ? (
               <div className="py-12 flex flex-col items-center gap-3 text-center">
-                <p className="text-sm font-semibold text-chess-text">
+                <p className="text-sm font-semibold text-white">
                   Couldn&rsquo;t load the puzzles.
                 </p>
                 <button
@@ -2200,12 +2216,12 @@ function WorkoutPageInner() {
                 >
                   Try again
                 </button>
-                <p className="text-xs text-chess-text-muted">
+                <p className="text-xs text-white/60">
                   Or hit Skip to move to the next round.
                 </p>
               </div>
             ) : (
-              <div className="text-center text-chess-text-muted py-12">
+              <div className="text-center text-white/70 py-12">
                 Loading puzzles…
               </div>
             )}
@@ -2213,12 +2229,12 @@ function WorkoutPageInner() {
         ) : current.kind === 'break' ? (
           <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 text-center gap-6">
             <BreathingRook size="xl" animate mood="zen" />
-            <div className="text-7xl font-black text-chess-text tabular-nums">
+            <div className="text-7xl font-black text-white tabular-nums">
               {fmtTime(secondsLeft)}
             </div>
             <div>
-              <h2 className="text-2xl font-black text-chess-text">Rest</h2>
-              <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
+              <h2 className="text-2xl font-black text-white">Rest</h2>
+              <p className="text-white/70 mt-3 max-w-xs text-sm leading-relaxed">
                 {isFight && fightLine ? fightLine : pick(ROOKIE_LINES.break, lineSeed)}
               </p>
             </div>
@@ -2246,7 +2262,7 @@ function WorkoutPageInner() {
                     if (typeof window !== 'undefined')
                       window.localStorage.setItem('cp_punch_cam', '0');
                   }}
-                  className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px]"
+                  className="text-sm font-semibold text-white/70 underline underline-offset-2 min-h-[44px]"
                 >
                   Turn off camera
                 </button>
@@ -2266,7 +2282,7 @@ function WorkoutPageInner() {
                   onFinish={(stats: FightStats) => setFightCard({ segIndex, stats })}
                 />
                 {fightCard?.segIndex === segIndex && (
-                  <p className="text-xs font-semibold text-chess-text-muted tabular-nums">
+                  <p className="text-xs font-semibold text-white/70 tabular-nums">
                     {fightCard.stats.punchesLanded} landed · {fightCard.stats.dodgesMade} dodged ·{' '}
                     {fightCard.stats.hitsTaken} hits taken
                   </p>
@@ -2277,17 +2293,17 @@ function WorkoutPageInner() {
                 {!FEATURE_FLAGS.WORKOUT_COMBO_CALLS && (
                   <Icon path={ICONS[iconFor(current.kind)]} className="w-20 h-20 text-chess-green" />
                 )}
-                <div className="text-7xl font-black text-chess-text tabular-nums">
+                <div className="text-7xl font-black text-white tabular-nums">
                   {fmtTime(secondsLeft)}
                 </div>
                 {FEATURE_FLAGS.WORKOUT_COMBO_CALLS ? (
                   <ComboCoach key={`coach-${segIndex}`} segmentSeconds={current.seconds} />
                 ) : (
                   <div>
-                    <h2 className="text-2xl font-black text-chess-text">
+                    <h2 className="text-2xl font-black text-white">
                       {promptFor(current.kind)}
                     </h2>
-                    <p className="text-chess-text-muted mt-3 max-w-xs text-sm leading-relaxed">
+                    <p className="text-white/70 mt-3 max-w-xs text-sm leading-relaxed">
                       {isFight && fightLine ? fightLine : pick(ROOKIE_LINES.workout, lineSeed)}
                     </p>
                   </div>
@@ -2301,7 +2317,7 @@ function WorkoutPageInner() {
                       if (typeof window !== 'undefined')
                         window.localStorage.setItem('cp_punch_cam', '1');
                     }}
-                    className="flex items-center gap-2 rounded-xl border-2 border-chess-green text-chess-green font-bold px-5 py-3 min-h-[44px] hover:bg-chess-green/5 transition"
+                    className="flex items-center gap-2 rounded-xl border-2 border-chess-green text-chess-green font-bold px-5 py-3 min-h-[44px] hover:bg-chess-green/10 transition"
                   >
                     Count my punches
                   </button>
@@ -2312,7 +2328,7 @@ function WorkoutPageInner() {
                       playButtonClick();
                       toggleQuadFight(true);
                     }}
-                    className="text-sm font-semibold text-chess-text-muted underline underline-offset-2 min-h-[44px] px-4"
+                    className="text-sm font-semibold text-white/70 underline underline-offset-2 min-h-[44px] px-4"
                   >
                     Quadrant Fight (beta)
                   </button>
@@ -2324,14 +2340,14 @@ function WorkoutPageInner() {
       </div>
 
       {/* Footer: skip + end */}
-      <div className="bg-chess-surface border-t border-slate-200">
+      <div className="bg-box-bar border-t border-white/10">
         <div className="max-w-md md:max-w-[40rem] mx-auto w-full px-4 md:px-6 py-3 flex items-center gap-3">
           <button
             onClick={() => {
               playButtonClick();
               advanceSegment();
             }}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 text-chess-text font-bold py-3 min-h-[44px] hover:bg-chess-page transition"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-white/15 text-white font-bold py-3 min-h-[44px] hover:bg-white/5 transition"
           >
             <Icon path={ICONS.skip} className="w-4 h-4" />
             Skip
@@ -2341,7 +2357,7 @@ function WorkoutPageInner() {
               playButtonClick();
               setEndConfirmOpen(true);
             }}
-            className="rounded-xl px-4 text-chess-text-muted font-bold py-3 min-h-[44px] hover:text-chess-text transition"
+            className="rounded-xl px-4 text-white/70 font-bold py-3 min-h-[44px] hover:text-white transition"
           >
             End
           </button>
@@ -2351,18 +2367,18 @@ function WorkoutPageInner() {
       {/* End-early confirm: save / discard / keep going */}
       {endConfirmOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={() => setEndConfirmOpen(false)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="w-full max-w-sm bg-chess-surface rounded-3xl shadow-2xl p-6 flex flex-col gap-4 text-center"
+            className="w-full max-w-sm bg-box-bar border border-white/10 rounded-3xl shadow-2xl p-6 flex flex-col gap-4 text-center"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <h2 className="text-xl font-black text-chess-text">End your workout?</h2>
-              <p className="text-sm text-chess-text-muted mt-1.5 leading-snug">
+              <h2 className="text-xl font-black text-white">End your workout?</h2>
+              <p className="text-sm text-white/70 mt-1.5 leading-snug">
                 Save your progress to keep the {liveScore} point{liveScore === 1 ? '' : 's'} you&apos;ve
                 earned, or discard this session.
               </p>
@@ -2382,7 +2398,7 @@ function WorkoutPageInner() {
                 playButtonClick();
                 discardSession();
               }}
-              className="w-full rounded-2xl border-2 border-slate-200 text-chess-red font-black text-base py-3 hover:bg-chess-page transition"
+              className="w-full rounded-2xl border-2 border-white/15 text-chess-red font-black text-base py-3 hover:bg-white/5 transition"
             >
               Discard
             </button>
@@ -2391,7 +2407,7 @@ function WorkoutPageInner() {
                 playButtonClick();
                 setEndConfirmOpen(false);
               }}
-              className="text-sm font-bold text-chess-text-muted hover:text-chess-text py-1 transition"
+              className="text-sm font-bold text-white/70 hover:text-white min-h-[44px] transition"
             >
               Keep going
             </button>

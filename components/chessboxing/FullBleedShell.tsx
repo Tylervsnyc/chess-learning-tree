@@ -10,8 +10,9 @@
  * either side of the dark arena.
  *
  * Render this at the top of a box-shell screen. Every /box route gets it from
- * app/box/layout.tsx; /workout and /play only get it in their box-shell
- * branch, because their web versions still want the 768px reading cap.
+ * app/box/layout.tsx and every /workout phase renders it (the workout is dark
+ * on the web too); /play only gets it in its box-shell branch, because its
+ * web version still wants the 768px reading cap.
  *
  * It is a plain server-rendered <style> — no effect, no hydration flash, and
  * it unmounts with the screen, so leaving the box shell restores the cap.

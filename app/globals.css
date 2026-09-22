@@ -51,7 +51,7 @@
   /* === Chess Boxing shell (the navies the app is built out of) ===
      These were loose hex literals in six files. ShellChrome drives the page
      shell from them so the strip behind the status bar matches each screen. */
-  --color-box-arena: #131a2e;   /* RingHome, bout pre-fight, workout setup */
+  --color-box-arena: #131a2e;   /* RingHome, bout pre-fight, every /workout phase */
   --color-box-deep: #10162a;    /* Play's gym setup screen */
   --color-box-splash: #101a33;  /* cold-start splash / native launch image */
   --color-box-bar: #1a2440;     /* the floating tab-bar island */

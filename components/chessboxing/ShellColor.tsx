@@ -35,7 +35,7 @@ import { notifyShellChange } from '@/lib/shell-chrome';
  * WHEN TO USE. ShellChrome already gives every route a default from its
  * pathname. Render this only on a screen whose colour differs from that
  * default, which in practice means a route that changes colour BY PHASE
- * (/play, /workout and /box/bout each open dark and then show a light board).
+ * (/play and /box/bout each open dark and then show a light board).
  * A component rather than a hook, because those are conditional JSX branches
  * and hooks cannot be called conditionally.
  */

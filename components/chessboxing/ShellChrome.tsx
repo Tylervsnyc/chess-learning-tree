@@ -23,7 +23,7 @@ import { useBoxShell } from '@/hooks/useBoxShell';
 
 /* ── the palette (mirrors the --color-box-* tokens in globals.css) ───────── */
 
-/** Arena navy — RingHome, the bout pre-fight, the workout setup. */
+/** Arena navy — RingHome, the bout pre-fight, every /workout phase. */
 export const SHELL_ARENA = '#131a2e';
 /** Gym navy — Play's setup screen. */
 export const SHELL_GYM = '#10162a';
@@ -42,9 +42,12 @@ const CORNER = SHELL_CORNER;
  * Each route's colour ON ENTRY, first match wins — so the specific /box
  * children must come before /box itself.
  *
- * /play, /workout and /box/bout are LIGHT here on purpose: each opens on a
- * dark screen but spends most of its time on a light board, so the dark phase
- * declares itself with <ShellColor> and every other phase needs no call site.
+ * /workout is ARENA: every phase (setup, rounds, rest, results) is dark, so
+ * it needs no <ShellColor> call site at all.
+ *
+ * /play and /box/bout are LIGHT here on purpose: each opens on a dark screen
+ * but spends most of its time on a light board, so the dark phase declares
+ * itself with <ShellColor> and every other phase needs no call site.
  *
  * /welcome is deliberately absent: it renders OnboardingFlow, which is light.
  * (WelcomeHero's navy is a small card inside /box/onboarding, not a page.)
@@ -61,7 +64,7 @@ const ROUTE_DEFAULTS: ReadonlyArray<readonly [string, string]> = [
   ['/box', ARENA],
   ['/workout/report', ARENA],
   ['/workout/fixit', ARENA],
-  ['/workout', LIGHT],
+  ['/workout', ARENA],
   ['/play', LIGHT],
 ];
 
