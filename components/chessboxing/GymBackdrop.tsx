@@ -48,8 +48,8 @@ export function GymBackdrop() {
             'repeating-linear-gradient(0deg, transparent 0 24px, rgba(255,255,255,0.35) 24px 25px), repeating-linear-gradient(90deg, transparent 0 50px, rgba(255,255,255,0.25) 50px 51px)',
         }}
       />
-      {/* neon — sits in the clear band under the level bar + its "tap a level" hint (was 54px, which printed over the hint in the app) */}
-      <div className="absolute top-[124px] left-1/2 -translate-x-1/2 whitespace-nowrap" style={{ animation: 'cbgFlicker 7s linear infinite' }}>
+      {/* neon — centered in the clear band between the "tap a level" hint and the LV. pill (54px printed over the hint; 124px sat behind the pill) */}
+      <div className="absolute top-[100px] left-1/2 -translate-x-1/2 whitespace-nowrap" style={{ animation: 'cbgFlicker 7s linear infinite' }}>
         <span
           className="text-[11px] font-black uppercase tracking-[0.18em] text-[#ff7a7a]"
           style={{ textShadow: '0 0 8px rgba(255,90,90,0.9), 0 0 22px rgba(255,60,60,0.55)' }}
