@@ -77,6 +77,11 @@ const config: CapacitorConfig = IS_CHESSPATH
       ios: {
         path: 'ios',
         contentInset: 'always',
+        // The native colour of the strips behind the status bar and the home
+        // indicator until the web reports its own (ShellViewController.swift).
+        // Unset, Capacitor uses system white — the "white bars" bug. Matches
+        // the splash navy so a cold start is dark edge to edge.
+        backgroundColor: '#101a33',
       },
       plugins: {
         SplashScreen: {
