@@ -300,4 +300,23 @@ platform :ios do
     fresh = app.get_app_store_versions(filter: { versionString: ver }).first
     UI.success("SUBMITTED #{ver} (build #{build_no}) — state=#{fresh.app_store_state}")
   end
+
+  desc "Cancel the review submission that is currently waiting, so a new build can replace it"
+  lane :cancel_review do
+    token = Spaceship::ConnectAPI::Token.create(
+      key_id: "767R5DY9P3",
+      issuer_id: "ec78424a-d56e-4da4-ace6-cc4e91f8bb49",
+      filepath: File.expand_path("~/Downloads/AuthKey_767R5DY9P3.p8")
+    )
+    Spaceship::ConnectAPI.token = token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    sub = app.get_in_progress_review_submission(platform: "IOS")
+    if sub.nil?
+      UI.important("no review submission in progress — nothing to cancel")
+    else
+      sub.cancel_submission
+      UI.success("cancelled review submission #{sub.id}")
+    end
+    app.get_app_store_versions(limit: 3).each { |v| UI.message("VERSION #{v.version_string} state=#{v.app_store_state}") }
+  end
 end
