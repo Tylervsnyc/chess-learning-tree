@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import LegalNotice from '@/components/shared/LegalNotice';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Chess Path',
@@ -70,12 +71,13 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-base font-semibold text-chess-text mb-2">Contact</h2>
-            <p>Questions about this policy? Email us at <a href="mailto:tyler@tylervsnyc.com" className="text-chess-green hover:underline">tyler@tylervsnyc.com</a>.</p>
+            <p>Questions about this policy? Email us at <a href="mailto:tyler@learnthroughstories.com" className="text-chess-green hover:underline">tyler@learnthroughstories.com</a>.</p>
           </section>
         </div>
 
         <div className="mt-10 pt-6 border-t border-slate-200 dark:border-slate-700 text-xs text-chess-text-muted">
           <Link href="/terms" className="inline-flex min-h-[44px] items-center text-chess-green hover:underline">Terms of Service</Link>
+          <LegalNotice className="mt-4 text-left px-0" />
         </div>
       </div>
     </div>

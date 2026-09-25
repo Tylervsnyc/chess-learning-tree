@@ -19,6 +19,7 @@ import { StreakHero } from '@/components/shared/StreakHero';
 import { FamilyStrip } from '@/components/shared/FamilyStrip';
 import { WeekChart, type WeekData } from '@/components/shared/WeekChart';
 import { TrophyCase } from '@/components/achievements/TrophyCase';
+import LegalNotice from '@/components/shared/LegalNotice';
 
 /**
  * /profile — the user's profile, streak, and lifetime stats.
@@ -670,6 +671,7 @@ export default function ProfilePage() {
         <MusicSettingsCard />
         <SignOutButton />
         <DeleteAccount />
+        <LegalNotice className="mt-6 mb-4" />
       </div>
 
       <PatronModal isOpen={patronOpen && !nativeApp} onClose={() => setPatronOpen(false)} />

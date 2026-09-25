@@ -1,5 +1,7 @@
 'use client';
 
+import LegalNotice from '@/components/shared/LegalNotice';
+
 import Link from 'next/link';
 import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { BreathingRook } from '@/components/ui/BreathingRook';
@@ -95,6 +97,7 @@ export default function AboutPage() {
               </button>
             )}
           </div>
+          <LegalNotice className="mt-8 mb-6" />
         </div>
       </div>
     </div>

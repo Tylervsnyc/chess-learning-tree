@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Get help with Chess Boxing and The Chess Path — contact, FAQ, billing, and account deletion.',
 };
 
-const SUPPORT_EMAIL = 'tyler@tylervsnyc.com';
+const SUPPORT_EMAIL = 'tyler@learnthroughstories.com';
 
 export default function SupportPage() {
   return (

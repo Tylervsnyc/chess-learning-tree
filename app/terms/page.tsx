@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import LegalNotice from '@/components/shared/LegalNotice';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Chess Path',
@@ -55,7 +56,14 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-base font-semibold text-chess-text mb-2">6. Content</h2>
-            <p>Chess puzzles are sourced from the Lichess open database (CC0 license). All other content, including lessons, design, and branding, is owned by Chess Path.</p>
+            <p>Chess puzzles are sourced from the Lichess open database (CC0 license). All other content, including lessons, design, and branding, is owned by Learn Through Stories LLC.</p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-chess-text mb-2">6a. Intellectual Property and Rookie</h2>
+            <p>The Service, and everything in it other than the CC0 puzzle data, is owned by Learn Through Stories LLC (&quot;the Company&quot;) and protected by copyright, trademark, trade dress and other intellectual property laws.</p>
+            <p className="mt-2">Rookie&trade; is a proprietary character of the Company. This includes her name, visual design and likeness, expressions, animations and motion, voice and speech patterns, sound effects, catchphrases, written lines and personality. Rookie&trade;, The Chess Path&trade;, Chess Boxing&trade; and Rookie&apos;s Revenge&trade; are trademarks of the Company, whether or not they appear with a trademark symbol.</p>
+            <p className="mt-2">You may not copy, reproduce, imitate, adapt, train models on, or create derivative works, characters or products based on Rookie or any other part of the Service, and you may not use the Company&apos;s marks or any confusingly similar mark, without the Company&apos;s prior written permission. Personal, non-commercial sharing of your own results and screenshots from the Service is welcome.</p>
           </section>
 
           <section>
@@ -75,12 +83,13 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-base font-semibold text-chess-text mb-2">10. Contact</h2>
-            <p>Questions? Email <a href="mailto:tyler@tylervsnyc.com" className="text-chess-green hover:underline">tyler@tylervsnyc.com</a>.</p>
+            <p>Questions? Email <a href="mailto:tyler@learnthroughstories.com" className="text-chess-green hover:underline">tyler@learnthroughstories.com</a>.</p>
           </section>
         </div>
 
         <div className="mt-10 pt-6 border-t border-slate-200 dark:border-slate-700 text-xs text-chess-text-muted">
           <Link href="/privacy" className="inline-flex min-h-[44px] items-center text-chess-green hover:underline">Privacy Policy</Link>
+          <LegalNotice className="mt-4 text-left px-0" />
         </div>
       </div>
     </div>

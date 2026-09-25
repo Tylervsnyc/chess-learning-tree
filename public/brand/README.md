@@ -1,5 +1,7 @@
 # Chess Path Brand Assets
 
+> **Ownership:** all assets in this folder, and Rookie™ the character, are the property of Learn Through Stories LLC. Rookie™, The Chess Path™, Chess Boxing™ and Rookie's Revenge™ are trademarks of the Company. Not licensed for reuse. Provenance and filing status: `docs/ip/rookie-provenance.md`.
+
 ## Logo Package Contents
 
 ### Icons (Queen shape - 22 colorful dots)
