@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withCronHeartbeat } from '@/lib/cron/heartbeat';
 import { publishReel } from '@/lib/instagram';
 import { loadQueue, saveQueue, nextForDate, queueRunway, tierOf } from '@/lib/ig-queue';
+import { ACTIVE_TIERS } from '@/lib/ig-difficult-days';
 import { postToSlack } from '@/lib/slack/notify';
 
 // Posting is gated by a flag, per the growth guardrails. Set IG_AUTOPOST=true
@@ -47,7 +48,7 @@ export const GET = withCronHeartbeat('ig-post', async (_request: NextRequest) =>
 
   // Never run dry silently again: a fallback or a low tier goes to Slack.
   const runway = queueRunway(queue);
-  const low = (Object.keys(runway) as (keyof typeof runway)[]).filter(t => runway[t].count < LOW_WATER);
+  const low = ACTIVE_TIERS.filter(t => runway[t].count < LOW_WATER);
   if (fellBack || low.length) {
     await postToSlack('reports', [
       fellBack ? `IG autopost: wanted a ${wantedTier} reel, bucket empty — posted ${tierOf(next)} instead.` : null,

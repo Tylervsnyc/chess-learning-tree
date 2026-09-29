@@ -3,9 +3,10 @@
  * the clock used to read it. Imported by the renderer (scripts/render-daily-video.ts)
  * and the poster (lib/ig-queue.ts → /api/cron/ig-post).
  *
- *   impossible — Thu(4), Sat(6)
- *   difficult  — Mon(1), Tue(2), Fri(5)
- *   normal     — Wed(3), Sun(0)
+ *   impossible — Tue(2), Thu(4), Sat(6)
+ *   difficult  — Sun(0), Mon(1), Wed(3), Fri(5)
+ *   normal     — no days (2026-09-29: difficult reached ~3x normal over 54 posts).
+ *                The tier still exists as the last-resort fallback bucket.
  *
  * See RULES.md §44.
  *
@@ -14,8 +15,8 @@
  */
 export type ReelTier = 'normal' | 'difficult' | 'impossible';
 
-export const IMPOSSIBLE_DOW = new Set([4, 6]);
-export const DIFFICULT_DOW = new Set([1, 2, 5]);
+export const IMPOSSIBLE_DOW = new Set([2, 4, 6]);
+export const DIFFICULT_DOW = new Set([0, 1, 3, 5]);
 
 /** Posting slots per week for each tier — for runway math. */
 export const TIER_SLOTS_PER_WEEK: Record<ReelTier, number> = {
@@ -23,6 +24,10 @@ export const TIER_SLOTS_PER_WEEK: Record<ReelTier, number> = {
   difficult: DIFFICULT_DOW.size,
   normal: 7 - IMPOSSIBLE_DOW.size - DIFFICULT_DOW.size,
 };
+
+/** Tiers that actually get posting days — the only ones refill stocks and low-water alerts watch. */
+export const ACTIVE_TIERS: ReelTier[] = (['normal', 'difficult', 'impossible'] as const)
+  .filter(t => TIER_SLOTS_PER_WEEK[t] > 0);
 
 const DOW_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 

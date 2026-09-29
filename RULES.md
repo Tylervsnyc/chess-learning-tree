@@ -2478,15 +2478,15 @@ Rendering is decoupled from posting (daily Vercel cron `/api/cron/ig-post`, 8am 
 - **Into the queue:** `scripts/ig-refill.ts` only (the Action calls it; it does not re-implement it).
 - **Onto Instagram:** `/api/cron/ig-post` only. Side-channel posting scripts (`ig-post-daily.ts`, `ig-push-difficult.ts`, `ig-test-post.ts --post`) bypassed the queue's `posted` state and caused the 2026-08 double-posts — all removed. `scripts/ig-token-check.ts` is read-only diagnostics and deliberately cannot publish.
 
-### Reel Tiers — Impossible Thu/Sat · Difficult Mon/Tue/Fri · Normal Wed/Sun
+### Reel Tiers — Impossible Tue/Thu/Sat · Difficult Sun/Mon/Wed/Fri · Normal (fallback only)
 
 | Tier | Days (ET) | Pool | Rating | Badge |
 |---|---|---|---|---|
-| impossible | Thu, Sat | `data/video-puzzle-pool-impossible.json` (179) | 2401–2800 | near-black → purple pill, violet/red pulse |
-| difficult | Mon, Tue, Fri | `data/video-puzzle-pool-hard.json` (180) | 2000–2400 | red siren pill |
-| normal | Wed, Sun | `data/video-puzzle-pool.json` (250) | 500–2000 | green pill |
+| impossible | Tue, Thu, Sat | `data/video-puzzle-pool-impossible.json` (179) | 2401–2800 | near-black → purple pill, violet/red pulse |
+| difficult | Sun, Mon, Wed, Fri | `data/video-puzzle-pool-hard.json` (180) | 2000–2400 | red siren pill |
+| normal | none — fallback bucket only | `data/video-puzzle-pool.json` (250) | 500–2000 | green pill |
 
-Difficult reels are the top performers (~5x the views of normal reels, verified 2026-07-30). IMPOSSIBLE (added 2026-09-21) is the step above: a weekly-event bragging-rights reel. `render-daily-video.ts` derives the tier from the **target date** (`--date=M.D.YY`, or today) — no flag needed; `--tier=normal|difficult|impossible` forces one.
+Difficult reels are the top performers (~5x the views of normal reels, verified 2026-07-30). IMPOSSIBLE (added 2026-09-21) is the step above: a weekly-event bragging-rights reel. **2026-09-29: normal dropped from the rotation** — over 54 posts since Aug 1, difficult median reach 564 vs normal 193 (and a 13-day all-normal stretch Sep 9–21, when difficult ran dry, cut reach ~1000 → ~150). Refill stocks only `ACTIVE_TIERS` (tiers with posting days); leftover normal reels stay queued as the last fallback. Re-check impossible vs difficult once impossible has ~10 posts. `render-daily-video.ts` derives the tier from the **target date** (`--date=M.D.YY`, or today) — no flag needed; `--tier=normal|difficult|impossible` forces one.
 
 **Cadence lives in one place:** `IMPOSSIBLE_DOW` / `DIFFICULT_DOW` + `tierForDate` / `tierForDateLabel` in `lib/ig-difficult-days.ts` (0=Sun..6=Sat), imported by the renderer, the poster, and refill — change the days there and everything follows. Pool paths live in `TIER_POOLS` (`lib/ig-reels.ts`).
 

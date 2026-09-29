@@ -13,7 +13,7 @@
  *        npx tsx scripts/curate-video-puzzles-hard.ts --impossible  # impossible pool, 2401-2800
  *
  * --impossible builds data/video-puzzle-pool-impossible.json for the IMPOSSIBLE
- * tier (Thu/Sat, lib/ig-difficult-days.ts). Same filters, higher band. The raw
+ * tier (Tue/Thu/Sat, lib/ig-difficult-days.ts). Same filters, higher band. The raw
  * CSVs are gitignored, so this only runs locally — commit the JSON it writes.
  */
 

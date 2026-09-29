@@ -28,7 +28,7 @@ import {
   type QueueItem, type ReelTier,
 } from '../lib/ig-queue';
 import { discoverReels } from '../lib/ig-reels';
-import { tierForDateLabel, easternDateLabel, TIER_SLOTS_PER_WEEK } from '../lib/ig-difficult-days';
+import { tierForDateLabel, easternDateLabel, TIER_SLOTS_PER_WEEK, ACTIVE_TIERS } from '../lib/ig-difficult-days';
 
 const arg = (name: string): string | undefined =>
   process.argv.find(a => a.startsWith(`--${name}=`))?.split('=')[1];
@@ -96,10 +96,10 @@ function topUp(queue: QueueItem[], max: number, dry: boolean) {
     return fmtLabel(d);
   };
 
-  console.log('Top-up plan — ' + TIERS.map(t => `${t} ${have[t]}/${target(t)}`).join(' · '));
+  console.log('Top-up plan — ' + ACTIVE_TIERS.map(t => `${t} ${have[t]}/${target(t)}`).join(' · '));
   for (let n = 0; n < max; n++) {
     // Most-starved = fewest weeks of runway relative to its posting rate.
-    const short = TIERS
+    const short = ACTIVE_TIERS
       .filter(t => have[t] < target(t))
       .sort((a, b) => have[a] / TIER_SLOTS_PER_WEEK[a] - have[b] / TIER_SLOTS_PER_WEEK[b]);
     if (!short.length) break;
@@ -179,10 +179,10 @@ async function main() {
     TIERS.map(t => `${added[t]} ${t}`).join(' + ') + '.' +
     (skippedNoCaption ? ` (${skippedNoCaption} skipped — no caption)` : ''),
   );
-  console.log('Runway — ' + TIERS.map(t =>
+  console.log('Runway — ' + ACTIVE_TIERS.map(t =>
     `${t}: ${rw[t].count} unposted (~${rw[t].weeks.toFixed(1)} wks)`).join(' · '));
 
-  const low = TIERS.filter(t => rw[t].count < LOW_WATER);
+  const low = ACTIVE_TIERS.filter(t => rw[t].count < LOW_WATER);
   if (low.length) {
     console.warn(`⚠ Low: ${low.join(', ')} — run: npx tsx scripts/ig-refill.ts --top-up --max=20`);
     process.exitCode = 1;
