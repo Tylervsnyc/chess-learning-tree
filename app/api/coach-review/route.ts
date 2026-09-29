@@ -276,14 +276,30 @@ ${locked ? `
 FREE PREVIEW: this student is on the free plan. Write "moves" entries ONLY for these keys: ${[...freeKeys].join(', ')} — leave every other move out of the array. Still read the whole game for the "summary". Set "takeaway" to an empty string.` : ''}
 `.trim();
 
-    const response = await anthropic.messages.create({
+    const effort = pass === 'instant' ? 'low' : 'medium';
+    const baseRequest = {
       model: 'claude-opus-5',
       max_tokens: 8000,
-      thinking: { type: 'adaptive' },
-      output_config: { effort: pass === 'instant' ? 'low' : 'medium', format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
-      system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
-      messages: [{ role: 'user', content: gameContext }],
-    });
+      thinking: { type: 'adaptive' as const },
+      system: [{ type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } }],
+      messages: [{ role: 'user' as const, content: gameContext }],
+    };
+    // Structured output depends on Anthropic's grammar service, which can go down
+    // on its own (503 "Grammar compilation is temporarily unavailable"). Fail fast
+    // instead of letting the SDK retry for ~50s, then ask again without the schema:
+    // SYSTEM_PROMPT already spells out the JSON shape and the parser below extracts it.
+    let response;
+    try {
+      response = await anthropic.messages.create(
+        { ...baseRequest, output_config: { effort, format: { type: 'json_schema', schema: OUTPUT_SCHEMA } } },
+        { maxRetries: 0 },
+      );
+    } catch (err) {
+      const status = (err as { status?: number }).status;
+      if (!status || status < 500) throw err;
+      console.warn('[coach-review] structured output unavailable, retrying without schema:', status);
+      response = await anthropic.messages.create({ ...baseRequest, output_config: { effort } });
+    }
     console.log('[coach-review] Claude response received, tokens:', response.usage, 'stop:', response.stop_reason);
 
     const text = response.content.find(b => b.type === 'text')?.text ?? '';
