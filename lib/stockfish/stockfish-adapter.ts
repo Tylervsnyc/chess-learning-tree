@@ -292,6 +292,15 @@ class StockfishEngine {
           resolve(null);
           return;
         }
+        // Checkmated position: Stockfish says "mate 0" (side to move is mated).
+        // 0 has no sign, so downstream it read as Black winning — every game
+        // White won by mate ended with the graph diving to the bottom. Report
+        // it as a decisive score for the side that delivered mate instead
+        // (one step past mate-in-1's 2000cp equivalent).
+        if (lastMate === 0) {
+          resolve({ cp: -flip * 2100, mate: null, bestMove: result.bestMove, bestLine: [] });
+          return;
+        }
         resolve({
           cp: lastCp !== null ? lastCp * flip : null,
           mate: lastMate !== null ? lastMate * flip : null,
