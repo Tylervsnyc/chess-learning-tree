@@ -42,6 +42,7 @@ import {
   ROOT_FILES,
   APP_TARGETS,
 } from './offline-build.config.mjs';
+import { checkBundleRoutes } from './offline-route-check.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD = path.join(ROOT, '.offline-build');
@@ -462,6 +463,15 @@ function publish() {
   };
   prunePrefetch(OUT);
   log(`pruned ${pruned} segment-prefetch files`);
+
+  // Every page must open inside the app: run each one through the same URL
+  // rules as the iOS router (ios-shared/StaticExportRouter.swift). A miss here
+  // is a page whose tap does nothing on a phone (all 446 lessons, 2026-10-02).
+  const routes = checkBundleRoutes(OUT);
+  if (routes.failures.length) {
+    die(`${routes.failures.length} pages won't open in the app:\n  ${routes.failures.slice(0, 20).join('\n  ')}`);
+  }
+  log(`route check: all ${routes.pages} pages resolve in the app (${routes.fullLoadOnly.length} dotted, tap-only)`);
 
   const bytes = execFileSync('du', ['-sk', OUT]).toString().split('\t')[0];
   const pages = execFileSync('sh', ['-c', `find ${OUT} -name '*.html' | wc -l`]).toString().trim();
