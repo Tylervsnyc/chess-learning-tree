@@ -33,6 +33,18 @@ static pose), and fades the moment `/play` has painted
 or any page with `?nativeSplash=hop`. If you change the rook geometry,
 re-run the generator AND rebuild the iOS app — the launch image is native.
 
+## URL routing inside the app (2026-10-02)
+
+Both iOS apps map capacitor://localhost URLs to bundle files with
+`ios-shared/StaticExportRouter.swift` (folder -> its index.html, dotted RSC
+URLs like `/lesson/1.1.1.txt` -> `lesson/1.1.1/index.txt`). Capacitor's
+default router broke every tactic lesson tap and sent full-page loads to the
+home page. `build-offline.mjs` re-checks every page against the same rules
+(`scripts/offline-route-check.mjs`) and fails the build on a miss. Dotted
+pages (lessons) are tap-only: never full-page-load them
+(`window.location` to `/lesson/...`); Capacitor would serve them with the
+wrong Content-Type.
+
 ## Build + ship
 
 ```bash

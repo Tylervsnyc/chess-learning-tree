@@ -14,8 +14,11 @@ import Capacitor
  * Now the web tells the native side what colour it is painting
  * (lib/shell-chrome.ts → ShellBackground.setColor), and the strips are set to
  * that colour explicitly, every time.
+ *
+ * Inherits StaticExportRouter (ios-shared/StaticExportRouter.swift), shared
+ * with the Chess Path app, which maps URLs to the offline bundle's files.
  */
-class ShellViewController: CAPBridgeViewController {
+class ShellViewController: StaticExportBridgeViewController {
     override func capacitorDidLoad() {
         bridge?.registerPluginInstance(ShellBackgroundPlugin())
     }

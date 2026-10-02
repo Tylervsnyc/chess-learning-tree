@@ -142,7 +142,17 @@ function transformPuzzle(puzzle: Puzzle): LessonPuzzle {
   };
 }
 
+// Retry restarts the lesson by remounting it (new key), so every piece of
+// lesson state starts over. Not a page reload: inside the iOS apps a dotted
+// URL like /lesson/1.1.1 can't be full-page-loaded
+// (ios-shared/StaticExportRouter.swift), and a remount is faster anyway.
 export default function LessonPage() {
+  const [attempt, setAttempt] = useState(0);
+  const restart = useCallback(() => setAttempt((n) => n + 1), []);
+  return <LessonAttempt key={attempt} restart={restart} />;
+}
+
+function LessonAttempt({ restart }: { restart: () => void }) {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1279,7 +1289,7 @@ export default function LessonPage() {
           onContinue={() => {
             window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
           }}
-          onRetry={tutorialCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
+          onRetry={tutorialCorrectCount <= 3 ? restart : undefined}
         />
         <CreateProfileModal
           isOpen={showCreateProfileModal}
@@ -1395,7 +1405,7 @@ export default function LessonPage() {
             onContinue={() => {
               window.location.href = `/path?level=${String(getLevelFromLessonId(lessonId) || 1)}`;
             }}
-            onRetry={firstAttemptCorrectCount <= 3 ? () => { window.location.href = `/lesson/${lessonId}` } : undefined}
+            onRetry={firstAttemptCorrectCount <= 3 ? restart : undefined}
           />
           <CreateProfileModal
             isOpen={showCreateProfileModal}
