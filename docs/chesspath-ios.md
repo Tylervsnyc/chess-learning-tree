@@ -83,6 +83,11 @@ whose CFBundleShortVersionString matches (no metadata-only updates on iOS).
 
 ## Signing
 
-Shares the Chess Boxing keychain `~/Library/Keychains/chessbox-signing.keychain-db`
-on purpose (team-scoped Distribution cert, scarce slots). Keep it out of /tmp.
+All three apps (Chess Path, Chess Boxing, Rookies Run) share ONE keychain:
+`~/Library/Keychains/lts-signing.keychain-db` (password in the Fastfile, no
+auto-lock), holding dist cert Z448AK2KX4. It is the only dist identity on the
+keychain search list. Keep it out of /tmp. If it is missing or won't unlock,
+the lane stops on purpose — never let `cert` mint another (Apple caps at 3).
+The old `chessbox-signing` keychain (password lost 2026-10-05) is off the
+search list; cert RQZUMZC2ML lives there, unusable.
 ASC API key `767R5DY9P3` at `~/Downloads/AuthKey_767R5DY9P3.p8`.
