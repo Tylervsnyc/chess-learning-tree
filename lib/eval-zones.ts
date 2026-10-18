@@ -183,14 +183,14 @@ export function evalToRookieMood(
 
   // ── Comeback detection: did Rookie jump 2+ mood zones in her favor? ──
   // Mood zones from Rookie's perspective (worst to best):
-  //   defeated(-5) → panicking(-3) → nervous(-1.5) → neutral(0) → scheming(+0.5) → happy(+1.5) → smug(+3)
-  // A jump of 2+ steps (e.g. panicking → neutral) triggers "excited"
+  //   panicking(-3) → defeated(-1.5) → nervous(-0.5) → neutral(0) → scheming(+0.5) → happy(+1.5) → smug(+3)
+  // A jump of 2+ steps (e.g. panicking → nervous) triggers "excited"
   let isComeback = false;
 
   if (prevRookiePawns !== undefined) {
     const moodRank = (p: number): number => {
-      if (p <= -EVAL_ZONES.WINNING) return 0;   // defeated
-      if (p <= -EVAL_ZONES.ADVANTAGE) return 1;  // panicking
+      if (p <= -EVAL_ZONES.WINNING) return 0;   // panicking
+      if (p <= -EVAL_ZONES.ADVANTAGE) return 1;  // defeated
       if (p <= -EVAL_ZONES.SLIGHT) return 2;     // nervous
       if (p <= EVAL_ZONES.SLIGHT) return 3;       // neutral
       if (p <= EVAL_ZONES.ADVANTAGE) return 4;    // scheming
@@ -232,11 +232,13 @@ export function evalToRookieMood(
     mood = 'nervous';
     reason = 'Losing ground';
   } else if (rookiePawns >= -EVAL_ZONES.WINNING) {
-    mood = 'panicking';
-    reason = 'In serious trouble';
-  } else {
+    // Black husk is the short stop on the way down; red is where she lives
+    // when losing big, so the alarm (which only renders on panicking) shows.
     mood = 'defeated';
-    reason = 'This is hopeless';
+    reason = 'Rough spot';
+  } else {
+    mood = 'panicking';
+    reason = 'Losing badly';
   }
 
   const alarmVariant = rookiePawns <= ALARM_THRESHOLD ? pickAlarmVariant() : null;

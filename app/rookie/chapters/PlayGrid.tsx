@@ -6,14 +6,18 @@ import { LEARN_TAP_REACTIONS } from '@/data/quips/learn-tap-quips';
 import { ShuffleBag } from '@/lib/shuffle-bag';
 import type { Stage } from '../stage';
 
-/** The tap-to-poke Rookie from /play — every shipped mode, with its shipped quips. */
+// The tour only shows the modes that read well from a click; /play has them all.
+const TOUR_MODES = ['tractor', 'eraser', 'paint', 'shockwave'];
+const TOUR_REACTIONS = TOUR_MODES.map((m) => LEARN_TAP_REACTIONS.find((r) => r.mode === m)!);
+
+/** The interactive Rookie from /play — four shipped modes, with their shipped quips. */
 export function PlayGrid({ stage }: { stage: Stage }) {
-  const bags = useRef(new Map(LEARN_TAP_REACTIONS.map((r) => [r.mode, new ShuffleBag(r.quips)])));
+  const bags = useRef(new Map(TOUR_REACTIONS.map((r) => [r.mode, new ShuffleBag(r.quips)])));
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {LEARN_TAP_REACTIONS.map((r) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {TOUR_REACTIONS.map((r) => (
           <div
             key={r.mode}
             onPointerDown={() => stage.say(bags.current.get(r.mode)!.draw())}
@@ -26,7 +30,7 @@ export function PlayGrid({ stage }: { stage: Stage }) {
           </div>
         ))}
       </div>
-      <p className="mt-3 text-sm text-chess-text-faint">Tap, drag, or poke each one. These are the live /play interactions.</p>
+      <p className="mt-3 text-sm text-chess-text-faint">Tap or drag each one. These are live from the Play screen.</p>
     </>
   );
 }

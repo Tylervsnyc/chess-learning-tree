@@ -7,7 +7,7 @@
 import type { RookieMood } from '@/lib/rookie-os/types';
 
 export type ChapterId =
-  | 'intro' | 'play' | 'pieces' | 'colors' | 'fan' | 'eval' | 'talk' | 'meltdown' | 'sabotage' | 'why';
+  | 'intro' | 'play' | 'pieces' | 'colors' | 'fan' | 'talk' | 'meltdown' | 'sabotage' | 'why';
 
 export interface Chapter {
   id: ChapterId;
@@ -39,10 +39,10 @@ export const CHAPTERS: Chapter[] = [
     id: 'play',
     label: 'Play',
     title: 'Play with Rookie',
-    blurb: 'On the Play screen you can poke Rookie. Every tap style is its own physics toy, and Rookie has something to say about each one.',
+    blurb: 'On the Play screen Rookie has fun animations you can play with. Every tap style is its own physics toy, and Rookie has something to say about each one.',
     mood: 'happy',
     lines: [
-      "First things first. You can poke me.",
+      "First things first. I have fun animations you can play with.",
       "Go ahead. Pick one. I'll pretend to mind.",
     ],
   },
@@ -60,12 +60,13 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'colors',
     label: 'Color',
-    title: 'Rookie changes color like an octopus',
-    blurb: 'Rookie is 22 blocks of color. Every mood re-tints all of them, so you can read how Rookie feels from across the room.',
-    mood: 'excited',
+    title: 'Rookie\'s mood is the scoreboard',
+    blurb: 'When you play Rookie, Rookie\'s color shows how the game is going. Green and smug means Rookie is ahead. Red and panicking means you are. No eval bar needed.',
+    mood: 'neutral',
     lines: [
-      "I change color like an octopus. You'll always know how I feel.",
-      "Tap a mood. Try not to judge.",
+      "When we play, you can read the game off my face.",
+      "Smug means I'm winning. Red means you are. I can't hide it. I've tried.",
+      "Drag the bar. Watch me feel things.",
     ],
   },
   {
@@ -75,19 +76,8 @@ export const CHAPTERS: Chapter[] = [
     blurb: "Rookie's colors can be swapped for any team's. For the 2026 NBA Finals, Rookie turned orange and blue and went full Knicks fan on the Play and Welcome screens. Any team, any colors, same Rookie.",
     mood: 'neutral',
     lines: [
-      "I'm a Knicks fan. Watch me get dressed.",
+      "I'm a Knicks fan. Watch me suit up.",
       "Pick any colors. I'll commit fully.",
-    ],
-  },
-  {
-    id: 'eval',
-    label: 'Eval',
-    title: "Rookie's color is the evaluation",
-    blurb: "During a game, the engine evaluation drives Rookie's mood. You can read the position from Rookie without looking at an eval bar.",
-    mood: 'neutral',
-    lines: [
-      "During a game, my color is the score.",
-      "Drag the bar. Watch me feel things.",
     ],
   },
   {
@@ -138,12 +128,12 @@ export const CHAPTERS: Chapter[] = [
 
 /** Piece opinions — taken from the voice bible's Piece Personalities table. */
 export const PIECE_OPINIONS: { piece: string; glyph: string; take: string; line: string; mood: RookieMood }[] = [
-  { piece: 'Queen',  glyph: '♛', take: 'A rook with unnecessary features', line: "Everyone loves the queen. I think she's showing off.", mood: 'smug' },
-  { piece: 'Bishop', glyph: '♝', take: 'Stuck on one color forever',       line: "Your bishops will never meet. I think about it too much.", mood: 'heartbroken' },
-  { piece: 'Knight', glyph: '♞', take: 'Flamboyant. The L-shape is a lot', line: "Two up, one over. Every time. Why.", mood: 'surprised' },
-  { piece: 'Pawn',   glyph: '♟', take: 'Cute little pets',                 line: "From pawn to that. I could cry.", mood: 'grateful' },
-  { piece: 'King',   glyph: '♚', take: 'Stoic, easily embarrassed',        line: "My king just looked at me. Never good.", mood: 'nervous' },
-  { piece: 'Rook',   glyph: '♜', take: 'The future. Obviously.',           line: "Open files are just the beginning.", mood: 'scheming' },
+  { piece: 'Queen',  glyph: '♛', take: 'A rook with unnecessary features', line: "The queen is just a rook who also does bishop stuff. Nobody asked for that.", mood: 'smug' },
+  { piece: 'Bishop', glyph: '♝', take: 'Stuck on one color forever',       line: "A bishop spends its whole life on one color. Never once visits the other one.", mood: 'heartbroken' },
+  { piece: 'Knight', glyph: '♞', take: 'Flamboyant. The L-shape is a lot', line: "Two up, one over. The knight thinks that's a personality.", mood: 'surprised' },
+  { piece: 'Pawn',   glyph: '♟', take: 'Cute little pets',                 line: "Pawns only move forward. Tiny, brave, and they have no idea what's coming.", mood: 'grateful' },
+  { piece: 'King',   glyph: '♚', take: 'Stoic, easily embarrassed',        line: "The king moves one square at a time and still needs everyone to protect him.", mood: 'nervous' },
+  { piece: 'Rook',   glyph: '♜', take: 'The future. Obviously.',           line: "Straight lines. No tricks. The most honest piece on the board. You're welcome.", mood: 'scheming' },
 ];
 
 /** Color descriptions — from MOOD_TINTS in components/ui/BreathingRook.tsx. */

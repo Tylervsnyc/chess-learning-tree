@@ -200,9 +200,16 @@ export function RookieTour({ stats }: { stats: TourStats }) {
             {chapter.id === 'intro' && <IntroDemo />}
             {chapter.id === 'play' && <PlayGrid stage={stage} />}
             {chapter.id === 'pieces' && <PieceOpinions stage={stage} />}
-            {chapter.id === 'colors' && <MoodGallery stage={stage} />}
+            {chapter.id === 'colors' && (
+              <>
+                <EvalStage stage={stage} />
+                <p className="mt-10 mb-3 text-xs font-bold uppercase tracking-wider text-chess-text-faint">
+                  All of Rookie&apos;s moods
+                </p>
+                <MoodGallery stage={stage} />
+              </>
+            )}
             {chapter.id === 'fan' && <FanColors stage={stage} />}
-            {chapter.id === 'eval' && <EvalStage stage={stage} />}
             {chapter.id === 'talk' && <TalkDemo stage={stage} />}
             {chapter.id === 'meltdown' && <Meltdown stage={stage} />}
             {chapter.id === 'sabotage' && <Sabotage stage={stage} />}

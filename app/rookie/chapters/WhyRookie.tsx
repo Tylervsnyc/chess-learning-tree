@@ -31,6 +31,7 @@ export function WhyRookie({ stats }: { stats: TourStats }) {
         <li><b>A point of view.</b> Rookie is a rook, and every opinion Rookie has comes from that.</li>
         <li><b>Readable at a glance.</b> Rookie's color tells you who is winning before you read a word.</li>
         <li><b>Funny when it counts.</b> Losing to a beginner is when Rookie shines, which makes beginners feel great.</li>
+        <li><b>Made for kids and adults.</b> Kids get a cute rook who is never scary. Adults get dry humor that is never babyish.</li>
         <li><b>Already built.</b> Everything on this page is the live production character, not a mockup.</li>
       </ul>
     </>

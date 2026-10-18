@@ -10,8 +10,8 @@ const MAX = 8;
 
 // Zone bands in Rookie's pawns — mirrors the thresholds in lib/eval-zones.ts.
 const BANDS: { from: number; to: number; mood: string; color: string }[] = [
-  { from: MIN, to: -3, mood: 'defeated', color: '#2a2a2f' },
-  { from: -3, to: -1.5, mood: 'panicking', color: '#dc1414' },
+  { from: MIN, to: -3, mood: 'panicking', color: '#dc1414' },
+  { from: -3, to: -1.5, mood: 'defeated', color: '#2a2a2f' },
   { from: -1.5, to: -0.5, mood: 'nervous', color: '#788caa' },
   { from: -0.5, to: 0.5, mood: 'neutral', color: '#cbd5e1' },
   { from: 0.5, to: 1.5, mood: 'scheming', color: '#00b450' },
