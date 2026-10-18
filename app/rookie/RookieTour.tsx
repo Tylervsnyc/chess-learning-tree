@@ -6,11 +6,13 @@ import { useRookieVoice } from '@/hooks/useRookieVoice';
 import { useRookieQuipQueue } from '@/hooks/useRookieQuipQueue';
 import { warmupAudio } from '@/lib/sounds';
 import type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
+import { ROOK_BLOCKS, type RookBlock } from '@/lib/daily-rook-blocks';
 import { CHAPTERS } from './script';
 import type { Stage, SayOptions } from './stage';
 import { PlayGrid } from './chapters/PlayGrid';
 import { PieceOpinions } from './chapters/PieceOpinions';
 import { MoodGallery } from './chapters/MoodGallery';
+import { FanColors } from './chapters/FanColors';
 import { EvalStage } from './chapters/EvalStage';
 import { TalkDemo } from './chapters/TalkDemo';
 import { Meltdown } from './chapters/Meltdown';
@@ -44,6 +46,32 @@ export function RookieTour({ stats }: { stats: TourStats }) {
     stopAudio();
   }, [clearQueue, stopAudio]);
 
+  // Fan colors: the stage Rookie's block palette, swapped one block at a time.
+  const [blocks, setBlocks] = useState<RookBlock[] | null>(null);
+  const blocksRef = useRef<RookBlock[] | null>(null);
+  const dressTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const dressUp = useCallback((target: RookBlock[] | null) => {
+    dressTimers.current.forEach(clearTimeout);
+    dressTimers.current = [];
+    const goal = target ?? ROOK_BLOCKS;
+    const current = new Map((blocksRef.current ?? ROOK_BLOCKS).map((b) => [`${b.x},${b.y}`, b.color]));
+    // Base row first, crown last — she "pulls on" the jersey from the bottom up.
+    const order = [...goal].sort((a, b) => b.y - a.y || a.x - b.x);
+    order.forEach((b, i) => {
+      dressTimers.current.push(setTimeout(() => {
+        current.set(`${b.x},${b.y}`, b.color);
+        const next = goal.map((g) => ({ ...g, color: current.get(`${g.x},${g.y}`)! }));
+        blocksRef.current = next;
+        setBlocks(next);
+      }, i * 70));
+    });
+    dressTimers.current.push(setTimeout(() => {
+      blocksRef.current = target;
+      setBlocks(target);
+    }, order.length * 70));
+  }, []);
+  useEffect(() => () => dressTimers.current.forEach(clearTimeout), []);
+
   const setLook = useCallback((m: RookieMood, a: AlarmVariant | null = null) => {
     setMood(m);
     setAlarm(a);
@@ -60,6 +88,7 @@ export function RookieTour({ stats }: { stats: TourStats }) {
     if (!started) return;
     interrupt();
     setLook(chapter.mood, null);
+    if (chapter.id !== 'fan' && blocksRef.current) dressUp(null);
     if (chapter.id === 'intro') playOneShot('powerOn', 2600);
     else if (chapter.id === 'why') playOneShot('celebrate');
     else playOneShot('enter', 900);
@@ -79,8 +108,8 @@ export function RookieTour({ stats }: { stats: TourStats }) {
   };
 
   const stage: Stage = useMemo(
-    () => ({ say, setLook, mood, talkIntensity, isTalking }),
-    [say, setLook, mood, talkIntensity, isTalking],
+    () => ({ say, setLook, dressUp, mood, talkIntensity, isTalking }),
+    [say, setLook, dressUp, mood, talkIntensity, isTalking],
   );
 
   const rookProps = {
@@ -89,6 +118,7 @@ export function RookieTour({ stats }: { stats: TourStats }) {
     animate: !isTalking && !oneShot,
     animation: !isTalking && oneShot ? oneShot : undefined,
     talkIntensity: isTalking ? talkIntensity : undefined,
+    blocks: blocks ?? undefined,
   } as const;
 
   if (!started) {
@@ -171,6 +201,7 @@ export function RookieTour({ stats }: { stats: TourStats }) {
             {chapter.id === 'play' && <PlayGrid stage={stage} />}
             {chapter.id === 'pieces' && <PieceOpinions stage={stage} />}
             {chapter.id === 'colors' && <MoodGallery stage={stage} />}
+            {chapter.id === 'fan' && <FanColors stage={stage} />}
             {chapter.id === 'eval' && <EvalStage stage={stage} />}
             {chapter.id === 'talk' && <TalkDemo stage={stage} />}
             {chapter.id === 'meltdown' && <Meltdown stage={stage} />}

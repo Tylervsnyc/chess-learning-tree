@@ -1,5 +1,6 @@
 import type { RookieMood, AlarmVariant } from '@/lib/rookie-os/types';
 import type { SpeechLine } from '@/lib/speech/priority-queue';
+import type { RookBlock } from '@/lib/daily-rook-blocks';
 
 export interface SayOptions {
   mood?: RookieMood;
@@ -13,6 +14,8 @@ export interface Stage {
   say: (text: string, opts?: SayOptions) => void;
   /** Change her look without speaking. */
   setLook: (mood: RookieMood, alarm?: AlarmVariant | null) => void;
+  /** Re-color Rookie's 22 blocks one at a time, base to crown (null = her own colors). */
+  dressUp: (blocks: RookBlock[] | null) => void;
   mood: RookieMood;
   /** Live 0–1 voice loudness (what drives the per-syllable pulse). */
   talkIntensity: number;

@@ -7,7 +7,7 @@
 import type { RookieMood } from '@/lib/rookie-os/types';
 
 export type ChapterId =
-  | 'intro' | 'play' | 'pieces' | 'colors' | 'eval' | 'talk' | 'meltdown' | 'sabotage' | 'why';
+  | 'intro' | 'play' | 'pieces' | 'colors' | 'fan' | 'eval' | 'talk' | 'meltdown' | 'sabotage' | 'why';
 
 export interface Chapter {
   id: ChapterId;
@@ -66,6 +66,17 @@ export const CHAPTERS: Chapter[] = [
     lines: [
       "I change color like an octopus. You'll always know how I feel.",
       "Tap a mood. Try not to judge.",
+    ],
+  },
+  {
+    id: 'fan',
+    label: 'Fan',
+    title: 'Rookie can be anyone\'s fan',
+    blurb: "Rookie's colors can be swapped for any team's. For the 2026 NBA Finals, Rookie turned orange and blue and went full Knicks fan on the Play and Welcome screens. Any team, any colors, same Rookie.",
+    mood: 'neutral',
+    lines: [
+      "I'm a Knicks fan. Watch me get dressed.",
+      "Pick any colors. I'll commit fully.",
     ],
   },
   {
@@ -159,3 +170,16 @@ export const TALK_MOODS: RookieMood[] = ['happy', 'smug', 'angry', 'excited', 'h
 
 /** Canned eval curve for "autoplay a game" (Rookie's eval in pawns, move by move). */
 export const AUTOPLAY_CURVE = [0, 0.3, 0.8, 1.6, 2.4, 3.4, 2.2, 0.9, 0.2, -0.7, -1.8, -2.6, -3.6, -5.2];
+
+/** Fan chapter: what Rookie says when she changes into team colors. */
+export const FAN_KNICKS_LINE = 'Orange and blue. Go Knicks.';
+export const FAN_SWITCH_LINE = "New team. I've loved them since just now.";
+
+/** Two-color fan presets (primary, secondary). Knicks is the shipped palette in lib/knicks-finals.ts. */
+export const FAN_PRESETS: { name: string; primary: string; secondary: string }[] = [
+  { name: 'Purple & gold', primary: '#552583', secondary: '#FDB927' },
+  { name: 'Green & silver', primary: '#00471B', secondary: '#C4CED4' },
+  { name: 'Red & navy',    primary: '#0C2340', secondary: '#C8102E' },
+  { name: 'Black & gold',  primary: '#1A1A1A', secondary: '#FFB612' },
+  { name: 'Teal & black',  primary: '#006778', secondary: '#101820' },
+];

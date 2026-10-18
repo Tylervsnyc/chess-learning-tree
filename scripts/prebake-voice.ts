@@ -16,7 +16,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { AUTHORED_LINES } from '../lib/speech/line-pool';
 import { LEARN_TAP_REACTIONS } from '../data/quips/learn-tap-quips';
-import { CHAPTERS, PIECE_OPINIONS, TALK_LINE } from '../app/rookie/script';
+import { CHAPTERS, PIECE_OPINIONS, TALK_LINE, FAN_KNICKS_LINE, FAN_SWITCH_LINE } from '../app/rookie/script';
 
 const BUCKET = 'rookie-voice';
 const MANIFEST_PATH = path.join(__dirname, '..', 'public', 'rookie-voice', 'manifest.json');
@@ -91,6 +91,8 @@ async function main() {
     ...CHAPTERS.flatMap(c => c.lines),
     ...PIECE_OPINIONS.map(p => p.line),
     TALK_LINE,
+    FAN_KNICKS_LINE,
+    FAN_SWITCH_LINE,
     ...LEARN_TAP_REACTIONS.flatMap(r => r.quips),
   ];
 
