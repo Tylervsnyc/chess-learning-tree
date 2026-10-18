@@ -7,7 +7,7 @@
 import type { RookieMood } from '@/lib/rookie-os/types';
 
 export type ChapterId =
-  | 'intro' | 'play' | 'pieces' | 'colors' | 'fan' | 'talk' | 'meltdown' | 'sabotage' | 'why';
+  | 'intro' | 'play' | 'pieces' | 'colors' | 'fan' | 'revenge' | 'talk' | 'meltdown' | 'sabotage' | 'why';
 
 export interface Chapter {
   id: ChapterId;
@@ -78,6 +78,17 @@ export const CHAPTERS: Chapter[] = [
     lines: [
       "I'm a Knicks fan. Watch me suit up.",
       "Pick any colors. I'll commit fully.",
+    ],
+  },
+  {
+    id: 'revenge',
+    label: 'Revenge',
+    title: 'Rookie\'s Revenge',
+    blurb: "In Rookie's Revenge, our standalone game on the App Store, Rookie is the piece on the board. Abilities let Rookie transform into other pieces, and even summon a dragon.",
+    mood: 'scheming',
+    lines: [
+      "In Rookie's Revenge, I'm the one on the board.",
+      "And I don't have to stay a rook. Pick something.",
     ],
   },
   {
@@ -173,3 +184,15 @@ export const FAN_PRESETS: { name: string; primary: string; secondary: string }[]
   { name: 'Black & gold',  primary: '#1A1A1A', secondary: '#FFB612' },
   { name: 'Teal & black',  primary: '#006778', secondary: '#101820' },
 ];
+
+/** Revenge chapter: the forms Rookie can take on the board, and what she says in each. */
+export type RevengeForm = 'rook' | 'pawn' | 'knight' | 'bishop' | 'queen' | 'dragon';
+export const REVENGE_FORMS: { form: RevengeForm; label: string; line: string; mood: RookieMood }[] = [
+  { form: 'rook',   label: 'Rook',   line: 'Back to a rook. The correct shape.', mood: 'happy' },
+  { form: 'pawn',   label: 'Pawn',   line: 'A pawn. Humble. Temporary. Watch this space.', mood: 'grateful' },
+  { form: 'knight', label: 'Knight', line: "Two up, one over. I get it now, and I still don't like it.", mood: 'nervous' },
+  { form: 'bishop', label: 'Bishop', line: 'Diagonals. Everything looks slanted from here.', mood: 'surprised' },
+  { form: 'queen',  label: 'Queen',  line: "So this is what having every move feels like. Don't get used to it.", mood: 'smug' },
+  { form: 'dragon', label: 'Dragon', line: 'Okay, I can also be a dragon. Nobody else on the board can say that.', mood: 'excited' },
+];
+export const REVENGE_FORM_LINES = REVENGE_FORMS.map((f) => f.line);

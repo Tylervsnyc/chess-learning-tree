@@ -13,6 +13,7 @@ import { PlayGrid } from './chapters/PlayGrid';
 import { PieceOpinions } from './chapters/PieceOpinions';
 import { MoodGallery } from './chapters/MoodGallery';
 import { FanColors } from './chapters/FanColors';
+import { RevengeForms } from './chapters/RevengeForms';
 import { EvalStage } from './chapters/EvalStage';
 import { TalkDemo } from './chapters/TalkDemo';
 import { Meltdown } from './chapters/Meltdown';
@@ -210,6 +211,7 @@ export function RookieTour({ stats }: { stats: TourStats }) {
               </>
             )}
             {chapter.id === 'fan' && <FanColors stage={stage} />}
+            {chapter.id === 'revenge' && <RevengeForms stage={stage} />}
             {chapter.id === 'talk' && <TalkDemo stage={stage} />}
             {chapter.id === 'meltdown' && <Meltdown stage={stage} />}
             {chapter.id === 'sabotage' && <Sabotage stage={stage} />}
