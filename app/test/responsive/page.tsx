@@ -63,6 +63,7 @@ const ROUTES: Route[] = [
   { label: 'Solve', url: '/solve', group: 'Secondary' },
   { label: 'Welcome', url: '/welcome', group: 'Secondary' },
   { label: 'About', url: '/about', group: 'Secondary' },
+  { label: 'Meet Rookie (pitch tour)', url: '/rookie', group: 'Secondary', note: 'unlisted; tap Start to enter the tour' },
   { label: 'Privacy', url: '/privacy', group: 'Secondary' },
   { label: 'Terms', url: '/terms', group: 'Secondary' },
   { label: 'Support', url: '/support', group: 'Secondary' },

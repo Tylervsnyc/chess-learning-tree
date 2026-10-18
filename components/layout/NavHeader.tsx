@@ -93,7 +93,7 @@ function LearnDropdown({ pathname }: { pathname: string | null }) {
 // Lightweight gate — checks path BEFORE loading Supabase/useUser
 // /workout/report + /workout/fixit are Chess Boxing screens (dark arena shell)
 // on the web too — they own their own close button, like the box screens.
-const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/chessboxing', '/workout/report', '/workout/fixit', '/test/landing', '/test/rookie-promise', '/test/basics-tutorial', '/test/tutorial', '/2026candidates', '/test-rook-animations'];
+const HIDDEN_PATHS = ['/auth/', '/welcome', '/basics', '/chessboxing', '/workout/report', '/workout/fixit', '/test/landing', '/test/rookie-promise', '/test/basics-tutorial', '/test/tutorial', '/2026candidates', '/test-rook-animations', '/rookie'];
 
 export function NavHeader() {
   const pathname = usePathname();
