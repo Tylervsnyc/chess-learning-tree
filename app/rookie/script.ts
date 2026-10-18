@@ -27,7 +27,7 @@ export const CHAPTERS: Chapter[] = [
     id: 'intro',
     label: 'Hi',
     title: 'Meet Rookie',
-    blurb: 'The chess coach who is unreasonably invested in your games. She is a rook, and she sees everything like one.',
+    blurb: 'The chess coach who is unreasonably invested in your games. Rookie is a rook, and Rookie sees everything like one.',
     mood: 'neutral',
     lines: [
       "Hi. I'm Rookie. I'm a rook.",
@@ -38,8 +38,8 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'play',
     label: 'Play',
-    title: 'Play with her',
-    blurb: 'On the Play screen you can poke Rookie. Every tap style is its own physics toy, and she has something to say about each one.',
+    title: 'Play with Rookie',
+    blurb: 'On the Play screen you can poke Rookie. Every tap style is its own physics toy, and Rookie has something to say about each one.',
     mood: 'happy',
     lines: [
       "First things first. You can poke me.",
@@ -60,8 +60,8 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'colors',
     label: 'Color',
-    title: 'She changes color like an octopus',
-    blurb: 'Rookie is 22 blocks of color. Every mood re-tints all of them, so you can read how she feels from across the room.',
+    title: 'Rookie changes color like an octopus',
+    blurb: 'Rookie is 22 blocks of color. Every mood re-tints all of them, so you can read how Rookie feels from across the room.',
     mood: 'excited',
     lines: [
       "I change color like an octopus. You'll always know how I feel.",
@@ -71,8 +71,8 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'eval',
     label: 'Eval',
-    title: 'Her color is the evaluation',
-    blurb: 'During a game, the engine evaluation drives her mood. You can read the position from her face without looking at an eval bar.',
+    title: "Rookie's color is the evaluation",
+    blurb: "During a game, the engine evaluation drives Rookie's mood. You can read the position from Rookie without looking at an eval bar.",
     mood: 'neutral',
     lines: [
       "During a game, my color is the score.",
@@ -82,8 +82,8 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'talk',
     label: 'Voice',
-    title: 'She talks with her whole body',
-    blurb: 'Rookie is fully voiced. Her blocks pulse with every syllable, and she keeps her mood color while she talks.',
+    title: 'Rookie talks with every block',
+    blurb: "Rookie is fully voiced. Rookie's blocks pulse with every syllable and keep the mood color while Rookie talks.",
     mood: 'happy',
     lines: [
       "When I talk, I light up on every syllable.",
@@ -93,8 +93,8 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'meltdown',
     label: 'Losing',
-    title: 'When she is losing',
-    blurb: 'Rookie is a spectacular sore loser. When the game turns against her, she goes red and sets off an alarm.',
+    title: 'When Rookie is losing',
+    blurb: 'Rookie is a spectacular sore loser. When the game turns, Rookie goes red and sets off an alarm.',
     mood: 'nervous',
     lines: [
       "Now. When I'm losing.",
@@ -104,8 +104,8 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'sabotage',
     label: 'Sabotage',
-    title: 'And when she is losing badly',
-    blurb: 'Down big, Rookie tries to sabotage the player with distractions and sound effects. This is the most-loved thing she does.',
+    title: 'And when Rookie is losing badly',
+    blurb: 'Down big, Rookie tries to sabotage the player with distractions and sound effects. This is the most-loved thing Rookie does.',
     mood: 'panicking',
     lines: [
       "And when I'm losing badly, I fight dirty.",
@@ -137,7 +137,7 @@ export const PIECE_OPINIONS: { piece: string; glyph: string; take: string; line:
 
 /** Color descriptions — from MOOD_TINTS in components/ui/BreathingRook.tsx. */
 export const MOOD_COLORS: Record<string, string> = {
-  neutral: 'Her default rainbow',
+  neutral: 'Default rainbow',
   happy: 'Warm green glow',
   nervous: 'Washed-out grey blue',
   angry: 'Deep red',

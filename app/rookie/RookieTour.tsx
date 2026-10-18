@@ -206,9 +206,9 @@ function IntroDemo() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       {[
-        ['A rook', 'She sees the board in straight lines and judges every other piece for it.'],
-        ['A color language', 'Her 22 blocks re-tint with every mood, driven live by the game.'],
-        ['A sore loser', 'When she is losing she melts down, out loud, with sound effects.'],
+        ['A rook', 'Rookie sees the board in straight lines and judges every other piece for it.'],
+        ['A color language', 'Rookie\'s 22 blocks re-tint with every mood, driven live by the game.'],
+        ['A sore loser', 'When Rookie is losing, Rookie melts down, out loud, with sound effects.'],
       ].map(([title, body]) => (
         <div key={title} className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
           <p className="font-black">{title}</p>

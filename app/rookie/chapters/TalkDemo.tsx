@@ -34,7 +34,7 @@ export function TalkDemo({ stage }: { stage: Stage }) {
           <div className="h-full bg-chess-green transition-[width] duration-75" style={{ width: `${Math.round(level * 100)}%` }} />
         </div>
         <p className="mt-2 text-sm text-chess-text-faint">
-          Her blocks brighten and swell with each burst of speech. The center reacts most, the edges follow.
+          Rookie's blocks brighten and swell with each burst of speech. The center reacts most, the edges follow.
         </p>
       </div>
     </div>
