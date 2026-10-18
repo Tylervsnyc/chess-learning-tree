@@ -1,8 +1,10 @@
 'use client';
 
 /**
- * RevenueCat (StoreKit) plumbing for Pro — iOS shells ONLY (Chess Boxing and
- * Chess Path; one Pro across both, plus Rookie's Revenge).
+ * RevenueCat (StoreKit) plumbing for Rookie Pro — iOS shells ONLY. ONE
+ * RevenueCat project holds all three apps (Chess Path, Chess Boxing, Rookie's
+ * Revenge — Revenge has its own copy of this in ~/rookies-run with its own
+ * key); every app's products attach to the ONE entitlement `pro`.
  *
  * Apple forbids linking out for digital goods, so inside the Capacitor app the
  * paywall must buy through StoreKit. RevenueCat wraps that and posts a webhook
@@ -16,23 +18,25 @@
  *
  * Per-target (build-time, lib/config/offline.ts): each iOS app is its own
  * App Store Connect record, so it has its own products and its own RevenueCat
- * public key. Both apps sit in ONE RevenueCat project, attach their products
- * to ONE entitlement `pro`, and identify the customer by the Supabase uid —
- * that is what makes a purchase in one app unlock the other.
+ * public (Apple) SDK key. Every app identifies the customer by the Supabase
+ * uid — that is what makes a purchase in one app unlock the others (and the
+ * webhook writes it to the shared profile row).
  *   Chess Boxing: chessboxing_pro_monthly / chessboxing_pro_yearly,
  *                 NEXT_PUBLIC_REVENUECAT_IOS_KEY
  *   Chess Path:   chesspath_pro_monthly / chesspath_pro_yearly,
  *                 NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH
- * Offering: `default`. Setup: docs/chess-boxing-pro-setup.md.
+ *   (Revenge:     revenge_pro_monthly / revenge_pro_yearly — its own repo)
+ * Offerings: `default` (7-day intro offer) and `no_trial` (for accounts that
+ * already used their one trial anywhere; falls back to `default`).
+ * Setup: docs/rookie-pro-setup.md.
  */
 
 import type { PurchasesPackage } from '@revenuecat/purchases-capacitor';
 import { IS_CHESSPATH_APP } from '@/lib/config/offline';
+import { PRO_PRODUCTS, RC_ENTITLEMENT, RC_OFFERING_NO_TRIAL } from '@/lib/iap/products';
 
-export const RC_ENTITLEMENT = 'pro';
-export const RC_PRODUCTS = IS_CHESSPATH_APP
-  ? ({ monthly: 'chesspath_pro_monthly', yearly: 'chesspath_pro_yearly' } as const)
-  : ({ monthly: 'chessboxing_pro_monthly', yearly: 'chessboxing_pro_yearly' } as const);
+export { RC_ENTITLEMENT };
+export const RC_PRODUCTS = IS_CHESSPATH_APP ? PRO_PRODUCTS.chesspath : PRO_PRODUCTS.chessboxing;
 /** Which env var carries this bundle's RevenueCat Apple public SDK key. */
 export const RC_KEY_ENV = IS_CHESSPATH_APP
   ? 'NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH'
@@ -45,7 +49,7 @@ const RC_API_KEY = IS_CHESSPATH_APP
 export interface ProOffering {
   monthly: PurchasesPackage | null;
   yearly: PurchasesPackage | null;
-  /** Localized price strings straight from StoreKit ("$5.99"). */
+  /** Localized price strings straight from StoreKit ("$4.99"). */
   monthlyPrice: string | null;
   yearlyPrice: string | null;
 }
@@ -97,20 +101,26 @@ export async function initRevenueCat(userId: string | null): Promise<boolean> {
   }
 }
 
-/** The `default` offering, split into the two packages the paywall renders. */
-export async function getProOffering(): Promise<ProOffering | null> {
+/**
+ * The offering the paywall sells, split into its two packages: `no_trial`
+ * when this account already used its one Rookie Pro trial (and that offering
+ * exists in RevenueCat), else the current (`default`) one.
+ */
+export async function getProOffering(opts?: { noTrial?: boolean }): Promise<ProOffering | null> {
   if (!(await isNativeIap())) return null;
   try {
     const Purchases = await plugin();
-    const { current } = await Purchases.getOfferings();
+    const offerings = await Purchases.getOfferings();
+    const current =
+      (opts?.noTrial ? offerings.all?.[RC_OFFERING_NO_TRIAL] : undefined) ?? offerings.current;
     if (!current) return null;
     const monthly =
       current.monthly ??
-      current.availablePackages.find((p) => p.product.identifier === RC_PRODUCTS.monthly) ??
+      current.availablePackages.find((p) => p.product.identifier.startsWith(RC_PRODUCTS.monthly)) ??
       null;
     const yearly =
       current.annual ??
-      current.availablePackages.find((p) => p.product.identifier === RC_PRODUCTS.yearly) ??
+      current.availablePackages.find((p) => p.product.identifier.startsWith(RC_PRODUCTS.yearly)) ??
       null;
     return {
       monthly,
@@ -146,6 +156,11 @@ export async function purchasePro(pkg: PurchasesPackage): Promise<{ ok: boolean;
 
 /**
  * Restore purchases (Apple requires this button on every paywall).
+ *
+ * The RevenueCat project's restore behavior is "Transfer to new App User ID"
+ * (docs/rookie-pro-setup.md): if this Apple ID's subscription belongs to a
+ * different account, restoring MOVES it to the signed-in one, and the webhook
+ * gets a TRANSFER event (revoke old account, grant this one).
  *
  * After the restore call, re-read customer info ONCE: a purchase made in the
  * other app (same Supabase uid, same entitlement) can land on the customer a

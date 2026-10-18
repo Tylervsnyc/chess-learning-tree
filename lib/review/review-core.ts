@@ -60,9 +60,9 @@ export interface CoachReview {
   summary: string | null;
   takeaway: string | null;
   /**
-   * Pro (Gate B): the server withheld Rookie's words past the free window
-   * (comments beyond the first few moves + the takeaway). Surfaces render a
-   * locked row for those moves. Always false while FEATURE_FLAGS.PRO is off.
+   * Rookie Pro: the server withheld Rookie's words because this free account
+   * already used today's full review (`limitReached`). Surfaces render a
+   * locked row (tap → paywall). Always false while FEATURE_FLAGS.PRO is off.
    */
   locked: boolean;
   /** How many move comments were withheld. */
@@ -122,6 +122,8 @@ export async function fetchCoachReview(args: {
         result: args.result,
         playerName: args.playerName,
         pass: args.pass ?? 'deep',
+        // Rookie Pro: the free daily review resets at the user's local midnight.
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
       }),
     });
     const data = await res.json();

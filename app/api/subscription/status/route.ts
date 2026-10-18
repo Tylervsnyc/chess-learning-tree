@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSubscriptionInfo } from '@/lib/subscription';
 import { FREE_TIER } from '@/lib/stripe';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { hasUsedProTrial } from '@/lib/pro/trial';
 
 export async function GET() {
   try {
@@ -23,11 +25,17 @@ export async function GET() {
       });
     }
 
-    const info = await getSubscriptionInfo(supabase, user.id);
+    const [info, trialUsed] = await Promise.all([
+      getSubscriptionInfo(supabase, user.id),
+      // Rookie Pro: one trial per person across every app (paywall copy +
+      // RevenueCat `no_trial` offering). Not read while PRO is off.
+      FEATURE_FLAGS.PRO ? hasUsedProTrial(supabase, user.id) : Promise.resolve(false),
+    ]);
 
     return NextResponse.json({
       ...info,
       isAuthenticated: true,
+      ...(FEATURE_FLAGS.PRO ? { trialUsed, email: user.email ?? null } : {}),
     });
   } catch (error) {
     console.error('Subscription status error:', error);

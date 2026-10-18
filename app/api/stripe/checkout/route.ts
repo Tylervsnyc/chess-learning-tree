@@ -3,6 +3,28 @@ import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { stripe, PRICES, EXPERIMENT_PRICES } from '@/lib/stripe';
 import type { PricingVariant } from '@/lib/posthog-flags';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { hasUsedProTrial } from '@/lib/pro/trial';
+
+/** Rookie Pro web free trial (FEATURE_FLAGS.PRO) — same length as the StoreKit intro offer. */
+const PRO_TRIAL_DAYS = 7;
+
+/**
+ * One trial per Stripe customer: a brand-new customer is eligible; an
+ * existing one only if they have never had a Premium/Pro subscription (any
+ * status — trialing, active, canceled…). Patron subs don't count; they unlock
+ * nothing. Any lookup failure → no trial (they just pay as before).
+ */
+async function trialEligible(customerId: string | null | undefined): Promise<boolean> {
+  if (!customerId) return true;
+  try {
+    const subs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
+    return !subs.data.some((s) => s.metadata?.is_patron !== 'true');
+  } catch (err) {
+    console.error('[checkout] trial eligibility lookup failed', err);
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +60,12 @@ export async function POST(request: NextRequest) {
     // Patron is a support-only subscription — flat price, no pricing experiment.
     const isPatron = priceId === 'patron';
 
+    // Rookie Pro folds Patron in (Pro members get the gold profile): with PRO on
+    // Patron is no longer sold. Existing patrons keep working (webhook untouched).
+    if (FEATURE_FLAGS.PRO && isPatron) {
+      return NextResponse.json({ error: 'Patron is now part of Rookie Pro' }, { status: 410 });
+    }
+
     // Resolve Stripe price ID — use experiment variant if provided, otherwise default
     let stripePriceId: string;
     const validVariants: PricingVariant[] = ['control', 'low', 'high'];
@@ -69,6 +97,17 @@ export async function POST(request: NextRequest) {
       .single();
 
     let customerId = profile?.stripe_customer_id;
+
+    // Pro web trial — only while PRO is on, never for Patron, ONCE PER PERSON:
+    // not if this account already trialed anywhere (an iOS intro offer recorded
+    // by the RevenueCat webhook, or an earlier Stripe trial → pro_trial_used_at),
+    // and not if this Stripe customer ever had a Pro subscription. Checked
+    // BEFORE a customer is created (a new customer is eligible on Stripe's side).
+    const withTrial =
+      FEATURE_FLAGS.PRO &&
+      !isPatron &&
+      !(await hasUsedProTrial(supabase, user.id)) &&
+      (await trialEligible(customerId));
 
     if (!customerId) {
       // Create Stripe customer
@@ -116,6 +155,7 @@ export async function POST(request: NextRequest) {
           // Webhook reads this to set is_patron WITHOUT touching subscription_status.
           ...(isPatron ? { is_patron: 'true' } : {}),
         },
+        ...(withTrial ? { trial_period_days: PRO_TRIAL_DAYS } : {}),
       },
     });
 

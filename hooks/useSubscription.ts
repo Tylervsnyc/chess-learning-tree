@@ -12,6 +12,10 @@ interface SubscriptionState {
   canSolvePuzzle: boolean;
   expiresAt: string | null;
   isAuthenticated: boolean;
+  /** Rookie Pro: this account already used its one free trial (any app). PRO only. */
+  trialUsed: boolean;
+  /** Signed-in email (PRO only — the paywall's "Signed in as" line). */
+  email: string | null;
   loading: boolean;
   error: string | null;
 }
@@ -25,6 +29,8 @@ const initialState: SubscriptionState = {
   canSolvePuzzle: true,
   expiresAt: null,
   isAuthenticated: false,
+  trialUsed: false,
+  email: null,
   loading: true,
   error: null,
 };
@@ -47,6 +53,8 @@ export function useSubscription() {
         canSolvePuzzle: data.canSolvePuzzle,
         expiresAt: data.expiresAt,
         isAuthenticated: data.isAuthenticated,
+        trialUsed: data.trialUsed === true,
+        email: typeof data.email === 'string' ? data.email : null,
         loading: false,
         error: null,
       });

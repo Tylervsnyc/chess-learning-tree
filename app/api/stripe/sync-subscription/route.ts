@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
+import { markProTrialUsed } from '@/lib/pro/trial';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +27,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (session.payment_status !== 'paid') {
+    // A paid checkout, or a free-trial checkout (FEATURE_FLAGS.PRO web trial):
+    // those complete with nothing charged yet and the subscription 'trialing'.
+    const subscription = session.subscription as { status?: string; current_period_end?: number } | null;
+    const trialStarted =
+      session.status === 'complete' &&
+      session.payment_status === 'no_payment_required' &&
+      subscription?.status === 'trialing';
+    if (session.payment_status !== 'paid' && !trialStarted) {
       return NextResponse.json(
         { error: 'Payment not completed' },
         { status: 400 }
@@ -44,8 +52,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get subscription details
-    const subscription = session.subscription as { current_period_end?: number } | null;
     const expiresAt = subscription?.current_period_end
       ? new Date(subscription.current_period_end * 1000).toISOString()
       : null;
@@ -54,7 +60,8 @@ export async function POST(request: NextRequest) {
     // service role by the protect_privileged_profile_columns trigger, so the
     // write (after server-validating the paid Stripe session above) uses the
     // service client.
-    const { error: updateError } = await createServiceClient()
+    const service = createServiceClient();
+    const { error: updateError } = await service
       .from('profiles')
       .update({
         subscription_status: 'premium',
@@ -70,6 +77,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // One Rookie Pro trial per person, across every app (lib/pro/trial.ts).
+    if (trialStarted) await markProTrialUsed(service, user.id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

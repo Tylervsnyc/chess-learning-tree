@@ -101,7 +101,7 @@ export const EloEvents = {
 // — buyer metrics for daily-report.ts. Every pro_* event carries `app` so the
 // funnel reads per app: 'chessboxing' / 'chesspath' (the two iOS bundles,
 // build-time constants) or 'web'.
-export type ProLimitKind = 'bout' | 'workout';
+export type ProLimitKind = 'lesson' | 'review' | 'bout' | 'workout';
 export type ProPlan = 'monthly' | 'yearly';
 export type ProPlatform = 'ios' | 'web';
 export type ProEventApp = 'chessboxing' | 'chesspath' | 'web';

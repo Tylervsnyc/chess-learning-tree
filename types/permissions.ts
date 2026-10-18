@@ -9,10 +9,9 @@ export type UserTier = 'anonymous' | 'free' | 'premium' | 'admin';
  *   'ok'          — go ahead
  *   'signup'      — anonymous user out of free lessons (CreateProfileModal)
  *   'daily_limit' — free user out of today's lessons
- *   'pro'         — the lesson's level is above PRO_FREE_LIMITS.FREE_LESSON_LEVELS
- *                   (only while FEATURE_FLAGS.PRO is on → ProPaywall)
+ * (The Rookie Pro daily lesson limit lives in hooks/useProGate, not here.)
  */
-export type LessonAccess = 'ok' | 'signup' | 'daily_limit' | 'pro';
+export type LessonAccess = 'ok' | 'signup' | 'daily_limit';
 
 export interface UserPermissions {
   tier: UserTier;
@@ -21,8 +20,6 @@ export interface UserPermissions {
   dailyLessonLimit: number | null; // null = unlimited
   lessonsCompletedToday: number;
   lessonsRemainingToday: number | null; // null = unlimited
-  /** Highest level free users may open; null = every level (Pro/admin, or PRO flag off). */
-  maxFreeLevel: number | null;
 
   // Access flags
   canAccessLesson: boolean;

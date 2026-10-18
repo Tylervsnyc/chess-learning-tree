@@ -105,11 +105,10 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 | Completed | Gold, checkmark sparkles | Navigate to lesson (replay) |
 | Current | Colored, pulsing ring | Navigate to lesson |
 | Completed + Current | Gold, checkmark sparkles, pulsing ring | Navigate to lesson (replay) |
-| Pro-locked level | Gold lock card, "Pro" pill, no lesson nodes | Tap "Unlock with Pro" → paywall (`requirePro('lesson_level')`) |
 
 **Note:** The pulsing ring always shows on `currentPosition`, even if that lesson is completed. This indicates "you are here" in the curriculum.
 
-**Pro (Gate C, only while `FEATURE_FLAGS.PRO` is on):** Levels 1–2 are free (`PRO_FREE_LIMITS.FREE_LESSON_LEVELS` in `lib/subscription.ts`); Level 3+ is Pro. Progression unlocking (above) is untouched — a level can be progression-unlocked AND Pro-locked, and the gold card renders either way (users who passed Level 2 before the flag see it too). One gate: `hooks/usePermissions.ts` → `isLevelProLocked(level)` / `lessonAccess(lessonId)` → `'ok' | 'signup' | 'daily_limit' | 'pro'`. Opening a Pro-locked lesson URL shows `ProPaywall` (trigger `lesson_level`). Premium/admin never locked.
+**Rookie Pro (`FEATURE_FLAGS.PRO`):** there is NO Pro level lock — every level is open to free users (Tyler 2026-10-18). Pro limits lessons per day instead (§7).
 
 ### Lesson Icon Selection (priority order):
 1. **`pieceFilter`** — If the lesson has an explicit piece filter, use that piece as the icon
@@ -141,8 +140,8 @@ The server does **NOT** validate unlock order. It only checks that the `lessonId
 ### Stored In:
 `profiles.unlocked_levels` (array of integers)
 
-### Pro (separate axis, `FEATURE_FLAGS.PRO` only):
-Levels 1–2 free, 3+ Pro (`PRO_FREE_LIMITS.FREE_LESSON_LEVELS`). Level tests stay free and a pass still records the unlock in `unlocked_levels`; the "Continue to Level N" CTA calls `requirePro('level_test_pass')` when Level N is Pro-locked. Gate: `hooks/usePermissions.ts` → `isLevelProLocked(level)`. See §2.
+### Rookie Pro:
+No level gate. Level tests and "Continue to Level N" are free for everyone. See §7 for the daily lesson limit.
 
 ---
 
@@ -303,7 +302,7 @@ instead of `transition: none`. The scroll fires 16ms later into a still-animatin
 | Premium | Unlimited | N/A |
 | Admin | Unlimited | N/A |
 
-**Pro level cap (`FEATURE_FLAGS.PRO` only):** in addition to the daily count, free and anonymous users can only open Levels 1–2 (`PRO_FREE_LIMITS.FREE_LESSON_LEVELS`, `lib/subscription.ts`); Level 3+ returns `lessonAccess === 'pro'` → `ProPaywall`. Premium/admin: all levels.
+**Rookie Pro daily lesson limit (`FEATURE_FLAGS.PRO` only):** free ACCOUNTS get `PRO_FREE_LIMITS.LESSONS_PER_DAY` (2) lessons per LOCAL day, every level open. Counted server-side from `lesson_progress.completed_at` since local midnight (`lib/pro/limits.ts` `countToday`, `localDayStartISO`; a replay re-stamps the same row, so it counts distinct lessons) → `/api/pro/limits` → `hooks/useProGate` (`limits.canLesson`, `ready`). The lesson page renders nothing until the read lands, then on the 3rd lesson shows "That's your 2 lessons for today" + `ProPaywall` (trigger `limit_lesson`, `pro_limit_hit {kind:'lesson'}`). Pro/admin: unlimited. **Logged-out visitors are never limited** (no server row to count; same rule as the Chess Boxing limits — the limit is a reason to buy Pro, not to bounce a cold visitor; today's anonymous lesson limits are also off). Game reviews: 1 FULL review per local day for free accounts (`/api/coach-review` + `review_usage`, one row per user + game); past it the model is not called and every move shows the locked row (tap → paywall, trigger `review`).
 
 ### Enforced In:
 `/hooks/usePermissions.ts` (`lessonAccess(lessonId)` → `'ok' | 'signup' | 'daily_limit' | 'pro'`)
@@ -325,10 +324,11 @@ instead of `transition: none`. The scroll fires 16ms later into a still-animatin
 - **Style**: Dismissible, not blocking
 - **Note**: Users can still subscribe even with limits disabled
 
-### Pro Prompts (`FEATURE_FLAGS.PRO` only):
-- **Where**: gold Pro level card on `/` (Level 3+), the lesson page for a Pro-locked lesson, and the level-test pass screen's "Continue to Level N"
-- **What**: `ProPaywall` via `hooks/useProGate` (`requirePro('lesson_level' | 'level_test_pass')`), which logs `pro_gate_hit` per feature
-- **Copy**: from `lib/pro/benefits.ts` (Lessons row: "Levels 1–2, 4 lessons a day" free / "All 8 levels, unlimited" Pro); never the word "bout"
+### Rookie Pro Prompts (`FEATURE_FLAGS.PRO` only):
+- **Where**: the lesson page on the 3rd lesson of the day (`limit_lesson`), a locked review row (`review` / `variations`), Chess Boxing launch points (`limit_bout`, `limit_workout`) and Boxing Pro features
+- **What**: `ProPaywall` via `hooks/useProGate` (`gate(kind)` for daily limits → `pro_limit_hit`; `requirePro(feature)` → `pro_gate_hit`). Approved design: `/test/pro-family-popup` renders the real component
+- **Copy**: "Rookie Pro — One subscription. All three apps." Rows from `lib/pro/benefits.ts` (one per app). One trial per person (`profiles.pro_trial_used_at`): trial-used accounts see "Start Rookie Pro", no trial copy. Never the word "bout"; no emoji; Chess Path has no leaderboard perk
+- **Patron**: folded into Pro — not sold while PRO is on (checkout 410, `/profile` CTA hidden); Pro members get the gold profile; existing patrons keep gold
 
 ---
 
@@ -1225,6 +1225,7 @@ The raw `Chessboard` component ships with default piece styling and no board col
 | `SHOW_OPENINGS` | `lib/config/feature-flags.ts` | `true` | Openings feature in Learn dropdown |
 | `CB_WEEKLY_TOP10_EMAIL` | `lib/config/feature-flags.ts` | env `CB_WEEKLY_TOP10_EMAIL=true` (default off) | Monday Chess Boxing Top 10 email (`cb_weekly_top10`) to the whole list. Off = `/api/cron/weekly-top10` dry-runs (counts, no sends). |
 | `ACHIEVEMENTS` | `lib/config/feature-flags.ts` | `true` | Chess Boxing achievements: trophy case on /profile + /box/profile, unlock animations on bout/workout result screens, server-side detection in the finish routes. Plan: docs/chess-boxing-achievements-plan.md |
+| `PRO` | `lib/config/feature-flags.ts` | `false` | Rookie Pro — ONE flag for the one subscription across Chess Path, Chess Boxing and Rookie's Revenge ($4.99/mo, $39.99/yr, 7-day trial, one trial per person). Free: 2 lessons + 1 full game review a day (Chess Path), 1 fight + 1 Puzzle Boxing a day (Chess Boxing); logged-out never limited. Off = no limits, no paywall, no IAP UI. Setup: docs/rookie-pro-setup.md; SQL: docs/rookie-pro-sql.sql |
 
 ### Permissions & Limits (not feature flags)
 

@@ -48,7 +48,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useProGate } from '@/hooks/useProGate';
 import { LessonLimitModal } from '@/components/subscription/LessonLimitModal';
 import { CreateProfileModal } from '@/components/subscription/CreateProfileModal';
-import { LearningEvents, trackEvent } from '@/lib/analytics/posthog';
+import { LearningEvents, ProEvents, trackEvent } from '@/lib/analytics/posthog';
 import { normalizeMove, processPuzzleWithSAN, isAlternateCheckmate, getCheckmateSquareHighlights, getHeroPiece, getPlayerMoveCount, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { ActivityComplete } from '@/components/shared/ActivityComplete';
@@ -174,16 +174,23 @@ function LessonAttempt({ restart }: { restart: () => void }) {
     lessonsCompletedToday,
     recordLessonComplete,
     loading: permissionsLoading,
-    lessonAccess,
   } = usePermissions();
 
-  // Gate C (FEATURE_FLAGS.PRO): a lesson in a Pro-locked level opens the paywall
-  // instead of the daily-limit screen. Flag off → lessonAccess never returns 'pro'.
-  const { requirePro, paywall: proPaywall } = useProGate();
-  const lessonProLocked = !permissionsLoading && lessonAccess(lessonId) === 'pro';
+  // Rookie Pro (FEATURE_FLAGS.PRO): free accounts get PRO_FREE_LIMITS.LESSONS_PER_DAY
+  // lessons a local day, counted server-side from lesson_progress (/api/pro/limits,
+  // read once on mount). Every level is open. Logged-out users are never limited.
+  // Flag off → ready is true, canLesson is true, nothing is fetched.
+  const proGate = useProGate();
+  const { openPaywall, paywall: proPaywall } = proGate;
+  const proLimitsLoading = proGate.enabled && !proGate.ready;
+  const lessonProLocked = proGate.enabled && proGate.ready && !proGate.limits.canLesson;
+  const lessonLimitLogged = useRef(false);
   useEffect(() => {
-    if (lessonProLocked) requirePro('lesson_level', () => {});
-  }, [lessonProLocked, requirePro]);
+    if (!lessonProLocked || lessonLimitLogged.current) return;
+    lessonLimitLogged.current = true;
+    ProEvents.limitHit('lesson');
+    openPaywall('limit_lesson');
+  }, [lessonProLocked, openPaywall]);
 
   // Session tracking for coaching
   const { startSession, recordPuzzleResult, endSession: endGameSession } = useGameSession('lesson', user?.id);
@@ -1161,7 +1168,8 @@ function LessonAttempt({ restart }: { restart: () => void }) {
 
   // Permission gate - check if user can access lessons
   // Only show blocked state AFTER permissions have finished loading
-  // Order (hooks/usePermissions lessonAccess): signup → daily limit → Pro level (Gate C)
+  // Order: signup → daily limit (hooks/usePermissions) → Rookie Pro lesson limit
+  if (proLimitsLoading) return null;
   if (!permissionsLoading && (!canAccessLesson || lessonProLocked)) {
     if (shouldPromptSignup) {
       return (
@@ -1190,13 +1198,13 @@ function LessonAttempt({ restart }: { restart: () => void }) {
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center max-w-md">
               <div className="flex justify-center mb-4"><BreathingRook size="md" /></div>
-              <h1 className="text-2xl font-bold mb-2">This level is Pro</h1>
-              <p className="text-white/60 mb-6">
-                Levels 1 and 2 are free. Pro opens every level.
+              <h1 className="text-2xl font-bold mb-2">That&apos;s your {proGate.limits.lessonLimit} lessons for today</h1>
+              <p className="text-chess-text-muted mb-6">
+                I was just getting warmed up. Rookie Pro means no limit, or come back tomorrow.
               </p>
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => requirePro('lesson_level', () => {})}
+                  onClick={() => openPaywall('limit_lesson')}
                   className="min-h-[48px] px-8 py-3 font-bold rounded-xl transition-colors"
                   style={{
                     backgroundColor: 'var(--color-chess-gold)',
@@ -1204,7 +1212,7 @@ function LessonAttempt({ restart }: { restart: () => void }) {
                     boxShadow: '0 4px 0 var(--color-chess-gold-dark)',
                   }}
                 >
-                  Unlock with Pro
+                  Get Rookie Pro
                 </button>
                 <button
                   onClick={() => router.push('/')}

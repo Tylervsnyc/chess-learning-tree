@@ -1,85 +1,70 @@
 /**
- * PRO_BENEFITS — the ONE list of what free vs Pro gets, per app.
+ * Rookie Pro — the ONE description of the deal (Tyler 2026-10-18): one
+ * subscription unlocks Pro in all three apps. Every surface that explains it
+ * reads this file — the paywall (components/pro/ProPaywall.tsx) and /pricing —
+ * so the pitch can never drift between apps.
  *
- * One Pro works in Chess Path, Chess Boxing and Rookie's Revenge (flag
- * `FEATURE_FLAGS.PRO`). Every surface that explains the deal reads this file:
- * the paywall (components/pro/ProPaywall.tsx), /pricing, and the locked-level
- * card — so the pitch can never drift between apps.
- *
- * Copy rules: no emoji; never the word "bout" — the vs-Rookie rounds game is
- * "Chess Boxing"; keep each cell short enough for a phone-width table.
+ * Copy rules: no emoji; never the word "bout" (say "fight" / "Chess Boxing");
+ * Chess Path has no leaderboard, so no leaderboard perk; keep each cell short
+ * enough for a phone-width row.
  */
 
-export type ProApp = 'chesspath' | 'chessboxing' | 'revenge' | 'all';
+export type ProApp = 'chesspath' | 'chessboxing' | 'revenge';
 
 export interface ProBenefit {
-  id: string;
-  /** Which app this perk lives in ('all' = every app). */
+  id: ProApp;
+  /** Which app this row is about. */
   app: ProApp;
+  /** Row label (the app's name). */
+  title: string;
   /** What free gets. */
   free: string;
   /** What Pro gets. */
   pro: string;
-  /** Short row label for tables. */
-  title: string;
 }
 
+export const PRO_NAME = 'Rookie Pro';
+
+/** The shared line every paywall carries. */
+export const PRO_SHARED_LINE = 'One subscription. All three apps.';
+
+/** Web (Stripe) display prices; StoreKit's localized strings win in the apps. */
+export const PRO_PRICES = { monthly: '$4.99', yearly: '$39.99' } as const;
+export const PRO_TRIAL_DAYS = 7;
+
+/** One row per app, in the family's canonical order. */
 export const PRO_BENEFITS: ProBenefit[] = [
   {
-    id: 'lessons',
+    id: 'chesspath',
     app: 'chesspath',
-    title: 'Lessons',
-    free: 'Levels 1–2, 4 lessons a day',
-    pro: 'All 8 levels, unlimited',
-  },
-  {
-    id: 'chessboxing',
-    app: 'chessboxing',
-    title: 'Chess Boxing and workouts',
-    free: '1 of each a day',
-    pro: 'Unlimited Chess Boxing and workouts',
-  },
-  {
-    id: 'review',
-    app: 'all',
-    title: "Rookie's review",
-    free: 'Summary + 3 moves',
-    pro: 'Every move, Try it, Fix-It',
-  },
-  {
-    id: 'leaderboard',
-    app: 'all',
-    title: 'Leaderboards',
-    free: 'Your name',
-    pro: 'Gold name and Pro pill',
+    title: 'Chess Path',
+    free: '2 lessons + 1 game review a day',
+    pro: 'Unlimited lessons + game reviews',
   },
   {
     id: 'revenge',
     app: 'revenge',
     title: "Rookie's Revenge",
-    free: 'The daily run',
-    pro: 'Pro perks coming to Revenge',
+    free: 'The first rungs',
+    pro: 'Full ladder + unlimited Endless',
+  },
+  {
+    id: 'chessboxing',
+    app: 'chessboxing',
+    title: 'Chess Boxing',
+    free: '1 fight + 1 Puzzle Boxing a day',
+    pro: 'Unlimited fights + Puzzle Boxing',
   },
 ];
 
-/** Display name for an app id (the 'all' pseudo-app has none). */
-export const PRO_APP_NAMES: Record<Exclude<ProApp, 'all'>, string> = {
+/** Display name for an app id. */
+export const PRO_APP_NAMES: Record<ProApp, string> = {
   chesspath: 'Chess Path',
   chessboxing: 'Chess Boxing',
   revenge: "Rookie's Revenge",
 };
 
-/** The shared line every paywall carries. */
-export const PRO_SHARED_LINE = "One Pro. Works in Chess Path, Chess Boxing, and Rookie's Revenge.";
-
-/**
- * Split the list for a given surface: the current app's perks (plus the
- * cross-app ones) first, everything else under "Also in Pro". Pass 'all' for
- * the web /pricing page, where every row belongs in the main table.
- */
-export function benefitsFor(app: ProApp): { here: ProBenefit[]; elsewhere: ProBenefit[] } {
-  if (app === 'all') return { here: PRO_BENEFITS, elsewhere: [] };
-  const here = PRO_BENEFITS.filter((b) => b.app === app || b.app === 'all');
-  const elsewhere = PRO_BENEFITS.filter((b) => b.app !== app && b.app !== 'all');
-  return { here, elsewhere };
+/** The rows with the current app first (the paywall's three-app card). */
+export function benefitsFor(here: ProApp): ProBenefit[] {
+  return [...PRO_BENEFITS.filter((b) => b.app === here), ...PRO_BENEFITS.filter((b) => b.app !== here)];
 }

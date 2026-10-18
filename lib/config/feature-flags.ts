@@ -179,21 +179,22 @@ export const FEATURE_FLAGS = {
    */
   PREMOVE: true,
   /**
-   * Pro — ONE subscription across Chess Path, Chess Boxing and Rookie's
-   * Revenge (2026-09-08; was CHESSBOXING_PRO, 2026-08-24, see
-   * docs/chess-boxing-monetization-and-exit-plan.md + docs/chess-boxing-pro-setup.md).
-   * ONE paid SKU: $5.99/mo · $39.99/yr, 7-day trial. "Pro" IS the existing
-   * premium entitlement (`profiles.subscription_status`, lib/subscription.ts)
-   * — Stripe on web, RevenueCat/StoreKit in BOTH iOS shells (lib/iap/revenuecat.ts
-   * picks the per-app products + key; one RevenueCat entitlement `pro`, keyed by
-   * the Supabase uid, so buying in one app unlocks the other). Perks per app live
-   * in lib/pro/benefits.ts (paywall, /pricing, locked-level card all read it).
-   * When ON and the user is NOT premium: 1 Chess Boxing + 1 workout per local
-   * day (hooks/useProGate + /api/pro/limits), custom round cards, history,
-   * punch log, gold name on leaderboards/profile are Pro; the Patron CTA folds
-   * away on /profile + /pricing (the is_patron gold stays). Supersedes the
-   * legacy `MONETIZATION_ENABLED` (lib/feature-flags.ts), which stays off as
-   * the old premium-UI switch — every NEW paid surface gates on this flag only.
+   * Rookie Pro — ONE subscription across Chess Path (web + iOS), Chess Boxing
+   * (iOS + /box) and Rookie's Revenge (Tyler 2026-10-18; reverses the Oct 7
+   * "Chess Path only" split — one flag, one implementation; see
+   * docs/rookie-pro-setup.md). $4.99/mo · $39.99/yr, 7-day free trial, ONE
+   * trial per person across every app (profiles.pro_trial_used_at). "Pro" IS
+   * the existing premium entitlement (`profiles.subscription_status`,
+   * lib/subscription.ts) — Stripe on web, RevenueCat entitlement `pro` in the
+   * iOS shells (lib/iap/revenuecat.ts). Perks: lib/pro/benefits.ts.
+   * When ON and the user is NOT premium:
+   *   Chess Path — every level open, PRO_FREE_LIMITS.LESSONS_PER_DAY lessons a
+   *     local day (server-counted from lesson_progress, /api/pro/limits), and
+   *     REVIEWS_PER_DAY full game review a day (/api/coach-review, counted in
+   *     review_usage). Play vs Rookie is always free.
+   *   Chess Boxing — 1 fight + 1 Puzzle Boxing a local day, custom rounds,
+   *     history, settings row, workout report lines, Fix-It.
+   *   Patron is no longer sold; Pro members get the gold profile.
    * OFF = the apps behave exactly as before: no limits, no paywall, no IAP UI.
    */
   PRO: false,

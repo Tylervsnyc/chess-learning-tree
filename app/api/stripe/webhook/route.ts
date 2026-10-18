@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase/service';
+import { markProTrialUsed } from '@/lib/pro/trial';
 import { sendEmail, getAppUrl, getUnsubscribeUrl } from '@/lib/email/send';
 import { PatronThankYou } from '@/lib/email/templates/PatronThankYou';
 import Stripe from 'stripe';
@@ -309,6 +310,9 @@ async function updateSubscriptionStatus(
   }
 
   const status = isActive ? 'premium' : 'free';
+
+  // Rookie Pro: one free trial per person across every app (lib/pro/trial.ts).
+  if (subscription.status === 'trialing') await markProTrialUsed(supabase, userId);
 
   // Get expiration date from the first subscription item
   let expiresAt: string | null = null;

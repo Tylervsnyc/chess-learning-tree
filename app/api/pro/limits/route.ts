@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { isProSubscription, type SubscriptionStatus } from '@/lib/subscription';
-import { buildLimits, countToday } from '@/lib/pro/limits';
+import { buildLimits, countToday, ZERO_COUNTS } from '@/lib/pro/limits';
+import { isProUser } from '@/lib/pro/server';
 
 /**
  * GET /api/pro/limits?tz=America/New_York
  *
- * { boutsToday, workoutsToday, boutLimit, workoutLimit, isPro, canBout, canWorkout }
+ * { lessonsToday, reviewsToday, boutsToday, workoutsToday, …Limit,
+ *   isPro, canLesson, canReview, canBout, canWorkout, authenticated }
  *
- * Read-only truth for the Chess Boxing Pro free limits (PRO).
- * The client gate (hooks/useProGate) asks this before launching a bout or a
- * workout. Logged-out users get "unlimited": the limit is a reason to buy Pro,
- * not a reason to bounce a cold visitor before their first fight.
+ * Read-only truth for the Rookie Pro free limits (FEATURE_FLAGS.PRO; the
+ * client only calls this while the flag is on — hooks/useProGate). Counted
+ * per local day by lib/pro/limits.ts. Logged-out users get "unlimited": the
+ * limit is a reason to buy Pro, not a reason to bounce a cold visitor.
+ * Admins count as Pro (isProUser), same as every Pro-gated route.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -19,22 +21,10 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const open = buildLimits({ boutsToday: 0, workoutsToday: 0 }, true);
+  const open = buildLimits(ZERO_COUNTS, true);
   if (!user) return NextResponse.json({ ...open, isPro: false, authenticated: false });
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('subscription_status, subscription_expires_at, is_admin')
-    .eq('id', user.id)
-    .single();
-  // Admins count as Pro here exactly as they do in the review/report/fixit routes.
-  const isPro =
-    !!profile?.is_admin ||
-    isProSubscription(
-      (profile?.subscription_status as SubscriptionStatus | null) ?? 'free',
-      profile?.subscription_expires_at ?? null,
-    );
-  if (isPro) return NextResponse.json({ ...open, authenticated: true });
+  if (await isProUser(supabase, user.id)) return NextResponse.json({ ...open, authenticated: true });
 
   const tz = request.nextUrl.searchParams.get('tz');
   const counts = await countToday(supabase, user.id, tz);

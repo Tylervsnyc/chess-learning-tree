@@ -33,8 +33,8 @@ export function isPremiumSubscription(
 }
 
 /**
- * Chess Boxing Pro == premium. ONE entitlement, two storefronts (Stripe on
- * web, RevenueCat/StoreKit in the iOS shell) — both land on the same
+ * Rookie Pro == premium. ONE entitlement, two storefronts (Stripe on web,
+ * RevenueCat/StoreKit in every iOS app) — both land on the same
  * `profiles.subscription_status` / `subscription_expires_at`. Never add a
  * second "pro" column or concept; this alias exists so Chess Boxing code
  * reads naturally while staying on the single source of truth.
@@ -42,14 +42,20 @@ export function isPremiumSubscription(
 export const isProSubscription = isPremiumSubscription;
 
 /**
- * Free-tier limits across the family (only enforced when FEATURE_FLAGS.PRO is on).
- * FREE_LESSON_LEVELS: Chess Path levels 1..N are free; N+1 and up are Pro
- * (Gate C — the gate lives in hooks/usePermissions.ts `isLevelProLocked`).
+ * Rookie Pro free-tier daily limits (enforced only when FEATURE_FLAGS.PRO is
+ * on; counted per LOCAL day, server truth in lib/pro/limits.ts):
+ *   LESSONS_PER_DAY — Chess Path lessons (every level is open; no level cap).
+ *   REVIEWS_PER_DAY — full Rookie game reviews (/api/coach-review).
+ *   BOUTS_PER_DAY   — Chess Boxing fights (Play Boxing).
+ *   WORKOUTS_PER_DAY — Puzzle Boxing workouts.
+ * Logged-out users are never limited: the limit is a reason to buy Pro, not a
+ * reason to bounce a cold visitor (and there is no server row to count).
  */
 export const PRO_FREE_LIMITS = {
+  LESSONS_PER_DAY: 2,
+  REVIEWS_PER_DAY: 1,
   BOUTS_PER_DAY: 1,
   WORKOUTS_PER_DAY: 1,
-  FREE_LESSON_LEVELS: 2,
 } as const;
 
 /**

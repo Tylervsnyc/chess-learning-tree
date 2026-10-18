@@ -13,8 +13,6 @@ import { AnimatedLogo } from '@/components/brand/AnimatedLogo';
 import { PuzzleResultPopup } from '@/components/puzzle/PuzzleResultPopup';
 import { useLessonProgress } from '@/hooks/useProgress';
 import { useUser } from '@/hooks/useUser';
-import { useLevelProLock } from '@/hooks/usePermissions';
-import { useProGate } from '@/hooks/useProGate';
 import { processPuzzle, ProcessedPuzzle, RawPuzzle, isCorrectMove, parseUciMove, isAlternateCheckmate, BOARD_COLORS } from '@/lib/puzzle-utils';
 import { useAudioWarmup } from '@/hooks/useAudioWarmup';
 import { useClickToMove, reconcileSelectionAfterOpponentMove } from '@/hooks/useClickToMove';
@@ -44,11 +42,6 @@ export default function LevelTestPage() {
   const [puzzles, setPuzzles] = useState<ProcessedPuzzle[]>([]);
   const [targetLevel, setTargetLevel] = useState<{ number: number; key: string; name: string } | null>(null);
 
-  // Gate C (FEATURE_FLAGS.PRO): the test itself stays free and a pass still records
-  // the unlock; only the "Continue to Level N" CTA opens the paywall when Level N is
-  // Pro-locked. Flag off → requirePro runs the action immediately (no change).
-  const { isLevelProLocked } = useLevelProLock();
-  const { requirePro, paywall: proPaywall } = useProGate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
@@ -597,13 +590,7 @@ export default function LevelTestPage() {
           </p>
           {user ? (
             <button
-              onClick={() => {
-                if (targetLevel && isLevelProLocked(targetLevel.number)) {
-                  requirePro('level_test_pass', handleBackToLearn);
-                } else {
-                  handleBackToLearn();
-                }
-              }}
+              onClick={handleBackToLearn}
               className="w-full py-4 rounded-xl font-bold text-lg text-white bg-chess-green shadow-[0_4px_0_var(--color-chess-green-shadow)] active:translate-y-[2px] active:shadow-[0_2px_0_var(--color-chess-green-shadow)] transition-all hover:bg-chess-green-dark"
             >
               Continue to Level {targetLevel?.number || 2}
@@ -624,7 +611,6 @@ export default function LevelTestPage() {
             context="level-test-passed"
           />
         )}
-        {proPaywall}
       </div>
     );
   }

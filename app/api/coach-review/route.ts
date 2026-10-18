@@ -1,20 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { Chess } from 'chess.js';
-import { getProStatus, proLockApplies } from '@/lib/pro/server';
+import { getProStatus } from '@/lib/pro/server';
+import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
+import { recordReview, reviewAllowed, reviewGameKey } from '@/lib/pro/review-usage';
 
 // The model writes ~30 comments in one shot with thinking on; give it room.
 export const maxDuration = 60;
 
 /**
- * Pro (Gate B, FEATURE_FLAGS.PRO): engine analysis is free, Rookie's WORDS are
- * paid. A non-Pro caller (anonymous counts as not Pro) gets the summary plus
- * comments on the first FREE_COMMENTED_MOVES moves; the takeaway and every
- * other comment are withheld and the response says so (`locked`,
- * `lockedCount`). The model is told to write only that much, so the withheld
- * words are never generated. Flag off → everyone gets everything, as today.
+ * Rookie Pro (FEATURE_FLAGS.PRO): a free account gets PRO_FREE_LIMITS.REVIEWS_PER_DAY
+ * FULL review(s) a local day — every word, no teaser (lib/pro/review-usage.ts,
+ * one `review_usage` row per user + game, so the instant + deep passes of one
+ * game and re-opening a reviewed game cost nothing extra). Past the limit the
+ * model is never called: the response carries no words and says so
+ * (`locked`, `lockedCount`, `limitReached`) — the engine analysis on the
+ * client stays free. Pro, admins and logged-out visitors are never metered.
+ * Flag off → everyone gets everything, exactly as before.
  */
-const FREE_COMMENTED_MOVES = 3;
 
 const anthropic = new Anthropic();
 
@@ -53,6 +56,8 @@ interface ReviewRequest {
   playerName?: string;
   /** 'instant' = quick in-game evals (be fast); 'deep' = depth-18 evals (think harder). */
   pass?: 'instant' | 'deep';
+  /** Caller's IANA timezone — the review limit resets at the user's local midnight. */
+  tz?: string;
 }
 
 const SYSTEM_PROMPT = `You are Rookie, the chess coach inside The Chess Path. You just PLAYED this game against the student, and now you are reviewing it with them. Warm, direct, occasionally wry, never cruel. When coaching you are clear and instructive — no gimmicks, no quips.
@@ -208,8 +213,28 @@ export async function POST(req: NextRequest) {
 
     const sign: 1 | -1 = playerColor === 'white' ? 1 : -1;
 
-    // Who is asking, and do they get the full review? (Inert while PRO is off.)
-    const locked = await proLockApplies(await getProStatus());
+    // Rookie Pro daily review meter (inert while PRO is off — no auth read, no DB).
+    let meterUser: string | null = null;
+    let gameKey = '';
+    if (FEATURE_FLAGS.PRO) {
+      const pro = await getProStatus();
+      if (pro.userId && !pro.isPro) {
+        gameKey = reviewGameKey(playerColor, moves.map((m) => m.san));
+        if (!(await reviewAllowed(pro.userId, gameKey, body.tz))) {
+          return NextResponse.json({
+            review: {
+              summary: null,
+              moves: {},
+              takeaway: null,
+              locked: true,
+              lockedCount: moves.length,
+              limitReached: true,
+            },
+          });
+        }
+        meterUser = pro.userId;
+      }
+    }
 
     // Resolve everything the engine said into real notation on the real board.
     // The model never sees a board, so it must never have to turn "e4f6" into
@@ -258,11 +283,8 @@ export async function POST(req: NextRequest) {
       return `${head}\nBoard before this move (${m.color} to move):\n${asciiBoard(m.fen)}`;
     }).join('\n');
 
-    // The keys whose comments a free caller gets to see (game order).
     const keyOf = (m: { moveNumber: number; color: 'white' | 'black' }) =>
       `${m.moveNumber}${m.color === 'white' ? 'w' : 'b'}`;
-    const freeKeys = new Set(enriched.slice(0, FREE_COMMENTED_MOVES).map(keyOf));
-    const lockedCount = locked ? Math.max(0, enriched.length - freeKeys.size) : 0;
 
     const student = playerName ? `${playerName} (the student)` : 'the student';
     const gameContext = `
@@ -272,8 +294,6 @@ Evals are from the STUDENT's point of view (+ = student better). "best" is the e
 
 MOVES:
 ${moveLines}
-${locked ? `
-FREE PREVIEW: this student is on the free plan. Write "moves" entries ONLY for these keys: ${[...freeKeys].join(', ')} — leave every other move out of the array. Still read the whole game for the "summary". Set "takeaway" to an empty string.` : ''}
 `.trim();
 
     const effort = pass === 'instant' ? 'low' : 'medium';
@@ -325,9 +345,6 @@ FREE PREVIEW: this student is on the free plan. Write "moves" entries ONLY for t
     let rejected = 0;
     for (const m of enriched) {
       const key = keyOf(m);
-      // Free preview: never ship a comment past the free window, even if the
-      // model wrote one anyway.
-      if (locked && !freeKeys.has(key)) continue;
       const comment = review.moves?.[key];
       if (typeof comment !== 'string' || !comment.trim()) continue;
       const bad = findIllegalMoveName(comment, m.allowed);
@@ -360,13 +377,16 @@ FREE PREVIEW: this student is on the free plan. Write "moves" entries ONLY for t
     const clean = (s: string | undefined) =>
       s && !findIllegalMoveName(s, everything) ? shorten(s) : null;
 
+    // This free account's review for today has now been delivered.
+    if (meterUser) await recordReview(meterUser, gameKey);
+
     return NextResponse.json({
       review: {
         summary: clean(review.summary),
         moves: outMoves,
-        takeaway: locked ? null : clean(review.takeaway),
-        locked,
-        lockedCount,
+        takeaway: clean(review.takeaway),
+        locked: false,
+        lockedCount: 0,
       },
     });
   } catch (error) {

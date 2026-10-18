@@ -19,7 +19,7 @@ function formatPrice(cents: number): string {
 function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { startCheckout, startGuestCheckout, isAuthenticated, isPremium, loading } = useSubscription();
+  const { startCheckout, startGuestCheckout, isAuthenticated, isPremium, loading, trialUsed } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // Pricing experiment state
@@ -216,7 +216,15 @@ function PricingContent() {
                 boxShadow: '0 4px 0 var(--color-chess-gold-dark)',
               }}
             >
-              {checkoutLoading ? 'Loading...' : 'Get Premium'}
+              {checkoutLoading
+                ? 'Loading...'
+                : FEATURE_FLAGS.PRO && isAuthenticated
+                  ? trialUsed
+                    ? 'Start Rookie Pro' /* one trial per person, across every app */
+                    : 'Start 7-day free trial' /* signed-in checkout carries the Pro web trial */
+                  : FEATURE_FLAGS.PRO
+                    ? 'Get Rookie Pro'
+                    : 'Get Premium'}
             </button>
 
             <div className="flex items-center justify-center gap-4 mt-3">

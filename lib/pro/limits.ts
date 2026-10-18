@@ -3,19 +3,35 @@ import { getTodayInTZ, isValidDate } from '@/lib/run/daily';
 import { PRO_FREE_LIMITS } from '@/lib/subscription';
 
 /**
- * Chess Boxing Pro — free-tier daily limits, server truth.
+ * Rookie Pro — free-tier daily limits, server truth (FEATURE_FLAGS.PRO).
  *
- * Counts finished bouts / workouts since the start of the user's LOCAL day
- * (same local-day notion the streak uses) straight from `bout_sessions` and
- * `workout_sessions`. Nothing is stored; nothing to drift.
+ * Counts since the start of the user's LOCAL day (same local-day notion the
+ * streak uses), straight from the tables that already record the activity:
+ *   lessons  — lesson_progress.completed_at (a replay re-stamps the same row,
+ *              so this counts DISTINCT lessons finished today)
+ *   reviews  — review_usage.created_at (one row per user + game, written by
+ *              /api/coach-review; docs/rookie-pro-sql.sql)
+ *   fights   — bout_sessions.created_at
+ *   Puzzle Boxing — workout_sessions.created_at
+ * Nothing is stored as a counter; nothing to drift. A missing table or column
+ * (unmigrated env) reads as 0 — never lock someone out over it.
  */
 
-export interface ProLimits {
+export interface ProCounts {
+  lessonsToday: number;
+  reviewsToday: number;
   boutsToday: number;
   workoutsToday: number;
+}
+
+export interface ProLimits extends ProCounts {
+  lessonLimit: number;
+  reviewLimit: number;
   boutLimit: number;
   workoutLimit: number;
   isPro: boolean;
+  canLesson: boolean;
+  canReview: boolean;
   canBout: boolean;
   canWorkout: boolean;
 }
@@ -49,34 +65,37 @@ export async function countToday(
   supabase: SupabaseClient,
   userId: string,
   tz: string | null | undefined,
-): Promise<{ boutsToday: number; workoutsToday: number }> {
+): Promise<ProCounts> {
   const since = localDayStartISO(tz);
-  const [bouts, workouts] = await Promise.all([
-    supabase
-      .from('bout_sessions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .gte('created_at', since),
-    supabase
-      .from('workout_sessions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .gte('created_at', since),
+  const head = { count: 'exact' as const, head: true };
+  const [lessons, reviews, bouts, workouts] = await Promise.all([
+    supabase.from('lesson_progress').select('id', head).eq('user_id', userId).gte('completed_at', since),
+    supabase.from('review_usage').select('user_id', head).eq('user_id', userId).gte('created_at', since),
+    supabase.from('bout_sessions').select('id', head).eq('user_id', userId).gte('created_at', since),
+    supabase.from('workout_sessions').select('id', head).eq('user_id', userId).gte('created_at', since),
   ]);
-  // A missing table (unmigrated env) reads as 0 — never lock someone out over it.
-  return { boutsToday: bouts.count ?? 0, workoutsToday: workouts.count ?? 0 };
+  return {
+    lessonsToday: lessons.count ?? 0,
+    reviewsToday: reviews.count ?? 0,
+    boutsToday: bouts.count ?? 0,
+    workoutsToday: workouts.count ?? 0,
+  };
 }
 
-export function buildLimits(
-  counts: { boutsToday: number; workoutsToday: number },
-  isPro: boolean,
-): ProLimits {
+export const ZERO_COUNTS: ProCounts = { lessonsToday: 0, reviewsToday: 0, boutsToday: 0, workoutsToday: 0 };
+
+export function buildLimits(counts: ProCounts, isPro: boolean): ProLimits {
+  const L = PRO_FREE_LIMITS;
   return {
     ...counts,
-    boutLimit: PRO_FREE_LIMITS.BOUTS_PER_DAY,
-    workoutLimit: PRO_FREE_LIMITS.WORKOUTS_PER_DAY,
+    lessonLimit: L.LESSONS_PER_DAY,
+    reviewLimit: L.REVIEWS_PER_DAY,
+    boutLimit: L.BOUTS_PER_DAY,
+    workoutLimit: L.WORKOUTS_PER_DAY,
     isPro,
-    canBout: isPro || counts.boutsToday < PRO_FREE_LIMITS.BOUTS_PER_DAY,
-    canWorkout: isPro || counts.workoutsToday < PRO_FREE_LIMITS.WORKOUTS_PER_DAY,
+    canLesson: isPro || counts.lessonsToday < L.LESSONS_PER_DAY,
+    canReview: isPro || counts.reviewsToday < L.REVIEWS_PER_DAY,
+    canBout: isPro || counts.boutsToday < L.BOUTS_PER_DAY,
+    canWorkout: isPro || counts.workoutsToday < L.WORKOUTS_PER_DAY,
   };
 }
