@@ -298,7 +298,7 @@ ${moveLines}
 
     const effort = pass === 'instant' ? 'low' : 'medium';
     const baseRequest = {
-      model: 'claude-opus-5',
+      model: 'claude-sonnet-5',
       max_tokens: 8000,
       thinking: { type: 'adaptive' as const },
       system: [{ type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } }],
