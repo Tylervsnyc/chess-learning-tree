@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import type { PostHog } from 'posthog-js';
 import { isNativeApp } from '@/lib/native-app';
+import { proEventApp } from '@/lib/analytics/posthog';
 
 // Lazy-load posthog-js — keeps it out of the initial bundle
 async function loadAndInitPostHog(): Promise<PostHog | null> {
@@ -27,7 +28,9 @@ async function loadAndInitPostHog(): Promise<PostHog | null> {
   // Tag every event from the Chess Boxing iOS shell (Capacitor injects its
   // bridge even though the webview loads the remote site). Super property, so
   // it rides on ALL events — the daily report can split app vs web traffic.
-  posthog.register({ in_native_app: isNativeApp() });
+  // `app` splits the shared PostHog project per product: 'chesspath' /
+  // 'chessboxing' (iOS bundles) or 'web'. Revenge registers 'revenge'.
+  posthog.register({ in_native_app: isNativeApp(), app: proEventApp() });
 
   return posthog;
 }
