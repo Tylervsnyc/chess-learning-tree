@@ -1,14 +1,14 @@
-// Builds the REAL repertoire tree from witty_alien's games: from a move prefix,
+// Builds the REAL repertoire tree from a player's games (PLAYER env, default witty_alien): from a move prefix,
 // walk the most-common continuation, showing every child above a frequency
 // threshold with game counts + his win rate. This is the core of the skill —
 // the lesson's opponent replies should be the dominant real moves here.
 //
-// Usage: npx tsx scripts/witty/line-tree.ts <color> "e4 e5 Nf3 d5" [depth=14] [minPct=8]
+// Set TIME_CLASS=blitz (or bullet/rapid) to restrict to one time control.
+// Usage: [PLAYER=hikaru TIME_CLASS=blitz] npx tsx scripts/witty/line-tree.ts <color> "e4 e5 Nf3 d5" [depth=14] [minPct=8]
 import { readdirSync, readFileSync } from 'fs'
 import { join } from 'path'
 
-const DIR = join(process.cwd(), 'data', 'witty-games')
-const USER = 'witty_alien'
+import { PLAYER as USER, GAMES_DIR as DIR, TIME_CLASS } from './lib/player'
 const DRAWS = new Set(['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient'])
 const outcome = (res: string) => (res === 'win' ? 'W' : DRAWS.has(res) ? 'D' : 'L')
 
@@ -38,6 +38,8 @@ for (const f of readdirSync(DIR).filter(f => f.endsWith('.json'))) {
   const { games } = JSON.parse(readFileSync(join(DIR, f), 'utf8'))
   for (const g of games) {
     if (!g.pgn) continue
+    if (TIME_CLASS && g.time_class !== TIME_CLASS) continue
+    if (g.rules && g.rules !== 'chess') continue
     const isWhite = g.white?.username?.toLowerCase() === USER
     const isBlack = g.black?.username?.toLowerCase() === USER
     if (wantColor === 'white' ? !isWhite : !isBlack) continue

@@ -53,6 +53,7 @@ import { WITTY_ALIEN_ELEPHANT } from '@/data/openings/witty-alien-elephant'
 import { WITTY_ALIEN_ENGLUND } from '@/data/openings/witty-alien-englund'
 import { WITTY_ALIEN_DANISH } from '@/data/openings/witty-alien-danish'
 import { WITTY_ALIEN_SCANDI } from '@/data/openings/witty-alien-scandi'
+import { HIKARU_LARSEN } from '@/data/openings/hikaru-larsen'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -106,6 +107,7 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'witty-alien-englund': WITTY_ALIEN_ENGLUND,
   'witty-alien-danish': WITTY_ALIEN_DANISH,
   'witty-alien-scandi': WITTY_ALIEN_SCANDI,
+  'hikaru-larsen': HIKARU_LARSEN,
 }
 
 /** Get total lesson count for an opening */

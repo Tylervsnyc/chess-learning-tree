@@ -36,7 +36,7 @@ export interface OpeningContent {
   description: string;
   moves: string;
   side: 'white' | 'black';
-  category: '1.e4' | '1.d4' | '1.c4';
+  category: '1.e4' | '1.d4' | '1.c4' | '1.b3';
   mainLineName: string;
   mainLineSubtitle: string;
   startingFen: string;

@@ -18,6 +18,8 @@ import { getWittyAlienElephantLesson } from '../data/openings/witty-alien-elepha
 import { getWittyAlienEnglundLesson } from '../data/openings/witty-alien-englund-lessons'
 import { getWittyAlienDanishLesson } from '../data/openings/witty-alien-danish-lessons'
 import { getWittyAlienScandiLesson } from '../data/openings/witty-alien-scandi-lessons'
+import { HIKARU_LARSEN } from '../data/openings/hikaru-larsen'
+import { getHikaruLarsenLesson } from '../data/openings/hikaru-larsen-lessons'
 
 const OPENINGS = [
   { tree: WITTY_ALIEN, get: getWittyAlienLesson },
@@ -27,6 +29,7 @@ const OPENINGS = [
   { tree: WITTY_ALIEN_ENGLUND, get: getWittyAlienEnglundLesson },
   { tree: WITTY_ALIEN_DANISH, get: getWittyAlienDanishLesson },
   { tree: WITTY_ALIEN_SCANDI, get: getWittyAlienScandiLesson },
+  { tree: HIKARU_LARSEN, get: getHikaruLarsenLesson },
 ]
 
 const place = (f: string) => f.split(' ')[0]

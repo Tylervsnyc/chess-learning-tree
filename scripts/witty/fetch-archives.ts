@@ -1,12 +1,13 @@
-// Fetches witty_alien's monthly game archives from the chess.com public API
-// and caches each month as raw JSON under data/witty-games/ (gitignored).
-// Usage: npx tsx scripts/witty/fetch-archives.ts [monthsBack=24]
+// Fetches a player's monthly game archives from the chess.com public API and
+// caches each month as raw JSON (gitignored). Default player: witty_alien,
+// cached under data/witty-games/. Any other player: PLAYER=<username>, cached
+// under data/player-games/<username>/.
+// Usage: [PLAYER=hikaru] npx tsx scripts/witty/fetch-archives.ts [monthsBack=24]
 import { mkdirSync, existsSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import { PLAYER as USER, GAMES_DIR as OUT } from './lib/player'
 
-const UA = 'chesspath-research/1.0 (tyler@learnthroughstories.com)'
-const USER = 'witty_alien'
-const OUT = join(process.cwd(), 'data', 'witty-games')
+const UA = 'chesspath-opening-research/1.0'
 const monthsBack = parseInt(process.argv[2] ?? '24', 10)
 
 async function get(url: string) {

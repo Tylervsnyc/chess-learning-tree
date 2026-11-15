@@ -9,7 +9,7 @@ export interface OpeningConfig {
   moves: string         // Key opening moves shown on cards
   description: string   // Longer description for detail page hero
   side: 'white' | 'black'
-  category: '1.e4' | '1.d4' | '1.c4'
+  category: '1.e4' | '1.d4' | '1.c4' | '1.b3'
   color: string         // Primary color
   colorDark: string     // Dark accent
   colorLight: string    // Light accent (for gradients)
@@ -285,6 +285,27 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       { name: 'Scandinavian Gambit', subtitle: 'Black vs 1.e4 — the 1...d5 gambit', icon: 'shield', hasData: true, slug: 'witty-alien-scandi' },
     ],
     alwaysUnlockVariations: true,
+  },
+  {
+    slug: 'hikaru-larsen',
+    name: "Hikaru's 1.b3",
+    subtitle: "Hikaru Nakamura's favorite blitz opening",
+    moves: '1.b3 e5 2.Bb2 Nc6 3.c4',
+    description: "Hikaru Nakamura's favorite blitz weapon: 1.b3, the Nimzo-Larsen Attack. He has played it in 1,693 blitz games on chess.com over the last two years and scored 93%. Every line here comes from those games.",
+    side: 'white',
+    category: '1.b3',
+    color: '#14B8A6',
+    colorDark: '#0F766E',
+    colorLight: '#2DD4BF',
+    ghostPiece: '♗',
+    icon: 'bishop',
+    hasData: true,
+    order: 6,
+    mainLine: {
+      name: 'Nimzo-Larsen Attack',
+      subtitle: '1...e5 2.Bb2 Nc6 3.c4 and the knight hops · 7 lessons',
+    },
+    variations: [],
   },
   // Coming Soon 1.e4
   {
