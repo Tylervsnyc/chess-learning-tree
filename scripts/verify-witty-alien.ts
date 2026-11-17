@@ -30,6 +30,10 @@ import { HIKARU_CARO } from '../data/openings/hikaru-caro'
 import { getHikaruCaroLesson } from '../data/openings/hikaru-caro-lessons'
 import { getWittyAlienScandiAlienLesson } from '../data/openings/witty-alien-scandi-alien-lessons'
 import { getWittyAlienMorraLesson } from '../data/openings/witty-alien-morra-lessons'
+import { MAGNUS_JOBAVA } from '../data/openings/magnus-jobava'
+import { getMagnusJobavaLesson } from '../data/openings/magnus-jobava-lessons'
+import { MAGNUS_FRENCH } from '../data/openings/magnus-french'
+import { getMagnusFrenchLesson } from '../data/openings/magnus-french-lessons'
 
 const OPENINGS = [
   { tree: WITTY_ALIEN, get: getWittyAlienLesson },
@@ -45,6 +49,8 @@ const OPENINGS = [
   { tree: HIKARU_CARO, get: getHikaruCaroLesson },
   { tree: WITTY_ALIEN_SCANDI_ALIEN, get: getWittyAlienScandiAlienLesson },
   { tree: WITTY_ALIEN_MORRA, get: getWittyAlienMorraLesson },
+  { tree: MAGNUS_JOBAVA, get: getMagnusJobavaLesson },
+  { tree: MAGNUS_FRENCH, get: getMagnusFrenchLesson },
 ]
 
 const place = (fen: string) => fen.split(' ')[0]

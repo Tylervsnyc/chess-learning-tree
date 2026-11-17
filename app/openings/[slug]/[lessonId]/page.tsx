@@ -88,6 +88,8 @@ import { getHikaruBishopsLesson } from '@/data/openings/hikaru-bishops-lessons'
 import { getHikaruCaroLesson } from '@/data/openings/hikaru-caro-lessons'
 import { getWittyAlienScandiAlienLesson } from '@/data/openings/witty-alien-scandi-alien-lessons'
 import { getWittyAlienMorraLesson } from '@/data/openings/witty-alien-morra-lessons'
+import { getMagnusJobavaLesson } from '@/data/openings/magnus-jobava-lessons'
+import { getMagnusFrenchLesson } from '@/data/openings/magnus-french-lessons'
 import type { OpeningLesson, LessonStep, PlayMoveStep, QuizStep } from '@/types/opening-lesson'
 import { getOpeningBySlug } from '@/data/openings/registry'
 import { useOpeningProgress } from '@/hooks/useOpeningProgress'
@@ -248,6 +250,8 @@ export default function OpeningLessonPage() {
       'hikaru-caro': getHikaruCaroLesson,
       'witty-alien-scandi-alien': getWittyAlienScandiAlienLesson,
       'witty-alien-morra': getWittyAlienMorraLesson,
+      'magnus-jobava': getMagnusJobavaLesson,
+      'magnus-french': getMagnusFrenchLesson,
     }
     return lookups[slug]?.(lessonId)
   }, [slug, lessonId])
