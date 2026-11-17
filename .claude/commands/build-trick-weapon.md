@@ -80,10 +80,10 @@ All scripts live in `scripts/witty/`. Games cache to `data/witty-games/` (gitign
 - Data files are **generated** — edit the spec in `scripts/witty/build-<name>.ts`
   and regenerate; do not hand-edit the `data/openings/*` output.
 
-## The 8 Witty Alien openings
+## The Witty Alien openings
 
 White: `witty-alien` (Alien main), `witty-alien-martian`, `witty-alien-two-knights`,
-`witty-alien-bonjour`, `witty-alien-danish`.
+`witty-alien-bonjour`, `witty-alien-danish`, `witty-alien-scandi-alien`, `witty-alien-morra`.
 Black: `witty-alien-elephant`, `witty-alien-englund`, `witty-alien-scandi`.
 
 Done from real data: Elephant, Martian. (Rebuild the rest the same way.)

@@ -10,6 +10,8 @@ import { WITTY_ALIEN_ELEPHANT } from '../data/openings/witty-alien-elephant'
 import { WITTY_ALIEN_ENGLUND } from '../data/openings/witty-alien-englund'
 import { WITTY_ALIEN_DANISH } from '../data/openings/witty-alien-danish'
 import { WITTY_ALIEN_SCANDI } from '../data/openings/witty-alien-scandi'
+import { WITTY_ALIEN_SCANDI_ALIEN } from '../data/openings/witty-alien-scandi-alien'
+import { WITTY_ALIEN_MORRA } from '../data/openings/witty-alien-morra'
 
 import { getWittyAlienLesson } from '../data/openings/witty-alien-lessons'
 import { getWittyAlienMartianLesson } from '../data/openings/witty-alien-martian-lessons'
@@ -26,6 +28,8 @@ import { HIKARU_BISHOPS } from '../data/openings/hikaru-bishops'
 import { getHikaruBishopsLesson } from '../data/openings/hikaru-bishops-lessons'
 import { HIKARU_CARO } from '../data/openings/hikaru-caro'
 import { getHikaruCaroLesson } from '../data/openings/hikaru-caro-lessons'
+import { getWittyAlienScandiAlienLesson } from '../data/openings/witty-alien-scandi-alien-lessons'
+import { getWittyAlienMorraLesson } from '../data/openings/witty-alien-morra-lessons'
 
 const OPENINGS = [
   { tree: WITTY_ALIEN, get: getWittyAlienLesson },
@@ -39,6 +43,8 @@ const OPENINGS = [
   { tree: HIKARU_MODERN, get: getHikaruModernLesson },
   { tree: HIKARU_BISHOPS, get: getHikaruBishopsLesson },
   { tree: HIKARU_CARO, get: getHikaruCaroLesson },
+  { tree: WITTY_ALIEN_SCANDI_ALIEN, get: getWittyAlienScandiAlienLesson },
+  { tree: WITTY_ALIEN_MORRA, get: getWittyAlienMorraLesson },
 ]
 
 const place = (fen: string) => fen.split(' ')[0]

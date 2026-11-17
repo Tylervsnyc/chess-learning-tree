@@ -283,6 +283,8 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
       { name: 'Englund Gambit', subtitle: 'Black vs 1.d4 — the 1...e5 gambit', icon: 'pawn', hasData: true, slug: 'witty-alien-englund' },
       { name: 'Danish Gambit', subtitle: 'White — the two-pawn 3.c3 gambit', icon: 'lightning', hasData: true, slug: 'witty-alien-danish' },
       { name: 'Scandinavian Gambit', subtitle: 'Black vs 1.e4 — the 1...d5 gambit', icon: 'shield', hasData: true, slug: 'witty-alien-scandi' },
+      { name: 'Alien vs Scandinavian', subtitle: 'White vs 1...d5 — 2.Nc3 and the Nxf7 sac', icon: 'knight', hasData: true, slug: 'witty-alien-scandi-alien' },
+      { name: 'Smith-Morra Gambit', subtitle: 'White vs the Sicilian — the 3.c3 gambit', icon: 'lightning', hasData: true, slug: 'witty-alien-morra' },
     ],
     alwaysUnlockVariations: true,
   },
