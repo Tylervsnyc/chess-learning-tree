@@ -312,6 +312,30 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     ],
     alwaysUnlockVariations: true,
   },
+  {
+    slug: 'magnus-jobava',
+    name: 'Magnus Carlsen',
+    subtitle: "Magnus's openings, from his real games",
+    moves: '1.d4 Nf6 2.Nc3 d5 3.Bf4',
+    description: "Magnus Carlsen's openings, built from his real chess.com games over the last two years: the Jobava London (85 games, 77% score) and his French Defence (127 games, 76% score).",
+    side: 'white',
+    category: '1.d4',
+    color: '#2563EB',
+    colorDark: '#1D4ED8',
+    colorLight: '#60A5FA',
+    ghostPiece: '♘',
+    icon: 'knight',
+    hasData: true,
+    order: 6,
+    mainLine: {
+      name: 'Jobava London',
+      subtitle: '1.d4 Nf6 2.Nc3 d5 3.Bf4 and the g4 lunge · 6 lessons',
+    },
+    variations: [
+      { name: 'French Defence', subtitle: 'Black vs 1.e4 — the Advance with ...Bd7 and ...Nf5', icon: 'pawn', hasData: true, slug: 'magnus-french' },
+    ],
+    alwaysUnlockVariations: true,
+  },
   // Coming Soon 1.e4
   {
     slug: 'scotch',

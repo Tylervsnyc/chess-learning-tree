@@ -57,6 +57,8 @@ import { HIKARU_LARSEN } from '@/data/openings/hikaru-larsen'
 import { HIKARU_MODERN } from '@/data/openings/hikaru-modern'
 import { HIKARU_BISHOPS } from '@/data/openings/hikaru-bishops'
 import { HIKARU_CARO } from '@/data/openings/hikaru-caro'
+import { MAGNUS_JOBAVA } from '@/data/openings/magnus-jobava'
+import { MAGNUS_FRENCH } from '@/data/openings/magnus-french'
 
 export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'ruy-lopez': RUY_LOPEZ,
@@ -114,6 +116,8 @@ export const TREE_LOOKUP: Record<string, OpeningTree> = {
   'hikaru-modern': HIKARU_MODERN,
   'hikaru-bishops': HIKARU_BISHOPS,
   'hikaru-caro': HIKARU_CARO,
+  'magnus-jobava': MAGNUS_JOBAVA,
+  'magnus-french': MAGNUS_FRENCH,
 }
 
 /** Get total lesson count for an opening */

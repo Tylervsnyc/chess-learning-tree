@@ -26,6 +26,10 @@ import { HIKARU_BISHOPS } from '../data/openings/hikaru-bishops'
 import { getHikaruBishopsLesson } from '../data/openings/hikaru-bishops-lessons'
 import { HIKARU_CARO } from '../data/openings/hikaru-caro'
 import { getHikaruCaroLesson } from '../data/openings/hikaru-caro-lessons'
+import { MAGNUS_JOBAVA } from '../data/openings/magnus-jobava'
+import { getMagnusJobavaLesson } from '../data/openings/magnus-jobava-lessons'
+import { MAGNUS_FRENCH } from '../data/openings/magnus-french'
+import { getMagnusFrenchLesson } from '../data/openings/magnus-french-lessons'
 
 const OPENINGS = [
   { tree: WITTY_ALIEN, get: getWittyAlienLesson },
@@ -39,6 +43,8 @@ const OPENINGS = [
   { tree: HIKARU_MODERN, get: getHikaruModernLesson },
   { tree: HIKARU_BISHOPS, get: getHikaruBishopsLesson },
   { tree: HIKARU_CARO, get: getHikaruCaroLesson },
+  { tree: MAGNUS_JOBAVA, get: getMagnusJobavaLesson },
+  { tree: MAGNUS_FRENCH, get: getMagnusFrenchLesson },
 ]
 
 const place = (f: string) => f.split(' ')[0]
