@@ -6,6 +6,7 @@
  * re-implement any of this per-surface — one goal, one implementation.
  */
 
+import { currentApp } from '@/lib/family/apps';
 import type { GameAnalysis, PositionEval } from '@/lib/game-eval';
 
 export const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -70,6 +71,17 @@ export interface CoachReview {
 }
 
 /**
+ * Which app this review belongs to, for the Pro meter (Chess Path only).
+ * The Chess Boxing iOS bundle, and Chess Boxing routes on the web (/box…),
+ * are 'chessboxing'; everything else is Chess Path.
+ */
+function reviewApp(): 'chesspath' | 'chessboxing' {
+  if (currentApp() === 'chessboxing') return 'chessboxing';
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/box')) return 'chessboxing';
+  return 'chesspath';
+}
+
+/**
  * Fetch per-move Claude coach commentary + summary + takeaway from
  * /api/coach-review. Returns null on any failure — commentary is a garnish,
  * never a blocker.
@@ -124,6 +136,8 @@ export async function fetchCoachReview(args: {
         pass: args.pass ?? 'deep',
         // Rookie Pro: the free daily review resets at the user's local midnight.
         tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+        // Pro is Chess Path only: reviews from Chess Boxing are never metered.
+        app: reviewApp(),
       }),
     });
     const data = await res.json();

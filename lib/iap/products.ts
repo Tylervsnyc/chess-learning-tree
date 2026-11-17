@@ -1,11 +1,12 @@
 /**
- * Rookie Pro store products — ONE RevenueCat project, ONE entitlement `pro`,
- * three App Store records (docs/rookie-pro-setup.md). Server-safe (no
- * 'use client'): the RevenueCat webhook reads this list to accept a purchase
- * from ANY of the three apps; lib/iap/revenuecat.ts picks this bundle's pair.
+ * Rookie Pro store products — Chess Path ONLY (Tyler 2026-11-17). ONE
+ * RevenueCat entitlement `pro`. Server-safe (no 'use client'): the RevenueCat
+ * webhook reads this list to accept a purchase; lib/iap/revenuecat.ts sells it.
+ * The chessboxing_pro_* / revenge_pro_* products made in ASC on 2026-10-18 are
+ * NOT sold — they are deliberately absent here, so the webhook ignores them.
  *
  * The `*_notrial` ids are optional no-intro-offer products for people who
- * already used their one Rookie Pro trial in another app (offering `no_trial`).
+ * already used their one trial (offering `no_trial`).
  */
 export const RC_ENTITLEMENT = 'pro';
 
@@ -14,8 +15,6 @@ export const RC_OFFERING_NO_TRIAL = 'no_trial';
 
 export const PRO_PRODUCTS = {
   chesspath: { monthly: 'chesspath_pro_monthly', yearly: 'chesspath_pro_yearly' },
-  chessboxing: { monthly: 'chessboxing_pro_monthly', yearly: 'chessboxing_pro_yearly' },
-  revenge: { monthly: 'revenge_pro_monthly', yearly: 'revenge_pro_yearly' },
 } as const;
 
 /** Every product id that grants Rookie Pro, trial and no-trial variants. */

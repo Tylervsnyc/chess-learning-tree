@@ -58,6 +58,12 @@ interface ReviewRequest {
   pass?: 'instant' | 'deep';
   /** Caller's IANA timezone — the review limit resets at the user's local midnight. */
   tz?: string;
+  /**
+   * Which app asked. Pro is Chess Path only (Tyler 2026-11-17): a Chess Boxing
+   * review is never metered. Client-supplied — faking it buys extra reviews,
+   * nothing else; acceptable for a $5 garnish.
+   */
+  app?: 'chesspath' | 'chessboxing';
 }
 
 const SYSTEM_PROMPT = `You are Rookie, the chess coach inside The Chess Path. You just PLAYED this game against the student, and now you are reviewing it with them. Warm, direct, occasionally wry, never cruel. When coaching you are clear and instructive — no gimmicks, no quips.
@@ -216,7 +222,7 @@ export async function POST(req: NextRequest) {
     // Rookie Pro daily review meter (inert while PRO is off — no auth read, no DB).
     let meterUser: string | null = null;
     let gameKey = '';
-    if (FEATURE_FLAGS.PRO) {
+    if (FEATURE_FLAGS.PRO && body.app !== 'chessboxing') {
       const pro = await getProStatus();
       if (pro.userId && !pro.isPro) {
         gameKey = reviewGameKey(playerColor, moves.map((m) => m.san));

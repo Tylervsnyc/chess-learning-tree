@@ -50,7 +50,6 @@ import { fireConfetti } from '@/lib/confetti';
 import { BreathingRook } from '@/components/ui/BreathingRook';
 import { ArenaBackButton, ArenaScene, GymSign } from '@/components/chessboxing/Arena';
 import { BoutEvents } from '@/lib/analytics/posthog';
-import { useProGate } from '@/hooks/useProGate';
 import { claimStreakToday, getTz } from '@/lib/streak-client';
 import AchievementUnlockOverlay from '@/components/achievements/AchievementUnlockOverlay';
 import type { AchievementUnlock, NextMedal } from '@/lib/achievements/types';
@@ -180,11 +179,11 @@ export default function BoutPage() {
   // Format picks the LENGTH; the structure is built, never chosen. Only
   // RANKED_FORMAT pays points (and only once a day) — see /api/bout/finish.
   const [format, setFormat] = useState<BoutFormat>(RANKED_FORMAT);
-  // PRO: a custom card (round count + bell lengths) or the official
-  // 11-round preset. null = the stock format above. Always unranked.
+  // Custom card (round count + bell lengths) or the official 11-round
+  // preset (FEATURE_FLAGS.BOUT_CUSTOM_ROUNDS). null = the stock format above.
+  // Always unranked. Free — Chess Boxing has no Pro tier (Tyler 2026-11-17).
   const [customCard, setCustomCard] = useState<BoutCard | null>(null);
   const [showCustom, setShowCustom] = useState(false);
-  const pro = useProGate();
   const segments = useMemo(() => buildSegments(format, customCard), [format, customCard]);
   // Callbacks read the card off a ref so a mid-bout re-render can't rebuild
   // them, exactly like the clock refs below.
@@ -1116,15 +1115,13 @@ export default function BoutPage() {
                 );
               })}
             </div>
-            {FEATURE_FLAGS.PRO && (
-              <div className="flex gap-1.5 mt-1.5" role="group" aria-label="Pro round cards">
+            {FEATURE_FLAGS.BOUT_CUSTOM_ROUNDS && (
+              <div className="flex gap-1.5 mt-1.5" role="group" aria-label="Round cards">
                 <button
                   onClick={() => {
                     playButtonClick();
-                    pro.requirePro('custom_rounds', () => {
-                      setCustomCard(OFFICIAL_CARD);
-                      setShowCustom(false);
-                    });
+                    setCustomCard(OFFICIAL_CARD);
+                    setShowCustom(false);
                   }}
                   aria-pressed={!!customCard && customCard === OFFICIAL_CARD}
                   className={`flex-1 rounded-xl px-2 min-h-[40px] border-2 transition tap-highlight ${
@@ -1133,16 +1130,13 @@ export default function BoutPage() {
                 >
                   <span className="block text-[11px] font-black leading-tight text-white">
                     Official 11-round
-                    {!pro.isPro && <ProPill />}
                   </span>
                 </button>
                 <button
                   onClick={() => {
                     playButtonClick();
-                    pro.requirePro('custom_rounds', () => {
-                      setCustomCard((c) => (c && c !== OFFICIAL_CARD ? c : { chessRounds: 3, chessSeconds: 120, boxingSeconds: 120 }));
-                      setShowCustom((v) => !v);
-                    });
+                    setCustomCard((c) => (c && c !== OFFICIAL_CARD ? c : { chessRounds: 3, chessSeconds: 120, boxingSeconds: 120 }));
+                    setShowCustom((v) => !v);
                   }}
                   aria-pressed={!!customCard && customCard !== OFFICIAL_CARD}
                   className={`flex-1 rounded-xl px-2 min-h-[40px] border-2 transition tap-highlight ${
@@ -1151,12 +1145,11 @@ export default function BoutPage() {
                 >
                   <span className="block text-[11px] font-black leading-tight text-white">
                     Custom rounds
-                    {!pro.isPro && <ProPill />}
                   </span>
                 </button>
               </div>
             )}
-            {FEATURE_FLAGS.PRO && showCustom && customCard && customCard !== OFFICIAL_CARD && (
+            {FEATURE_FLAGS.BOUT_CUSTOM_ROUNDS && showCustom && customCard && customCard !== OFFICIAL_CARD && (
               <div className="mt-1.5 rounded-xl bg-white/[0.06] border border-white/10 p-2 flex flex-col gap-1.5">
                 <Dial
                   label="Chess rounds"
@@ -1250,13 +1243,12 @@ export default function BoutPage() {
           </p>
 
           <button
-            onClick={() => pro.gate('bout', begin)}
+            onClick={begin}
             className="w-full rounded-2xl bg-[#e5484d] text-white font-black text-lg py-3 min-h-[48px] shadow-[0_4px_0_#b53437] tap-highlight shrink-0"
           >
             Fight
           </button>
         </div>
-        {pro.paywall}
       </div>
     );
   }
@@ -1732,15 +1724,7 @@ export default function BoutPage() {
   );
 }
 
-/* ── Chess Boxing Pro round-card helpers (PRO) ─────────────── */
-
-function ProPill() {
-  return (
-    <span className="ml-1 align-middle rounded-full bg-[#f6c445] px-1.5 py-px text-[8px] font-black uppercase tracking-widest text-[#2A3C45]">
-      Pro
-    </span>
-  );
-}
+/* ── Round-card helpers (BOUT_CUSTOM_ROUNDS) ─────────────── */
 
 function Dial<T extends number>({
   label,

@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PERIODS, type LeaderboardPeriod } from '@/lib/leaderboard/period';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { useProGate } from '@/hooks/useProGate';
-import { useRouter } from 'next/navigation';
 
 type Scope = 'crew' | 'global';
 
@@ -48,8 +46,6 @@ export default function LeaderboardPage() {
   const [scope, setScope] = useState<Scope>('crew');
   const [data, setData] = useState<BoardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { gate, paywall } = useProGate();
 
   // Handle (username) gate.
   const [username, setUsername] = useState<string | null | undefined>(undefined); // undefined=unknown
@@ -294,7 +290,6 @@ export default function LeaderboardPage() {
             {data.rows.length === 0 && (
               <Link
                 href="/workout"
-                onClick={(e) => { e.preventDefault(); gate('workout', () => router.push('/workout')); }}
                 className="block bg-chess-surface rounded-2xl border border-slate-200 shadow-sm p-8 text-center text-chess-text-muted hover:border-chess-green transition"
               >
                 No scores {PERIOD_LABELS[period].toLowerCase()} yet. Be the first —{' '}
@@ -332,7 +327,6 @@ export default function LeaderboardPage() {
           </button>
         )}
       </div>
-      {paywall}
     </div>
   );
 }
@@ -359,19 +353,12 @@ function RankRow({ row, metric }: { row: Row; metric: 'best_round' | 'total' }) 
       <div className="flex-1 min-w-0">
         <div
           className={`font-bold truncate ${
-            FEATURE_FLAGS.PRO && row.isPro
-              ? 'text-chess-gold-dark'
-              : row.isSelf
+            row.isSelf
                 ? 'text-chess-green'
                 : 'text-chess-text'
           }`}
         >
           {row.username}
-          {FEATURE_FLAGS.PRO && row.isPro && (
-            <span className="ml-1.5 align-middle rounded-full bg-chess-gold/25 px-1.5 py-px text-[9px] font-black uppercase tracking-widest text-chess-gold-dark">
-              Pro
-            </span>
-          )}
           {row.isSelf && <span className="text-chess-text-muted font-semibold"> (you)</span>}
         </div>
         {row.punches > 0 && (

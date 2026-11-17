@@ -8,9 +8,9 @@ import { markProTrialUsed } from '@/lib/pro/trial';
 /**
  * POST /api/iap/revenuecat-webhook — RevenueCat → Supabase entitlement sync.
  *
- * Rookie Pro bought through StoreKit in ANY of the three apps (Chess Path,
- * Chess Boxing, Rookie's Revenge — one RevenueCat project, one entitlement
- * `pro`, docs/rookie-pro-setup.md) lands here and is written onto the SAME
+ * Rookie Pro bought through StoreKit in the Chess Path iOS app (Pro is Chess
+ * Path only since 2026-11-17; one RevenueCat entitlement `pro`,
+ * docs/rookie-pro-setup.md) lands here and is written onto the SAME
  * `profiles.subscription_status` / `subscription_expires_at` the Stripe
  * webhook sets. Those columns are guarded by the
  * `protect_privileged_profile_columns` trigger, so this route writes with the

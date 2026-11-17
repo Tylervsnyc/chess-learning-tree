@@ -1,31 +1,24 @@
 'use client';
 
 /**
- * RevenueCat (StoreKit) plumbing for Rookie Pro — iOS shells ONLY. ONE
- * RevenueCat project holds all three apps (Chess Path, Chess Boxing, Rookie's
- * Revenge — Revenge has its own copy of this in ~/rookies-run with its own
- * key); every app's products attach to the ONE entitlement `pro`.
+ * RevenueCat (StoreKit) plumbing for Rookie Pro — the Chess Path iOS app ONLY.
+ * Pro is Chess Path only (Tyler 2026-11-17); the Chess Boxing bundle never
+ * opens the paywall, and if anything ever calls in there, this reports
+ * "not native" so no purchase can start in the wrong app.
  *
  * Apple forbids linking out for digital goods, so inside the Capacitor app the
  * paywall must buy through StoreKit. RevenueCat wraps that and posts a webhook
  * (/api/iap/revenuecat-webhook) which writes the SAME `profiles.subscription_status`
- * the Stripe webhook sets — one entitlement, three storefronts.
+ * the Stripe webhook sets — one entitlement, two storefronts (web + iOS).
  *
  * On the web (non-native) every function here is a no-op that reports
  * `{ native: false }` so the paywall falls through to the Stripe checkout in
  * hooks/useSubscription.ts. The plugin is imported lazily so it never ships to
  * web bundles that don't need it.
  *
- * Per-target (build-time, lib/config/offline.ts): each iOS app is its own
- * App Store Connect record, so it has its own products and its own RevenueCat
- * public (Apple) SDK key. Every app identifies the customer by the Supabase
- * uid — that is what makes a purchase in one app unlock the others (and the
- * webhook writes it to the shared profile row).
- *   Chess Boxing: chessboxing_pro_monthly / chessboxing_pro_yearly,
- *                 NEXT_PUBLIC_REVENUECAT_IOS_KEY
- *   Chess Path:   chesspath_pro_monthly / chesspath_pro_yearly,
- *                 NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH
- *   (Revenge:     revenge_pro_monthly / revenge_pro_yearly — its own repo)
+ * Products: chesspath_pro_monthly / chesspath_pro_yearly, key
+ * NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH. The customer is identified by the
+ * Supabase uid so the webhook writes the same profile row Stripe does.
  * Offerings: `default` (7-day intro offer) and `no_trial` (for accounts that
  * already used their one trial anywhere; falls back to `default`).
  * Setup: docs/rookie-pro-setup.md.
@@ -36,15 +29,11 @@ import { IS_CHESSPATH_APP } from '@/lib/config/offline';
 import { PRO_PRODUCTS, RC_ENTITLEMENT, RC_OFFERING_NO_TRIAL } from '@/lib/iap/products';
 
 export { RC_ENTITLEMENT };
-export const RC_PRODUCTS = IS_CHESSPATH_APP ? PRO_PRODUCTS.chesspath : PRO_PRODUCTS.chessboxing;
-/** Which env var carries this bundle's RevenueCat Apple public SDK key. */
-export const RC_KEY_ENV = IS_CHESSPATH_APP
-  ? 'NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH'
-  : 'NEXT_PUBLIC_REVENUECAT_IOS_KEY';
-// Both branches must be literal `process.env.X` reads so Next can inline them.
-const RC_API_KEY = IS_CHESSPATH_APP
-  ? process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH
-  : process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY;
+export const RC_PRODUCTS = PRO_PRODUCTS.chesspath;
+/** Which env var carries the Chess Path RevenueCat Apple public SDK key. */
+export const RC_KEY_ENV = 'NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH';
+// Literal `process.env.X` read so Next can inline it.
+const RC_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY_CHESSPATH;
 
 export interface ProOffering {
   monthly: PurchasesPackage | null;
@@ -57,9 +46,13 @@ export interface ProOffering {
 let configuredFor: string | null = null; // Supabase user id we identified as
 let nativeCache: boolean | null = null;
 
-/** True only inside the Capacitor iOS/Android shell — never on the web. */
+/** True only inside the Chess Path iOS shell — never on the web or in Chess Boxing. */
 export async function isNativeIap(): Promise<boolean> {
   if (nativeCache !== null) return nativeCache;
+  if (!IS_CHESSPATH_APP) {
+    nativeCache = false;
+    return false;
+  }
   try {
     const { Capacitor } = await import('@capacitor/core');
     nativeCache = Capacitor.isNativePlatform();

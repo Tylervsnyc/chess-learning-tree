@@ -7,17 +7,19 @@ import { getTz } from '@/lib/streak-client';
 import { ProPaywall } from '@/components/pro/ProPaywall';
 import { useUser } from '@/hooks/useUser';
 import { PRO_FREE_LIMITS } from '@/lib/subscription';
+import { currentApp } from '@/lib/family/apps';
 
 /**
- * useProGate — the ONE way any surface (Chess Path, Chess Boxing, web) asks
- * "may this free user start another lesson / fight / Puzzle Boxing?" or "is
- * this a Pro feature?" (FEATURE_FLAGS.PRO — Rookie Pro, one subscription
- * across all three apps).
+ * useProGate — the ONE way a Chess Path surface asks "may this free user
+ * start another lesson / game review?" or "is this a Pro feature?"
+ * (FEATURE_FLAGS.PRO — Pro is CHESS PATH ONLY, Tyler 2026-11-17). Inert inside
+ * the Chess Boxing iOS bundle: Chess Boxing is free, so a shared surface
+ * (e.g. /play's review) never paywalls there.
  *
  *   const { gate, requirePro, paywall, isPro } = useProGate();
- *   gate('bout', () => router.push('/box/bout'));   // daily-limit check, then go
+ *   gate('lesson', () => router.push(href));       // daily-limit check, then go
  *   // or read limits directly once `ready` (the lesson page: limits.canLesson)
- *   requirePro('custom_rounds', () => setCustom(true)); // Pro feature, else paywall
+ *   requirePro('variations', () => tryIt());        // Pro feature, else paywall
  *   …
  *   {paywall}                                        // render once in the tree
  *
@@ -28,46 +30,28 @@ import { PRO_FREE_LIMITS } from '@/lib/subscription';
  * Flag OFF: `gate` and `requirePro` run the action immediately, `paywall` is
  * null, `isPro` is true, `ready` is true and NOTHING is fetched — zero
  * behaviour change. Limits come fresh from /api/pro/limits on mount and on
- * every gate call (four HEAD counts) so the truth is always
+ * every gate call (two HEAD counts) so the truth is always
  * the DB, never a client counter. If the endpoint fails, the action runs —
- * never block a fight over a stat line.
+ * never block a lesson over a stat line.
  */
 
 /**
  * Every Pro-only feature a surface can gate on. Add here first — the union is
  * what keeps `pro_gate_hit.feature` a closed, reportable set.
- *   Chess Path: review (the day's free full review is used) / variations ("Try it")
- *   Chess Boxing: custom_rounds, history, settings, profile, bout, workout,
- *                 report / fixit (workout report lines + Fix-It)
- * Daily limits (lessons, reviews, fights, Puzzle Boxing) go through `gate` /
+ *   review (the day's free full review is used) / variations ("Try it")
+ * Daily limits (lessons, reviews) go through `gate` /
  * the `limit_<kind>` trigger instead.
  */
-export type ProGateFeature =
-  | 'review'
-  | 'variations'
-  | 'report'
-  | 'fixit'
-  | 'custom_rounds'
-  | 'history'
-  | 'settings'
-  | 'profile'
-  | 'bout'
-  | 'workout';
+export type ProGateFeature = 'review' | 'variations';
 
 export interface ProLimitsState {
   isPro: boolean;
   lessonsToday: number;
   reviewsToday: number;
-  boutsToday: number;
-  workoutsToday: number;
   lessonLimit: number;
   reviewLimit: number;
-  boutLimit: number;
-  workoutLimit: number;
   canLesson: boolean;
   canReview: boolean;
-  canBout: boolean;
-  canWorkout: boolean;
   authenticated: boolean;
 }
 
@@ -75,24 +59,16 @@ const OPEN: ProLimitsState = {
   isPro: true,
   lessonsToday: 0,
   reviewsToday: 0,
-  boutsToday: 0,
-  workoutsToday: 0,
   lessonLimit: PRO_FREE_LIMITS.LESSONS_PER_DAY,
   reviewLimit: PRO_FREE_LIMITS.REVIEWS_PER_DAY,
-  boutLimit: PRO_FREE_LIMITS.BOUTS_PER_DAY,
-  workoutLimit: PRO_FREE_LIMITS.WORKOUTS_PER_DAY,
   canLesson: true,
   canReview: true,
-  canBout: true,
-  canWorkout: true,
   authenticated: false,
 };
 
 const CAN: Record<ProLimitKind, keyof ProLimitsState> = {
   lesson: 'canLesson',
   review: 'canReview',
-  bout: 'canBout',
-  workout: 'canWorkout',
 };
 
 export async function fetchProLimits(): Promise<ProLimitsState> {
@@ -104,16 +80,10 @@ export async function fetchProLimits(): Promise<ProLimitsState> {
       isPro: !!d.isPro,
       lessonsToday: d.lessonsToday ?? 0,
       reviewsToday: d.reviewsToday ?? 0,
-      boutsToday: d.boutsToday ?? 0,
-      workoutsToday: d.workoutsToday ?? 0,
       lessonLimit: d.lessonLimit ?? OPEN.lessonLimit,
       reviewLimit: d.reviewLimit ?? OPEN.reviewLimit,
-      boutLimit: d.boutLimit ?? OPEN.boutLimit,
-      workoutLimit: d.workoutLimit ?? OPEN.workoutLimit,
       canLesson: d.canLesson !== false,
       canReview: d.canReview !== false,
-      canBout: d.canBout !== false,
-      canWorkout: d.canWorkout !== false,
       authenticated: !!d.authenticated,
     };
   } catch {
@@ -122,7 +92,7 @@ export async function fetchProLimits(): Promise<ProLimitsState> {
 }
 
 export function useProGate() {
-  const enabled = FEATURE_FLAGS.PRO;
+  const enabled = FEATURE_FLAGS.PRO && currentApp() !== 'chessboxing';
   const { user } = useUser();
   const [limits, setLimits] = useState<ProLimitsState>(OPEN);
   // False only while PRO is on and the first /api/pro/limits read is in flight.
@@ -156,7 +126,7 @@ export function useProGate() {
     [enabled],
   );
 
-  /** Daily-limit gate for starting a lesson, fight or Puzzle Boxing workout. */
+  /** Daily-limit gate for starting a lesson (or a game review). */
   const gate = useCallback(
     async (kind: ProLimitKind, action: () => void) => {
       if (!enabled) {

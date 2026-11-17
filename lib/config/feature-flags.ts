@@ -179,25 +179,29 @@ export const FEATURE_FLAGS = {
    */
   PREMOVE: true,
   /**
-   * Rookie Pro — ONE subscription across Chess Path (web + iOS), Chess Boxing
-   * (iOS + /box) and Rookie's Revenge (Tyler 2026-10-18; reverses the Oct 7
-   * "Chess Path only" split — one flag, one implementation; see
-   * docs/rookie-pro-setup.md). $4.99/mo · $39.99/yr, 7-day free trial, ONE
-   * trial per person across every app (profiles.pro_trial_used_at). "Pro" IS
-   * the existing premium entitlement (`profiles.subscription_status`,
-   * lib/subscription.ts) — Stripe on web, RevenueCat entitlement `pro` in the
-   * iOS shells (lib/iap/revenuecat.ts). Perks: lib/pro/benefits.ts.
-   * When ON and the user is NOT premium:
-   *   Chess Path — every level open, PRO_FREE_LIMITS.LESSONS_PER_DAY lessons a
-   *     local day (server-counted from lesson_progress, /api/pro/limits), and
-   *     REVIEWS_PER_DAY full game review a day (/api/coach-review, counted in
-   *     review_usage). Play vs Rookie is always free.
-   *   Chess Boxing — 1 fight + 1 Puzzle Boxing a local day, custom rounds,
-   *     history, settings row, workout report lines, Fix-It.
-   *   Patron is no longer sold; Pro members get the gold profile.
+   * Rookie Pro — CHESS PATH ONLY (Tyler 2026-11-17; the third call on scope:
+   * Oct 7 Path-only → Oct 18 all three apps → Nov 17 Path-only again).
+   * chesspath.app (Stripe) + the Chess Path iOS app (RevenueCat
+   * chesspath_pro_*). $4.99/mo · $39.99/yr, 7-day free trial, one trial per
+   * person (profiles.pro_trial_used_at). "Pro" IS the existing premium
+   * entitlement (`profiles.subscription_status`, lib/subscription.ts).
+   * Perks: lib/pro/benefits.ts. Chess Boxing and Rookie's Revenge are free —
+   * useProGate is inert in the Chess Boxing bundle and on /box reviews.
+   * When ON and the user is NOT premium: every level open,
+   * PRO_FREE_LIMITS.LESSONS_PER_DAY lessons a local day (/api/pro/limits),
+   * REVIEWS_PER_DAY full game review a day (/api/coach-review, review_usage),
+   * "Try it" variations are Pro. Play vs Rookie is always free. Patron is no
+   * longer sold; Pro members get the gold profile.
    * OFF = the apps behave exactly as before: no limits, no paywall, no IAP UI.
    */
   PRO: false,
+  /**
+   * Chess Boxing round cards on /box/bout: "Official 11-round" preset +
+   * "Custom rounds" dials. Built 2026-10-18 as a Pro perk; Chess Boxing has no
+   * Pro tier since 2026-11-17, so this is now a plain feature flag (free for
+   * everyone when on). Off = today's behavior (stock formats only).
+   */
+  BOUT_CUSTOM_ROUNDS: false,
   /**
    * Chess clock tab in the Chess Boxing app (2026-08-31, Tyler). Replaces the
    * Train tab (Tactics/Openings drop-up) in BoxTabBar with a Clock tab →

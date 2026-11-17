@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { useProGate } from '@/hooks/useProGate';
 
 /**
  * BoxSettings — the Chess Boxing app's settings screen (/box/settings).
@@ -45,8 +44,6 @@ export function BoxSettings() {
   const [crew, setCrew] = useState<Crew | null>(null);
   const [optIn, setOptIn] = useState<boolean | null>(null);
   const [view, setView] = useState<View>('list');
-  // PRO: the "Go Pro" row + paywall (nothing renders while off).
-  const pro = useProGate();
 
   useEffect(() => {
     fetch('/api/profile/username')
@@ -178,19 +175,6 @@ export function BoxSettings() {
               </section>
             )}
 
-            {FEATURE_FLAGS.PRO && (
-              <section className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 shrink-0">
-                <NavRow
-                  title="Chess Boxing Pro"
-                  value={pro.isPro ? 'Active' : 'Go Pro'}
-                  onClick={() => {
-                    if (!pro.isPro) pro.openPaywall('settings');
-                  }}
-                  disabled={pro.isPro}
-                />
-              </section>
-            )}
-
             {FEATURE_FLAGS.WORKOUT_PUNCH_CAM && <CameraSection />}
 
             {/* Account — Apple 5.1.1(v): in-app account deletion, reachable
@@ -211,7 +195,6 @@ export function BoxSettings() {
           </div>
         )}
       </div>
-      {pro.paywall}
     </div>
   );
 }

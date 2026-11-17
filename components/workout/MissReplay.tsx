@@ -38,7 +38,6 @@ import {
   vibrateOnError,
 } from '@/lib/sounds';
 import type { MissAnalysis } from '@/hooks/useMissAnalysis';
-import { ProLockedLine } from '@/components/pro/ProLockedLine';
 import { LearnWhyMoment } from '@/components/shared/FamilyMoment';
 
 type Arrow = { startSquare: string; endSquare: string; color: string };
@@ -50,13 +49,6 @@ interface Props {
   analysis: MissAnalysis;
   line?: string;
   lineLoading: boolean;
-  /**
-   * Pro (Gate B): Rookie's line for this miss was withheld — the board and
-   * evals still show, the Rookie card becomes a locked row. `onUnlock` opens
-   * the paywall (the caller's `requirePro('report')`).
-   */
-  locked?: boolean;
-  onUnlock?: () => void;
 }
 
 function fmtEval(pawns: number | null, mate: number | null): string {
@@ -116,7 +108,7 @@ function playStepSound(step: Step) {
   else sfx(playMoveSound);
 }
 
-export function MissReplay({ analysis, line, lineLoading, locked = false, onUnlock }: Props) {
+export function MissReplay({ analysis, line, lineLoading }: Props) {
   const hasPlayed = !!analysis.playedUci;
   const steps = useMemo(() => buildSteps(analysis), [analysis]);
   // null = intro (your move / "we didn't catch it"); 0 = answer arrow on the
@@ -250,9 +242,7 @@ export function MissReplay({ analysis, line, lineLoading, locked = false, onUnlo
 
             <div className="rounded-2xl bg-white/[0.07] border border-white/15 px-4 py-3">
               <p className="text-[11px] font-black uppercase tracking-wide text-white/50 mb-1">Rookie</p>
-              {locked && onUnlock ? (
-                <ProLockedLine tone="dark" onTap={onUnlock} className="-my-1" />
-              ) : line ? (
+              {line ? (
                 <p className="text-sm text-white leading-snug">{line}</p>
               ) : lineLoading ? (
                 <div className="space-y-1.5" aria-label="Rookie is looking…">
@@ -265,9 +255,8 @@ export function MissReplay({ analysis, line, lineLoading, locked = false, onUnlo
             </div>
 
             {/* Cross-app moment: the lesson that teaches this miss's theme,
-                in Chess Path. Hidden while Rookie's line is paywalled so the
-                two prompts never stack. */}
-            {!locked && <LearnWhyMoment themes={analysis.themes} tone="dark" />}
+                in Chess Path. */}
+            <LearnWhyMoment themes={analysis.themes} tone="dark" />
 
             <div className="flex items-center justify-center gap-4">
               {steps.length > 0 && (

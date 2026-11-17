@@ -11,7 +11,6 @@ import { IS_OFFLINE_APP } from '@/lib/config/offline';
 import { ArenaScene } from '@/components/chessboxing/Arena';
 import { FullBleedShell } from '@/components/chessboxing/FullBleedShell';
 import { isSoundEnabled, playBoxingBell, playButtonClick } from '@/lib/sounds';
-import { useProGate } from '@/hooks/useProGate';
 
 /**
  * WorkoutReport — the interactive post-workout report.
@@ -28,10 +27,7 @@ import { useProGate } from '@/hooks/useProGate';
  * Chess Boxing feature → ALWAYS the dark box shell (arena backdrop, white
  * text, one fixed window, no page scroll). Web users get the same screen.
  *
- * Pro (Gate B, FEATURE_FLAGS.PRO): miss #1 is the free preview. Misses 2+
- * keep the board + evals but Rookie's line is a locked row, and the Focused
- * Workout (Fix-It) button goes through `requirePro('fixit')`. The server
- * decides what was withheld (`report.locked`); this only renders it.
+ * Free for everyone — Chess Boxing has no Pro tier (Tyler 2026-11-17).
  */
 
 /** The sound helpers don't all check the global toggle themselves. */
@@ -131,8 +127,6 @@ export function WorkoutReport({ sessionId }: { sessionId: string }) {
 
   const router = useRouter();
   const id = sessionId || null;
-  // Flag off: isPro is true, requirePro runs the action at once, paywall is null.
-  const { isPro, requirePro, paywall } = useProGate();
 
   const [status, setStatus] = useState<Status>('loading');
   // Why we landed on the empty screen — shown in faint text so a report of
@@ -188,12 +182,9 @@ export function WorkoutReport({ sessionId }: { sessionId: string }) {
   }, [id]);
 
   const missed = useMemo(() => session?.missedPuzzles ?? null, [session]);
-  const report = useMissAnalysis(missed, id, { isPro: FEATURE_FLAGS.PRO && isPro });
+  const report = useMissAnalysis(missed, id);
   const { analyses, lines, diagnosis, profile } = report;
   const lineLoading = report.status === 'engine' || report.status === 'rookie';
-  // Rookie's lines past miss #1 were withheld by the server (never while PRO is off).
-  const linesLocked = FEATURE_FLAGS.PRO && report.locked;
-  const unlockReport = useCallback(() => requirePro('report', () => {}), [requirePro]);
 
   const total = analyses.length;
 
@@ -216,11 +207,9 @@ export function WorkoutReport({ sessionId }: { sessionId: string }) {
   // Ding ding — the bell is the hand-off into the Fix-It round. Navigate a
   // beat later so it's actually heard before the page swaps.
   const startFixit = useCallback(() => {
-    requirePro('fixit', () => {
-      sfx(playBoxingBell);
-      window.setTimeout(() => router.push('/workout/fixit'), 250);
-    });
-  }, [router, requirePro]);
+    sfx(playBoxingBell);
+    window.setTimeout(() => router.push('/workout/fixit'), 250);
+  }, [router]);
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (status === 'loading') {
@@ -334,8 +323,6 @@ export function WorkoutReport({ sessionId }: { sessionId: string }) {
           analysis={a}
           line={lines[screen.index]}
           lineLoading={lineLoading}
-          locked={linesLocked && screen.index > 0}
-          onUnlock={unlockReport}
         />
         <div className="flex gap-3 shrink-0">
           {screen.index > 0 && (
@@ -451,7 +438,6 @@ export function WorkoutReport({ sessionId }: { sessionId: string }) {
           {body}
         </div>
       </div>
-      {paywall}
     </Shell>
   );
 }

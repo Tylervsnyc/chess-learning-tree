@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { ProPaywall } from '@/components/pro/ProPaywall';
 
 /**
- * Test page: the REAL Rookie Pro paywall (components/pro/ProPaywall.tsx),
+ * Test page: the REAL Rookie Pro paywall (Chess Path only since 2026-11-17) (components/pro/ProPaywall.tsx),
  * mounted directly so it shows even while FEATURE_FLAGS.PRO is off. The
  * buttons are live: on the web "Start" opens Stripe checkout for a signed-in
  * account — don't tap it with a real card. Container MUST be overflow-auto
@@ -19,9 +19,6 @@ const TRIGGERS: { id: string; label: string }[] = [
   { id: 'limit_lesson', label: 'Chess Path: lesson limit' },
   { id: 'limit_review', label: 'Chess Path: review limit' },
   { id: 'variations', label: 'Chess Path: Try it' },
-  { id: 'limit_bout', label: 'Chess Boxing: fight limit' },
-  { id: 'limit_workout', label: 'Chess Boxing: Puzzle Boxing limit' },
-  { id: 'custom_rounds', label: 'Chess Boxing: custom rounds' },
 ];
 
 export default function ProFamilyPopupTest() {

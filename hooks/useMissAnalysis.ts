@@ -81,12 +81,6 @@ export interface MissAnalysisResult {
   diagnosis: string | null;
   profile: MissProfile | null;
   status: MissAnalysisStatus;
-  /**
-   * Pro (Gate B): the server only wrote Rookie's line for the first miss;
-   * `lines[1..]` are empty on purpose and the report shows a locked row for
-   * them. Always false while FEATURE_FLAGS.PRO is off.
-   */
-  locked: boolean;
 }
 
 interface CachedReport {
@@ -94,7 +88,6 @@ interface CachedReport {
   lines: string[];
   diagnosis: string | null;
   profile: MissProfile | null;
-  locked?: boolean;
 }
 
 const cacheKey = (sessionId: string) => `cp_report_${sessionId}`;
@@ -213,14 +206,7 @@ function toSolverPawns(
 export function useMissAnalysis(
   missedPuzzles: WorkoutPuzzleData[] | null,
   sessionId: string | null | undefined,
-  /**
-   * Pro (Gate B): a report cached while the user was free is a locked
-   * preview. Once they are Pro, that cache is stale — skip it and ask the
-   * server again for the full set of lines.
-   */
-  opts: { isPro?: boolean } = {},
 ): MissAnalysisResult {
-  const isPro = opts.isPro === true;
   const [state, setState] = useState<MissAnalysisResult>({
     analyses: [],
     progress: 0,
@@ -228,7 +214,6 @@ export function useMissAnalysis(
     diagnosis: null,
     profile: null,
     status: 'idle',
-    locked: false,
   });
   // Monotonic run token — bumping it orphans the in-flight loop (StrictMode-safe).
   const runIdRef = useRef(0);
@@ -239,7 +224,7 @@ export function useMissAnalysis(
     const cancelled = () => runIdRef.current !== runId;
 
     const cached = readCache(sessionId);
-    if (cached && !(cached.locked === true && isPro)) {
+    if (cached) {
       setState({
         analyses: cached.analyses,
         progress: 1,
@@ -247,7 +232,6 @@ export function useMissAnalysis(
         diagnosis: cached.diagnosis ?? null,
         profile: cached.profile ?? null,
         status: 'done',
-        locked: cached.locked === true,
       });
       return;
     }
@@ -261,7 +245,7 @@ export function useMissAnalysis(
       return;
     }
 
-    setState({ analyses, progress: 0, lines: [], diagnosis: null, profile: null, status: 'engine', locked: false });
+    setState({ analyses, progress: 0, lines: [], diagnosis: null, profile: null, status: 'engine' });
 
     (async () => {
       try {
@@ -311,7 +295,6 @@ export function useMissAnalysis(
         let lines: string[] = [];
         let diagnosis: string | null = null;
         let profile: MissProfile | null = null;
-        let locked = false;
         try {
           const res = await fetch('/api/workout/report-lines', {
             method: 'POST',
@@ -334,7 +317,6 @@ export function useMissAnalysis(
             const data = await res.json();
             if (Array.isArray(data?.lines)) lines = data.lines.map((l: unknown) => String(l ?? ''));
             if (typeof data?.diagnosis === 'string') diagnosis = data.diagnosis;
-            locked = data?.locked === true;
             if (data?.profile && typeof data.profile === 'object') {
               profile = {
                 weakest: Array.isArray(data.profile.weakest) ? data.profile.weakest : [],
@@ -348,12 +330,10 @@ export function useMissAnalysis(
         }
         if (cancelled()) return;
 
-        const final: CachedReport = { analyses, lines, diagnosis, profile, locked };
+        const final: CachedReport = { analyses, lines, diagnosis, profile };
         // Only cache a complete report — a rate-limited one should retry next open.
-        // (A locked preview is complete for a free user; it is re-fetched once
-        // they are Pro — see the cache read above.)
         if (lines.length === analyses.length) writeCache(sessionId, final);
-        setState({ ...final, locked, progress: 1, status: 'done' });
+        setState({ ...final, progress: 1, status: 'done' });
       } catch (err) {
         console.error('[useMissAnalysis] failed:', err);
         if (!cancelled()) setState((s) => ({ ...s, status: 'error' }));
@@ -366,7 +346,7 @@ export function useMissAnalysis(
       runIdRef.current++;
       stockfish.cancel();
     };
-  }, [missedPuzzles, sessionId, isPro]);
+  }, [missedPuzzles, sessionId]);
 
   return state;
 }

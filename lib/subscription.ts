@@ -46,16 +46,13 @@ export const isProSubscription = isPremiumSubscription;
  * on; counted per LOCAL day, server truth in lib/pro/limits.ts):
  *   LESSONS_PER_DAY — Chess Path lessons (every level is open; no level cap).
  *   REVIEWS_PER_DAY — full Rookie game reviews (/api/coach-review).
- *   BOUTS_PER_DAY   — Chess Boxing fights (Play Boxing).
- *   WORKOUTS_PER_DAY — Puzzle Boxing workouts.
+ * Chess Path only — Chess Boxing and Rookie's Revenge have no limits.
  * Logged-out users are never limited: the limit is a reason to buy Pro, not a
  * reason to bounce a cold visitor (and there is no server row to count).
  */
 export const PRO_FREE_LIMITS = {
   LESSONS_PER_DAY: 2,
   REVIEWS_PER_DAY: 1,
-  BOUTS_PER_DAY: 1,
-  WORKOUTS_PER_DAY: 1,
 } as const;
 
 /**

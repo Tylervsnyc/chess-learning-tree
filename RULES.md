@@ -302,7 +302,7 @@ instead of `transition: none`. The scroll fires 16ms later into a still-animatin
 | Premium | Unlimited | N/A |
 | Admin | Unlimited | N/A |
 
-**Rookie Pro daily lesson limit (`FEATURE_FLAGS.PRO` only):** free ACCOUNTS get `PRO_FREE_LIMITS.LESSONS_PER_DAY` (2) lessons per LOCAL day, every level open. Counted server-side from `lesson_progress.completed_at` since local midnight (`lib/pro/limits.ts` `countToday`, `localDayStartISO`; a replay re-stamps the same row, so it counts distinct lessons) → `/api/pro/limits` → `hooks/useProGate` (`limits.canLesson`, `ready`). The lesson page renders nothing until the read lands, then on the 3rd lesson shows "That's your 2 lessons for today" + `ProPaywall` (trigger `limit_lesson`, `pro_limit_hit {kind:'lesson'}`). Pro/admin: unlimited. **Logged-out visitors are never limited** (no server row to count; same rule as the Chess Boxing limits — the limit is a reason to buy Pro, not to bounce a cold visitor; today's anonymous lesson limits are also off). Game reviews: 1 FULL review per local day for free accounts (`/api/coach-review` + `review_usage`, one row per user + game); past it the model is not called and every move shows the locked row (tap → paywall, trigger `review`).
+**Rookie Pro daily lesson limit (`FEATURE_FLAGS.PRO` only):** free ACCOUNTS get `PRO_FREE_LIMITS.LESSONS_PER_DAY` (2) lessons per LOCAL day, every level open. Counted server-side from `lesson_progress.completed_at` since local midnight (`lib/pro/limits.ts` `countToday`, `localDayStartISO`; a replay re-stamps the same row, so it counts distinct lessons) → `/api/pro/limits` → `hooks/useProGate` (`limits.canLesson`, `ready`). The lesson page renders nothing until the read lands, then on the 3rd lesson shows "That's your 2 lessons for today" + `ProPaywall` (trigger `limit_lesson`, `pro_limit_hit {kind:'lesson'}`). Pro/admin: unlimited. **Logged-out visitors are never limited** (no server row to count — the limit is a reason to buy Pro, not to bounce a cold visitor; today's anonymous lesson limits are also off). Game reviews: 1 FULL review per local day for free accounts (`/api/coach-review` + `review_usage`, one row per user + game); past it the model is not called and every move shows the locked row (tap → paywall, trigger `review`).
 
 ### Enforced In:
 `/hooks/usePermissions.ts` (`lessonAccess(lessonId)` → `'ok' | 'signup' | 'daily_limit' | 'pro'`)
@@ -325,9 +325,10 @@ instead of `transition: none`. The scroll fires 16ms later into a still-animatin
 - **Note**: Users can still subscribe even with limits disabled
 
 ### Rookie Pro Prompts (`FEATURE_FLAGS.PRO` only):
-- **Where**: the lesson page on the 3rd lesson of the day (`limit_lesson`), a locked review row (`review` / `variations`), Chess Boxing launch points (`limit_bout`, `limit_workout`) and Boxing Pro features
+- **Scope**: CHESS PATH ONLY (Tyler 2026-11-17) — chesspath.app + the Chess Path iOS app. Chess Boxing and Rookie's Revenge are free: no limits, no paywall, no IAP. `useProGate` is inert in the Chess Boxing bundle; reviews from `/box` or the Boxing app are never metered (`app` field on `/api/coach-review`)
+- **Where**: the lesson page on the 3rd lesson of the day (`limit_lesson`), a locked review row (`review` / `variations`)
 - **What**: `ProPaywall` via `hooks/useProGate` (`gate(kind)` for daily limits → `pro_limit_hit`; `requirePro(feature)` → `pro_gate_hit`). Approved design: `/test/pro-family-popup` renders the real component
-- **Copy**: "Rookie Pro — One subscription. All three apps." Rows from `lib/pro/benefits.ts` (one per app). One trial per person (`profiles.pro_trial_used_at`): trial-used accounts see "Start Rookie Pro", no trial copy. Never the word "bout"; no emoji; Chess Path has no leaderboard perk
+- **Copy**: "Rookie Pro — Chess Path with no daily limit." Free-vs-Pro rows from `lib/pro/benefits.ts` (lessons, game reviews, Try it). One trial per person (`profiles.pro_trial_used_at`): trial-used accounts see "Start Rookie Pro", no trial copy. Never the word "bout"; no emoji
 - **Patron**: folded into Pro — not sold while PRO is on (checkout 410, `/profile` CTA hidden); Pro members get the gold profile; existing patrons keep gold
 
 ---
@@ -1225,7 +1226,7 @@ The raw `Chessboard` component ships with default piece styling and no board col
 | `SHOW_OPENINGS` | `lib/config/feature-flags.ts` | `true` | Openings feature in Learn dropdown |
 | `CB_WEEKLY_TOP10_EMAIL` | `lib/config/feature-flags.ts` | env `CB_WEEKLY_TOP10_EMAIL=true` (default off) | Monday Chess Boxing Top 10 email (`cb_weekly_top10`) to the whole list. Off = `/api/cron/weekly-top10` dry-runs (counts, no sends). |
 | `ACHIEVEMENTS` | `lib/config/feature-flags.ts` | `true` | Chess Boxing achievements: trophy case on /profile + /box/profile, unlock animations on bout/workout result screens, server-side detection in the finish routes. Plan: docs/chess-boxing-achievements-plan.md |
-| `PRO` | `lib/config/feature-flags.ts` | `false` | Rookie Pro — ONE flag for the one subscription across Chess Path, Chess Boxing and Rookie's Revenge ($4.99/mo, $39.99/yr, 7-day trial, one trial per person). Free: 2 lessons + 1 full game review a day (Chess Path), 1 fight + 1 Puzzle Boxing a day (Chess Boxing); logged-out never limited. Off = no limits, no paywall, no IAP UI. Setup: docs/rookie-pro-setup.md; SQL: docs/rookie-pro-sql.sql |
+| `PRO` | `lib/config/feature-flags.ts` | `false` | Rookie Pro — Chess Path ONLY (web + Chess Path iOS; $4.99/mo, $39.99/yr, 7-day trial, one trial per person). Free: 2 lessons + 1 full game review a day; logged-out never limited. Chess Boxing + Revenge are free. Off = no limits, no paywall, no IAP UI. Setup: docs/rookie-pro-setup.md; SQL: docs/rookie-pro-sql.sql |
 
 ### Permissions & Limits (not feature flags)
 

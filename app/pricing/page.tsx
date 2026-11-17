@@ -8,7 +8,7 @@ import { BreathingRook } from '@/components/ui/BreathingRook';
 import { SubscriptionEvents } from '@/lib/analytics/posthog';
 import { NativeNoSaleGuard } from '@/components/subscription/NativeNoSaleGuard';
 import { FEATURE_FLAGS } from '@/lib/config/feature-flags';
-import { PRO_BENEFITS, PRO_SHARED_LINE } from '@/lib/pro/benefits';
+import { PRO_BENEFITS, PRO_TAGLINE } from '@/lib/pro/benefits';
 
 type PricingVariant = 'control' | 'low' | 'high';
 
@@ -220,7 +220,7 @@ function PricingContent() {
                 ? 'Loading...'
                 : FEATURE_FLAGS.PRO && isAuthenticated
                   ? trialUsed
-                    ? 'Start Rookie Pro' /* one trial per person, across every app */
+                    ? 'Start Rookie Pro' /* one trial per person */
                     : 'Start 7-day free trial' /* signed-in checkout carries the Pro web trial */
                   : FEATURE_FLAGS.PRO
                     ? 'Get Rookie Pro'
@@ -241,7 +241,7 @@ function PricingContent() {
   );
 }
 
-/* PRO: free vs Pro per app, one row per benefit — the same list the paywall renders. */
+/* PRO: free vs Pro, one row per benefit — the same list the paywall renders. */
 function ProBenefitsTable() {
   return (
     <div className="bg-chess-surface rounded-2xl border border-slate-200 shadow-sm mb-3 overflow-hidden">
@@ -259,7 +259,7 @@ function ProBenefitsTable() {
           </div>
         ))}
       </div>
-      <p className="px-4 py-2 text-center text-[11px] font-bold text-chess-text-muted bg-slate-50">{PRO_SHARED_LINE}</p>
+      <p className="px-4 py-2 text-center text-[11px] font-bold text-chess-text-muted bg-slate-50">{PRO_TAGLINE}</p>
     </div>
   );
 }

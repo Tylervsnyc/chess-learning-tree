@@ -6,8 +6,8 @@ import { isProUser } from '@/lib/pro/server';
 /**
  * GET /api/pro/limits?tz=America/New_York
  *
- * { lessonsToday, reviewsToday, boutsToday, workoutsToday, …Limit,
- *   isPro, canLesson, canReview, canBout, canWorkout, authenticated }
+ * { lessonsToday, reviewsToday, lessonLimit, reviewLimit,
+ *   isPro, canLesson, canReview, authenticated }
  *
  * Read-only truth for the Rookie Pro free limits (FEATURE_FLAGS.PRO; the
  * client only calls this while the flag is on — hooks/useProGate). Counted
