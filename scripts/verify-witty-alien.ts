@@ -20,6 +20,12 @@ import { getWittyAlienDanishLesson } from '../data/openings/witty-alien-danish-l
 import { getWittyAlienScandiLesson } from '../data/openings/witty-alien-scandi-lessons'
 import { HIKARU_LARSEN } from '../data/openings/hikaru-larsen'
 import { getHikaruLarsenLesson } from '../data/openings/hikaru-larsen-lessons'
+import { HIKARU_MODERN } from '../data/openings/hikaru-modern'
+import { getHikaruModernLesson } from '../data/openings/hikaru-modern-lessons'
+import { HIKARU_BISHOPS } from '../data/openings/hikaru-bishops'
+import { getHikaruBishopsLesson } from '../data/openings/hikaru-bishops-lessons'
+import { HIKARU_CARO } from '../data/openings/hikaru-caro'
+import { getHikaruCaroLesson } from '../data/openings/hikaru-caro-lessons'
 
 const OPENINGS = [
   { tree: WITTY_ALIEN, get: getWittyAlienLesson },
@@ -30,6 +36,9 @@ const OPENINGS = [
   { tree: WITTY_ALIEN_DANISH, get: getWittyAlienDanishLesson },
   { tree: WITTY_ALIEN_SCANDI, get: getWittyAlienScandiLesson },
   { tree: HIKARU_LARSEN, get: getHikaruLarsenLesson },
+  { tree: HIKARU_MODERN, get: getHikaruModernLesson },
+  { tree: HIKARU_BISHOPS, get: getHikaruBishopsLesson },
+  { tree: HIKARU_CARO, get: getHikaruCaroLesson },
 ]
 
 const place = (fen: string) => fen.split(' ')[0]

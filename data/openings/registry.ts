@@ -288,10 +288,10 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
   },
   {
     slug: 'hikaru-larsen',
-    name: "Hikaru's 1.b3",
-    subtitle: "Hikaru Nakamura's favorite blitz opening",
+    name: 'Hikaru Nakamura',
+    subtitle: "Hikaru's favorite blitz openings, from his real games",
     moves: '1.b3 e5 2.Bb2 Nc6 3.c4',
-    description: "Hikaru Nakamura's favorite blitz weapon: 1.b3, the Nimzo-Larsen Attack. He has played it in 1,693 blitz games on chess.com over the last two years and scored 93%. Every line here comes from those games.",
+    description: "Hikaru Nakamura's favorite blitz openings, built from his real chess.com games over the last two years: 1.b3 (1,693 blitz games, 93% score), the ...a6 Modern, the Bishop's Opening and his strange anti-Caro-Kann with the Nf1 retreat.",
     side: 'white',
     category: '1.b3',
     color: '#14B8A6',
@@ -303,9 +303,14 @@ export const OPENINGS_REGISTRY: OpeningConfig[] = [
     order: 6,
     mainLine: {
       name: 'Nimzo-Larsen Attack',
-      subtitle: '1...e5 2.Bb2 Nc6 3.c4 and the knight hops · 7 lessons',
+      subtitle: '1.b3 — 1...e5 2.Bb2 Nc6 3.c4 and the knight hops · 7 lessons',
     },
-    variations: [],
+    variations: [
+      { name: '...a6 Modern', subtitle: 'Black vs 1.e4 — 1...g6 2.d4 Bg7 3.Nc3 a6', icon: 'pawn', hasData: true, slug: 'hikaru-modern' },
+      { name: "Bishop's Opening", subtitle: 'White vs 1...e5 — 2.Bc4 and Ne2', icon: 'bishop', hasData: true, slug: 'hikaru-bishops' },
+      { name: 'Anti-Caro with Nf1', subtitle: 'White vs the Caro-Kann — 5.Ng3 and 7.Nf1', icon: 'knight', hasData: true, slug: 'hikaru-caro' },
+    ],
+    alwaysUnlockVariations: true,
   },
   // Coming Soon 1.e4
   {
